@@ -3,7 +3,7 @@ var camNear = 0.1, camFar = 20000;
 var width = window.innerWidth, height = window.innerHeight;
 
 
-var animation = parseJSON('media/camera/sample.JSON');
+var animation = parseJSON('media/camera/sample1.JSON');
 var animation_interval = setInterval(function(){},10);
 Init();
 
@@ -14,7 +14,8 @@ function Init() {
 	addCameraAndControls();
 	addLight();
 	initKeyboard();
-	loadJSON('cardinal');
+	loadJSON('cardinal1');
+	loadJSON('text');
 	animateCamera(camera, animation)
 	animate();
 }
@@ -56,10 +57,10 @@ function addCameraAndControls() {
 	camera.position.set(0, 1000, 1500);
 	scene.add( camera );
 
-    controls = new THREE.OrbitControls( camera, renderer.domElement ); 
-    controls.target = new THREE.Vector3(0, 500, 0);
+    //controls = new THREE.OrbitControls( camera, renderer.domElement ); 
+    //controls.target = new THREE.Vector3(0, 500, 0);
 
-    camera.lookAt(controls.target)
+    //camera.lookAt(controls.target)
 }
 
 function animate() {
@@ -87,10 +88,11 @@ function animateCamera(camera, animation){
 	animation_interval = setInterval(function(){
 		if(i<animation.frames.length-1){
 			i++
-			camera.position.set(Number(animation.frames[i].camera.x),Number(animation.frames[i].camera.z),Number(animation.frames[i].camera.y));
-			camera.target.x = Number(animation.frames[i].target.x);
-			camera.target.y = Number(animation.frames[i].target.z);
-			camera.target.z = Number(animation.frames[i].target.y);
+			camera.fov = animation.frames[i].fov;
+			camera.updateProjectionMatrix();
+			camera.position.set((animation.frames[i].camera.x),(animation.frames[i].camera.z),-(animation.frames[i].camera.y));
+			var lookAt = new THREE.Vector3(animation.frames[i].target.x, animation.frames[i].target.z, -animation.frames[i].target.y);
+			camera.lookAt(lookAt);
 		}
 	},1000/animation.fps);
 }
