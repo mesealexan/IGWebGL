@@ -2,7 +2,7 @@ var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 0.1, camFar = 20000;
 var width = window.innerWidth, height = window.innerHeight;
 
-var refractSphereCamera, refractSphere, skyBox;
+var refractSphereCamera, refractSphere, skyBox, windowMesh;
 
 Init();
 
@@ -19,18 +19,18 @@ function Init() {
 }
 
 function loadJSON (name, material, callback) {
-	var mesh;
+	var windowMesh;
 	var loader = new THREE.JSONLoader();
 
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
 	    var material = new THREE.MeshFaceMaterial( materials ); 
-        mesh = new THREE.Mesh( geometry, material );
+        windowMesh = new THREE.Mesh( geometry, material );
     });
 
 	loader.onLoadComplete = function(){		
-		mesh.name = name;
-		if(callback)callback(mesh);
-    	scene.add(mesh);
+		windowMesh.name = name;
+		if(callback)callback(windowMesh);
+    	scene.add(windowMesh);
 	};
 }
 
@@ -38,8 +38,14 @@ function manageWindow(obj) {
 	refractSphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
 	scene.add( refractSphereCamera );
 	
+	refractSphereCamera.renderTarget.generateMipmaps = false;
 	refractSphereCamera.renderTarget.mapping = THREE.CubeRefractionMapping;
-	
+
+	refractSphereCamera.renderTarget.wrapS = THREE.RepeatWrapping;
+	refractSphereCamera.renderTarget.wrapT = THREE.RepeatWrapping;
+	refractSphereCamera.renderTarget.repeat.x = 100;
+	refractSphereCamera.renderTarget.repeat.y = 100;
+
 	var refractMaterial = new THREE.MeshPhongMaterial({ 
 		color: 0xccddff, 
 		envMap: refractSphereCamera.renderTarget, 
@@ -56,8 +62,8 @@ function manageWindow(obj) {
 
 function addSkybox () {
 	var size = 10000;
-	var imagePrefix = "media/skybox/cube__";
-	var directions  = ["r", "l", "u", "d", "f", "b"];
+	var imagePrefix = "media/skybox/test_";
+	var directions  = ["r", "r", "u", "d", "f", "b"];
 	var imageSuffix = ".jpg";
 	var skyGeometry = new THREE.BoxGeometry( size, size, size );	
 	
@@ -69,7 +75,6 @@ function addSkybox () {
 		}));
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-	//skyBox.visible = false;
 	scene.add( skyBox );
 }
 
@@ -101,11 +106,9 @@ function addCameraAndControls() {
 
 function animate() {
 	frameID = requestAnimationFrame(animate);
-	//if(frameID < 30){
-		refractSphereCamera.updateCubeMap( renderer, scene );
-	//}
-	//else skyBox.visible = false;
-
+	if(windowMesh)windowMesh.visible = false;
+	if(refractSphereCamera)refractSphereCamera.updateCubeMap( renderer, scene );
+	if(windowMesh)windowMesh.visible = true;
 	renderer.render(scene, camera);
 } 
 
