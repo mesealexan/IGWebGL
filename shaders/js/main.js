@@ -35,16 +35,27 @@ function loadJSON (name, material, callback) {
 }
 
 function manageWindow(obj) {
-	refractSphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
-	scene.add( refractSphereCamera );
-	
-	refractSphereCamera.renderTarget.mapping = THREE.CubeRefractionMapping;
-	
+	//refractSphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
+	//scene.add( refractSphereCamera );	
+	//refractSphereCamera.renderTarget.mapping = THREE.CubeRefractionMapping;
+
+	var urls = [];
+	var imagePrefix = "media/skybox/cube__";
+	var directions  = ["r", "l", "u", "d", "f", "b"];
+	var imageSuffix = ".jpg";
+
+	for (var i = 0; i < 6; i++)
+		urls.push(imagePrefix + directions[i] + imageSuffix);
+
+	var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+
+
 	var refractMaterial = new THREE.MeshPhongMaterial({ 
 		color: 0xccddff, 
-		envMap: refractSphereCamera.renderTarget, 
+		//envMap: refractSphereCamera.renderTarget, 
+		envMap: textureCube,
 		refractionRatio: 0.985, 
-		reflectivity: 0.9,
+		//reflectivity: 0.9,
 		specular: 0x222222,  
 		emissive: 0x006063,
 		shininess: 30
@@ -70,7 +81,7 @@ function addSkybox () {
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
 	//skyBox.visible = false;
-	scene.add( skyBox );
+	//scene.add( skyBox );
 }
 
 function addRenderer() {
@@ -101,7 +112,7 @@ function addCameraAndControls() {
 
 function animate() {
 	frameID = requestAnimationFrame(animate);
-	refractSphereCamera.updateCubeMap( renderer, scene );
+	//refractSphereCamera.updateCubeMap( renderer, scene );
 	renderer.render(scene, camera);
 } 
 
