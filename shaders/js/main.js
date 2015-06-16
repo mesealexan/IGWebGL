@@ -101,11 +101,11 @@ function addCameraAndControls() {
 
 function animate() {
 	frameID = requestAnimationFrame(animate);
-	if(frameID < 30){
+	//if(frameID < 30){
 		refractSphereCamera.updateCubeMap( renderer, scene );
-	}
-	else skyBox.visible = false;
-	
+	//}
+	//else skyBox.visible = false;
+
 	renderer.render(scene, camera);
 } 
 
