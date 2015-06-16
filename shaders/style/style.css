@@ -1,0 +1,22 @@
+body{
+  margin: 0px;
+  overflow: hidden;
+  padding: 0px;
+}
+
+canvas {
+    display: block;
+}
+
+@font-face {
+    font-family: cubic;
+    src: url(LLPIXEL3.ttf);
+}
+
+#score{
+    font-family: cubic;
+    color: blue;
+    background-color: black;
+    font-size: 30px;
+	position:absolute;
+}
