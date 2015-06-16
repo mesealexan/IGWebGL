@@ -35,10 +35,6 @@ function loadJSON (name, material, callback) {
 }
 
 function manageWindow(obj) {
-	//refractSphereCamera = new THREE.CubeCamera( 0.1, 5000, 512 );
-	//scene.add( refractSphereCamera );	
-	//refractSphereCamera.renderTarget.mapping = THREE.CubeRefractionMapping;
-
 	var urls = [];
 	var imagePrefix = "media/skybox/cube__";
 	var directions  = ["r", "l", "u", "d", "f", "b"];
@@ -81,7 +77,7 @@ function addSkybox () {
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
 	//skyBox.visible = false;
-	//scene.add( skyBox );
+	scene.add( skyBox );
 }
 
 function addRenderer() {
