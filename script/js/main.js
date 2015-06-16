@@ -2,6 +2,9 @@ var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 0.1, camFar = 20000;
 var width = window.innerWidth, height = window.innerHeight;
 
+
+var animation = parseJSON('media/camera/sample.JSON');
+var animation_interval = setInterval(function(){},10);
 Init();
 
 function Init() {
@@ -12,12 +15,8 @@ function Init() {
 	addLight();
 	initKeyboard();
 	loadJSON('cardinal');
+	animateCamera(camera, animation)
 	animate();
-	console.log(parseJSON('media/camera/sample.JSON'));
-}
-
-function animateCamera(camera, JSON_file){
-
 }
 
 function loadJSON (name, material, callback) {
@@ -80,4 +79,18 @@ function parseJSON(file) {
    		request.send(null)
    	var JSON_object = JSON.parse(request.responseText);
    	return JSON_object;
+}
+
+function animateCamera(camera, animation){
+	clearInterval(animation_interval);
+	var i = -1;
+	animation_interval = setInterval(function(){
+		if(i<animation.frames.length-1){
+			i++
+			camera.position.set(Number(animation.frames[i].camera.x),Number(animation.frames[i].camera.z),Number(animation.frames[i].camera.y));
+			camera.target.x = Number(animation.frames[i].target.x);
+			camera.target.y = Number(animation.frames[i].target.z);
+			camera.target.z = Number(animation.frames[i].target.y);
+		}
+	},1000/animation.fps);
 }
