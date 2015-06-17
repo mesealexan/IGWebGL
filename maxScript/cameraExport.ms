@@ -1,10 +1,3 @@
-cam = selection[1]
-
---check is a camera is selected
-if classOf(cam) != Targetcamera then 
-	messageBox "Error: Please select a camera."
-else getCamera(cam)
-
 fn getCamera cam =
 (
 	local count = cam.position.controller.keys.count
@@ -25,3 +18,10 @@ fn getCamera cam =
 	
 	Close output_file
 )
+
+cam = selection[1]
+
+--check is a camera is selected
+if classOf(cam) != Targetcamera then 
+	messageBox "Error: Please select a camera."
+else getCamera(cam)
