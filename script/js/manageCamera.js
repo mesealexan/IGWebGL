@@ -23,9 +23,15 @@ function animateCamera(animation){
 		}
 		else{ //free camera
 
-			var quaternion = new THREE.Quaternion(animation.frames[i].quaternion.x, 
-				animation.frames[i].quaternion.y, animation.frames[i].quaternion.z, 
-				animation.frames[i].quaternion.w);
+			var euler = new THREE.Euler(
+				degreesToRadians(animation.frames[i].quaternion.x), 
+				degreesToRadians(animation.frames[i].quaternion.z), 
+				degreesToRadians(animation.frames[i].quaternion.y), 'XYZ');
+			camera.rotation.copy(euler)
+			//camera.rotation.copy(quaternion);
+			//console.log(camera.rotation)
+			//camera.setRotationFromQuaternion(quaternion);
+
 			//camera.quaternion.copy(quaternion);
 			//console.log(camera.quaternion)
 			//var axis = new THREE.Vector3( animation.frames[i].quaternion.x, 
@@ -37,7 +43,6 @@ function animateCamera(animation){
 			//console.log(quaternion)
 			//console.log(quaternion)
 			//camera.rotation.set(rotationVector.x, rotationVector.y, rotationVector.z);
-			camera.setRotationFromQuaternion(quaternion);
 			//console.log(camera.rotation)
 			// var a = new THREE.Euler( animation.frames[i].quaternion.x, 
 			// 	animation.frames[i].quaternion.y, animation.frames[i].quaternion.z );

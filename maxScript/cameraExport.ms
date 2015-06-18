@@ -60,7 +60,7 @@ fn getCamera cam =
 			format "\t\t\"target\" : {\"x\":%, \"y\":%, \"z\":%},\n" cam.Target.pos.x cam.Target.pos.y cam.Target.pos.z to:output_file 
 			format "\t\t\"rollAngle\" : %,\n" cam.controller.roll_angle to:output_file 
 		)
-		else format "\t\t\"quaternion\" : {\"x\":%, \"y\":%, \"z\":%, \"w\":%},\n" cam.rotation.x cam.rotation.y cam.rotation.z cam.rotation.w to:output_file 
+		else format "\t\t\"quaternion\" : {\"x\":%, \"y\":%, \"z\":%},\n" (cam.rotation as eulerangles).x (cam.rotation as eulerangles).y (cam.rotation as eulerangles).z  to:output_file 
 		
 		format "\t\t\"fov\" : %\n\t\t}" cam.fov to:output_file 
 		

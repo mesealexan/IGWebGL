@@ -16,7 +16,7 @@ function Init() {
 	initKeyboard();
 	loadJSON('cardinal1');
 	loadJSON('text');
-	animateCamera(animation)
+	animateCamera(animation);
 	animate();
 }
 
