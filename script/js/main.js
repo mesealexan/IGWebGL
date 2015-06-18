@@ -1,5 +1,5 @@
 var container, camera, scene, renderer, keyboard, frameID;
-var camNear = 0.1, camFar = 20000;
+var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
 
 
@@ -16,7 +16,7 @@ function Init() {
 	initKeyboard();
 	loadJSON('cardinal1');
 	loadJSON('text');
-	animateCamera(camera, animation)
+	animateCamera(animation)
 	animate();
 }
 
@@ -80,19 +80,4 @@ function parseJSON(file) {
    		request.send(null)
    	var JSON_object = JSON.parse(request.responseText);
    	return JSON_object;
-}
-
-function animateCamera(camera, animation){
-	clearInterval(animation_interval);
-	var i = -1;
-	animation_interval = setInterval(function(){
-		if(i<animation.frames.length-1){
-			i++
-			camera.fov = animation.frames[i].fov;
-			camera.updateProjectionMatrix();
-			camera.position.set((animation.frames[i].camera.x),(animation.frames[i].camera.z),-(animation.frames[i].camera.y));
-			var lookAt = new THREE.Vector3(animation.frames[i].target.x, animation.frames[i].target.z, -animation.frames[i].target.y);
-			camera.lookAt(lookAt);
-		}
-	},1000/animation.fps);
 }
