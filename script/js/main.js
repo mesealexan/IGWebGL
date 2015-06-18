@@ -3,7 +3,7 @@ var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
 
 
-var animation = parseJSON('media/camera/sample1.JSON');
+var animation = parseJSON('media/camera/sample2.JSON');
 var animation_interval = setInterval(function(){},10);
 Init();
 
@@ -14,9 +14,9 @@ function Init() {
 	addCameraAndControls();
 	addLight();
 	initKeyboard();
-	loadJSON('cardinal1');
+	loadObject('cardinal2', cardinal2materials);
 	loadJSON('text');
-	animateCamera(animation);
+	animateCamera.play(animation);
 	animate();
 }
 
@@ -56,10 +56,8 @@ function addCameraAndControls() {
 	camera = new THREE.PerspectiveCamera( 45, width / height, camNear, camFar ); 
 	camera.position.set(0, 1000, 1500);
 	scene.add( camera );
-
     //controls = new THREE.OrbitControls( camera, renderer.domElement ); 
     //controls.target = new THREE.Vector3(0, 500, 0);
-
     //camera.lookAt(controls.target)
 }
 

@@ -1,3 +1,5 @@
+pausedFrame = 0;
+
 function modifyCameraUp (degrees) {	
 	var radians = this.degreesToRadians(degrees);	
 	var vector3 = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));	
@@ -6,58 +8,76 @@ function modifyCameraUp (degrees) {
 	return vector3;
 }
 
-function animateCamera(animation){
-	clearInterval(animation_interval);
-	var i = -1;
-	animation_interval = setInterval(function(){
-	if(i<animation.frames.length-1){
-		i++;
+var animateCamera = {
+	paused: false,
+	frame: -1,
+	play: function(animation, startFrom, reverse){
+		animateCamera.stop(animation_interval);
+		if(startFrom != undefined) animateCamera.frame = startFrom;
+		animation_interval = setInterval(function(){
+		if(animateCamera.checkPlayback(animation, reverse)){
+			if(reverse != undefined)
+			{				
+				if(!reverse) animateCamera.frame++;
+				else animateCamera.frame--;
+			}
+			else animateCamera.frame++;
 
-		if(animation.type == 'Targetcamera'){
-			var newUp = modifyCameraUp(animation.frames[i].rollAngle);
-			camera.up.set(newUp.x, newUp.y, newUp.z);
+			if(animation.type == 'Targetcamera')
+			{
+				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
+				camera.up.set(newUp.x, newUp.y, newUp.z);
 
-			var lookAt = new THREE.Vector3(animation.frames[i].target.x, animation.frames[i].target.z, 
-				-animation.frames[i].target.y);
-			camera.lookAt(lookAt);
+				var lookAt = new THREE.Vector3(animation.frames[animateCamera.frame].target.x, 
+					animation.frames[animateCamera.frame].target.z, 
+					-animation.frames[animateCamera.frame].target.y);
+				camera.lookAt(lookAt);
+			}
+			else //free camera
+			{ 
+				var euler = new THREE.Euler(
+					degreesToRadians(animation.frames[animateCamera.frame].quaternion.x), 
+					degreesToRadians(animation.frames[animateCamera.frame].quaternion.z), 
+					degreesToRadians(animation.frames[animateCamera.frame].quaternion.y), 'XYZ');
+				camera.rotation.copy(euler)
+			} 
+
+			camera.fov = animation.frames[animateCamera.frame].fov;
+			camera.updateProjectionMatrix();
+
+			camera.position.set((animation.frames[animateCamera.frame].camera.x),(animation
+				.frames[animateCamera.frame].camera.z),
+				-(animation.frames[animateCamera.frame].camera.y));
+
+			
 		}
-		else{ //free camera
+		},1000/animation.fps)
+	}, 
+	stop: function(){
+		clearInterval(animation_interval);
+	},
+	checkPlayback: function(animation, reverse){
+		if(reverse != undefined)
+		{
+			if(!reverse && animateCamera.frame < animation.frames.length-1) return true;
+			else if(!reverse && animateCamera.frame >= animation.frames.length-1) {				
+				console.log("Finished playing normally, 'reverse' argument was 'false'");
+				animateCamera.stop();
+			}
 
-			var euler = new THREE.Euler(
-				degreesToRadians(animation.frames[i].quaternion.x), 
-				degreesToRadians(animation.frames[i].quaternion.z), 
-				degreesToRadians(animation.frames[i].quaternion.y), 'XYZ');
-			camera.rotation.copy(euler)
-			//camera.rotation.copy(quaternion);
-			//console.log(camera.rotation)
-			//camera.setRotationFromQuaternion(quaternion);
-
-			//camera.quaternion.copy(quaternion);
-			//console.log(camera.quaternion)
-			//var axis = new THREE.Vector3( animation.frames[i].quaternion.x, 
-			//animation.frames[i].quaternion.z, animation.frames[i].quaternion.y).normalize();
-			//quaternion.setFromAxisAngle(axis, animation.frames[i].quaternion.w);
-			//camera.rotation.setFromQuaternion ( quaternion );
-			//quaternion.normalize();
-			//rotationVector.applyQuaternion( quaternion );
-			//console.log(quaternion)
-			//console.log(quaternion)
-			//camera.rotation.set(rotationVector.x, rotationVector.y, rotationVector.z);
-			//console.log(camera.rotation)
-			// var a = new THREE.Euler( animation.frames[i].quaternion.x, 
-			// 	animation.frames[i].quaternion.y, animation.frames[i].quaternion.z );
-			// camera.quaternion.setFromEuler( a )
-		} 
-
-		camera.fov = animation.frames[i].fov;
-		camera.updateProjectionMatrix();
-
-		camera.position.set((animation.frames[i].camera.x),(animation.frames[i].camera.z),
-			-(animation.frames[i].camera.y));
-
+			if(reverse && animateCamera.frame > -1) return true;
+			else if(reverse && animateCamera.frame < 1) {
+				console.log("Finished playing in reverse.");
+				animateCamera.stop();
+			}
+		}
+		else {
+			if(animateCamera.frame < animation.frames.length-1)
+				return true;
+			else return false;
+		}
 		
 	}
-	},1000/animation.fps);
 }
 
 function degreesToRadians (deg) { return deg * (Math.PI / 180); }

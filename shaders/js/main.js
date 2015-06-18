@@ -45,7 +45,6 @@ function manageWindow(obj) {
 
 	var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
 
-
 	var refractMaterial = new THREE.MeshPhongMaterial({ 
 		color: 0xccddff, 
 		//envMap: refractSphereCamera.renderTarget, 
