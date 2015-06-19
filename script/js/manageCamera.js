@@ -24,7 +24,6 @@ var animateCamera = {
 				else animateCamera.frame--;
 			}
 			else animateCamera.frame++;
-
 			if(animation.type == 'Targetcamera')
 			{
 				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
