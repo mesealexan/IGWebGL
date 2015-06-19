@@ -28,6 +28,7 @@ function loadAssets () {
 	loadAnimations();
 	loadObject('cardinal2', cardinal2materials);
 	loadObject('cardinal_vertical', cardinal2materials);
+	loadObject('slice', cardinal2materials);
  } 
 
 function loadMaterials () {
