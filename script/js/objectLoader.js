@@ -32,7 +32,7 @@ function loadAssets () {
 	loadJSON('text');
 	loadObject('cardinal2', cardinal2materials, addToScene, windowHorizontal);
 	//loadObject('cardinal_vertical', cardinal2materials);
-	//loadObject('slice', cardinal2materials);
+	loadJSON('slice');
  } 
 
  function addToScene (obj) {
