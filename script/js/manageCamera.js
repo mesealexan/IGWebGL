@@ -10,6 +10,7 @@ function modifyCameraUp (degrees) {
 
 var animateCamera = {
 	paused: false,
+	finished: false,
 	frame: -1,
 	play: function(animation, startFrom, reverse){
 		animateCamera.stop(animation_interval);
@@ -60,16 +61,14 @@ var animateCamera = {
 		if(reverse != undefined)
 		{
 			if(!reverse && animateCamera.frame < animation.frames.length-1) return true;
-			else if(!reverse && animateCamera.frame >= animation.frames.length-1) {				
-				console.log("Finished playing normally, 'reverse' argument was 'false'");
+			else if(!reverse && animateCamera.frame >= animation.frames.length-1) 
+				//Finished playing normally, 'reverse' argument was 'false'				
 				animateCamera.stop();
-			}
 
 			if(reverse && animateCamera.frame > -1) return true;
-			else if(reverse && animateCamera.frame < 1) {
-				console.log("Finished playing in reverse.");
+			else if(reverse && animateCamera.frame < 1) 
+				//Finished playing in reverse
 				animateCamera.stop();
-			}
 		}
 		else {
 			if(animateCamera.frame < animation.frames.length-1)

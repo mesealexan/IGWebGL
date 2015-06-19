@@ -1,5 +1,4 @@
-var cardinal2materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
-						  greenGlassMaterial(), sealantA_Material()]
+var cardinal1materials, cardinal2materials;
 
 function loadObject (name, material, callback) {
 	var mesh;
@@ -19,4 +18,17 @@ function loadObject (name, material, callback) {
 		if(callback)callback(mesh);
     	scene.add(mesh);
 	};
+}
+
+function loadImages () {	
+	bmap = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
+	loadMaterials();
+ } 
+
+function loadMaterials () {
+	cardinal1materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
+						  greenGlassMaterial(), sealantA_Material()];
+
+ 	cardinal2materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
+						  greenGlassMaterial(), sealantA_Material(), sealantMaterial()];
 }

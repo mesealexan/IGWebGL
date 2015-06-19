@@ -1,3 +1,5 @@
+var bmap;
+
 var shaderSettings = {
 	uniforms: {
 	  	ScreenResX: {
@@ -114,13 +116,15 @@ function glassMaterial1 () {
 	return refractMaterial;
 }
 
-function spacerMaterial () {
-	return new THREE.MeshPhongMaterial({ 
+function spacerMaterial () {	
+	var spacerMat = new THREE.MeshPhongMaterial({ 
 		color: new THREE.Color(0.3882, 0.3882, 0.3882),
 		ambient: new THREE.Color(0.3882, 0.3882, 0.3882),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000), 
-		shininess: 40		
-	});
+		shininess: 40,
+		normalMap: bmap
+	});	
+	return spacerMat;
 }
 
 function sealantMaterial () {
