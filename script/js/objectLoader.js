@@ -39,5 +39,7 @@ function loadMaterials () {
 function loadAnimations () {
 	for (var i = 0; i < 6; i++) {
 		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));
+		cameraAnimations[i].duration = (cameraAnimations[i].frames.length / 
+			cameraAnimations[i].fps) * 1000; //to ms
 	};
 }

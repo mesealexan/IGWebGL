@@ -1,5 +1,8 @@
 var cameraAnimations = [];
 
+//ms
+var transitionWait_1_2 = 5000;
+
 function modifyCameraUp (degrees) {	
 	var radians = this.degreesToRadians(degrees);	
 	var vector3 = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));	
@@ -16,7 +19,6 @@ var animateCamera = {
 		animateCamera.stop(animation_interval);
 		if(startFrom != undefined) animateCamera.frame = startFrom;
 		animation_interval = setInterval(function(){
-			console.log(animation.frames.length)
 		if(animateCamera.checkPlayback(animation, reverse)){
 			if(reverse != undefined)
 			{				
@@ -54,7 +56,11 @@ var animateCamera = {
 		}
 		},1000/animation.fps)
 	}, 
+	pause: function(){
+		clearInterval(animation_interval);
+	},
 	stop: function(){
+		animateCamera.frame = 0;
 		clearInterval(animation_interval);
 	},
 	checkPlayback: function(animation, reverse){
@@ -82,7 +88,8 @@ var animateCamera = {
 var manageCameraAnimations = {
 	anim_1: function(){
 		animateCamera.play(cameraAnimations[0]);
-		setTimeout(function(){ animateCamera.play(cameraAnimations[1]) }, 7000);		
+		setTimeout(function(){ animateCamera.play(cameraAnimations[1]) }, 
+			cameraAnimations[0].duration + transitionWait_1_2);		
 	},
 	anim2: function () {
 		animateCamera.frame = 0;
