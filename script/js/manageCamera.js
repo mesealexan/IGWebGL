@@ -1,7 +1,8 @@
 var cameraAnimations = [];
-
+var currentAnimationIndex = undefined;
+var zoomedOnSlice = undefined;
 //ms
-var transitionWait_1_2 = 5000;
+var transitionWait_1_2 = 1000;
 
 function modifyCameraUp (degrees) {	
 	var radians = this.degreesToRadians(degrees);	
@@ -17,6 +18,8 @@ var animateCamera = {
 	frame: -1,
 	play: function(animation, startFrom, reverse){
 		animateCamera.stop(animation_interval);
+		animateCamera.finished = false;
+		if(reverse) animateCamera.frame = animation.frames.length - 1;
 		if(startFrom != undefined) animateCamera.frame = startFrom;
 		animation_interval = setInterval(function(){
 		if(animateCamera.checkPlayback(animation, reverse)){
@@ -60,6 +63,7 @@ var animateCamera = {
 		clearInterval(animation_interval);
 	},
 	stop: function(){
+		animateCamera.finished = true;
 		animateCamera.frame = 0;
 		clearInterval(animation_interval);
 	},
@@ -79,30 +83,84 @@ var animateCamera = {
 		else {
 			if(animateCamera.frame < animation.frames.length-1)
 				return true;
-			else return false;
+			else animateCamera.stop();
 		}
 		
 	}
 }
 
 var manageCameraAnimations = {
+	//horizontal window
 	playAnim_1: function(){
+		currentAnimationIndex = 0;
 		animateCamera.play(cameraAnimations[0]);
-		setTimeout(function(){ manageCameraAnimations.playAnim_2() }, 
-			cameraAnimations[0].duration + transitionWait_1_2);		
+		setTimeout(function(){ 
+			manageCameraAnimations.playAnim_2() 
+		}, cameraAnimations[0].duration + transitionWait_1_2);		
 	},
+	//both windows perspective
 	playAnim_2: function () {
+		currentAnimationIndex = 1;
 		loadObject('cardinal_vertical', cardinal2materials, addToScene, windowVertical);
 		animateCamera.frame = 0;
 		animateCamera.play(cameraAnimations[1]);
-		setTimeout(function(){ menuButtons.style.visibility = "visible" }, 
-			cameraAnimations[1].duration);	
+		setTimeout(function(){ 
+			menu.style.visibility = "visible" 
+		}, cameraAnimations[1].duration);	
 	},
+	//go to slice
 	playAnim_3: function () {
+		currentAnimationIndex = 2;
 		windowVertical.mesh.visible = false;
 		windowHorizontal.mesh.visible = false;
 		text.mesh.visible = false;
-		loadObject('slice', cardinal2materials, addToScene, slice);
+		loadObject('slice', cardinal2materials, addToScene, slice);		
+		animateCamera.play(cameraAnimations[2]);
+		menu.style.visibility = "hidden";
+		setTimeout(function(){ 
+			backButton.style.visibility = "visible";
+			closeUpMenu.style.visibility = "visible"; 
+		}, cameraAnimations[2].duration);	
+	},
+	//reverse to both windows perspective
+	playAnim_3_reverse: function () {
+		currentAnimationIndex = 2;
+		windowVertical.mesh.visible = true;
+		windowHorizontal.mesh.visible = true;
+		text.mesh.visible = true;
+		slice.mesh.visible = false;
+		backButton.style.visibility = "hidden";
+		closeUpMenu.style.visibility = "hidden";
+		animateCamera.play(cameraAnimations[2], undefined, true);
+		setTimeout(function(){ 
+			menu.style.visibility = "visible" 
+		}, cameraAnimations[2].duration);		
+	},
+	//different zoom ins on slice
+	playZoomInAnim: function (num) {
+		if(!animateCamera.finished) return;
+		if(num == currentAnimationIndex) return;
+		if(currentAnimationIndex > 2){
+			zoomedOnSlice = true;
+			animateCamera.play(cameraAnimations[currentAnimationIndex], undefined, true);
+			setTimeout(function(){
+				animateCamera.play(cameraAnimations[num]);
+			}, cameraAnimations[currentAnimationIndex].duration);}
+		else {
+			animateCamera.play(cameraAnimations[num]);
+			zoomedOnSlice = true;
+		}
+		currentAnimationIndex = num;
+	},
+	back: function() {
+		//back to slice
+		if(zoomedOnSlice){
+			zoomedOnSlice = false;
+			animateCamera.play(cameraAnimations[currentAnimationIndex], undefined, true);
+			currentAnimationIndex = 2;
+		} 
+		//back to both windows perspective
+		else manageCameraAnimations.playAnim_3_reverse();
 	}
 }
 

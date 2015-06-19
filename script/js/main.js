@@ -1,7 +1,9 @@
 var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
-var menuButtons = document.getElementById("menu");
+var menu = document.getElementById("menu");
+var closeUpMenu = document.getElementById("closeUpMenu");
+var backButton = document.getElementById("backButton");
 
 var animation = parseJSON('media/camera/anim_1.JSON');
 var animation_interval = setInterval(function(){},10);

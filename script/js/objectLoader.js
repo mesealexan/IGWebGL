@@ -32,7 +32,7 @@ function loadAssets () {
 	loadJSON('text', undefined, addToScene, text);
 	loadObject('cardinal2', cardinal2materials, addToScene, windowHorizontal);
 	//loadObject('cardinal_vertical', cardinal2materials);
-	loadJSON('slice');
+	//loadJSON('slice');
  } 
 
  function addToScene (obj) {
@@ -46,7 +46,7 @@ function loadMaterials () {
  	cardinal2materials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), sealantA_Material(), spacerMaterial()];
 }
 function loadAnimations () {
-	for (var i = 0; i < 6; i++) {
+	for (var i = 0; i < 7; i++) {
 		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));
 		cameraAnimations[i].duration = (cameraAnimations[i].frames.length / 
 			cameraAnimations[i].fps) * 1000; //to ms
