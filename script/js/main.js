@@ -2,7 +2,7 @@ var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
 
-var animation = parseJSON('media/camera/sample2.JSON');
+var animation = parseJSON('media/camera/anim_1.JSON');
 var animation_interval = setInterval(function(){},10);
 Init();
 
@@ -13,11 +13,9 @@ function Init() {
 	addCameraAndControls();
 	addLight();
 	initKeyboard();
-	loadImages();
-	loadObject('cardinal2', cardinal2materials);
-	
+	loadAssets();	
 	loadJSON('text');
-	animateCamera.play(animation);
+	manageCameraAnimations.anim_1()
 	animate();
 }
 

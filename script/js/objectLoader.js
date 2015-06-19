@@ -20,9 +20,11 @@ function loadObject (name, material, callback) {
 	};
 }
 
-function loadImages () {	
+function loadAssets () {	
 	bmap = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
 	loadMaterials();
+	loadAnimations();
+	loadObject('cardinal2', cardinal2materials);
  } 
 
 function loadMaterials () {
@@ -31,4 +33,10 @@ function loadMaterials () {
 
  	cardinal2materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
 						  greenGlassMaterial(), sealantA_Material(), sealantMaterial()];
+}
+
+function loadAnimations () {
+	for (var i = 0; i < 6; i++) {
+		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));
+	};
 }

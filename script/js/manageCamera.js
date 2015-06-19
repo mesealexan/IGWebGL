@@ -1,4 +1,4 @@
-pausedFrame = 0;
+var cameraAnimations = [];
 
 function modifyCameraUp (degrees) {	
 	var radians = this.degreesToRadians(degrees);	
@@ -16,6 +16,7 @@ var animateCamera = {
 		animateCamera.stop(animation_interval);
 		if(startFrom != undefined) animateCamera.frame = startFrom;
 		animation_interval = setInterval(function(){
+			console.log(animation.frames.length)
 		if(animateCamera.checkPlayback(animation, reverse)){
 			if(reverse != undefined)
 			{				
@@ -76,6 +77,17 @@ var animateCamera = {
 			else return false;
 		}
 		
+	}
+}
+
+var manageCameraAnimations = {
+	anim_1: function(){
+		animateCamera.play(cameraAnimations[0]);
+		setTimeout(function(){ animateCamera.play(cameraAnimations[1]) }, 7000);		
+	},
+	anim2: function () {
+		animateCamera.frame = 0;
+		animateCamera.play(cameraAnimations[1]);
 	}
 }
 

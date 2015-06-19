@@ -43,6 +43,9 @@ fn getCamera cam =
 	local lastFrame = results[2]
 	local cameraType = classOf(cam)
 	
+	--sets fov type to vertical
+	cam.fovType = 2
+	
 	output_name = getSaveFileName types: "json(*.JSON)"
 	output_file = createfile output_name
 	
@@ -62,7 +65,7 @@ fn getCamera cam =
 		)
 		else format "\t\t\"quaternion\" : {\"x\":%, \"y\":%, \"z\":%},\n" (cam.rotation as eulerangles).x (cam.rotation as eulerangles).y (cam.rotation as eulerangles).z  to:output_file 
 		
-		format "\t\t\"fov\" : %\n\t\t}" cam.fov to:output_file 
+		format "\t\t\"fov\" : %\n\t\t}" cam.curFOV to:output_file 
 		
 		if i < lastFrame 
 			then format ",\n"  to:output_file 
