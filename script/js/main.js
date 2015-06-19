@@ -19,7 +19,7 @@ function Init() {
 	animate();
 }
 
-function loadJSON (name, material, callback) {
+function loadJSON (name, material, callback, variable) {
 	var mesh;
 	var loader = new THREE.JSONLoader();
 
@@ -31,6 +31,7 @@ function loadJSON (name, material, callback) {
 	loader.onLoadComplete = function(){		
 		mesh.name = name;
 		if(callback)callback(mesh);
+		if(variable)variable.mesh = mesh;
     	scene.add(mesh);
 	};
 }

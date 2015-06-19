@@ -29,7 +29,7 @@ function loadAssets () {
 	loadMaterials();
 	loadAnimations();
 	//loadObject('text', undefined, addToScene, text);
-	loadJSON('text');
+	loadJSON('text', undefined, addToScene, text);
 	loadObject('cardinal2', cardinal2materials, addToScene, windowHorizontal);
 	//loadObject('cardinal_vertical', cardinal2materials);
 	loadJSON('slice');
