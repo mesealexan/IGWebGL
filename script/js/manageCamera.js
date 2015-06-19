@@ -92,11 +92,17 @@ var manageCameraAnimations = {
 			cameraAnimations[0].duration + transitionWait_1_2);		
 	},
 	playAnim_2: function () {
-		loadObject('cardinal_vertical', cardinal2materials, addToScene);
+		loadObject('cardinal_vertical', cardinal2materials, addToScene, windowVertical);
 		animateCamera.frame = 0;
 		animateCamera.play(cameraAnimations[1]);
 		setTimeout(function(){ menuButtons.style.visibility = "visible" }, 
 			cameraAnimations[1].duration);	
+	},
+	playAnim_3: function () {
+		windowVertical.mesh.visible = false;
+		windowHorizontal.mesh.visible = false;
+		text.mesh.visible = false;
+		loadObject('slice', cardinal2materials, addToScene, slice);
 	}
 }
 

@@ -1,15 +1,16 @@
 var cardinal1materials, cardinal2materials;
-var windowHorizontal, windowVertical;
+var text = {}, windowHorizontal = {}, windowVertical = {}, slice = {};
 
-function loadObject (name, material, callback) {
+function loadObject (name, material, callback, variable) {
 	var mesh;
 	var loader = new THREE.JSONLoader();
 	var materialsArray = [];
 
-	if(material.constructor == Array) materialsArray = materialsArray.concat(material);
-	else materialsArray.push(material);
-
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
+		if(material == undefined) material = materials;
+		if(material.constructor == Array) materialsArray = materialsArray.concat(material);
+		else materialsArray.push(material);
+
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 	    var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
@@ -18,10 +19,8 @@ function loadObject (name, material, callback) {
 
 	loader.onLoadComplete = function(){
 		mesh.name = name;
+		if(variable)variable.mesh = mesh;
 		if(callback)callback(mesh);
-    	//scene.add(mesh);
-    	//if(variable) variable = mesh;
-    	//return mesh;
 	};
 }
 
@@ -29,13 +28,11 @@ function loadAssets () {
 	bmap = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
 	loadMaterials();
 	loadAnimations();
-<<<<<<< HEAD
-	loadObject('cardinal2', cardinal2materials, addToScene);
-=======
-	loadObject('cardinal2', cardinal2materials);
-	loadObject('cardinal_vertical', cardinal2materials);
-	loadObject('slice', cardinal2materials);
->>>>>>> origin/master
+	//loadObject('text', undefined, addToScene, text);
+	loadJSON('text');
+	loadObject('cardinal2', cardinal2materials, addToScene, windowHorizontal);
+	//loadObject('cardinal_vertical', cardinal2materials);
+	//loadObject('slice', cardinal2materials);
  } 
 
  function addToScene (obj) {

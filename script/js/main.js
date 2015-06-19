@@ -15,7 +15,6 @@ function Init() {
 	addLight();
 	initKeyboard();
 	loadAssets();	
-	loadJSON('text');
 	manageCameraAnimations.playAnim_1();
 	animate();
 }
