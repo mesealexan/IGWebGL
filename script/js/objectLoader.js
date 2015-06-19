@@ -29,7 +29,13 @@ function loadAssets () {
 	bmap = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
 	loadMaterials();
 	loadAnimations();
+<<<<<<< HEAD
 	loadObject('cardinal2', cardinal2materials, addToScene);
+=======
+	loadObject('cardinal2', cardinal2materials);
+	loadObject('cardinal_vertical', cardinal2materials);
+	loadObject('slice', cardinal2materials);
+>>>>>>> origin/master
  } 
 
  function addToScene (obj) {
