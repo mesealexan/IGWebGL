@@ -86,14 +86,17 @@ var animateCamera = {
 }
 
 var manageCameraAnimations = {
-	anim_1: function(){
+	playAnim_1: function(){
 		animateCamera.play(cameraAnimations[0]);
-		setTimeout(function(){ animateCamera.play(cameraAnimations[1]) }, 
+		setTimeout(function(){ manageCameraAnimations.playAnim_2() }, 
 			cameraAnimations[0].duration + transitionWait_1_2);		
 	},
-	anim2: function () {
+	playAnim_2: function () {
+		loadObject('cardinal_vertical', cardinal2materials, addToScene);
 		animateCamera.frame = 0;
 		animateCamera.play(cameraAnimations[1]);
+		setTimeout(function(){ menuButtons.style.visibility = "visible" }, 
+			cameraAnimations[1].duration);	
 	}
 }
 

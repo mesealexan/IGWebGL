@@ -25,6 +25,7 @@ body{
   	z-index: 5;
 }
 #menu{
+  visibility: hidden;
 	position:fixed;
 	bottom: 16%;
 	left: 30%;
