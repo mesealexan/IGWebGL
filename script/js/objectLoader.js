@@ -9,6 +9,8 @@ function loadObject (name, material, callback) {
 	else materialsArray.push(material);
 
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
+		geometry.computeFaceNormals();
+		geometry.computeVertexNormals();
 	    var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
         mesh = new THREE.Mesh( geometry, faceMaterial );
     });
@@ -31,10 +33,8 @@ function loadMaterials () {
 	cardinal1materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
 						  greenGlassMaterial(), sealantA_Material()];
 
- 	cardinal2materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
-						  greenGlassMaterial(), sealantA_Material(), sealantMaterial()];
+ 	cardinal2materials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), sealantA_Material(), spacerMaterial()];
 }
-
 function loadAnimations () {
 	for (var i = 0; i < 6; i++) {
 		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));

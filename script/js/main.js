@@ -46,9 +46,9 @@ function addLight () {
 	var ambientLight = new THREE.AmbientLight( 0x808080 );
 	scene.add( ambientLight );
 
-	var directionalLight = new THREE.DirectionalLight( 0xffffff );
-	directionalLight.position.set( 0, 0, 1 );
-	scene.add( directionalLight );
+	var spotLight = new THREE.SpotLight( 0xffffff );
+		spotLight.position.set( 3806, -3550, 1336 );
+		scene.add( spotLight );
 }
 
 function addCameraAndControls() {

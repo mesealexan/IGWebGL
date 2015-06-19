@@ -121,7 +121,7 @@ function spacerMaterial () {
 		color: new THREE.Color(0.3882, 0.3882, 0.3882),
 		ambient: new THREE.Color(0.3882, 0.3882, 0.3882),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000), 
-		shininess: 40,
+		shininess: 15,
 		normalMap: bmap
 	});	
 	return spacerMat;
@@ -150,6 +150,7 @@ function sealantA_Material () {
 	return new THREE.MeshPhongMaterial({ 
 		color: new THREE.Color(0.1922, 0.1922, 0.1922),
 		ambient: new THREE.Color(0.1922, 0.1922, 0.1922),
-		specular: new THREE.Color(0.9000, 0.9000, 0.9000)
+		specular: new THREE.Color(0.9000, 0.9000, 0.9000),
+		shininess: 100
 	});
 }
