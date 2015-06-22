@@ -79,7 +79,6 @@ function glassMaterial1 () {
 		return ""+
 		"uniform float ScreenResX;"+
 		"uniform float ScreenResY;"+
-		//"uniform vec3 cameraPosition;"+
 		"varying vec2 vUv;"+	
 		"varying vec3 vNormal;"+
 		"varying vec3 vVector;"+
@@ -99,7 +98,6 @@ function glassMaterial1 () {
 		return ""+
 		"uniform float ScreenResX;"+
 		"uniform float ScreenResY;"+
-		//"uniform vec3 cameraPosition;"+
 		"varying vec3 worldVertexPosition;"+
 		"varying vec3 worldNormalDirection;"+
 		"varying vec3 vVector;"+
@@ -122,7 +120,8 @@ function spacerMaterial () {
 		ambient: new THREE.Color(0.3882, 0.3882, 0.3882),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000), 
 		shininess: 15,
-		normalMap: bmap
+		normalMap: bmap,
+		transparent: true
 	});	
 	return spacerMat;
 }
@@ -132,7 +131,8 @@ function sealantMaterial () {
 		color: new THREE.Color(0.1961, 0.1961, 0.1961),
 		ambient: new THREE.Color(0.1961, 0.1961, 0.1961),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000),
-		shininess: 20
+		shininess: 20,
+		transparent: true
 	});
 }
 
@@ -151,6 +151,36 @@ function sealantA_Material () {
 		color: new THREE.Color(0.1922, 0.1922, 0.1922),
 		ambient: new THREE.Color(0.1922, 0.1922, 0.1922),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000),
-		shininess: 100
+		shininess: 100,
+		transparent: true
 	});
+}
+
+var manageVisibility = {
+	fadeOut: function (materials, tick) {
+		var interval = setInterval(function(){ manageVisibility.modifyOpacity(materials, interval, -0.1); 
+		}, tick);
+	},
+	fadeIn: function (materials, tick) {
+		var interval = setInterval(function(){ manageVisibility.modifyOpacity(materials, interval, 0.1); 
+		}, tick);
+	},
+	modifyOpacity: function (materials, interval, step) {
+		var complete = 0;
+
+		for (var i = 0; i < materials.length; i++) {
+
+			if(step < 0){
+				//fade out
+				materials[i].maxOpacity = materials[i].opacity;
+				if(materials[i].opacity < 0) complete++;}
+			else{
+				//fade in
+				if(materials[i].opacity > 1) complete++;}
+
+			if (complete == materials.length) clearInterval(interval);
+
+			materials[i].opacity += step;
+		};
+	}
 }

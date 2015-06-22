@@ -1,4 +1,4 @@
-var cardinal1materials, cardinal2materials;
+var cardinal1materials, cardinal2materials, sliceMaterials;
 var text = {}, windowHorizontal = {}, windowVertical = {}, slice = {};
 
 function loadObject (name, material, callback, variable) {
@@ -40,10 +40,14 @@ function loadAssets () {
  }
 
 function loadMaterials () {
-	cardinal1materials = [spacerMaterial(), sealantMaterial(), glassMaterial1(), 
-						  greenGlassMaterial(), sealantA_Material()];
+	cardinalVerticalMaterials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
+ 						  sealantA_Material(), spacerMaterial()];
 
- 	cardinal2materials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), sealantA_Material(), spacerMaterial()];
+ 	cardinal2materials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
+ 						  sealantA_Material(), spacerMaterial()];
+
+    sliceMaterials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
+    sealantA_Material(), spacerMaterial()];
 }
 function loadAnimations () {
 	for (var i = 0; i < 7; i++) {

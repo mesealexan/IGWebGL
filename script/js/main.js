@@ -54,23 +54,10 @@ function addLight () {
 		scene.add( spotLight );
 }
 
-function addCameraAndControls() {
-	camera = new THREE.PerspectiveCamera( 45, width / height, camNear, camFar ); 
-	camera.position.set(0, 1000, 1500);
-	scene.add( camera );
-    //controls = new THREE.OrbitControls( camera, renderer.domElement ); 
-    //controls.target = new THREE.Vector3(0, 500, 0);
-    //camera.lookAt(controls.target)
-}
-
 function animate() {
 	frameID = requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 } 
-
-function initKeyboard () {
-	keyboard = new THREEx.KeyboardState();
-}
 
 function parseJSON(file) {
 	//	file - JSON path
