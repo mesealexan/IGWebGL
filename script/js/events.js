@@ -3,8 +3,8 @@ var camPosition1 = new THREE.Vector3();
 var camPosition2 = new THREE.Vector3();
 var camPosition1Target = new THREE.Vector3();
 var panSlowDown = 3;
-var cameraOutOfBoundsReset = 3;
-var maxCameraDeviation = 150;
+var cameraOutOfBoundsReset = 1;
+var maxCameraDeviation = 50;
 
 function addCameraAndControls() {
 	camera = new THREE.PerspectiveCamera( 45, width / height, camNear, camFar ); 

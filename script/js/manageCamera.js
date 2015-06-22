@@ -4,7 +4,7 @@ var zoomedOnSlice = undefined;
 var camAtPosition1 = false;
 var camAtPosition2 = false;
 //ms
-var transitionWait_1_2 = 0;//1000;
+var transitionWait_1_2 = 1000;
 var windowsFadeTick = 20;
 
 function modifyCameraUp (degrees) {	
@@ -105,7 +105,7 @@ var manageCameraAnimations = {
 	//both windows perspective
 	playAnim_2: function () {
 		currentAnimationIndex = 1;		
-		loadObject('cardinal_vertical', cardinalVerticalMaterials, addToScene, windowVertical);
+		loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
 		animateCamera.frame = 0;
 		animateCamera.play(cameraAnimations[1]);
 
@@ -121,7 +121,7 @@ var manageCameraAnimations = {
 	//go to slice
 	playAnim_3: function () {
 		manageVisibility.fadeOut(windowVertical.mesh.material.materials, windowsFadeTick);
-		manageVisibility.fadeOut(windowHorizontal.mesh.material.materials, windowsFadeTick)
+		manageVisibility.fadeOut(windowHorizontal.mesh.material.materials, windowsFadeTick);
 		camAtPosition1 = false;
 		currentAnimationIndex = 2;
 		//windowVertical.mesh.visible = false;
@@ -130,8 +130,9 @@ var manageCameraAnimations = {
 
 		//dont add slice every time, toggle visibility instead
 		if(slice.mesh == undefined)
-			loadObject('slice', cardinal2materials, addToScene, slice);	
-		else slice.mesh.visible = true;
+			loadObject('cardinal_slice', undefined, addToScene, slice);	
+		else manageVisibility.fadeIn(slice.mesh.material.materials, windowsFadeTick);
+		//slice.mesh.visible = true;
 
 		animateCamera.play(cameraAnimations[2]);
 		menu.style.visibility = "hidden";
@@ -152,7 +153,8 @@ var manageCameraAnimations = {
 		windowVertical.mesh.visible = true;
 		windowHorizontal.mesh.visible = true;
 		text.mesh.visible = true;
-		slice.mesh.visible = false;
+		//slice.mesh.visible = false;
+		manageVisibility.fadeOut(slice.mesh.material.materials, windowsFadeTick);
 		backButton.style.visibility = "hidden";
 		closeUpMenu.style.visibility = "hidden";
 		animateCamera.play(cameraAnimations[2], undefined, true);

@@ -13,6 +13,7 @@ function loadObject (name, material, callback, variable) {
 
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
+
 	    var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
         mesh = new THREE.Mesh( geometry, faceMaterial );
     });
@@ -30,7 +31,7 @@ function loadAssets () {
 	loadAnimations();
 	//loadObject('text', undefined, addToScene, text);
 	loadJSON('text', undefined, addToScene, text);
-	loadObject('cardinal2', cardinal2materials, addToScene, windowHorizontal);
+	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
 	//loadObject('cardinal_vertical', cardinal2materials);
 	//loadJSON('slice');
  } 
@@ -40,14 +41,25 @@ function loadAssets () {
  }
 
 function loadMaterials () {
-	cardinalVerticalMaterials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
- 						  sealantA_Material(), spacerMaterial()];
+	cardinalVerticalMaterials = cardinal2materials = [
+ 		sealantA_Material(),	// 0
+ 		glassMaterial1(),		// 1
+ 		greenGlassMaterial(),	// 2
+ 		sealantA_Material(),	// 3
+	 	sealantMaterial(),		// 4
+	 	spacerMaterial()		// 5
+	 ];
 
- 	cardinal2materials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
- 						  sealantA_Material(), spacerMaterial()];
+    sliceMaterials = [
+    	sealantA_Material(),	// 0
+    	sealantA_Material(),	// 1
+    	sealantA_Material(),	// 2
+    	glassMaterial1(),		// 3
+    	greenGlassMaterial(),	// 4
+    	spacerMaterial(),		// 5
+    	glassMaterial1()		// 6
 
-    sliceMaterials = [sealantMaterial(), glassMaterial1(), greenGlassMaterial(), 
-    sealantA_Material(), spacerMaterial()];
+    ];
 }
 function loadAnimations () {
 	for (var i = 0; i < 7; i++) {
