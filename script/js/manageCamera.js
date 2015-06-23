@@ -175,3 +175,8 @@ var manageCameraAnimations = {
 }
 
 function degreesToRadians (deg) { return deg * (Math.PI / 180); }
+
+
+watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
+    console.log(newvalue)
+});
