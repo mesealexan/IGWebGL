@@ -120,7 +120,7 @@ function spacerMaterial () {
 		ambient: new THREE.Color(0.3882, 0.3882, 0.3882),
 		specular: new THREE.Color(0.9000, 0.9000, 0.9000), 
 		shininess: 15,
-		normalMap: bmap,
+		normalMap: spacerNormalImg,
 		opacity: 1,
 		transparent: true
 	});	

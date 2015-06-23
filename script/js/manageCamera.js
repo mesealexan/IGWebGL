@@ -16,7 +16,6 @@ function modifyCameraUp (degrees) {
 }
 
 var animateCamera = {
-	paused: false,
 	finished: false,
 	frame: -1,
 	play: function(from, to){
@@ -56,9 +55,6 @@ var animateCamera = {
 		}
 		},1000/animation.fps)
 	}, 
-	pause: function(){
-		clearInterval(animation_interval);
-	},
 	stop: function(){
 		animateCamera.finished = true;
 		animateCamera.frame = 0;
@@ -66,9 +62,19 @@ var animateCamera = {
 	},
 	checkPlayback: function(from, to){
 		if (from < to){ //regular playback	
-			if (animateCamera.frame < to)		
+			if (animateCamera.frame < to){ //still has to play
 				animateCamera.frame++;
-		}				
+				return true;
+			}
+			else return false; //reached the end				
+		}	
+		else if (from > to){ //reverse playback
+			if (animateCamera.frame > to){ //still has to play
+				animateCamera.frame--;
+				return true;
+			}
+			else return false; //reached the end	
+		}			
 	}
 }
 
