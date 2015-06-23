@@ -35,7 +35,7 @@
 "colorAmbient"  : [0.0314, 0.0431, 0.0314],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "colorEmissive"  : [0.0314, 0.0431, 0.0314],
-"transparency"  : 0.5,
+"transparency"  : 0.61,
 "specularCoef"  : 33.0,
 "vertexColors" : false,
 "shading" : "Phong",

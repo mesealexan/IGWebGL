@@ -47,11 +47,20 @@ function addRenderer() {
 
 function addLight () {
 	var ambientLight = new THREE.AmbientLight( 0x808080 );
-	scene.add( ambientLight );
+	//scene.add( ambientLight );
 
-	var spotLight = new THREE.SpotLight( 0xffffff );
-		spotLight.position.set( 3806, -3550, 1336 );
-		scene.add( spotLight );
+	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light.position.set( -3325, 2593, 4239 );
+		scene.add( light );
+
+
+	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light2.position.set( -3166, 746, 2028 );
+		scene.add( light2 );
+
+	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light3.position.set(4177, -1014, 1350 );
+		scene.add( light3 );
 }
 
 function animate() {

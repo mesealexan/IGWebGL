@@ -18,6 +18,7 @@
 "DbgIndex" : 0,
 "DbgName"  : "03 - Default",
 "colorDiffuse"  : [0.6510, 0.6510, 0.3647],
+"colorEmissive"  : [0.6510, 0.6510, 0.3647],
 "colorAmbient"  : [0.3373, 0.3373, 0.1882],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
