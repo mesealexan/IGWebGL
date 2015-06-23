@@ -20,23 +20,16 @@ function loadObject (name, material, callback, variable) {
 
 	loader.onLoadComplete = function(){
 		mesh.name = name;
-		if(variable)variable.mesh = mesh;
+		if(variable){
+			variable.mesh = mesh;
+			variable.inScene = false;
+		}
 		if(callback)callback(mesh);
 	};
 }
 
-function loadAssets () {	
-	bmap = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
-	loadMaterials();
-	loadAnimations();
-	//loadObject('text', undefined, addToScene, text);
-	loadJSON('text', undefined, addToScene, text);
-	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
-	//loadObject('cardinal_vertical', cardinal2materials);
-	//loadJSON('slice');
- } 
-
  function addToScene (obj) {
+ 	obj.inScene = true;
 	scene.add(obj);
  }
 

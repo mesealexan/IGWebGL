@@ -172,18 +172,16 @@ var manageVisibility = {
 		var complete = 0;
 
 		for (var i = 0; i < materials.length; i++) {
-
+			materials[i].transparent = true;
 			if(step < 0){
 				//fade out
-				materials[i].maxOpacity = materials[i].opacity;
 				if(materials[i].opacity < 0) complete++;}
 			else{
 				//fade in
 				if(materials[i].opacity > 1) complete++;}
 
 			if (complete == materials.length) clearInterval(interval);
-
-			materials[i].opacity += step;
+			materials[i].opacity += step;	
 		};
 	}
 }

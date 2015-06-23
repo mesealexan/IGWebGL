@@ -33,7 +33,6 @@ function bothWindowsPerspectivePan (ev) {
 			camera.position.x -= (ev.deltaX - initialMousePos.x) / panSlowDown;	
 		if(checkCameraDeviation('z'))	
 			camera.position.z += (ev.deltaY - initialMousePos.y) / panSlowDown;
-		//camera.lookAt(camPosition1Target);
 		initialMousePos = { x: ev.deltaX, y: ev.deltaY };
 	}	
 }

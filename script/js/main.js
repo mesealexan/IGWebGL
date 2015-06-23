@@ -39,7 +39,7 @@ function loadJSON (name, material, callback, variable) {
 }
 
 function addRenderer() {
-	renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 	renderer.setClearColor( 0x000000, 0.0 );
 	renderer.setSize( width, height ); 
 	container.appendChild( renderer.domElement );

@@ -4,7 +4,7 @@ var zoomedOnSlice = undefined;
 var camAtPosition1 = false;
 var camAtPosition2 = false;
 //ms
-var transitionWait_1_2 = 1000;
+var transitionWait_1_2 = 0;
 var windowsFadeTick = 20;
 
 function modifyCameraUp (degrees) {	
@@ -19,19 +19,13 @@ var animateCamera = {
 	paused: false,
 	finished: false,
 	frame: -1,
-	play: function(animation, startFrom, reverse){
+	play: function(from, to){
 		animateCamera.stop(animation_interval);
+		animateCamera.frame = from;
 		animateCamera.finished = false;
-		if(reverse) animateCamera.frame = animation.frames.length - 1;
-		if(startFrom != undefined) animateCamera.frame = startFrom;
+		
 		animation_interval = setInterval(function(){
-		if(animateCamera.checkPlayback(animation, reverse)){
-			if(reverse != undefined)
-			{				
-				if(!reverse) animateCamera.frame++;
-				else animateCamera.frame--;
-			}
-			else animateCamera.frame++;
+		if(animateCamera.checkPlayback(from, to)){
 			if(animation.type == 'Targetcamera')
 			{
 				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
@@ -41,7 +35,6 @@ var animateCamera = {
 					animation.frames[animateCamera.frame].target.z, 
 					-animation.frames[animateCamera.frame].target.y);
 				camera.lookAt(lookAt);
-				//console.log(lookAt)
 			}
 			else //free camera
 			{ 
@@ -71,25 +64,11 @@ var animateCamera = {
 		animateCamera.frame = 0;
 		clearInterval(animation_interval);
 	},
-	checkPlayback: function(animation, reverse){
-		if(reverse != undefined)
-		{
-			if(!reverse && animateCamera.frame < animation.frames.length-1) return true;
-			else if(!reverse && animateCamera.frame >= animation.frames.length-1) 
-				//Finished playing normally, 'reverse' argument was 'false'				
-				animateCamera.stop();
-
-			if(reverse && animateCamera.frame > -1) return true;
-			else if(reverse && animateCamera.frame < 1) 
-				//Finished playing in reverse
-				animateCamera.stop();
-		}
-		else {
-			if(animateCamera.frame < animation.frames.length-1)
-				return true;
-			else animateCamera.stop();
-		}
-		
+	checkPlayback: function(from, to){
+		if (from < to){ //regular playback	
+			if (animateCamera.frame < to)		
+				animateCamera.frame++;
+		}				
 	}
 }
 
@@ -105,7 +84,8 @@ var manageCameraAnimations = {
 	//both windows perspective
 	playAnim_2: function () {
 		currentAnimationIndex = 1;		
-		loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+		//loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+		if(!windowVertical.inScene) addToScene(windowVertical.mesh);
 		animateCamera.frame = 0;
 		animateCamera.play(cameraAnimations[1]);
 
@@ -129,8 +109,7 @@ var manageCameraAnimations = {
 		text.mesh.visible = false;
 
 		//dont add slice every time, toggle visibility instead
-		if(slice.mesh == undefined)
-			loadObject('cardinal_slice', undefined, addToScene, slice);	
+		if(!slice.inScene) addToScene(slice.mesh);
 		else manageVisibility.fadeIn(slice.mesh.material.materials, windowsFadeTick);
 		//slice.mesh.visible = true;
 
@@ -148,13 +127,13 @@ var manageCameraAnimations = {
 	playAnim_3_reverse: function () {
 		manageVisibility.fadeIn(windowVertical.mesh.material.materials, windowsFadeTick);
 		manageVisibility.fadeIn(windowHorizontal.mesh.material.materials, windowsFadeTick)
+		manageVisibility.fadeOut(slice.mesh.material.materials, windowsFadeTick);
 		camAtPosition2 = false;
 		currentAnimationIndex = 2;
 		windowVertical.mesh.visible = true;
 		windowHorizontal.mesh.visible = true;
 		text.mesh.visible = true;
 		//slice.mesh.visible = false;
-		manageVisibility.fadeOut(slice.mesh.material.materials, windowsFadeTick);
 		backButton.style.visibility = "hidden";
 		closeUpMenu.style.visibility = "hidden";
 		animateCamera.play(cameraAnimations[2], undefined, true);
