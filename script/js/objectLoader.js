@@ -14,9 +14,9 @@ function loadObject (name, material, callback, variable) {
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 
-	    var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
-        mesh = new THREE.Mesh( geometry, faceMaterial );
-    });
+	 var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
+ 	 	mesh = new THREE.Mesh( geometry, faceMaterial );
+ 	 });
 
 	loader.onLoadComplete = function(){
 		mesh.name = name;
@@ -54,6 +54,17 @@ function loadMaterials () {
 
     ];
 }
+
+function loadAssets () {	
+	//spacerNormal = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
+	// loadMaterials();
+	// loadAnimations();
+	// loadJSON('text', undefined, undefined, text);
+	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
+	// loadObject('cardinal_vertical', undefined, undefined, windowVertical);
+	// loadObject('cardinal_slice', undefined, undefined, slice);	
+ } 
+
 function loadAnimations () {
 	for (var i = 0; i < 7; i++) {
 		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));
