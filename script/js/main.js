@@ -1,9 +1,6 @@
 var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
-var menu = document.getElementById("menu");
-var closeUpMenu = document.getElementById("closeUpMenu");
-var backButton = document.getElementById("backButton");
 var animation_interval = setInterval(function(){},10);
 Init();
 
@@ -15,7 +12,7 @@ function Init() {
 	addLight();
 	initKeyboard();
 	loadAssets();	
-	//manageCameraAnimations.playAnim_1();
+	manageCameraAnimations.playAnim_1();
 	animate();
 }
 

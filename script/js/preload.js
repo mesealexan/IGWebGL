@@ -1,3 +1,7 @@
+var menu = document.getElementById("menu");
+var closeUpMenu = document.getElementById("closeUpMenu");
+var backButton = document.getElementById("backButton");
+
 var spacerNormalImg = new Image();
 	spacerNormalImg.src = "media/models/spacer.jpg";
 

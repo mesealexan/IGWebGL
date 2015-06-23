@@ -79,30 +79,26 @@ var animateCamera = {
 }
 
 var manageCameraAnimations = {
-	//horizontal window
-	playAnim_1: function(){
-		currentAnimationIndex = 0;
-		animateCamera.play(cameraAnimations[0]);
-		setTimeout(function(){ 
-			manageCameraAnimations.playAnim_2() 
-		}, cameraAnimations[0].duration + transitionWait_1_2);		
-	},
 	//both windows perspective
+	playAnim_1: function(){
+		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
+	},
 	playAnim_2: function () {
-		currentAnimationIndex = 1;		
+		
+		//currentAnimationIndex = 1;		
 		//loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
-		if(!windowVertical.inScene) addToScene(windowVertical.mesh);
-		animateCamera.frame = 0;
-		animateCamera.play(cameraAnimations[1]);
+		//if(!windowVertical.inScene) addToScene(windowVertical.mesh);
+		//animateCamera.frame = 0;
+		// animateCamera.play(cameraAnimations[1]);
 
-		setTimeout(function(){ 
-			menu.style.visibility = "visible";
-			camAtPosition1 = true; 
-			camPosition1.copy(camera.position);
-			var target = cameraAnimations[1].frames[cameraAnimations[1].
-				frames.length - 1].target; 
-			camPosition1Target.set(target.x, target.z, -target.y);
-		}, cameraAnimations[1].duration);	
+		// setTimeout(function(){ 
+		// 	menu.style.visibility = "visible";
+		// 	camAtPosition1 = true; 
+		// 	camPosition1.copy(camera.position);
+		// 	var target = cameraAnimations[1].frames[cameraAnimations[1].
+		// 		frames.length - 1].target; 
+		// 	camPosition1Target.set(target.x, target.z, -target.y);
+		// }, cameraAnimations[1].duration);	
 	},
 	//go to slice
 	playAnim_3: function () {

@@ -1,6 +1,3 @@
-var cardinal1materials, cardinal2materials, sliceMaterials;
-var text = {}, windowHorizontal = {}, windowVertical = {}, slice = {};
-
 function loadObject (name, material, callback, variable) {
 	var mesh;
 	var loader = new THREE.JSONLoader();
@@ -22,15 +19,14 @@ function loadObject (name, material, callback, variable) {
 		mesh.name = name;
 		if(variable){
 			variable.mesh = mesh;
-			variable.inScene = false;
 		}
-		if(callback)callback(mesh);
+		if(callback)callback(variable);
 	};
 }
 
  function addToScene (obj) {
  	obj.inScene = true;
-	scene.add(obj);
+	scene.add(obj.mesh);
  }
 
 function loadMaterials () {
