@@ -1,4 +1,4 @@
-function loadObject (name, material, callback, variable) {
+function loadObject (name, material, callback, variable, initiallyVisible) {
 	var mesh;
 	var loader = new THREE.JSONLoader();
 	var materialsArray = [];
@@ -17,6 +17,7 @@ function loadObject (name, material, callback, variable) {
 
 	loader.onLoadComplete = function(){
 		mesh.name = name;
+		if(initiallyVisible) mesh.visible = initiallyVisible;
 		if(variable){
 			variable.mesh = mesh;
 		}

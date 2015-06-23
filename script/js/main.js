@@ -1,14 +1,9 @@
+var menu = document.getElementById("menu");
+var cutMenu = document.getElementById("cutMenu");
+var backButton = document.getElementById("backButton");
 var container, camera, scene, renderer, keyboard, frameID;
 var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
-<<<<<<< HEAD
-=======
-var menu = document.getElementById("menu");
-var closeUpMenu = document.getElementById("closeUpMenu");
-var backButton = document.getElementById("backButton");
-
-var animation = parseJSON('media/camera/anim_all.JSON');
->>>>>>> origin/master
 var animation_interval = setInterval(function(){},10);
 Init();
 
@@ -65,11 +60,6 @@ function addLight () {
 		light3.position.set(4177, -1014, 1350 );
 		scene.add( light3 );
 }
-
-function animate() {
-	frameID = requestAnimationFrame(animate);
-	renderer.render(scene, camera);
-} 
 
 function parseJSON(file) {
 	//	file - JSON path
