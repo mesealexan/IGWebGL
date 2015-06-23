@@ -5,7 +5,7 @@ var menu = document.getElementById("menu");
 var closeUpMenu = document.getElementById("closeUpMenu");
 var backButton = document.getElementById("backButton");
 
-var animation = parseJSON('media/camera/anim_1.JSON');
+var animation = parseJSON('media/camera/anim_all.JSON');
 var animation_interval = setInterval(function(){},10);
 Init();
 
