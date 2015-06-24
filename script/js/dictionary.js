@@ -20,4 +20,4 @@ var zoomedOnSlice = undefined;
 var cardinal1materials, cardinal2materials, sliceMaterials;
 var windowHorizontal = {}, windowVertical = {}, slice = {};
 
-var textureFlare1, textureFlare2, textureFlare3;
+var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;
