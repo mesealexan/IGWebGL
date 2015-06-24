@@ -56,9 +56,10 @@ function loadAssets () {
 	// loadMaterials();
 	// loadAnimations();
 	//loadObject('text', undefined, addToScene, text);
-	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
+	
 	loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);
+	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
 	// loadObject('cardinal_vertical', undefined, undefined, windowVertical);
 	// loadObject('cardinal_slice', undefined, undefined, slice);	
  } 

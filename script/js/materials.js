@@ -19,8 +19,7 @@ function makeSkybox () {
 		}));
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
-	skyBox.rotation.x += Math.PI / 2;
-	scene.add( skyBox );
+	//scene.add( skyBox );
 }
 
 function vertexShader () {	
@@ -80,7 +79,7 @@ function setMaterials(materialName){
 	    case 'Spacer':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(213,213,213)"),
-		    	ambient: new THREE.Color("rgb(188,188,188)"),
+		    	ambient: new THREE.Color("rgb(222,222,222)"),
 		    	specular: new THREE.Color("rgb(255,255,255)")
 		    })
 	        break;
@@ -94,7 +93,7 @@ function setMaterials(materialName){
 	        break;
 	    case 'Glass':
 			material = new THREE.MeshPhongMaterial({ 
-				color: new THREE.Color("rgb(60,71,43)"),
+				color: new THREE.Color("rgb(255,255,255)"),
 				//ambient: new THREE.Color("rgb(255,1,0)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				envMap: textureCube,

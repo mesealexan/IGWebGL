@@ -8,13 +8,12 @@ Init();
 function Init() {
 	container = document.getElementById( 'webGL' );	
 	scene = new THREE.Scene();
+	loadAssets();	
 	addRenderer();
 	addCamera();
-	addControls();
-	
+	addControls();	
 	addLight();
 	initKeyboard();
-	loadAssets();	
 	manageCameraAnimations.playAnim_1();
 	animate();
 	makeSkybox()
@@ -52,15 +51,15 @@ function addLight () {
 
 
 	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light1.position.set( 3615, -61, 2750 );
+		light1.position.set( -2929, 2686, 938 );
 		scene.add( light1 );
 
 	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light2.position.set( 345, 4830, 3622 );
+		light2.position.set( 345,3562,-4050 );
 		scene.add( light2 );
 
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light3.position.set( -3000, -157, 2745 );
+		light3.position.set( 3615,2688,843 );
 		scene.add( light3 );
 /*
 	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
