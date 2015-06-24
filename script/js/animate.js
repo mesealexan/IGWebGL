@@ -2,7 +2,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	//console.log(newvalue)
 	switch (newvalue){
 		case 100: //vertical window out of frustum
-			loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+			//loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+			windowVertical.mesh.visible = true;
 		break;
 		case 158: //finished anim 1
 			toggleElement(menu, 'visible');			
@@ -13,7 +14,6 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 188: //between slice and both windows
 			windowVertical.mesh.visible = !animateCamera.forward;
 			windowHorizontal.mesh.visible = !animateCamera.forward;
-			text.mesh.visible = !animateCamera.forward;
 			slice.mesh.visible = animateCamera.forward;
 		break;
 		case 189: //going back to both windows

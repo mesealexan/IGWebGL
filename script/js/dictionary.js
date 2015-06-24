@@ -18,4 +18,4 @@ var bmap;
 var initialMousePos = {};
 var zoomedOnSlice = undefined;
 var cardinal1materials, cardinal2materials, sliceMaterials;
-var text = {}, windowHorizontal = {}, windowVertical = {}, slice = {};
+var windowHorizontal = {}, windowVertical = {}, slice = {};

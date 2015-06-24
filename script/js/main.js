@@ -1,11 +1,6 @@
 var menu = document.getElementById("menu");
 var cutMenu = document.getElementById("cutMenu");
 var backButton = document.getElementById("backButton");
-<<<<<<< HEAD
-=======
-var container, camera, scene, renderer, keyboard, frameID;
-var camNear = 10, camFar = 6000;
->>>>>>> origin/master
 var width = window.innerWidth, height = window.innerHeight;
 var animation_interval = setInterval(function(){},10);
 Init();

@@ -55,7 +55,7 @@ function loadAssets () {
 	//spacerNormal = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
 	// loadMaterials();
 	// loadAnimations();
-	loadObject('text', undefined, addToScene, text);
+	//loadObject('text', undefined, addToScene, text);
 	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
 	loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);
