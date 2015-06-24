@@ -106,8 +106,9 @@ function setMaterials(materialName){
 	        break;
 	    case 'Glass Sides':
 		    material = new THREE.MeshPhongMaterial({ 
-				color: new THREE.Color("rgb(39,44,22)"),
-				emissive: new THREE.Color("rgb(39,44,22)"),
+				color: new THREE.Color("rgb(46,56,31)"),
+		    	ambient: new THREE.Color("rgb(46,56,31)"),
+				emissive: new THREE.Color("rgb(46,56,31)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				envMap: textureCube,
 				refractionRatio: 0.985, 
@@ -152,10 +153,11 @@ function setMaterials(materialName){
 		    })
 	        break;
 	    case 'desicant':
-		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(255,0,0)"),
-		    	ambient: new THREE.Color("rgb(255,0,0)"),
-		    	specular: new THREE.Color("rgb(255,0,0)")
+		    material = new THREE.MeshLambertMaterial({
+		    	color: new THREE.Color("rgb(198,204,151)"),
+		    	ambient: new THREE.Color("rgb(198,204,151)"),
+		    	transparent: true,
+		    	opacity: 0.75
 		    	
 		    })
 	        break;
