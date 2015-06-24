@@ -56,6 +56,13 @@ function loadAssets () {
 	// loadMaterials();
 	// loadAnimations();
 	//loadObject('text', undefined, addToScene, text);
+	textureFlare1 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_1.png", function(){},function(){
+	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
+	textureFlare3 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_3.png", function(){},function(){
+		addLensFlare();
+	} );
+	} );
+	} );
 	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
 	loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);

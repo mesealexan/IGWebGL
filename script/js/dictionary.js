@@ -19,3 +19,5 @@ var initialMousePos = {};
 var zoomedOnSlice = undefined;
 var cardinal1materials, cardinal2materials, sliceMaterials;
 var windowHorizontal = {}, windowVertical = {}, slice = {};
+
+var textureFlare1, textureFlare2, textureFlare3;

@@ -48,7 +48,6 @@ function addLight () {
 
 	scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
 
-
 	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light1.position.set( 3615, -61, 2750 );
 		scene.add( light1 );
@@ -83,7 +82,20 @@ function addCamera () {
 
 function addLensFlare () {
 	var flareColor = new THREE.Color( 0xffffff );
-	lensFlare = new THREE.LensFlare( undefined, 700, 0.0, THREE.AdditiveBlending, flareColor);
+	lensFlare = new THREE.LensFlare( textureFlare1, 300, 0.0, THREE.NormalBlending, flareColor);
+	lensFlare.add( textureFlare2, 64, 0.1, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare2, 32, 0.2, THREE.AdditiveBlending );
+	//console.log(textureFlare2)
+	//lensFlare.lensFlares.push( textureFlare2 );
+	// lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+	// lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
+
+	// lensFlare.add( textureFlare3, 60, 0.6, THREE.AdditiveBlending );
+	// lensFlare.add( textureFlare3, 70, 0.7, THREE.AdditiveBlending );
+	// lensFlare.add( textureFlare3, 120, 0.9, THREE.AdditiveBlending );
+	// lensFlare.add( textureFlare3, 70, 1.0, THREE.AdditiveBlending );
+	//x: -1527.008, y: 2502.779999999999, z: 1431.912
+	lensFlare.position.set( -1527, 2502, 1431 );
 	scene.add( lensFlare );
 }
 
