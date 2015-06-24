@@ -8,7 +8,7 @@ var camera_frames = {
 }
 
 var container, camera, scene, renderer, keyboard, frameID;
-var camNear = 1, camFar = 10000, fov = 45;
+var camNear = 20, camFar = 6000, fov = 45;
 
 var panSlowDown = 3;
 var cameraOutOfBoundsReset = 1;

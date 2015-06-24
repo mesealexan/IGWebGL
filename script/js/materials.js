@@ -19,7 +19,7 @@ function makeSkybox () {
 		}));
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
-	scene.add( skyBox );
+	//scene.add( skyBox );
 }
 
 function vertexShader () {	
@@ -63,59 +63,58 @@ function setMaterials(materialName){
 	switch(materialName) {
 	    case 'sealant a':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(255,0,0)"),
-		    	ambient: new THREE.Color("rgb(255,0,0)"),
-		    	specular: new THREE.Color("rgb(255,0,0)")
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
 		    })
 	        break;
 	    case 'sealant b':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(255,0,0)"),
-		    	ambient: new THREE.Color("rgb(255,0,0)"),
-		    	specular: new THREE.Color("rgb(255,0,0)")
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
 		    	
 		    })
 	        break;
 	    case 'Spacer':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(213,213,213)"),
-		    	ambient: new THREE.Color("rgb(188,188,188)"),
+		    	ambient: new THREE.Color("rgb(222,222,222)"),
 		    	specular: new THREE.Color("rgb(255,255,255)")
-		    	
 		    })
 	        break;
 	    case 'Spacer Cap':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(255,0,0)"),
-		    	ambient: new THREE.Color("rgb(255,0,0)"),
-		    	specular: new THREE.Color("rgb(255,0,0)")
-		    	
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[0])
 		    })
 	        break;
 	    case 'Glass':
 			material = new THREE.MeshPhongMaterial({ 
-				color: new THREE.Color("rgb(8,11,8)"),
-				ambient: new THREE.Color("rgb(0,1,0)"),
+				color: new THREE.Color("rgb(255,255,255)"),
+				//ambient: new THREE.Color("rgb(255,1,0)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				envMap: textureCube,
 				refractionRatio: 0.985, 
-				reflectivity: 0.88,
+				reflectivity: 0.99,
 				shininess: 30,
 				transparent: true,
-				opacity: 1
+				opacity: 0.66
 			});
 	        break;
 	    case 'Glass Sides':
 		    material = new THREE.MeshPhongMaterial({ 
-				color: new THREE.Color("rgb(0,1,0)"),
-				ambient: new THREE.Color("rgb(0,1,0)"),
+				color: new THREE.Color("rgb(39,44,22)"),
+				emissive: new THREE.Color("rgb(39,44,22)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				envMap: textureCube,
 				refractionRatio: 0.985, 
-				reflectivity: 0.88,
+				reflectivity: 0.99,
 				shininess: 30,
 				transparent: true,
-				opacity: 0.81
+				opacity: 0.96
 			});
 	        break;
 	    case 'p1 op':
@@ -123,7 +122,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(0,0,0)"),
 		    	ambient: new THREE.Color("rgb(0,0,0)"),
 		    	specular: new THREE.Color("rgb(0,0,0)"),
-		    	map:  THREE.ImageUtils.loadTexture(imagesArray[1]),
+		    	map: THREE.ImageUtils.loadTexture(imagesArray[1]),
 		    	transparent: true
 		    })
 	        break;
@@ -147,7 +146,8 @@ function setMaterials(materialName){
 		    material = new THREE.MeshLambertMaterial({
 		    	color: new THREE.Color("rgb(113,106,76)"),
 		    	ambient: new THREE.Color("rgb(113,106,76)"),
-		    	specular: new THREE.Color("rgb(191,188,175)")
+		    	specular: new THREE.Color("rgb(191,188,175)"),
+		    	emissive: new THREE.Color("rgb(113,106,76)")
 		    	
 		    })
 	        break;
