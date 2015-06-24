@@ -11,9 +11,9 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			toggleElement(menu, 'hidden');			
 		break;
 		case 170: //between slice and both windows
-			//windowVertical.mesh.visible = !windowVertical.mesh.visible;
-			//windowHorizontal.mesh.visible = !windowHorizontal.mesh.visible;
-			//slice.mesh.visible = !slice.mesh.visible;
+			windowVertical.mesh.visible = !animateCamera.forward;
+			windowHorizontal.mesh.visible = !animateCamera.forward;
+			slice.mesh.visible = animateCamera.forward;
 		break;
 		case 189: //going back to both windows
 			toggleElement(cutMenu, 'hidden');

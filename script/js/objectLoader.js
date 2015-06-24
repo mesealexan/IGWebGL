@@ -11,17 +11,15 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 
-	 var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
+		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
  	 	mesh = new THREE.Mesh( geometry, faceMaterial );
- 	 });
+ 	});
 
 	loader.onLoadComplete = function(){
 		mesh.name = name;
-		if(initiallyVisible) mesh.visible = initiallyVisible;
-		if(variable){
-			variable.mesh = mesh;
-		}
-		if(callback)callback(variable);
+		if(initiallyVisible != undefined) mesh.visible = initiallyVisible;
+		if(variable) variable.mesh = mesh;
+		if(callback) callback(variable);
 	};
 }
 

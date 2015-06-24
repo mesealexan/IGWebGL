@@ -11,10 +11,6 @@ function addCameraAndControls() {
 	camera.position.set(0, 1000, 1500);
 	scene.add( camera );
 
-    //controls = new THREE.OrbitControls( camera, renderer.domElement ); 
-    //controls.target = new THREE.Vector3(0, 500, 0);
-    //camera.lookAt(controls.target)
-
     var hammer = new Hammer(container);
 
 	hammer.on('pan', function(ev) {
