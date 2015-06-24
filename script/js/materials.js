@@ -1,5 +1,3 @@
-var bmap;
-
 var shaderSettings = {
 	uniforms: {
 	  	ScreenResX: {

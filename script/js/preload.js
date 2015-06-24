@@ -1,5 +1,5 @@
 var spacerNormalImg = new Image();
-	spacerNormalImg.src = "media/models/spacer.jpg";
+spacerNormalImg.src = "media/models/spacer.jpg";
 
 var animation = parseJSON('media/camera/anim_all.JSON');
 

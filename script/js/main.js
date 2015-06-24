@@ -1,8 +1,6 @@
 var menu = document.getElementById("menu");
 var cutMenu = document.getElementById("cutMenu");
 var backButton = document.getElementById("backButton");
-var container, camera, scene, renderer, keyboard, frameID;
-var camNear = 1, camFar = 10000;
 var width = window.innerWidth, height = window.innerHeight;
 var animation_interval = setInterval(function(){},10);
 Init();
@@ -11,7 +9,8 @@ function Init() {
 	container = document.getElementById( 'webGL' );	
 	scene = new THREE.Scene();
 	addRenderer();
-	addCameraAndControls();
+	addControls();
+	addCamera();
 	addLight();
 	initKeyboard();
 	loadAssets();	
@@ -59,6 +58,18 @@ function addLight () {
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light3.position.set(4177, -1014, 1350 );
 		scene.add( light3 );
+}
+
+function addCamera () {	
+	camera = new THREE.PerspectiveCamera( fov, width / height, camNear, camFar ); 
+	camera.position.set(0, 1000, 1500);
+	scene.add( camera );
+}
+
+function addLensFlare () {
+	var flareColor = new THREE.Color( 0xffffff );
+	lensFlare = new THREE.LensFlare( undefined, 700, 0.0, THREE.AdditiveBlending, flareColor);
+	scene.add( lensFlare );
 }
 
 function parseJSON(file) {

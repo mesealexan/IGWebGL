@@ -54,16 +54,8 @@ function loadAssets () {
 	//spacerNormal = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
 	// loadMaterials();
 	// loadAnimations();
-	// loadJSON('text', undefined, undefined, text);
+	loadObject('text', undefined, addToScene, text);
 	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
 	// loadObject('cardinal_vertical', undefined, undefined, windowVertical);
 	// loadObject('cardinal_slice', undefined, undefined, slice);	
  } 
-
-function loadAnimations () {
-	for (var i = 0; i < 7; i++) {
-		cameraAnimations.push(parseJSON('media/camera/anim_' + (i + 1) + '.JSON'));
-		cameraAnimations[i].duration = (cameraAnimations[i].frames.length / 
-			cameraAnimations[i].fps) * 1000; //to ms
-	};
-}

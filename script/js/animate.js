@@ -13,6 +13,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 170: //between slice and both windows
 			windowVertical.mesh.visible = !animateCamera.forward;
 			windowHorizontal.mesh.visible = !animateCamera.forward;
+			text.mesh.visible = !animateCamera.forward;
 			slice.mesh.visible = animateCamera.forward;
 		break;
 		case 189: //going back to both windows
