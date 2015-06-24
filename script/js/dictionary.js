@@ -7,5 +7,15 @@ var camera_frames = {
 	animation_6:{ frame: 194, speed: 0.1}
 }
 
+var container, camera, scene, renderer, keyboard, frameID;
+var camNear = 1, camFar = 10000, fov = 45;
+
+var panSlowDown = 3;
+var cameraOutOfBoundsReset = 1;
+var maxCameraDeviation = 50;
+
+var bmap;
+var initialMousePos = {};
+var zoomedOnSlice = undefined;
 var cardinal1materials, cardinal2materials, sliceMaterials;
-var text = {}, windowHorizontal = {}, windowVertical = {}, slice = {};
+var windowHorizontal = {}, windowVertical = {}, slice = {};

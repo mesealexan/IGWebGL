@@ -2,7 +2,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	//console.log(newvalue)
 	switch (newvalue){
 		case 100: //vertical window out of frustum
-			loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+			//loadObject('cardinal_vertical', undefined, addToScene, windowVertical);
+			windowVertical.mesh.visible = true;
 		break;
 		case 158: //finished anim 1
 			toggleElement(menu, 'visible');			

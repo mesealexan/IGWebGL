@@ -8,10 +8,6 @@ var imagesArray = [];
 			img.src = imagesArray[i]
 	}
 
-
-//var spacerNormalImg = new Image();
-//	spacerNormalImg.src = "media/models/spacer.jpg";
-
 var animation = parseJSON('media/camera/anim_all.JSON');
 
 parseJSON('media/models/cardinal_horizontal.js');
