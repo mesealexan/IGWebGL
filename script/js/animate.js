@@ -26,7 +26,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	}
 });
 
-function animate() {
+function animate(time) {
 	frameID = requestAnimationFrame(animate);
 	renderer.render(scene, camera);
+	TWEEN.update(time);
 } 

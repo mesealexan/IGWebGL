@@ -75,6 +75,18 @@ var animateCamera = {
 			}
 			else return false; //reached the end	
 		}			
+	},
+	tween: function (frame, speed) {
+		var destination = new THREE.Vector3(animation.frames[frame].camera.x, 
+			animation.frames[frame].camera.z, 
+			-animation.frames[frame].camera.y);
+
+		var tween = new TWEEN.Tween( camera.position )
+	    tween.to( { x: destination.x, y: destination.y, z: destination.z }, 2000 );
+	    tween.onUpdate( function () {
+	    	//camera.lookAt
+        });
+	    tween.start();
 	}
 }
 
