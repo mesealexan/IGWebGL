@@ -9,6 +9,9 @@ var imagesArray = [];
 	imagesArray.push("media/skybox/cube_l.jpg");
 	imagesArray.push("media/skybox/cube_r.jpg");
 	imagesArray.push("media/skybox/cube_u.jpg");
+	imagesArray.push("media/LensFlare/Flare_1.png");
+	imagesArray.push("media/LensFlare/Flare_2.png");
+	imagesArray.push("media/LensFlare/Flare_3.png");
 
 	for(var i=0,l=imagesArray.length;i<l;i++){
 		var img = new Image();

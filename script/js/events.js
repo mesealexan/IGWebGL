@@ -7,7 +7,7 @@ function addControls() {
     var hammer = new Hammer(container);
 
 	hammer.on('pan', function(ev) {
-    	bothWindowsPerspectivePan(ev);
+    	//bothWindowsPerspectivePan(ev);
 	});
 
 	hammer.on('panstart', function(ev) {
