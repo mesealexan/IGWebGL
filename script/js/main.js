@@ -83,22 +83,29 @@ function addCamera () {
 
 function addLensFlare () {
 	var flareColor = new THREE.Color( 0xffffff );
-	var smallCircles = 75;
-	var smallCircleMinSize = 0;
+	var smallCircles = 10;
+	var smallCircleMinSize = 1;
 	var smallCircleMaxSize = 10;
 	var smallCircleMinDistance = 0.01;
-	var SmallCircleMaxDistance = 200;
+	var smallCircleMaxDistance = 35;
+
+	var bigCircles = 5;
+	var bigCircleMinSize = 20;
+	var bigCircleMaxSize = 40;
+	var bigCircleMinDistance = 0.3;
+	var bigCircleMaxDistance = 200;
 
 	lensFlare = new THREE.LensFlare( textureFlare1, 256, 0.0, THREE.NormalBlending, flareColor);
 	for (var i = 0; i < smallCircles; i++) {
-			lensFlare.add( textureFlare5, smallCircleMinSize + (Math.random() * smallCircleMaxSize), 
-				smallCircleMinDistance + (i / SmallCircleMaxDistance) + 
-				Math.random() / SmallCircleMaxDistance, THREE.AdditiveBlending );
+			lensFlare.add( textureFlare2, smallCircleMinSize + (Math.random() * smallCircleMaxSize), 
+				smallCircleMinDistance + (i / smallCircleMaxDistance) + (Math.random() / 10)
+				, THREE.AdditiveBlending );
 	};
 
-	// for (var i = 0; i < 150; i++) {
-	// 	lensFlare.add( textureFlare5, 0 + (Math.random() * 10), 0.01 + (i / 200) + 
-	// 		Math.random() / 200, THREE.AdditiveBlending );
+	// for (var i = 0; i < bigCircles; i++) {
+	// 	lensFlare.add( textureFlare5, bigCircleMinSize + (Math.random() * bigCircleMaxSize), 
+	// 			bigCircleMinDistance + (i / bigCircleMaxDistance) + 
+	// 			((Math.random() * 2) / 10), THREE.AdditiveBlending );
 	// };
 	//lensFlare.add( textureFlare2, 40, 0.4, THREE.AdditiveBlending );
 	//lensFlare.add( textureFlare2, 32, 0.42, THREE.AdditiveBlending );
