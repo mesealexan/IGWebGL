@@ -4,10 +4,11 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 	var materialsArray = [];
 
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
-		if(material == undefined) material = materials;
-		if(material.constructor == Array) materialsArray = materialsArray.concat(material);
-		else materialsArray.push(material);
 
+		materialsArray = materials;
+		for (var i = materialsArray.length - 1; i >= 0; i--) {
+			materialsArray[i] = setMaterials(materialsArray[i].name);
+		};
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 
@@ -56,6 +57,8 @@ function loadAssets () {
 	// loadAnimations();
 	loadObject('text', undefined, addToScene, text);
 	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
+	loadObject('cardinal_slice', undefined, addToScene, slice, false);
+	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);
 	// loadObject('cardinal_vertical', undefined, undefined, windowVertical);
 	// loadObject('cardinal_slice', undefined, undefined, slice);	
  } 

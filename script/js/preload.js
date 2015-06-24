@@ -1,5 +1,21 @@
+<<<<<<< HEAD
 var spacerNormalImg = new Image();
 spacerNormalImg.src = "media/models/spacer.jpg";
+=======
+var imagesArray = [];
+	imagesArray.push("media/models/spacer.jpg");
+	imagesArray.push("media/models/p1_op.png");
+	imagesArray.push("media/models/p2_op.png");
+
+	for(var i=0,l=imagesArray.length;i<l;i++){
+		var img = new Image();
+			img.src = imagesArray[i]
+	}
+
+
+//var spacerNormalImg = new Image();
+//	spacerNormalImg.src = "media/models/spacer.jpg";
+>>>>>>> origin/master
 
 var animation = parseJSON('media/camera/anim_all.JSON');
 

@@ -1,6 +1,11 @@
 var menu = document.getElementById("menu");
 var cutMenu = document.getElementById("cutMenu");
 var backButton = document.getElementById("backButton");
+<<<<<<< HEAD
+=======
+var container, camera, scene, renderer, keyboard, frameID;
+var camNear = 10, camFar = 6000;
+>>>>>>> origin/master
 var width = window.innerWidth, height = window.innerHeight;
 var animation_interval = setInterval(function(){},10);
 Init();
@@ -43,21 +48,36 @@ function addRenderer() {
 }
 
 function addLight () {
-	var ambientLight = new THREE.AmbientLight( 0x808080 );
-	//scene.add( ambientLight );
+	var ambientLight = new THREE.AmbientLight( 0x666666 );
+	scene.add( ambientLight );
 
+	scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
+
+
+	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light1.position.set( 3615, -61, 2750 );
+		scene.add( light1 );
+
+	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light2.position.set( 345, 4830, 3622 );
+		scene.add( light2 );
+
+	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
+		light3.position.set( -3000, -157, 2745 );
+		scene.add( light3 );
+/*
 	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light.position.set( -3325, 2593, 4239 );
+		light.position.set( -750,1073,5852 );
 		scene.add( light );
 
 
 	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light2.position.set( -3166, 746, 2028 );
+		light2.position.set( 0, 5746, 2028 );
 		scene.add( light2 );
 
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light3.position.set(4177, -1014, 1350 );
-		scene.add( light3 );
+		scene.add( light3 );*/
 }
 
 function addCamera () {	
