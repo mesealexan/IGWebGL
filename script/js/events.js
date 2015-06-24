@@ -3,6 +3,7 @@ var camPosition2 = new THREE.Vector3();
 var camPosition1Target = new THREE.Vector3();
 
 function addControls() {
+	
     var hammer = new Hammer(container);
 
 	hammer.on('pan', function(ev) {

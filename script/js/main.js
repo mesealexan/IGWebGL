@@ -9,13 +9,15 @@ function Init() {
 	container = document.getElementById( 'webGL' );	
 	scene = new THREE.Scene();
 	addRenderer();
-	addControls();
 	addCamera();
+	addControls();
+	
 	addLight();
 	initKeyboard();
 	loadAssets();	
 	manageCameraAnimations.playAnim_1();
 	animate();
+	makeSkybox()
 }
 
 function loadJSON (name, material, callback, variable) {
