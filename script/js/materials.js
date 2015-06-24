@@ -1,5 +1,5 @@
 var urls = [];
-var imagePrefix = "media/skybox/cube_";
+var imagePrefix = "media/skybox/Cube_";
 var directions  = ["r", "l", "u", "d", "f", "b"]; //l
 var imageSuffix = ".jpg";
 
@@ -7,6 +7,20 @@ for (var i = 0; i < 6; i++)
 	urls.push(imagePrefix + directions[i] + imageSuffix);
 
 var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+
+function makeSkybox () {
+	var cubeGeom = new THREE.BoxGeometry(5000,5000,5000);
+
+	var materialArray = [];
+	for (var i = 0; i < 6; i++)
+		materialArray.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
+	scene.add( skyBox );
+}
 
 function vertexShader () {	
 	return ""+
@@ -88,7 +102,7 @@ function setMaterials(materialName){
 				reflectivity: 0.88,
 				shininess: 30,
 				transparent: true,
-				opacity: 0.6
+				opacity: 1
 			});
 	        break;
 	    case 'Glass Sides':
