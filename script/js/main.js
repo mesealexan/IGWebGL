@@ -84,7 +84,7 @@ function addLensFlare () {
 	var flareColor = new THREE.Color( 0xffffff );
 	lensFlare = new THREE.LensFlare( textureFlare1, 300, 0.0, THREE.NormalBlending, flareColor);
 	lensFlare.add( textureFlare2, 64, 0.1, THREE.AdditiveBlending );
-	lensFlare.add( textureFlare2, 32, 0.2, THREE.AdditiveBlending );
+	lensFlare.add( textureFlare2, 32, 0.12, THREE.AdditiveBlending );
 	//console.log(textureFlare2)
 	//lensFlare.lensFlares.push( textureFlare2 );
 	// lensFlare.add( textureFlare2, 512, 0.0, THREE.AdditiveBlending );
