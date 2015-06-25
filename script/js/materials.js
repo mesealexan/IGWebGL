@@ -125,6 +125,17 @@ function setMaterials(materialName){
 		    	
 		    })
 	        break;
+	    case 'Spacer slice':
+	  		material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(222,222,222)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+				envMap: textureCube,
+				refractionRatio: 0.985, 
+				reflectivity: 0.99,
+				shininess: 30
+		    })	
+		    break;
 	    default:
 	    	material =  new THREE.MeshNormalMaterial()
         	
