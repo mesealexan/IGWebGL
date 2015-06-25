@@ -6,7 +6,7 @@ var camera_frames = {
 	animation_5:{ frame: 193, speed: 0.1},
 	animation_6:{ frame: 194, speed: 0.1}
 }
-
+var windowFadeTime = 70;
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var camNear = 20, camFar = 6000, fov = 45;
 

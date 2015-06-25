@@ -19,9 +19,9 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			toggleInput(false);
 		break;
 		case 188: //between slice and both windows
-			windowVertical.mesh.visible = !animateCamera.forward;
-			windowHorizontal.mesh.visible = !animateCamera.forward;
-			slice.mesh.visible = animateCamera.forward;
+			//windowVertical.mesh.visible = !animateCamera.forward;
+			//windowHorizontal.mesh.visible = !animateCamera.forward;
+			//slice.mesh.visible = animateCamera.forward;
 		break;
 		case 189: //going back to both windows	
 			cancelAllTweens();

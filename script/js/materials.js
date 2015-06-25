@@ -1,5 +1,5 @@
 var urls = [];
-var imagePrefix = "media/skybox/Cube_";
+var imagePrefix = "media/skybox/cube_";
 var directions  = ["r", "l", "u", "d", "f", "b"]; 
 var imageSuffix = ".jpg";
 
@@ -141,32 +141,46 @@ function setMaterials(materialName){
 	    	material =  new THREE.MeshNormalMaterial()
         	
 	}
+
+	material.name = materialName;
+	material.maxOpacity = material.opacity;
+
 	return material
 }
 
 var manageVisibility = {
-	fadeOut: function (materials, tick) {
-		var interval = setInterval(function(){ manageVisibility.modifyOpacity(materials, interval, -0.1); 
-		}, tick);
+	fadeOut: function (obj, tick) {
+		var complete = [];
+		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
+			-0.1, complete); }, tick);
 	},
-	fadeIn: function (materials, tick) {
-		var interval = setInterval(function(){ manageVisibility.modifyOpacity(materials, interval, 0.1); 
-		}, tick);
+	fadeIn: function (obj, tick) {
+		var complete = [];
+		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
+			0.1, complete); }, tick);
 	},
-	modifyOpacity: function (materials, interval, step) {
-		var complete = 0;
-
+	modifyOpacity: function (obj, interval, step, array) {
+		materials = obj.mesh.material.materials;
+		if(step > 0) obj.mesh.visible = true;
 		for (var i = 0; i < materials.length; i++) {
-			materials[i].transparent = true;
-			if(step < 0){
-				//fade out
-				if(materials[i].opacity < 0) complete++;}
-			else{
-				//fade in
-				if(materials[i].opacity > 1) complete++;}
+			if(array.indexOf(i) != -1) continue;
 
-			if (complete == materials.length) clearInterval(interval);
+			if(materials[i].name == "plane") {array.push(i); continue;}
+
+			materials[i].transparent = true;
 			materials[i].opacity += step;	
+
+			if(step < 0){ //fade out		
+				if(materials[i].opacity < 0) array.push(i);
+			}
+			else{ //fade in				
+				if(materials[i].opacity > materials[i].maxOpacity) array.push(i);
+			}	
+
+			if (array.length === materials.length) {
+				clearInterval(interval); 
+				if(step < 0) obj.mesh.visible = false;
+			}
 		};
 	}
 }
