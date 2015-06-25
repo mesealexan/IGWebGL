@@ -55,11 +55,12 @@ function setMaterials(materialName){
 		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[0])
 		    })
 	        break;
-	    case 'Glass':
+	    case 'Glass':	
 			material = new THREE.MeshPhongMaterial({ 
 				color: new THREE.Color("rgb(255,255,255)"),
 				//ambient: new THREE.Color("rgb(255,1,0)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
+				vertexColors: THREE.VertexColors,
 				envMap: textureCube,
 				refractionRatio: 0.985, 
 				reflectivity: 0.99,
@@ -69,9 +70,9 @@ function setMaterials(materialName){
 			});
 	        break;
 	    case 'Glass Sides':
-		    material = new THREE.MeshPhongMaterial({ 
+			material = new THREE.MeshPhongMaterial({ 
 				color: new THREE.Color("rgb(46,56,31)"),
-		    	ambient: new THREE.Color("rgb(46,56,31)"),
+				ambient: new THREE.Color("rgb(46,56,31)"),
 				emissive: new THREE.Color("rgb(46,56,31)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				envMap: textureCube,
@@ -167,51 +168,5 @@ var manageVisibility = {
 			if (complete == materials.length) clearInterval(interval);
 			materials[i].opacity += step;	
 		};
-	}
-}
-
-function sliceMat () {
-	var material = new THREE.ShaderMaterial( {
-		uniforms: {
-			time: { 
-				type: "f", value: 1.0 
-			}
-		},
-		attributes: {
-
-		},
-		vertexShader: vertexShader(),
-		fragmentShader: fragmentShader()		
-	})
-		
-
-
-	function vertexShader () {	
-		return ""+
-		"varying vec3 vNormal;"+
-		"void main(){"+
-		"vUv = uv;"+
-		"vNormal = normal;"+
-		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);"+
-		"worldVertexPosition = vec3(modelViewMatrix * vec4(position, 1.0));"+
-		"worldNormalDirection = mat3(modelViewMatrix) * normal;"+
-		"vVector = position;}"
-	}
-
-	function fragmentShader () {	
-		return ""+
-		"uniform float ScreenResX;"+
-		"uniform float ScreenResY;"+
-		"varying vec3 worldVertexPosition;"+
-		"varying vec3 worldNormalDirection;"+
-		"varying vec3 vVector;"+
-		"varying vec2 vUv;"+
-		"varying vec3 vNormal;"+
-
-		"void main(){"+
-		"float color = 1.0;"+
-		"vec2 position = vUv;"+
-		"vec3 incident = normalize(worldVertexPosition);"+
-		"gl_FragColor = vec4( vVector.x, vVector.y, vVector.z, 1.0);}"
 	}
 }
