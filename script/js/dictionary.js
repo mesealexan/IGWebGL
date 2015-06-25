@@ -7,7 +7,7 @@ var camera_frames = {
 	animation_6:{ frame: 194, speed: 0.1}
 }
 
-var container, camera, scene, renderer, keyboard, frameID;
+var container, camera, scene, renderer, keyboard, frameID, controls;
 var camNear = 20, camFar = 6000, fov = 45;
 
 var panSlowDown = 3;

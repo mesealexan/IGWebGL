@@ -5,7 +5,7 @@ var camPosition1Target = new THREE.Vector3();
 function addControls() {
 	
     var hammer = new Hammer(container);
-
+    controls = new THREE.OrbitControls( camera );
 	hammer.on('pan', function(ev) {
     	//bothWindowsPerspectivePan(ev);
 	});
