@@ -73,7 +73,8 @@ var animateCamera = {
 		var distance = startPos.distanceTo(destination);
 		var time = distance / speed;
 
-		var cameraPos = new TWEEN.Tween( camera.position )
+		var cameraPos = new TWEEN.Tween( camera.position );
+		cameraPos.easing(TWEEN.Easing.Cubic.InOut);
 	    cameraPos.to( { x: destination.x, y: destination.y, z: destination.z }, time );
 	    cameraPos.start();
 	//rotation
@@ -107,6 +108,7 @@ var manageCameraAnimations = {
 	},
 	playZoomInAnim: function (anim) { //zoom in further on slice
 		zoomedOnSlice = true;
+		toggleInput(false);
 		animateCamera.tween(camera_frames[anim].frame, camera_frames[anim].speed);
 	},
 	back: function() { //multiple back options
@@ -116,6 +118,7 @@ var manageCameraAnimations = {
 		}
 
 		if(zoomedOnSlice){ //back to slice
+			toggleInput(true);
 			zoomedOnSlice = false;
 			animateCamera.tween(camera_frames.animation_2.to, 0.1);
 		} 

@@ -13,7 +13,6 @@ function Init() {
 	addCamera();
 	addControls();	
 	addLight();
-	initKeyboard();
 	manageCameraAnimations.playAnim_1();
 	animate();
 	//addSkybox()
@@ -73,7 +72,7 @@ function addLensFlare () {
 	var smallCircleMinDistance = 0.01;
 	var smallCircleCloseness = 300;
 
-	lensFlare = new THREE.LensFlare( textureFlare1, 256, 0.0, THREE.NormalBlending, flareColor);
+	lensFlare = new THREE.LensFlare( textureFlare1, 256, 0.0, THREE.AdditiveBlending, flareColor);
 	for (var i = 0; i < smallCircles; i++) {
 			lensFlare.add( textureFlare2, smallCircleMinSize + (Math.random() * smallCircleMaxSize), 
 				smallCircleMinDistance + (i / smallCircleCloseness) + (Math.random() / 10)

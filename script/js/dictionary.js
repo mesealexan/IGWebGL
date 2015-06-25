@@ -10,7 +10,9 @@ var camera_frames = {
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var camNear = 20, camFar = 6000, fov = 45;
 
+var hammer;
 var bmap;
+var cameraDestinationFrame, cameraTweenSpeed;
 var animation_interval;
 var initialMousePos = {};
 var zoomedOnSlice = undefined;
