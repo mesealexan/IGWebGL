@@ -29,33 +29,7 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 	scene.add(obj.mesh);
  }
 
-function loadMaterials () {
-	cardinalVerticalMaterials = cardinal2materials = [
- 		sealantA_Material(),	// 0
- 		glassMaterial1(),		// 1
- 		greenGlassMaterial(),	// 2
- 		sealantA_Material(),	// 3
-	 	sealantMaterial(),		// 4
-	 	spacerMaterial()		// 5
-	 ];
-
-    sliceMaterials = [
-    	sealantA_Material(),	// 0
-    	sealantA_Material(),	// 1
-    	sealantA_Material(),	// 2
-    	glassMaterial1(),		// 3
-    	greenGlassMaterial(),	// 4
-    	spacerMaterial(),		// 5
-    	glassMaterial1()		// 6
-
-    ];
-}
-
 function loadAssets () {	
-	//spacerNormal = THREE.ImageUtils.loadTexture("media/models/spacer.jpg", function(){},function(){});
-	// loadMaterials();
-	// loadAnimations();
-	//loadObject('text', undefined, addToScene, text);
 	textureFlare1 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_1.png", function(){},function(){
 	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
 	textureFlare3 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_3.png", function(){},function(){
@@ -67,6 +41,4 @@ function loadAssets () {
 	loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);
 	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
-	// loadObject('cardinal_vertical', undefined, undefined, windowVertical);
-	// loadObject('cardinal_slice', undefined, undefined, slice);	
  } 

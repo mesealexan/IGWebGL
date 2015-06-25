@@ -1,6 +1,6 @@
 function modifyCameraUp (degrees) {	
-	var radians = this.degreesToRadians(degrees);	
-	var vector3 = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));	
+	var radians = this.degreesToRadians(degrees);
+	var vector3 = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));
 	var up = new THREE.Vector3( 0, 0, 1 );
 	vector3.applyAxisAngle( up, radians );
 	return vector3;
@@ -9,12 +9,12 @@ function modifyCameraUp (degrees) {
 var animateCamera = {
 	forward: undefined,
 	frame: -1,
-	play: function(from, to){		
+	play: function(from, to){
 		animateCamera.stop(animation_interval);
-		animateCamera.frame = from;		
+		animateCamera.frame = from;
 		animation_interval = setInterval(function(){
 		if(animateCamera.checkPlayback(from, to)){
-			if(animation.type == 'Targetcamera'){
+			//if(animation.type == 'Targetcamera'){
 				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
 				camera.up.set(newUp.x, newUp.y, newUp.z);
 
@@ -23,16 +23,14 @@ var animateCamera = {
 					-animation.frames[animateCamera.frame].target.y);
 				camera.target = lookAt
 				camera.lookAt(camera.target);
-
-			}
-			else{ //free camera			 
-				var euler = new THREE.Euler(
-					degreesToRadians(animation.frames[animateCamera.frame].quaternion.x), 
-					degreesToRadians(animation.frames[animateCamera.frame].quaternion.z), 
-					degreesToRadians(animation.frames[animateCamera.frame].quaternion.y), 'XYZ');
-				camera.rotation.copy(euler)
-			} 
-
+			//}
+			// else{ //free camera
+			// 	var euler = new THREE.Euler(
+			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.x), 
+			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.z), 
+			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.y), 'XYZ');
+			// 	camera.rotation.copy(euler)
+			// } 
 			camera.fov = animation.frames[animateCamera.frame].fov;
 			camera.updateProjectionMatrix();
 
@@ -53,16 +51,16 @@ var animateCamera = {
 				animateCamera.frame++;
 				return true;
 			}
-			else return false; //reached the end				
+			else return false; //reached the end
 		}	
-		else if (from > to){ //reverse playback			
+		else if (from > to){ //reverse playback
 			animateCamera.forward = false;
 			if (animateCamera.frame > to){ //still has to play
 				animateCamera.frame--;
 				return true;
 			}
 			else return false; //reached the end	
-		}			
+		}
 	},
 	tween: function (frame, speed) {
 	//position
@@ -79,7 +77,7 @@ var animateCamera = {
 	    cameraPos.to( { x: destination.x, y: destination.y, z: destination.z }, time );
 	    cameraPos.start();
 	//rotation
-    	var rollAngle = animation.frames[frame].rollAngle;    	
+    	var rollAngle = animation.frames[frame].rollAngle;
     	var newUp = modifyCameraUp(rollAngle);
 	    var cameraAng = new TWEEN.Tween( camera.up );
 	    cameraAng.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
@@ -111,7 +109,7 @@ var manageCameraAnimations = {
 		zoomedOnSlice = true;
 		animateCamera.tween(camera_frames[anim].frame, camera_frames[anim].speed);
 	},
-	back: function() { //multiple back options			
+	back: function() { //multiple back options
 		if(animateCamera.frame == camera_frames.animation_2.to && //back to both windows
 			!zoomedOnSlice){
 			animateCamera.play(camera_frames.animation_2.to, camera_frames.animation_2.from);

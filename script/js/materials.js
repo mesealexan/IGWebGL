@@ -1,6 +1,6 @@
 var urls = [];
 var imagePrefix = "media/skybox/Cube_";
-var directions  = ["r", "l", "u", "d", "f", "b"]; //l
+var directions  = ["r", "l", "u", "d", "f", "b"]; 
 var imageSuffix = ".jpg";
 
 for (var i = 0; i < 6; i++)
@@ -8,7 +8,7 @@ for (var i = 0; i < 6; i++)
 
 var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
 
-function makeSkybox () {
+function addSkybox () {
 	var cubeGeom = new THREE.BoxGeometry(5000,5000,5000);
 
 	var materialArray = [];
@@ -19,43 +19,7 @@ function makeSkybox () {
 		}));
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
-	//scene.add( skyBox );
-}
-
-function vertexShader () {	
-	return ""+
-	"uniform float ScreenResX;"+
-	"uniform float ScreenResY;"+
-	"varying vec2 vUv;"+	
-	"varying vec3 vNormal;"+
-	"varying vec3 vVector;"+
-	"varying vec3 worldVertexPosition;"+
-	"varying vec3 worldNormalDirection;"+
-
-	"void main(){"+
-	"vUv = uv;"+
-	"vNormal = normal;"+
-	"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);"+
-	"worldVertexPosition = vec3(modelViewMatrix * vec4(position, 1.0));"+
-	"worldNormalDirection = mat3(modelViewMatrix) * normal;"+
-	"vVector = position;}"
-}
-
-function fragmentShader () {	
-	return ""+
-	"uniform float ScreenResX;"+
-	"uniform float ScreenResY;"+
-	"varying vec3 worldVertexPosition;"+
-	"varying vec3 worldNormalDirection;"+
-	"varying vec3 vVector;"+
-	"varying vec2 vUv;"+
-	"varying vec3 vNormal;"+
-
-	"void main(){"+
-	"float color = 1.0;"+
-	"vec2 position = vUv;"+
-	"vec3 incident = normalize(worldVertexPosition);"+
-	"gl_FragColor = vec4( vVector.x, vVector.y, vVector.z, 1.0);}"
+	scene.add( skyBox );
 }
 
 function setMaterials(materialName){
@@ -192,5 +156,51 @@ var manageVisibility = {
 			if (complete == materials.length) clearInterval(interval);
 			materials[i].opacity += step;	
 		};
+	}
+}
+
+function sliceMat () {
+	var material = new THREE.ShaderMaterial( {
+		uniforms: {
+			time: { 
+				type: "f", value: 1.0 
+			}
+		},
+		attributes: {
+
+		},
+		vertexShader: vertexShader(),
+		fragmentShader: fragmentShader()		
+	})
+		
+
+
+	function vertexShader () {	
+		return ""+
+		"varying vec3 vNormal;"+
+		"void main(){"+
+		"vUv = uv;"+
+		"vNormal = normal;"+
+		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);"+
+		"worldVertexPosition = vec3(modelViewMatrix * vec4(position, 1.0));"+
+		"worldNormalDirection = mat3(modelViewMatrix) * normal;"+
+		"vVector = position;}"
+	}
+
+	function fragmentShader () {	
+		return ""+
+		"uniform float ScreenResX;"+
+		"uniform float ScreenResY;"+
+		"varying vec3 worldVertexPosition;"+
+		"varying vec3 worldNormalDirection;"+
+		"varying vec3 vVector;"+
+		"varying vec2 vUv;"+
+		"varying vec3 vNormal;"+
+
+		"void main(){"+
+		"float color = 1.0;"+
+		"vec2 position = vUv;"+
+		"vec3 incident = normalize(worldVertexPosition);"+
+		"gl_FragColor = vec4( vVector.x, vVector.y, vVector.z, 1.0);}"
 	}
 }

@@ -10,14 +10,10 @@ var camera_frames = {
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var camNear = 20, camFar = 6000, fov = 45;
 
-var panSlowDown = 3;
-var cameraOutOfBoundsReset = 1;
-var maxCameraDeviation = 50;
-
 var bmap;
+var animation_interval;
 var initialMousePos = {};
 var zoomedOnSlice = undefined;
 var cardinal1materials, cardinal2materials, sliceMaterials;
 var windowHorizontal = {}, windowVertical = {}, slice = {};
-
 var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;

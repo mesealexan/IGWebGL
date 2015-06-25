@@ -33,5 +33,4 @@ function animate(time) {
 		renderer.render(scene, camera);
 		TWEEN.update(time);		
 	}
-
 } 

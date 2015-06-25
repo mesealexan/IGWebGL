@@ -2,7 +2,7 @@ var menu = document.getElementById("menu");
 var cutMenu = document.getElementById("cutMenu");
 var backButton = document.getElementById("backButton");
 var width = window.innerWidth, height = window.innerHeight;
-var animation_interval = setInterval(function(){},10);
+
 Init();
 
 function Init() {
@@ -16,24 +16,7 @@ function Init() {
 	initKeyboard();
 	manageCameraAnimations.playAnim_1();
 	animate();
-	makeSkybox()
-}
-
-function loadJSON (name, material, callback, variable) {
-	var mesh;
-	var loader = new THREE.JSONLoader();
-
-	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
-	    var material = new THREE.MeshFaceMaterial( materials ); 
-        mesh = new THREE.Mesh( geometry, material );
-    });
-
-	loader.onLoadComplete = function(){		
-		mesh.name = name;
-		if(callback)callback(mesh);
-		if(variable)variable.mesh = mesh;
-    	scene.add(mesh);
-	};
+	//addSkybox()
 }
 
 function addRenderer() {
@@ -60,7 +43,7 @@ function addLight () {
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light3.position.set( 3615,2688,843 );
 		scene.add( light3 );
-/*
+	/*
 	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light.position.set( -750,1073,5852 );
 		scene.add( light );
@@ -72,7 +55,8 @@ function addLight () {
 
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light3.position.set(4177, -1014, 1350 );
-		scene.add( light3 );*/
+		scene.add( light3 );
+	*/
 }
 
 function addCamera () {	
@@ -87,30 +71,14 @@ function addLensFlare () {
 	var smallCircleMinSize = 1;
 	var smallCircleMaxSize = 10;
 	var smallCircleMinDistance = 0.01;
-	var smallCircleMaxDistance = 35;
-
-	var bigCircles = 5;
-	var bigCircleMinSize = 20;
-	var bigCircleMaxSize = 40;
-	var bigCircleMinDistance = 0.3;
-	var bigCircleMaxDistance = 200;
+	var smallCircleCloseness = 300;
 
 	lensFlare = new THREE.LensFlare( textureFlare1, 256, 0.0, THREE.NormalBlending, flareColor);
 	for (var i = 0; i < smallCircles; i++) {
 			lensFlare.add( textureFlare2, smallCircleMinSize + (Math.random() * smallCircleMaxSize), 
-				smallCircleMinDistance + (i / smallCircleMaxDistance) + (Math.random() / 10)
+				smallCircleMinDistance + (i / smallCircleCloseness) + (Math.random() / 10)
 				, THREE.AdditiveBlending );
 	};
-
-	// for (var i = 0; i < bigCircles; i++) {
-	// 	lensFlare.add( textureFlare5, bigCircleMinSize + (Math.random() * bigCircleMaxSize), 
-	// 			bigCircleMinDistance + (i / bigCircleMaxDistance) + 
-	// 			((Math.random() * 2) / 10), THREE.AdditiveBlending );
-	// };
-	//lensFlare.add( textureFlare2, 40, 0.4, THREE.AdditiveBlending );
-	//lensFlare.add( textureFlare2, 32, 0.42, THREE.AdditiveBlending );
-	//lensFlare.add( textureFlare5, 28, 0.44, THREE.AdditiveBlending );
-	//lensFlare.add( textureFlare3, 2048, 0.2, THREE.AdditiveBlending );
 
 	lensFlare.position.set( -1127.008, 1232.292, -11  );
 	scene.add( lensFlare );
