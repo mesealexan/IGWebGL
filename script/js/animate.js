@@ -30,8 +30,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			toggleElement(backButton, 'hidden');
 		break;
 		case 190: //finished anim 2
-		    controls.minAzimuthAngle = 0.1; 
-		    controls.maxAzimuthAngle = 0.9;
+		    controls.minAzimuthAngle = 0.33; 
+		    controls.maxAzimuthAngle = 0.7;
 			cameraTweenSpeed = 0.05;
 			controls.target = camera.target;
 			toggleInput(true);

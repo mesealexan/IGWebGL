@@ -4,7 +4,7 @@ function addControls() {
     controls.noPan = true;
     controls.maxPolarAngle = 1.6;
     controls.minPolarAngle = 1.3;
-   	controls.rotateSpeed = 0.3;
+   	controls.rotateSpeed = 0.11;
 
     hammer = new Hammer(container);
 
