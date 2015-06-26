@@ -4,7 +4,6 @@ function loadObject (name, material, callback, variable, initiallyVisible, initi
 	var materialsArray = [];
 
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
-
 		materialsArray = materials;
 		for (var i = materialsArray.length - 1; i >= 0; i--) {
 			if(initialOpacity != undefined) materialsArray[i].opacity = initialOpacity;
@@ -38,7 +37,6 @@ function loadAssets () {
 	makeTextureCube();
 
 	//loader chain, one 'onLoadComplete' triggers the next load
-
 	textureFlare1 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_1.png", function(){},function(){
 	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
 		loadObject('cardinal_horizontal', undefined, [addToScene, function(){

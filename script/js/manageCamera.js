@@ -1,37 +1,29 @@
 function modifyCameraUp (degrees) {	
 	var radians = this.degreesToRadians(degrees);
-	var vector3 = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));
+	var newUp = new THREE.Vector3(0, Math.cos(radians), Math.sin(radians));
 	var up = new THREE.Vector3( 0, 0, 1 );
-	vector3.applyAxisAngle( up, radians );
-	return vector3;
+	newUp.applyAxisAngle( up, radians );
+	return newUp;
 }
 
 var animateCamera = {
-	forward: undefined,
 	frame: -1,
 	play: function(from, to){
 		animateCamera.stop(animation_interval);
-		animateCamera.frame = from;
+		//decrement because check below first increments then returns true
+		animateCamera.frame = from - 1; 
 		animation_interval = setInterval(function(){
 		if(animateCamera.checkPlayback(from, to)){
-			//if(animation.type == 'Targetcamera'){
-				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
-				camera.up.set(newUp.x, newUp.y, newUp.z);
+			var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
+			camera.up.set(newUp.x, newUp.y, newUp.z);
 
-				var lookAt = new THREE.Vector3(
-					animation.frames[animateCamera.frame].target.x, 
-					animation.frames[animateCamera.frame].target.z, 
-					-animation.frames[animateCamera.frame].target.y);
-				camera.target = lookAt;
-				camera.lookAt(lookAt);
-			//}
-			// else{ //TODO: free camera needs work on faulty rotation, disabled
-			// 	var euler = new THREE.Euler(
-			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.x), 
-			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.z), 
-			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.y), 'XYZ');
-			// 	camera.rotation.copy(euler)
-			// } 
+			var lookAt = new THREE.Vector3(
+				animation.frames[animateCamera.frame].target.x, 
+				animation.frames[animateCamera.frame].target.z, 
+				-animation.frames[animateCamera.frame].target.y);
+
+			camera.target = lookAt;
+			camera.lookAt(lookAt);
 			camera.fov = animation.frames[animateCamera.frame].fov;
 			camera.updateProjectionMatrix();
 
@@ -47,8 +39,7 @@ var animateCamera = {
 		clearInterval(animation_interval);
 	},
 	checkPlayback: function(from, to){
-		if (from < to){ //regular playback	
-			animateCamera.forward = true;
+		if (from < to){ //regular playback
 			if (animateCamera.frame < to){ //still has to play
 				animateCamera.frame++;
 				return true;
@@ -56,7 +47,6 @@ var animateCamera = {
 			else return false; //reached the end
 		}	
 		else if (from > to){ //reverse playback
-			animateCamera.forward = false;
 			if (animateCamera.frame > to){ //still has to play
 				animateCamera.frame--;
 				return true;
@@ -75,31 +65,31 @@ var animateCamera = {
 		var distance = startPos.distanceTo(destination);
 		var time = distance / speed;
 
-		var cameraPos = new TWEEN.Tween( camera.position );
-		cameraPos.easing(TWEEN.Easing.Cubic.InOut);
-	    cameraPos.to( { x: destination.x, y: destination.y, z: destination.z }, time );
-	    cameraPos.start();
+		var posTween = new TWEEN.Tween( camera.position );
+		posTween.easing(TWEEN.Easing.Cubic.InOut);
+	    posTween.to( { x: destination.x, y: destination.y, z: destination.z }, time );
+	    posTween.start();
 	//rotation
     	var rollAngle = animation.frames[frame].rollAngle;
     	var newUp = modifyCameraUp(rollAngle);
-	    var cameraAng = new TWEEN.Tween( camera.up );
-	    cameraAng.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
-	    cameraAng.start();  
+	    var angleTween = new TWEEN.Tween( camera.up );
+	    angleTween.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
+	    angleTween.start();  
 	//target
 	    var target = new THREE.Vector3(animation.frames[frame].target.x, 
 			animation.frames[frame].target.z, 
 			-animation.frames[frame].target.y);
 
-	    var cameraTar = new TWEEN.Tween( camera.target )
-	    cameraTar.to( { x: target.x, y: target.y, z: target.z }, time );
-	    cameraTar.start();
-	    cameraTar.onUpdate( function () { camera.lookAt(camera.target) });
+	    var targetTween = new TWEEN.Tween( camera.target )
+	    targetTween.to( { x: target.x, y: target.y, z: target.z }, time );
+	    targetTween.start();
+	    targetTween.onUpdate( function () { camera.lookAt(camera.target) });
 	//fov
-	    var cameraFov = new TWEEN.Tween( camera );
-	    cameraFov.to( { fov: animation.frames[frame].fov }, time);
-	    cameraFov.start();
+	    var fovTween = new TWEEN.Tween( camera );
+	    fovTween.to( { fov: animation.frames[frame].fov }, time);
+	    fovTween.start();
 
-	    cameraFov.onUpdate( function () { camera.updateProjectionMatrix() }); 
+	    fovTween.onUpdate( function () { camera.updateProjectionMatrix() }); 
 	}	
 }
 
@@ -117,6 +107,7 @@ var manageCameraAnimations = {
 		if(!slice.inScene) loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	},
 	playZoomInAnim: function (anim) { //zoom in further on slice
+		cancelAllTweens();
 		manageEmissive.resetAllSlice();
 		manageEmissive.modify(camera_frames[anim].frame);
 		zoomedOnSlice = true;
@@ -133,11 +124,11 @@ var manageCameraAnimations = {
 		}
 
 		if(zoomedOnSlice){ //back to slice
-			manageEmissive.resetAllSlice();
-			toggleInput(true);
 			cancelAllTweens();
+			manageEmissive.resetAllSlice();
 			zoomedOnSlice = false;
-			animateCamera.tween(camera_frames.animation_2.to, 0.1);
+			toggleInput(true);
+			animateCamera.tween(camera_frames.animation_2.to, 0.05);
 		} 
 	}
 }

@@ -146,6 +146,7 @@ function setMaterials(materialName){
 	}
 
 	material.name = materialName;
+	material.defaultEmissive = material.emissive;
 	material.maxOpacity = material.opacity;
 
 	return material
@@ -175,7 +176,10 @@ var manageVisibility = {
 				if(materials[i].opacity < 0) array.push(i);
 			}
 			else{ //fade in				
-				if(materials[i].opacity > materials[i].maxOpacity) array.push(i);
+				if(materials[i].opacity >= materials[i].maxOpacity){
+					materials[i].opacity = materials[i].maxOpacity;
+					array.push(i);
+				} 
 			}	
 
 			if (array.length === materials.length) {
@@ -195,19 +199,19 @@ var manageEmissive = {
 		switch (frame){
 			case 191:
 			slice.mesh.material.materials[manageEmissive.sealantA_ID]
-				.emissive = sealantAselectedC;
+				.emissive = sliceSelectedC;
 			break;
 			case 192:
 			slice.mesh.material.materials[manageEmissive.sealantB_ID]
-				.emissive = sealantBselectedC;
+				.emissive = sliceSelectedC;
 			break;
 			case 193:
 			slice.mesh.material.materials[manageEmissive.spacerSlice_ID]
-				.emissive = spacerSliceSelectedC;
+				.emissive = sliceSelectedC;
 			break;
 			case 194:
 			slice.mesh.material.materials[manageEmissive.desicant_ID]
-				.emissive = desicantSelectedC;
+				.emissive = sliceSelectedC;
 			break;
 		}
 	},
@@ -219,6 +223,7 @@ var manageEmissive = {
 			slice.mesh.material.materials[manageEmissive.desicant_ID]];
 
 		for (var i = 0; i < slice.mesh.material.materials.length; i++) 
-			slice.mesh.material.materials[i].emissive = unselectedC;
+			slice.mesh.material.materials[i].emissive = 
+				slice.mesh.material.materials[i].defaultEmissive;
 	}
 }

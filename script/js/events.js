@@ -12,9 +12,7 @@ function addControls() {
     hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
     //dont create simultaneous tweens, stop all, create new ones
-    hammer.on('panstart', function(ev) {
-        cancelAllTweens();
-    });
+    hammer.on('panstart', function(ev) { cancelAllTweens(); });
 
     //trigger tween back
 	hammer.on('panend', function(ev) {
@@ -28,9 +26,7 @@ function addControls() {
 
 function cancelAllTweens () {
     var tweens = TWEEN.getAll();
-    for (var i = 0; i < tweens.length; i++) {
-        tweens[i].stop();
-    };
+    for (var i = 0; i < tweens.length; i++) tweens[i].stop();
 }
 
 function toggleInput (bool) {

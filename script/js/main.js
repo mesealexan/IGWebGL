@@ -16,7 +16,7 @@ function Init() {
 	addLight();
 	initColors();	
 	//animate(); //called in objectLoader.js when all meshes are loaded
-	//addSkybox()
+	//addSkybox();
 }
 
 function addRenderer() {
@@ -67,7 +67,8 @@ function addCamera () {
 }
 
 function addWhitePlane () {
-	var geometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+	var side = 10000;
+	var geometry = new THREE.PlaneBufferGeometry( side, side );
 	var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff, 
 		specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
 	var plane = new THREE.Mesh( geometry, material );
@@ -91,24 +92,11 @@ function addLensFlare () {
 			THREE.AdditiveBlending );
 	};
 
-	lensFlare.position.set( -1127.008, 1232.292, -11  );	
+	lensFlare.position.set( -1127.008, 1232.292, -11  );
+
 	scene.add( lensFlare );
 }
 
 function initColors () {	
-	sealantAselectedC = new THREE.Color(sealantAselectedC); 
-	sealantBselectedC = new THREE.Color(sealantBselectedC); 
-	spacerSliceSelectedC = new THREE.Color(spacerSliceSelectedC); 
-	desicantSelectedC = new THREE.Color(desicantSelectedC); 
-	unselectedC = new THREE.Color(unselectedC);  
-}
-
-function parseJSON(file) {
-	//	file - JSON path
-	//	returns JS object
-	var request = new XMLHttpRequest();
-   		request.open("GET", file, false);
-   		request.send(null)
-   	var JSON_object = JSON.parse(request.responseText);
-   	return JSON_object;
+	sliceSelectedC = new THREE.Color(sliceSelectedC); 
 }

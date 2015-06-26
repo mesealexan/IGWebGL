@@ -7,19 +7,15 @@ var camera_frames = {
 	animation_6:{ frame: 194, speed: 0.05}
 }
 
+var camNear = 20, camFar = 6000, fov = 45;
+
 //color for selected slice pieces
-var sealantAselectedC = ("rgb(0,0,255)");
-var sealantBselectedC = ("rgb(0,0,255)");
-var spacerSliceSelectedC = ("rgb(0,0,255)");
-var desicantSelectedC = ("rgb(0,0,255)");
-var unselectedC = ("rgb(0,0,0)"); 
+var sliceSelectedC = (0x3498db);
 
 //opacity is modified every x ms
 var windowFadeTick = 45;
-//opacity is modified by x per step
+//opacity is modified by x per tick
 var windowFadeStep = 0.08;
-
-var camNear = 20, camFar = 6000, fov = 45;
 
 var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;
 var container, camera, scene, renderer, keyboard, frameID, controls;

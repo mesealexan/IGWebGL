@@ -13,7 +13,7 @@ var imagesArray = [];
 	imagesArray.push("media/LensFlare/Flare_2.png");
 	imagesArray.push("media/LensFlare/Flare_3.png");
 
-	for(var i=0,l=imagesArray.length;i<l;i++){
+	for(var i = 0, l = imagesArray.length; i < l; i++){
 		var img = new Image();
 			img.src = imagesArray[i]
 	}
@@ -24,7 +24,7 @@ parseJSON('media/models/cardinal_horizontal.js');
 parseJSON('media/models/cardinal_vertical.js');
 parseJSON('media/models/cardinal_slice.js');
 
- function parseJSON(file) {
+function parseJSON(file) {
 	var request = new XMLHttpRequest();
    		request.open("GET", file, false);
    		request.send(null);

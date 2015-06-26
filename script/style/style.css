@@ -10,7 +10,6 @@ body{
   	width: 100%;
   	height: 100%;
   	z-index: 1;
-  	background-color: red;
   	background-image: url("../img/bck.jpg");
   	background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -31,6 +30,10 @@ body{
 	bottom: 16%;
 	left: 30%;
   	z-index: 10;
+}
+
+#menu button, #sliceMenu button {
+  /*margin-left: 20px;*/
 }
 
 #backButton{
