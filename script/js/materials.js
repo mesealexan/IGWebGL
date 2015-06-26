@@ -27,7 +27,7 @@ function setMaterials(materialName){
 	switch(materialName) {
 	    case 'sealant a':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	color: new THREE.Color("rgb(161,161,161)"),
 		    	ambient: new THREE.Color("rgb(116,116,116)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
 		    })
