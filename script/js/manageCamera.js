@@ -18,13 +18,14 @@ var animateCamera = {
 				var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
 				camera.up.set(newUp.x, newUp.y, newUp.z);
 
-				var lookAt = new THREE.Vector3(animation.frames[animateCamera.frame].target.x, 
+				var lookAt = new THREE.Vector3(
+					animation.frames[animateCamera.frame].target.x, 
 					animation.frames[animateCamera.frame].target.z, 
 					-animation.frames[animateCamera.frame].target.y);
-				camera.target = lookAt
-				camera.lookAt(camera.target);
+				camera.target = lookAt;
+				camera.lookAt(lookAt);
 			//}
-			// else{ //free camera
+			// else{ //TODO: free camera needs work on faulty rotation, disabled
 			// 	var euler = new THREE.Euler(
 			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.x), 
 			// 		degreesToRadians(animation.frames[animateCamera.frame].quaternion.z), 
@@ -34,11 +35,12 @@ var animateCamera = {
 			camera.fov = animation.frames[animateCamera.frame].fov;
 			camera.updateProjectionMatrix();
 
-			camera.position.set((animation.frames[animateCamera.frame].camera.x),(animation
-				.frames[animateCamera.frame].camera.z),
+			camera.position.set(
+				(animation.frames[animateCamera.frame].camera.x),
+				(animation.frames[animateCamera.frame].camera.z),
 				-(animation.frames[animateCamera.frame].camera.y));
 		}
-		else animateCamera.stop(); //reached the end
+		else {camera.lookAt(camera.target); animateCamera.stop();} //reached the end
 		},1000/animation.fps)
 	}, 
 	stop: function(){
@@ -91,11 +93,14 @@ var animateCamera = {
 	    var cameraTar = new TWEEN.Tween( camera.target )
 	    cameraTar.to( { x: target.x, y: target.y, z: target.z }, time );
 	    cameraTar.start();
+	    cameraTar.onUpdate( function () { camera.lookAt(camera.target) });
+	//fov
+	    var cameraFov = new TWEEN.Tween( camera );
+	    cameraFov.to( { fov: animation.frames[frame].fov }, time);
+	    cameraFov.start();
 
-	    cameraTar.onUpdate( function () {
-	   		camera.lookAt(camera.target);
-        });    
-	}
+	    cameraFov.onUpdate( function () { camera.updateProjectionMatrix() }); 
+	}	
 }
 
 var manageCameraAnimations = {
@@ -103,10 +108,10 @@ var manageCameraAnimations = {
 		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
 	},	
 	playAnim_2: function () { //to slice
-		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTime);
-							   manageVisibility.fadeOut(windowHorizontal, windowFadeTime); }, 350);	
-							   	
-		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTime); }, 600);		
+		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTick);
+							   manageVisibility.fadeOut(windowHorizontal, windowFadeTick); }, 350);	
+
+		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTick); }, 500);		
 		
 		animateCamera.play(camera_frames.animation_2.from, camera_frames.animation_2.to);
 		if(!slice.inScene) loadObject('cardinal_slice', undefined, addToScene, slice, false);
@@ -121,9 +126,9 @@ var manageCameraAnimations = {
 	back: function() { //multiple back options
 		if(animateCamera.frame == camera_frames.animation_2.to && //back to both windows
 			!zoomedOnSlice){			
-			manageVisibility.fadeIn(windowHorizontal, windowFadeTime);		
-			manageVisibility.fadeIn(windowVertical, windowFadeTime);			
-			manageVisibility.fadeOut(slice, 1);
+			manageVisibility.fadeIn(windowHorizontal, windowFadeTick);		
+			manageVisibility.fadeIn(windowVertical, windowFadeTick);			
+			manageVisibility.fadeOut(slice, windowFadeTick);
 			animateCamera.play(camera_frames.animation_2.to, camera_frames.animation_2.from);
 		}
 

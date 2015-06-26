@@ -1,4 +1,4 @@
-function loadObject (name, material, callback, variable, initiallyVisible) {
+function loadObject (name, material, callback, variable, initiallyVisible, initialOpacity) {
 	var mesh;
 	var loader = new THREE.JSONLoader();
 	var materialsArray = [];
@@ -7,6 +7,7 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 
 		materialsArray = materials;
 		for (var i = materialsArray.length - 1; i >= 0; i--) {
+			if(initialOpacity != undefined) materialsArray[i].opacity = initialOpacity;
 			materialsArray[i] = setMaterials(materialsArray[i].name);
 		};
 		geometry.computeFaceNormals();
@@ -36,16 +37,22 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 function loadAssets () {	
 	makeTextureCube();
 
+	//loader chain, one 'onLoadComplete' triggers the next load
+
 	textureFlare1 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_1.png", function(){},function(){
 	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
-		addLensFlare();
+		loadObject('cardinal_horizontal', undefined, [addToScene, function(){
+			//begin playing just before calling 'animate()'
+			manageCameraAnimations.playAnim_1();
+			loadObject('cardinal_vertical', undefined, [addToScene, function(){
+				addLensFlare();
+				addWhitePlane();
+				windowHorizontal.mesh.material.materials[8].visible = false;
+				//the last mesh laoded calls 'animate()'
+				loadObject('cardinal_slice', undefined,  [addToScene, animate], slice, false, 0);
+			}], windowVertical, false);
+		}], windowHorizontal);
 	});})
 
-	loadObject('cardinal_horizontal', undefined, [addToScene, function(){
-	windowHorizontal.mesh.material.materials[8].visible = false;
-	addWhitePlane();
-	loadObject('cardinal_vertical', undefined, [addToScene, function(){
-	loadObject('cardinal_slice', undefined,  [addToScene, animate], slice, false);
-	}], windowVertical, false);
-	}], windowHorizontal);
+
  } 

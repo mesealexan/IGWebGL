@@ -14,12 +14,8 @@ function Init() {
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
-	initColors();
-	manageCameraAnimations.playAnim_1();
-
-	//animate function called in onjectLoader.js when all meshed are loaded
-	//animate(); 
-
+	initColors();	
+	//animate(); //called in objectLoader.js when all meshes are loaded
 	//addSkybox()
 }
 
@@ -47,6 +43,7 @@ function addLight () {
 	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light3.position.set( 3615,2688,843 );
 		scene.add( light3 );
+
 	/*
 	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light.position.set( -750,1073,5852 );
@@ -90,11 +87,11 @@ function addLensFlare () {
 	lensFlare = new THREE.LensFlare( textureFlare1, 256, 0.0, THREE.AdditiveBlending, flareColor);
 	for (var i = 0; i < smallCircles; i++) {
 			lensFlare.add( textureFlare2, smallCircleMinSize + (Math.random() * smallCircleMaxSize), 
-				smallCircleMinDistance + (i / smallCircleCloseness) + (Math.random() / 10)
-				, THREE.AdditiveBlending );
+			smallCircleMinDistance + (i / smallCircleCloseness) + (Math.random() / 10),
+			THREE.AdditiveBlending );
 	};
 
-	lensFlare.position.set( -1127.008, 1232.292, -11  );
+	lensFlare.position.set( -1127.008, 1232.292, -11  );	
 	scene.add( lensFlare );
 }
 

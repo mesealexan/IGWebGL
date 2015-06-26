@@ -155,20 +155,18 @@ var manageVisibility = {
 	fadeOut: function (obj, tick) {
 		var complete = [];
 		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
-			-0.1, complete); }, tick);
+			-windowFadeStep, complete); }, tick);
 	},
 	fadeIn: function (obj, tick) {
 		var complete = [];
 		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
-			0.1, complete); }, tick);
+			windowFadeStep, complete); }, tick);
 	},
 	modifyOpacity: function (obj, interval, step, array) {
 		materials = obj.mesh.material.materials;
 		if(step > 0) obj.mesh.visible = true;
 		for (var i = 0; i < materials.length; i++) {
 			if(array.indexOf(i) != -1) continue;
-
-			//if(materials[i].name == "plane") {array.push(i); continue;}
 
 			materials[i].transparent = true;
 			materials[i].opacity += step;	
