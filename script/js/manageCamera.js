@@ -103,9 +103,10 @@ var manageCameraAnimations = {
 		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
 	},	
 	playAnim_2: function () { //to slice
-		manageVisibility.fadeOut(windowHorizontal, windowFadeTime);		
-		manageVisibility.fadeOut(windowVertical, windowFadeTime);	
-		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTime); }, 370);		
+		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTime);
+							   manageVisibility.fadeOut(windowHorizontal, windowFadeTime); }, 350);	
+							   	
+		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTime); }, 600);		
 		
 		animateCamera.play(camera_frames.animation_2.from, camera_frames.animation_2.to);
 		if(!slice.inScene) loadObject('cardinal_slice', undefined, addToScene, slice, false);

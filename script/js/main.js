@@ -16,7 +16,10 @@ function Init() {
 	addLight();
 	initColors();
 	manageCameraAnimations.playAnim_1();
-	animate();
+
+	//animate function called in onjectLoader.js when all meshed are loaded
+	//animate(); 
+
 	//addSkybox()
 }
 
@@ -64,6 +67,16 @@ function addCamera () {
 	camera = new THREE.PerspectiveCamera( fov, width / height, camNear, camFar ); 
 	camera.position.set(0, 1000, 1500);
 	scene.add( camera );
+}
+
+function addWhitePlane () {
+	var geometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+	var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff, 
+		specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
+	var plane = new THREE.Mesh( geometry, material );
+	plane.rotation.x -= Math.PI / 2;
+	plane.position.set(0, -100, 0);
+	scene.add( plane );
 }
 
 function addLensFlare () {

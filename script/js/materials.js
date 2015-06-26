@@ -1,12 +1,14 @@
-var urls = [];
-var imagePrefix = "media/skybox/cube_";
-var directions  = ["r", "l", "u", "d", "f", "b"]; 
-var imageSuffix = ".jpg";
+function makeTextureCube (argument) {
+	var urls = [];
+	var imagePrefix = "media/skybox/cube_";
+	var directions  = ["r", "l", "u", "d", "f", "b"]; 
+	var imageSuffix = ".jpg";
 
-for (var i = 0; i < 6; i++)
-	urls.push(imagePrefix + directions[i] + imageSuffix);
+	for (var i = 0; i < 6; i++)
+		urls.push(imagePrefix + directions[i] + imageSuffix);
 
-var textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+	textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+}
 
 function addSkybox () {
 	var cubeGeom = new THREE.BoxGeometry(5000,5000,5000);
@@ -105,7 +107,8 @@ function setMaterials(materialName){
 		    material = new THREE.MeshLambertMaterial({
 		    	color: new THREE.Color("rgb(255,255,255)"),
 		    	ambient: new THREE.Color("rgb(255,255,255)"),
-		    	specular: new THREE.Color("rgb(255,255,255)")
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	visible: false
 		    })
 	        break;
 	    case 'text':
@@ -165,7 +168,7 @@ var manageVisibility = {
 		for (var i = 0; i < materials.length; i++) {
 			if(array.indexOf(i) != -1) continue;
 
-			if(materials[i].name == "plane") {array.push(i); continue;}
+			//if(materials[i].name == "plane") {array.push(i); continue;}
 
 			materials[i].transparent = true;
 			materials[i].opacity += step;	
@@ -186,25 +189,36 @@ var manageVisibility = {
 }
 
 var manageEmissive = {
+	sealantA_ID: 4,
+	sealantB_ID: 6,
+	spacerSlice_ID: 2,
+	desicant_ID: 3,
 	modify: function (frame){
 		switch (frame){
 			case 191:
-			slice.mesh.material.materials[3].emissive = sealantAselectedC;
+			slice.mesh.material.materials[manageEmissive.sealantA_ID]
+				.emissive = sealantAselectedC;
 			break;
 			case 192:
-			slice.mesh.material.materials[0].emissive = sealantBselectedC;
+			slice.mesh.material.materials[manageEmissive.sealantB_ID]
+				.emissive = sealantBselectedC;
 			break;
 			case 193:
-			slice.mesh.material.materials[5].emissive = spacerSliceSelectedC;
+			slice.mesh.material.materials[manageEmissive.spacerSlice_ID]
+				.emissive = spacerSliceSelectedC;
 			break;
 			case 194:
-			slice.mesh.material.materials[6].emissive = desicantSelectedC;
+			slice.mesh.material.materials[manageEmissive.desicant_ID]
+				.emissive = desicantSelectedC;
 			break;
 		}
 	},
 	resetAllSlice: function () {
-		var sliceMats = [slice.mesh.material.materials[3], slice.mesh.material.materials[0],
-						 slice.mesh.material.materials[5], slice.mesh.material.materials[6]];
+		var sliceMats = [
+			slice.mesh.material.materials[manageEmissive.sealantA_ID], 
+			slice.mesh.material.materials[manageEmissive.sealantB_ID],
+			slice.mesh.material.materials[manageEmissive.spacerSlice_ID], 
+			slice.mesh.material.materials[manageEmissive.desicant_ID]];
 
 		for (var i = 0; i < slice.mesh.material.materials.length; i++) 
 			slice.mesh.material.materials[i].emissive = unselectedC;

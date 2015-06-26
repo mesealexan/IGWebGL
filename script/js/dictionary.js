@@ -19,6 +19,7 @@ var camNear = 20, camFar = 6000, fov = 45;
 
 var hammer;
 var bmap;
+var textureCube;
 var cameraDestinationFrame, cameraTweenSpeed;
 var animation_interval;
 var initialMousePos = {};

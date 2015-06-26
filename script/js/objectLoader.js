@@ -20,7 +20,11 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
 		mesh.name = name;
 		if(initiallyVisible != undefined) mesh.visible = initiallyVisible;
 		if(variable) variable.mesh = mesh;
-		if(callback) callback(variable);
+		if(callback) {
+			if(callback.constructor === Array)
+				for (var i = 0; i < callback.length; i++) callback[i](variable);
+			else callback(variable);
+		}			
 	};
 }
 
@@ -30,15 +34,18 @@ function loadObject (name, material, callback, variable, initiallyVisible) {
  }
 
 function loadAssets () {	
+	makeTextureCube();
+
 	textureFlare1 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_1.png", function(){},function(){
 	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
-	textureFlare3 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_3.png", function(){},function(){
-	textureFlare4 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_4.png", function(){},function(){
-	textureFlare5 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_5.png", function(){},function(){
-	textureFlare6 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_6.png", function(){},function(){
 		addLensFlare();
-	});});});});});});
-	loadObject('cardinal_slice', undefined, addToScene, slice, false);
-	loadObject('cardinal_vertical', undefined, addToScene, windowVertical, false);
-	loadObject('cardinal_horizontal', undefined, addToScene, windowHorizontal);
+	});})
+
+	loadObject('cardinal_horizontal', undefined, [addToScene, function(){
+	windowHorizontal.mesh.material.materials[8].visible = false;
+	addWhitePlane();
+	loadObject('cardinal_vertical', undefined, [addToScene, function(){
+	loadObject('cardinal_slice', undefined,  [addToScene, animate], slice, false);
+	}], windowVertical, false);
+	}], windowHorizontal);
  } 

@@ -44,8 +44,6 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 
 function animate(time) {
 	frameID = requestAnimationFrame(animate);
-	if(imagesArray.length === 13){
-		renderer.render(scene, camera);
-		TWEEN.update(time);		
-	}
+	renderer.render(scene, camera);
+	TWEEN.update(time);	
 } 
