@@ -184,3 +184,29 @@ var manageVisibility = {
 		};
 	}
 }
+
+var manageEmissive = {
+	modify: function (frame){
+		switch (frame){
+			case 191:
+			slice.mesh.material.materials[3].emissive = sealantAselectedC;
+			break;
+			case 192:
+			slice.mesh.material.materials[0].emissive = sealantBselectedC;
+			break;
+			case 193:
+			slice.mesh.material.materials[5].emissive = spacerSliceSelectedC;
+			break;
+			case 194:
+			slice.mesh.material.materials[6].emissive = desicantSelectedC;
+			break;
+		}
+	},
+	resetAllSlice: function () {
+		var sliceMats = [slice.mesh.material.materials[3], slice.mesh.material.materials[0],
+						 slice.mesh.material.materials[5], slice.mesh.material.materials[6]];
+
+		for (var i = 0; i < slice.mesh.material.materials.length; i++) 
+			slice.mesh.material.materials[i].emissive = unselectedC;
+	}
+}

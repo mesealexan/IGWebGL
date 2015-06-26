@@ -26,7 +26,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 189: //going back to both windows	
 			cancelAllTweens();
 			toggleInput(false);
-			toggleElement(cutMenu, 'hidden');
+			toggleElement(sliceMenu, 'hidden');
 			toggleElement(backButton, 'hidden');
 		break;
 		case 190: //finished anim 2
@@ -36,7 +36,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			controls.target = camera.target;
 			toggleInput(true);
 			cameraDestinationFrame = newvalue;
-			toggleElement(cutMenu, 'visible');
+			toggleElement(sliceMenu, 'visible');
 			toggleElement(backButton, 'visible');
 		break;
 	}

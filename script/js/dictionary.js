@@ -6,7 +6,14 @@ var camera_frames = {
 	animation_5:{ frame: 193, speed: 0.1},
 	animation_6:{ frame: 194, speed: 0.1}
 }
-var windowFadeTime = 70;
+
+var sealantAselectedC = ("rgb(0,0,255)");
+var sealantBselectedC = ("rgb(0,0,255)");
+var spacerSliceSelectedC = ("rgb(0,0,255)");
+var desicantSelectedC = ("rgb(0,0,255)");
+var unselectedC = ("rgb(0,0,0)"); 
+
+var windowFadeTime = 45;
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var camNear = 20, camFar = 6000, fov = 45;
 

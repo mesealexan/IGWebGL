@@ -104,12 +104,15 @@ var manageCameraAnimations = {
 	},	
 	playAnim_2: function () { //to slice
 		manageVisibility.fadeOut(windowHorizontal, windowFadeTime);		
-		manageVisibility.fadeOut(windowVertical, windowFadeTime);			
-		manageVisibility.fadeIn(slice, 200);
+		manageVisibility.fadeOut(windowVertical, windowFadeTime);	
+		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTime); }, 370);		
+		
 		animateCamera.play(camera_frames.animation_2.from, camera_frames.animation_2.to);
 		if(!slice.inScene) loadObject('cardinal_slice', undefined, addToScene, slice, false);
 	},
 	playZoomInAnim: function (anim) { //zoom in further on slice
+		manageEmissive.resetAllSlice();
+		manageEmissive.modify(camera_frames[anim].frame);
 		zoomedOnSlice = true;
 		toggleInput(false);
 		animateCamera.tween(camera_frames[anim].frame, camera_frames[anim].speed);
@@ -124,6 +127,7 @@ var manageCameraAnimations = {
 		}
 
 		if(zoomedOnSlice){ //back to slice
+			manageEmissive.resetAllSlice();
 			toggleInput(true);
 			cancelAllTweens();
 			zoomedOnSlice = false;

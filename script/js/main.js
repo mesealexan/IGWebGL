@@ -1,5 +1,5 @@
 var menu = document.getElementById("menu");
-var cutMenu = document.getElementById("cutMenu");
+var sliceMenu = document.getElementById("sliceMenu");
 var backButton = document.getElementById("backButton");
 var width = window.innerWidth, height = window.innerHeight;
 
@@ -11,8 +11,10 @@ function Init() {
 	loadAssets();	
 	addRenderer();
 	addCamera();
+	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
+	initColors();
 	manageCameraAnimations.playAnim_1();
 	animate();
 	//addSkybox()
@@ -81,6 +83,14 @@ function addLensFlare () {
 
 	lensFlare.position.set( -1127.008, 1232.292, -11  );
 	scene.add( lensFlare );
+}
+
+function initColors () {	
+	sealantAselectedC = new THREE.Color(sealantAselectedC); 
+	sealantBselectedC = new THREE.Color(sealantBselectedC); 
+	spacerSliceSelectedC = new THREE.Color(spacerSliceSelectedC); 
+	desicantSelectedC = new THREE.Color(desicantSelectedC); 
+	unselectedC = new THREE.Color(unselectedC);  
 }
 
 function parseJSON(file) {
