@@ -1,0 +1,7 @@
+For the closeup animation, remove the intermediate click: go to slice. not needed. Just have the four components buttons available and zoom in immediately to those four locations. For the Back button, zoom back out to the 2 IG unit view.
+
+For iOS devices - issue with the tween on the four components. The problem is the animation doesnt happen, it just goes to the final frame. Please troubleshoot.
+
+For the Desiccants material - please remove transparency. Desiccants are white.
+
+For portrait view on iphone/ipad - please adjust to flow on portrait aspect ratio with no overlapping to the edge.
