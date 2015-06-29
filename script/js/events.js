@@ -25,8 +25,7 @@ function addControls() {
             
 
 function cancelAllTweens () {
-    var tweens = TWEEN.getAll();
-    for (var i = 0; i < tweens.length; i++) tweens[i].stop();
+    TWEEN.removeAll();
 }
 
 function toggleInput (bool) {

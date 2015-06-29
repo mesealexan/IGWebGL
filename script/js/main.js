@@ -2,6 +2,7 @@ var menu = document.getElementById("menu");
 var sliceMenu = document.getElementById("sliceMenu");
 var backButton = document.getElementById("backButton");
 var width = window.innerWidth, height = window.innerHeight;
+aspectRatio = width / height;
 
 Init();
 
@@ -10,11 +11,13 @@ function Init() {
 	scene = new THREE.Scene();
 	loadAssets();	
 	addRenderer();
+	detectOrientationChange();
 	addCamera();
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
 	initColors();	
+	setInitialCameraPos();
 	//animate(); //called in objectLoader.js when all meshes are loaded
 	//addSkybox();
 }
@@ -61,9 +64,26 @@ function addLight () {
 }
 
 function addCamera () {	
-	camera = new THREE.PerspectiveCamera( fov, width / height, camNear, camFar ); 
+	if (window.matchMedia("(orientation: portrait)").matches) fovModifier = 40;
+	else fovModifier = 0;
+
+	camera = new THREE.PerspectiveCamera( fov + fovModifier, width / height, camNear, camFar ); 
 	camera.position.set(0, 1000, 1500);
 	scene.add( camera );
+}
+
+function detectOrientationChange () {
+	$(window).on("orientationchange", function(){		
+		aspectRatio = width / height; 
+
+		// Portrait
+		if(window.orientation == 0) fovModifier = 40;
+		// Landscape
+		else fovModifier = 0;
+
+		camera.fov = fov + fovModifier;
+		camera.updateProjectionMatrix();
+	});
 }
 
 function addWhitePlane () {

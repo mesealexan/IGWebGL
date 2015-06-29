@@ -41,13 +41,14 @@ function loadAssets () {
 	textureFlare2 = THREE.ImageUtils.loadTexture( "media/LensFlare/Flare_2.png", function(){},function(){
 		loadObject('cardinal_horizontal', undefined, [addToScene, function(){
 			//begin playing just before calling 'animate()'
-			manageCameraAnimations.playAnim_1();
+			
 			loadObject('cardinal_vertical', undefined, [addToScene, function(){
 				addLensFlare();
 				addWhitePlane();
 				windowHorizontal.mesh.material.materials[8].visible = false;
 				//the last mesh laoded calls 'animate()'
-				loadObject('cardinal_slice', undefined,  [addToScene, animate], slice, false, 0);
+				loadObject('cardinal_slice', undefined,  [addToScene, animate,
+					manageCameraAnimations.playAnim_1], slice, false, 0);
 			}], windowVertical, false);
 		}], windowHorizontal);
 	});})

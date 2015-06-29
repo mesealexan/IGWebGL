@@ -12,7 +12,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			cameraDestinationFrame = newvalue;
 			toggleElement(menu, 'visible');	
 		break;
-		case 159: //going to slice		
+		//replaced by tweening
+		/*case 159: //going to slice		
 			cancelAllTweens();
 			toggleElement(menu, 'hidden');	
 			toggleInput(false);
@@ -33,6 +34,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			toggleElement(sliceMenu, 'visible');
 			toggleElement(backButton, 'visible');
 		break;
+		*/
 	}
 });
 

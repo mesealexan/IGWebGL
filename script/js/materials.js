@@ -122,10 +122,10 @@ function setMaterials(materialName){
 	        break;
 	    case 'desicant':
 		    material = new THREE.MeshLambertMaterial({
-		    	color: new THREE.Color("rgb(198,204,151)"),
-		    	ambient: new THREE.Color("rgb(198,204,151)"),
-		    	transparent: true,
-		    	opacity: 0.75
+		    	color: new THREE.Color("rgb(255,255,255)"),
+		    	ambient: new THREE.Color("rgb(255,255,255)")
+		    	//transparent: true,
+		    	//opacity: 0.75
 		    	
 		    })
 	        break;

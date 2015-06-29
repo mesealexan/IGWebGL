@@ -30,6 +30,7 @@ THREEx.WindowResize	= function(renderer, camera, dimension){
 		// fetch target renderer size
 		var rendererSize = dimension();
 		// notify the renderer of the size change
+		aspectRatio = rendererSize.width / rendererSize.height;
 		renderer.setSize( rendererSize.width, rendererSize.height )
 		// update the camera
 		camera.aspect	= rendererSize.width / rendererSize.height
