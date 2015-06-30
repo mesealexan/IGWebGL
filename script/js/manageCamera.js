@@ -28,9 +28,9 @@ var animateCamera = {
 			camera.updateProjectionMatrix();
 
 			camera.position.set(
-				(animation.frames[animateCamera.frame].camera.x),
-				(animation.frames[animateCamera.frame].camera.z),
-				-(animation.frames[animateCamera.frame].camera.y));
+				(animation.frames[animateCamera.frame].position.x),
+				(animation.frames[animateCamera.frame].position.z),
+				-(animation.frames[animateCamera.frame].position.y));
 		}
 		else {camera.lookAt(camera.target); animateCamera.stop();} //reached the end
 		},1000/animation.fps)
@@ -58,9 +58,9 @@ var animateCamera = {
 	//position
 		var startPos = camera.position;
 		var destination = new THREE.Vector3(
-			animation.frames[frame].camera.x, 
-			animation.frames[frame].camera.z, 
-			-animation.frames[frame].camera.y);
+			animation.frames[frame].position.x, 
+			animation.frames[frame].position.z, 
+			-animation.frames[frame].position.y);
 		var distance = startPos.distanceTo(destination);
 		var time = distance / speed;
 
