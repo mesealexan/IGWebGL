@@ -55,7 +55,7 @@ fn writeJSON obj =
 	output_name = getSaveFileName types: "json(*.JSON)"
 	output_file = createfile output_name
 	
-	format  "{\n" cameraType to:output_file 	
+	format  "{\n" to:output_file 	
 	
 	if (camSelected == true) then
 	(
@@ -80,8 +80,7 @@ fn writeJSON obj =
 		
 		format "\t\t}" to:output_file 
 		
-		if i < lastFrame 
-			then format ",\n"  to:output_file 
+		if i < lastFrame then format ",\n"  to:output_file 
 		else format "\n\t]\n}" to:output_file
 	)
 	

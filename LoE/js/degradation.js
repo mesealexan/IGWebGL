@@ -29,11 +29,11 @@ function webgl_detect(return_context)
 
 function webGL_disabled () {
     if(bowser.safari){
-     $( "#background" ).append( "<p>webGL is disabled.</p>" );
-     $( "#background" ).append( "<p>Open the Safari menu and select Preferences.</p>" );
-     $( "#background" ).append( "<p>Then, click the Advanced tab in the Preferences window.</p>" );
-     $( "#background" ).append( "<p>At the bottom of the window, check the Show Develop menu in menu bar checkbox.</p>" );
-     $( "#background" ).append( "<p>Finally, open the Develop menu in the menu bar and select Enable WebGL.</p>" );
+    $( "#background" ).append( "<p>webGL is disabled.</p>" );
+    $( "#background" ).append( "<p>Open the Safari menu and select Preferences.</p>" );
+    $( "#background" ).append( "<p>Then, click the Advanced tab in the Preferences window.</p>" );
+    $( "#background" ).append( "<p>At the bottom of the window, check the Show Develop menu in menu bar checkbox.</p>" );
+    $( "#background" ).append( "<p>Finally, open the Develop menu in the menu bar and select Enable WebGL.</p>" );
     }
     else background.textContent = "Please enable WebGL for the best experience.";
 
