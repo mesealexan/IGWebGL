@@ -1,4 +1,7 @@
 var imagesArray = [];
+	imagesArray.push("media/models/tambur.jpg");
+	imagesArray.push("media/models/tambur_bump.jpg");
+	imagesArray.push("media/models/pouring.png");
 	imagesArray.push("media/skybox/cube_b.jpg");
 	imagesArray.push("media/skybox/cube_d.jpg");
 	imagesArray.push("media/skybox/cube_f.jpg");
@@ -20,6 +23,7 @@ parseJSON('media/models/rail.js');
 parseJSON('media/models/rotator.js');
 parseJSON('media/models/text.js');
 parseJSON('media/models/window.js');
+parseJSON('media/models/fixed_glass.js');
 
 function parseJSON(file) {
 	var request = new XMLHttpRequest();

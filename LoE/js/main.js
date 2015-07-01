@@ -20,7 +20,7 @@ function Init() {
 	addLight();
 	initColors();	
 	//animate(); //called in objectLoader.js when all meshes are loaded
-	//addSkybox();
+	addSkybox();
 }
 
 function addRenderer() {
@@ -31,37 +31,24 @@ function addRenderer() {
 }
 
 function addLight () {
-	var ambientLight = new THREE.AmbientLight( 0x666666 );
+	var ambientLight = new THREE.AmbientLight( 0x999999 );
 	scene.add( ambientLight );
 
-	scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
+	//scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
 
 	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light1.position.set( -2929, 2686, 938 );
+		light1.position.set( -12170,1063,-2025 );
 		scene.add( light1 );
 
 	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light2.position.set( 345,3562,-4050 );
+		light2.position.set( -4870,-163,-2469 );
 		scene.add( light2 );
 
-	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light3.position.set( 3615,2688,843 );
-		scene.add( light3 );
+	var spotLight = new THREE.SpotLight( 0xffffff );
+		spotLight.position.set( 18398, 13569, 17048 );
+		spotLight.intensity = 1;
+		scene.add( spotLight );
 
-	/*
-	var light = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light.position.set( -750,1073,5852 );
-		scene.add( light );
-
-
-	var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light2.position.set( 0, 5746, 2028 );
-		scene.add( light2 );
-
-	var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light3.position.set(4177, -1014, 1350 );
-		scene.add( light3 );
-	*/
 }
 
 function addCamera () {	

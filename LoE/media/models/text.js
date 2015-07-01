@@ -16,7 +16,7 @@
 "materials": [
 {
 "DbgIndex" : 0,
-"DbgName"  : "22 - Default",
+"DbgName"  : "text",
 "colorDiffuse"  : [1.0000, 1.0000, 1.0000],
 "colorAmbient"  : [1.0000, 1.0000, 1.0000],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],

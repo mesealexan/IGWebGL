@@ -16,7 +16,7 @@
 "materials": [
 {
 "DbgIndex" : 0,
-"DbgName"  : "cyc",
+"DbgName"  : "plane",
 "colorDiffuse"  : [0.5880, 0.5880, 0.5880],
 "colorAmbient"  : [0.5880, 0.5880, 0.5880],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],

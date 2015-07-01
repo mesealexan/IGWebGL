@@ -38,7 +38,7 @@
 
 {
 "DbgIndex" : 2,
-"DbgName"  : "02 - Default",
+"DbgName"  : "Glass",
 "colorDiffuse"  : [0.1843, 0.2196, 0.1843],
 "colorAmbient"  : [0.1843, 0.2196, 0.1843],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
@@ -49,7 +49,7 @@
 
 {
 "DbgIndex" : 3,
-"DbgName"  : "02 - Default",
+"DbgName"  : "Glass Sides",
 "colorDiffuse"  : [0.0353, 0.0431, 0.0353],
 "colorAmbient"  : [0.0353, 0.0431, 0.0353],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],

@@ -26,7 +26,51 @@ function addSkybox () {
 
 function setMaterials(materialName){
 	var material;
-	switch(materialName) {
+	switch(materialName){ 
+		case 'pouring':
+		    material = new THREE.MeshPhongMaterial({
+		    	map: THREE.ImageUtils.loadTexture(imagesArray[2]),
+		    	transparent: true,
+		    	shininess: 16,
+		    })
+	        break;
+		case 'tambur':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(125,125,125)"),
+		    	ambient: new THREE.Color("rgb(125,125,125)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	map: THREE.ImageUtils.loadTexture(imagesArray[0]),
+		    	bumpMap: THREE.ImageUtils.loadTexture(imagesArray[1]),
+		    	bumpScale: 1,
+		    	shininess: 11,
+		    })
+	        break;
+	    case 'metal':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(116,116,116)"),
+		    	ambient: new THREE.Color("rgb(66,66,66)"),
+		    	specular: new THREE.Color("rgb(222,222,222)"),
+		    	shininess: 16,
+		    	metal: true
+		    })
+	        break;
+	   	case 'rotator':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(126,7,100)"),
+		    	ambient: new THREE.Color("rgb(126,7,100)"),
+		    	specular: new THREE.Color("rgb(222,222,222)"),
+		    	shininess: 22,
+		    	metal: true
+		    })
+	        break;
+		case 'rail':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(0,49,174)"),
+		    	ambient: new THREE.Color("rgb(0,49,174)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	shininess: 6
+		    })
+	        break;
 	    case 'sealant a':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(161,161,161)"),
@@ -105,10 +149,9 @@ function setMaterials(materialName){
 	        break;
 	    case 'plane':
 		    material = new THREE.MeshLambertMaterial({
-		    	color: new THREE.Color("rgb(255,255,255)"),
-		    	ambient: new THREE.Color("rgb(255,255,255)"),
-		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	visible: false
+		    	color: new THREE.Color("rgb(233,233,233)"),
+		    	ambient: new THREE.Color("rgb(233,233,233)"),
+		    	specular: new THREE.Color("rgb(255,255,255)")
 		    })
 	        break;
 	    case 'text':
@@ -116,7 +159,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(113,106,76)"),
 		    	ambient: new THREE.Color("rgb(113,106,76)"),
 		    	specular: new THREE.Color("rgb(191,188,175)"),
-		    	emissive: new THREE.Color("rgb(113,106,76)")
+		    	emissive: new THREE.Color("rgb(225,225,225)")
 		    	
 		    })
 	        break;

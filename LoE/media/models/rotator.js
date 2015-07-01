@@ -16,7 +16,7 @@
 "materials": [
 {
 "DbgIndex" : 0,
-"DbgName"  : "24 - Default",
+"DbgName"  : "rotator",
 "colorDiffuse"  : [0.4941, 0.0275, 0.3922],
 "colorAmbient"  : [0.4941, 0.0275, 0.3922],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],

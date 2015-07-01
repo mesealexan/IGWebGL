@@ -38,18 +38,24 @@ function loadAssets () {
 	makeTextureCube();
 
 	loadObject('window', [addToScene, function () {
-	 loadObject('text', [addToScene, function(){
-	  loadObject('rotator', [addToScene, function(){
-	   loadObject('rail', [addToScene, function(){
-	  	loadObject('plane', [addToScene, function(){
-	  	 loadObject('tambur_a', function(){
-	  	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, animate, placeTambur], 
-	  	   tambur_b);
-	  	 }, tambur_a);
-	    }], plane);
-	   }], rail);
-	  }], rotator);
-	 }], text);
+ 	 loadObject('mobile_glass', [addToScene, function(){
+      loadObject('pouring', [addToScene, function(){
+       loadObject('fixed_glass', [addToScene, function(){
+        loadObject('text', [addToScene, function(){
+         loadObject('rotator', [addToScene, function(){
+          loadObject('rail', [addToScene, function(){
+         	loadObject('plane', [addToScene, function(){
+         	 loadObject('tambur_a', function(){
+         	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, animate, placeTambur], 
+         	   tambur_b);
+         	 }, tambur_a);
+           }], plane);
+          }], rail);
+         }], rotator);
+        }], text);
+       }], fixed_glass);
+      }], pouring);
+     }], mobile_glass);
 	}], _window);
  }
 
