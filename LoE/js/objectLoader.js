@@ -36,7 +36,7 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
-	
+
 	loadObject('window', [addToScene, function () {
 	 loadObject('text', [addToScene, function(){
 	  loadObject('rotator', [addToScene, function(){
@@ -57,8 +57,8 @@ function placeTambur () {
 	var loopTo = 0;
 	//in case of unequal number of tambur
 	if(tambur_a_pos.positions.loopTogth > tambur_b_pos.positions.loopTogth)
-		loopTo = tambur_a_pos.positions.loopTogth;
-	else loopTo = tambur_b_pos.positions.loopTogth;
+		loopTo = tambur_a_pos.positions.length;
+	else loopTo = tambur_b_pos.positions.length;
 
 	for (var i = 0; i < loopTo; i++) {
 		var newTambur_a = {}, newTambur_b = {};
