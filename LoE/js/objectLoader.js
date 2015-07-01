@@ -36,18 +36,32 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
-
+	//manageCameraAnimations.playAnim_1, animate,
 	loadObject('window', [addToScene, function () {
 	 loadObject('text', [addToScene, function(){
 	  loadObject('rotator', [addToScene, function(){
 	   loadObject('rail', [addToScene, function(){
-	  	loadObject('plane', [addToScene, manageCameraAnimations.playAnim_1, animate, 
-	  	    function(){
+	  	loadObject('plane', [addToScene, function(){
+	  	 loadObject('tambur_a', function(){
+	  	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, animate, function(){
 
+	  	  }], tambur_b);
+	  	 }, tambur_a);
 	    }], plane);
 	   }], rail);
 	  }], rotator);
 	 }], text);
 	}], _window);
+ }
 
- } 
+function placeTambur () {
+	var len;
+
+	if(tambur_a_pos.positions.length > tambur_b_pos.positions.length)
+		len = tambur_a_pos.positions.length;
+	else len = tambur_b_pos.positions.length;
+
+	for (var i = 0; i < len; i++) {
+		var newTambur_a = tambur_a
+	};
+} 

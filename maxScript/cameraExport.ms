@@ -56,7 +56,7 @@ fn getCamera cam =
 	for i = firstFrame to lastFrame do
 	(	
 		sliderTime = i
-		format "\t\t{\n\t\t\"camera\" : {\"x\":%, \"y\":%, \"z\":%},\n" cam.pos.x cam.pos.y cam.pos.z to:output_file
+		format "\t\t{\n\t\t\"position\" : {\"x\":%, \"y\":%, \"z\":%},\n" cam.pos.x cam.pos.y cam.pos.z to:output_file
 		
 		if cameraType == Targetcamera then
 		(

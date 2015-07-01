@@ -12,6 +12,8 @@ var imagesArray = [];
 	}
 
 var animation = parseJSON('media/camera/camera.JSON');
+var tambur_a_pos = parseJSON('media/models/tambur_a_pos.JSON');
+var tambur_b_pos = parseJSON('media/models/tambur_b_pos.JSON');
 
 parseJSON('media/models/plane.js');
 parseJSON('media/models/rail.js');
