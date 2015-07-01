@@ -100,8 +100,8 @@ var animateCamera = {
 var manageCameraAnimations = {
 	playAnim_1: function(){ //both windows perspective
 		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
-	},	
-	/*playAnim_2: function () { //to slice
+	}/*,	
+	playAnim_2: function () { //to slice
 		//replaced by tweening
 		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTick);
 							   manageVisibility.fadeOut(windowHorizontal, windowFadeTick); }, 350);	
