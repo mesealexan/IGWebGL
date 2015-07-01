@@ -78,7 +78,21 @@ function placeTambur () {
 		newTambur_a.mesh.position.copy(newTambur_a_pos);
 		newTambur_b.mesh.position.copy(newTambur_b_pos);
 
+		newTambur_a.rotateTambur = rotateTambur;
+		newTambur_b.rotateTambur = rotateTambur;
+		newTambur_a.rotateTambur(2666);
+		newTambur_b.rotateTambur(2666);
+
 		if(tambur_a_pos.positions[i])addToScene(newTambur_a);
 		if(tambur_b_pos.positions[i])addToScene(newTambur_b);
+
+		
 	};
 } 
+
+function rotateTambur (time) {
+	tween = new TWEEN.Tween( this.mesh.rotation );
+	tween.to( { z: -Math.PI * 2 }, time );
+	tween.repeat( Infinity );
+	tween.start();
+}
