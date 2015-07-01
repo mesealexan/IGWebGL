@@ -1,4 +1,5 @@
 var menu = document.getElementById("menu");
+var background = document.getElementById("background"); 
 var sliceMenu = document.getElementById("sliceMenu");
 var backButton = document.getElementById("backButton");
 var width = window.innerWidth, height = window.innerHeight;
@@ -7,6 +8,7 @@ aspectRatio = width / height;
 Init();
 
 function Init() {
+	if(!webgl_detect()) return;	
 	container = document.getElementById( 'webGL' );	
 	scene = new THREE.Scene();
 	loadAssets();	
@@ -92,6 +94,7 @@ function addWhitePlane () {
 	var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff, 
 		specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
 	var plane = new THREE.Mesh( geometry, material );
+
 	plane.rotation.x -= Math.PI / 2;
 	plane.position.set(0, -100, 0);
 	scene.add( plane );
@@ -111,9 +114,7 @@ function addLensFlare () {
 			smallCircleMinDistance + (i / smallCircleCloseness) + (Math.random() / 10),
 			THREE.AdditiveBlending );
 	};
-
 	lensFlare.position.set( -1127.008, 1232.292, -11  );
-
 	scene.add( lensFlare );
 }
 

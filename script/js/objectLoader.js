@@ -33,7 +33,7 @@ function loadObject (name, material, callback, variable, initiallyVisible, initi
 	scene.add(obj.mesh);
  }
 
-function loadAssets () {	
+function loadAssets () {
 	makeTextureCube();
 
 	//loader chain, one 'onLoadComplete' triggers the next load
