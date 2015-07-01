@@ -36,16 +36,15 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
-	//manageCameraAnimations.playAnim_1, animate,
+	
 	loadObject('window', [addToScene, function () {
 	 loadObject('text', [addToScene, function(){
 	  loadObject('rotator', [addToScene, function(){
 	   loadObject('rail', [addToScene, function(){
 	  	loadObject('plane', [addToScene, function(){
 	  	 loadObject('tambur_a', function(){
-	  	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, animate, function(){
-
-	  	  }], tambur_b);
+	  	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, animate, placeTambur], 
+	  	   tambur_b);
 	  	 }, tambur_a);
 	    }], plane);
 	   }], rail);
@@ -55,13 +54,31 @@ function loadAssets () {
  }
 
 function placeTambur () {
-	var len;
+	var loopTo = 0;
+	//in case of unequal number of tambur
+	if(tambur_a_pos.positions.loopTogth > tambur_b_pos.positions.loopTogth)
+		loopTo = tambur_a_pos.positions.loopTogth;
+	else loopTo = tambur_b_pos.positions.loopTogth;
 
-	if(tambur_a_pos.positions.length > tambur_b_pos.positions.length)
-		len = tambur_a_pos.positions.length;
-	else len = tambur_b_pos.positions.length;
+	for (var i = 0; i < loopTo; i++) {
+		var newTambur_a = {}, newTambur_b = {};
+		newTambur_a.mesh = tambur_a.mesh.clone();
+		newTambur_b.mesh = tambur_b.mesh.clone();
 
-	for (var i = 0; i < len; i++) {
-		var newTambur_a = tambur_a
+		var newTambur_a_pos = new THREE.Vector3(
+			tambur_a_pos.positions[i].position.x,
+			tambur_a_pos.positions[i].position.z, 
+			-tambur_a_pos.positions[i].position.y);
+
+		var newTambur_b_pos = new THREE.Vector3(
+			tambur_b_pos.positions[i].position.x,
+			tambur_b_pos.positions[i].position.z, 
+			-tambur_b_pos.positions[i].position.y);
+
+		newTambur_a.mesh.position.copy(newTambur_a_pos);
+		newTambur_b.mesh.position.copy(newTambur_b_pos);
+
+		if(tambur_a_pos.positions[i])addToScene(newTambur_a);
+		if(tambur_b_pos.positions[i])addToScene(newTambur_b);
 	};
 } 

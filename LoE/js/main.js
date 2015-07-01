@@ -16,7 +16,7 @@ function Init() {
 	detectOrientationChange();
 	addCamera();
 	var winResize = new THREEx.WindowResize(renderer, camera);
-	//addControls();	
+	addControls();	
 	addLight();
 	initColors();	
 	//animate(); //called in objectLoader.js when all meshes are loaded

@@ -15,6 +15,7 @@ var animateCamera = {
 		//decrement because 0 based
 		to--;
 		animation_interval = setInterval(function(){
+		//console.log(animateCamera.frame)
 		if(animateCamera.checkPlayback(from, to)){
 			var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
 			camera.up.set(newUp.x, newUp.y, newUp.z);
