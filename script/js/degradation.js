@@ -43,17 +43,17 @@ function webGL_disabled () {
 function webGL_notSupported() {
     if(bowser.msie)        
         background.textContent = "webGL not supported. For the best results, "+ 
-                                 "please upgrade to Internet Explorer 11."; 
+                                 "please update to Internet Explorer 11."; 
     else if (bowser.safari && !bowser.ios) 
        background.textContent = "Please change to Firefox or Chrome for the best experience.";    
     else if(bowser.safari && bowser.ios) 
         background.textContent = "webGL not supported. For the best results, "+
-                                 "please upgrade to iOS 8."; 
+                                 "please update to iOS 8."; 
     else if(bowser.chrome) 
         background.textContent = "webGL not supported. For the best results, "+
-                                 "please upgrade Chrome."; 
+                                 "please update Chrome."; 
     else background.textContent = "webGL not supported. For the best results, "+
-                                 "please upgrade your browser.";     
+                                 "please update your browser.";     
 
     return false;        
 }

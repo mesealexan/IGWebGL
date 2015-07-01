@@ -15,7 +15,6 @@ fn writeJSON sel =
 	
 	for i = 1 to sel.count do
 	(	
-		sliderTime = i
 		format "\t\t{\n\t\t\"name\": \"%\",\n" sel[i].name to:output_file
 		format "\t\t\"position\" : {\"x\":%, \"y\":%, \"z\":%},\n" sel[i].pos.x sel[i].pos.y sel[i].pos.z to:output_file
 		format "\t\t\"rotation\" : {\"x\":%, \"y\":%, \"z\":%}\n" (sel[i].rotation as eulerangles).x (sel[i].rotation as eulerangles).y (sel[i].rotation as eulerangles).z  to:output_file 		
