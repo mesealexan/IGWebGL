@@ -62,7 +62,7 @@ fn writeJSON obj =
 		format "\t\"type\": \"%\",\n" objClass to:output_file 
 	)	
 	
-	format  "\t\"fps\": 30,\n" to:output_file 	
+	format  "\t\"fps\": %,\n" framerate to:output_file 	
 	format  "\t\"frames\": [\n" to:output_file 
 	
 	for i = firstFrame to lastFrame do
@@ -76,7 +76,7 @@ fn writeJSON obj =
 			format "\t\t\"fov\" : %,\n" cam.curFOV to:output_file 
 			format "\t\t\"rollAngle\" : %\n" obj.controller.roll_angle to:output_file 
 		)
-		else format "\t\t\"quaternion\" : {\"x\":%, \"y\":%, \"z\":%}\n" (obj.rotation as eulerangles).x (obj.rotation as eulerangles).y (obj.rotation as eulerangles).z  to:output_file 
+		else format "\t\t\"rotation\" : {\"x\":%, \"y\":%, \"z\":%, \"w\":%}\n" obj.rotation.x obj.rotation.y obj.rotation.z obj.rotation.w  to:output_file 
 		
 		format "\t\t}" to:output_file 
 		

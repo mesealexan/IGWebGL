@@ -18,9 +18,9 @@ function Init() {
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
-	initColors();	
+	//initColors();	
 	//animate(); //called in objectLoader.js when all meshes are loaded
-	addSkybox();
+	//addSkybox();
 }
 
 function addRenderer() {

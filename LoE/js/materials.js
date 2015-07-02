@@ -1,9 +1,10 @@
+var imagePrefix = "media/skybox/cube_";
+var directions  = ["r", "l", "u", "d", "f", "b"]; 
+var imageSuffix = ".jpg";
+
+
 function makeTextureCube (argument) {
 	var urls = [];
-	var imagePrefix = "media/skybox/cube_";
-	var directions  = ["r", "l", "u", "d", "f", "b"]; 
-	var imageSuffix = ".jpg";
-
 	for (var i = 0; i < 6; i++)
 		urls.push(imagePrefix + directions[i] + imageSuffix);
 
@@ -270,3 +271,57 @@ var manageEmissive = {
 				slice.mesh.material.materials[i].defaultEmissive;
 	}
 }
+
+var shSettings = {
+	uniforms:{		
+		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
+		start: { type: 'f', value: 1.5}
+	},
+	tween: function(time){
+		tween = new TWEEN.Tween( shSettings.uniforms.start );
+		tween.to( { value: -1.0}, time );
+		tween.repeat( Infinity );
+		tween.start();
+
+		tween.onComplete(function() { console.log("done") });
+	}
+	
+}
+
+function shaderMaterial1 () {
+	var material = new THREE.ShaderMaterial({ 
+		uniforms: shSettings.uniforms, 
+		attributes: {}, 
+		vertexShader: vertexShader(), 
+		fragmentShader: fragmentShader(),
+		transparent: true,
+		wireframe: false,
+		side: 1
+	});
+
+	return material;
+
+	function vertexShader () {	
+		return ""+
+		"varying vec2 vUv;"+	
+		"void main(){"+
+		"vUv = uv;"+
+		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+	}
+
+	function fragmentShader () {	
+		return ""+
+		"varying vec2 vUv;"+
+		"uniform sampler2D texture1;"+		
+		"uniform float start;"+
+		"void main(){"+
+		"float color = 0.0;"+
+		"vec2 position = vUv;"+
+		"color = (position.x + start);"+
+		"if(color > 1.5) discard;"+
+		"else gl_FragColor = color * texture2D(texture1, vUv);}"
+		//"gl_FragColor = color * texture2D(texture1, vUv);}"
+	}
+}
+
+

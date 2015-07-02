@@ -1,6 +1,6 @@
 {
 	"type": "Targetcamera",
-	"fps": 30,
+	"fps": 25,
 	"frames": [
 		{
 		"position" : {"x":-12184.9, "y":-3938.23, "z":2487.53},

@@ -15,6 +15,8 @@ var imagesArray = [];
 	}
 
 var animation = parseJSON('media/camera/camera.JSON');
+var fixed_window_animation = parseJSON('media/models/fixed_glass_anim.JSON');
+var mobile_window_animation = parseJSON('media/models/mobile_glass_anim.JSON');
 var tambur_a_pos = parseJSON('media/models/tambur_a_pos.JSON');
 var tambur_b_pos = parseJSON('media/models/tambur_b_pos.JSON');
 

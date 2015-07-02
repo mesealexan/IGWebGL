@@ -1,9 +1,12 @@
-/*watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
+watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	switch (newvalue){
-		case 100: //anim 1 mid way, vertical window out of frustum
-			windowVertical.mesh.visible = true;
+		case 402: //move rail down
+			moveRailDown();
 		break;
-		case 158: //finished anim 1
+		case 499:
+			scene.remove(rail.mesh);
+		break;
+		/*case 158: //finished anim 1
 		    controls.minAzimuthAngle = - 0.3; 
 		    controls.maxAzimuthAngle = 0.3;
 			cameraTweenSpeed = 1;
@@ -33,10 +36,9 @@
 			cameraDestinationFrame = newvalue;
 			toggleElement(sliceMenu, 'visible');
 			toggleElement(backButton, 'visible');
-		break;
-		
+		break;*/		
 	}
-});*/
+});
 
 function animate(time) {
 	frameID = requestAnimationFrame(animate);

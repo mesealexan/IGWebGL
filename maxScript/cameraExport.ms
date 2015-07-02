@@ -50,7 +50,7 @@ fn getCamera cam =
 	output_file = createfile output_name
 	
 	format  "{\n\t\"type\": \"%\"," cameraType to:output_file 	
-	format  "\n\t\"fps\": 30," to:output_file 
+	format  "\t\"fps\": %,\n" framerate to:output_file 	
 	format  "\n\t\"frames\": [\n" to:output_file 
 	
 	for i = firstFrame to lastFrame do
