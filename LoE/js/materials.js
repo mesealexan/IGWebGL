@@ -196,132 +196,51 @@ function setMaterials(materialName){
 	return material
 }
 
-var manageVisibility = {
-	fadeOut: function (obj, tick) {
-		var complete = [];
-		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
-			-windowFadeStep, complete); }, tick);
-	},
-	fadeIn: function (obj, tick) {
-		var complete = [];
-		var interval = setInterval(function(){ manageVisibility.modifyOpacity(obj, interval, 
-			windowFadeStep, complete); }, tick);
-	},
-	modifyOpacity: function (obj, interval, step, array) {
-		materials = obj.mesh.material.materials;
-		if(step > 0) obj.mesh.visible = true;
-		for (var i = 0; i < materials.length; i++) {
-			if(array.indexOf(i) != -1) continue;
-
-			materials[i].transparent = true;
-			materials[i].opacity += step;	
-
-			if(step < 0){ //fade out		
-				if(materials[i].opacity < 0) array.push(i);
-			}
-			else{ //fade in				
-				if(materials[i].opacity >= materials[i].maxOpacity){
-					materials[i].opacity = materials[i].maxOpacity;
-					array.push(i);
-				} 
-			}	
-
-			if (array.length === materials.length) {
-				clearInterval(interval); 
-				if(step < 0) obj.mesh.visible = false;
-			}
-		};
-	}
-}
-
-var manageEmissive = {
-	sealantA_ID: 4,
-	sealantB_ID: 6,
-	spacerSlice_ID: 2,
-	desicant_ID: 3,
-	modify: function (frame){
-		switch (frame){
-			case 191:
-			slice.mesh.material.materials[manageEmissive.sealantA_ID]
-				.emissive = sliceSelectedC;
-			break;
-			case 192:
-			slice.mesh.material.materials[manageEmissive.sealantB_ID]
-				.emissive = sliceSelectedC;
-			break;
-			case 193:
-			slice.mesh.material.materials[manageEmissive.spacerSlice_ID]
-				.emissive = sliceSelectedC;
-			break;
-			case 194:
-			slice.mesh.material.materials[manageEmissive.desicant_ID]
-				.emissive = sliceSelectedC;
-			break;
-		}
-	},
-	resetAllSlice: function () {
-		var sliceMats = [
-			slice.mesh.material.materials[manageEmissive.sealantA_ID], 
-			slice.mesh.material.materials[manageEmissive.sealantB_ID],
-			slice.mesh.material.materials[manageEmissive.spacerSlice_ID], 
-			slice.mesh.material.materials[manageEmissive.desicant_ID]];
-
-		for (var i = 0; i < slice.mesh.material.materials.length; i++) 
-			slice.mesh.material.materials[i].emissive = 
-				slice.mesh.material.materials[i].defaultEmissive;
-	}
-}
-
-var shSettings = {
-	uniforms:{		
+function silverCoatingMaterial () {
+	this.uniforms = {		
 		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
-		start: { type: 'f', value: 1.5}
+		start: { type: 'f', value: 1.501}
 	},
-	tween: function(time){
-		tween = new TWEEN.Tween( shSettings.uniforms.start );
-		tween.to( { value: -1.0}, time );
-		tween.repeat( Infinity );
-		tween.start();
-
-		tween.onComplete(function() { console.log("done") });
-	}
-	
-}
-
-function shaderMaterial1 () {
-	var material = new THREE.ShaderMaterial({ 
-		uniforms: shSettings.uniforms, 
-		attributes: {}, 
-		vertexShader: vertexShader(), 
-		fragmentShader: fragmentShader(),
-		transparent: true,
-		wireframe: false,
-		side: 1
-	});
-
-	return material;
-
-	function vertexShader () {	
+	this.material = function() {
+		var mat = new THREE.ShaderMaterial({ 
+			uniforms: this.uniforms, 
+			attributes: {}, 
+			vertexShader: this.vertexShader(), 
+			fragmentShader: this.fragmentShader(),
+			transparent: true,
+			side: 1
+		});
+		return mat;
+	},
+	this.vertexShader = function () {	
 		return ""+
 		"varying vec2 vUv;"+	
 		"void main(){"+
 		"vUv = uv;"+
 		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
-	}
-
-	function fragmentShader () {	
+	},
+	this.fragmentShader = function () {	
 		return ""+
 		"varying vec2 vUv;"+
 		"uniform sampler2D texture1;"+		
 		"uniform float start;"+
+		"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
 		"void main(){"+
 		"float color = 0.0;"+
 		"vec2 position = vUv;"+
+		"float noise = rand2(position.xy);"+
 		"color = (position.x + start);"+
 		"if(color > 1.5) discard;"+
 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
-		//"gl_FragColor = color * texture2D(texture1, vUv);}"
+	},
+	this.tween = function(time, delay, repeat){
+		tween = new TWEEN.Tween( this.uniforms.start )
+		if(repeat != undefined) tween.repeat( repeat );
+		if(delay != undefined) tween.delay( delay );
+		tween.to( { value: -1.0}, time );
+		tween.start();
 	}
+	return this;
 }
 
 

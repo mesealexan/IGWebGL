@@ -18,7 +18,6 @@ function Init() {
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
-	//initColors();	
 	//animate(); //called in objectLoader.js when all meshes are loaded
 	//addSkybox();
 }
@@ -102,8 +101,4 @@ function addLensFlare () {
 	};
 	lensFlare.position.set( -1127.008, 1232.292, -11  );
 	scene.add( lensFlare );
-}
-
-function initColors () {	
-	sliceSelectedC = new THREE.Color(sliceSelectedC); 
 }

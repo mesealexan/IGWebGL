@@ -46,19 +46,17 @@ function loadAssets () {
           loadObject('rail', [addToScene,function(){          	
          	loadObject('plane', [addToScene, function(){
          	 loadObject('tambur_a', function(){
-         	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur,
+         	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur, 
+         	  	moveMobileGlass.play, moveFixedGlass.play,
          	  function(){         
+         			plane.mesh.scale.z /= 2;
          	  		rotator.mesh.position.set(-8323.986, -142.658, -4.892);
          	  		rotator.rotate = rotate; 	
          	  		rotator.rotate('z', -1, tamburRotateTime, Infinity);
-         	  		//addTestPlane();	
+         	  		addSilverPlanes();
          	  		addToScene(rotator, rail.mesh);
-
           			addToScene(fixed_glass, rail.mesh);
-          			moveFixedGlass.play();
-          			moveMobileGlass.play()
-          			animate();
-         	  }], tambur_b);
+         	  }, animate], tambur_b);
          	 }, tambur_a);
            }], plane);
           }], rail);
@@ -97,21 +95,42 @@ function placeTambur () {
 
 		newTambur_a.rotate = rotate;
 		newTambur_b.rotate = rotate;
-		newTambur_a.rotate('z', 1,tamburRotateTime, Infinity);
-		newTambur_b.rotate('z', 1,tamburRotateTime, Infinity);
+		newTambur_a.rotate('z', 1, tamburRotateTime, Infinity);
+		newTambur_b.rotate('z', 1, tamburRotateTime, Infinity);
 
 		if(tambur_a_pos.positions[i])addToScene(newTambur_a, rail.mesh);
 		if(tambur_b_pos.positions[i])addToScene(newTambur_b, rail.mesh);		
 	};	
 } 
 
-function addTestPlane () {
-	var geometry = new THREE.PlaneGeometry( 1500, 800 );
-	var material = shaderMaterial1();//new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
-	var plane = new THREE.Mesh( geometry, material );
-	plane.rotation.x += Math.PI / 2;
-	plane.rotation.z += Math.PI;
-	plane.position.set(-12199.081, -400, -42.954);
-	scene.add(plane);
+function addSilverPlanes () {
+	var geometry = new THREE.PlaneBufferGeometry( 1040, 785 );
+	var offsetX = 15074 / 2 + 505 + 519 / 2;
+	var offsetY = 359;
+
+	for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
+		var planeObj = {};		
+		planeObj.silverCoatingMaterial = new silverCoatingMaterial();
+		planeObj.mesh = new THREE.Mesh( geometry.clone(), planeObj.silverCoatingMaterial.material() );
+		planeObj.mesh.rotation.x += Math.PI / 2;
+		planeObj.mesh.rotation.z += Math.PI;																			             //magic
+		planeObj.mesh.position.set(silver_Planes_pos.positions[i].position.x + offsetX, 
+							    silver_Planes_pos.positions[i].position.z + offsetY,
+							    -silver_Planes_pos.positions[i].position.y);
+
+		fixed_glass['plane' + (i + 1).toString()] = planeObj;
+		fixed_glass.mesh.add(planeObj.mesh);
+	};
+
+	var mobilePlaneObj = {};		
+	mobilePlaneObj.silverCoatingMaterial = new silverCoatingMaterial();
+	mobilePlaneObj.mesh = new THREE.Mesh( geometry.clone(), mobilePlaneObj.silverCoatingMaterial.material() );
+	mobilePlaneObj.mesh.rotation.x += Math.PI / 2;	
+	mobilePlaneObj.mesh.rotation.z += Math.PI;						             
+	mobilePlaneObj.mesh.position.copy(mobile_glass.mesh.position);
+	mobilePlaneObj.mesh.position.y += 10;
+
+	mobile_glass.plane = mobilePlaneObj;
+	mobile_glass.mesh.add(mobilePlaneObj.mesh);
 }
 

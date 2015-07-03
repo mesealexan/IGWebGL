@@ -1,42 +1,25 @@
 watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	switch (newvalue){
-		case 402: //move rail down
+		case 120:
+			fixed_glass.plane3.silverCoatingMaterial.tween(coatingTime);
+		break;
+		case 195:
+			fixed_glass.plane4.silverCoatingMaterial.tween(coatingTime);
+		break;
+		case 265:
+			fixed_glass.plane5.silverCoatingMaterial.tween(coatingTime);
+		break;
+		case 339:			
+			mobile_glass.plane.silverCoatingMaterial.tween(coatingTime - 120);
+		break;
+		case 402:
 			moveRailDown();
 		break;
 		case 499:
 			scene.remove(rail.mesh);
-		break;
-		/*case 158: //finished anim 1
-		    controls.minAzimuthAngle = - 0.3; 
-		    controls.maxAzimuthAngle = 0.3;
-			cameraTweenSpeed = 1;
-			controls.target.copy(camera.target);
+			controls.target = camera.target;
 			toggleInput(true);
-			cameraDestinationFrame = newvalue;
-			toggleElement(menu, 'visible');	
 		break;
-		//replaced by tweening
-		case 159: //going to slice		
-			cancelAllTweens();
-			toggleElement(menu, 'hidden');	
-			toggleInput(false);
-		break;
-		case 189: //going back to both windows	
-			cancelAllTweens();
-			toggleInput(false);
-			toggleElement(sliceMenu, 'hidden');
-			toggleElement(backButton, 'hidden');
-		break;
-		case 190: //finished anim 2
-		    controls.minAzimuthAngle = 0.33; 
-		    controls.maxAzimuthAngle = 0.7;
-			cameraTweenSpeed = 0.05;
-			controls.target.copy(camera.target);
-			toggleInput(true);
-			cameraDestinationFrame = newvalue;
-			toggleElement(sliceMenu, 'visible');
-			toggleElement(backButton, 'visible');
-		break;*/		
 	}
 });
 
