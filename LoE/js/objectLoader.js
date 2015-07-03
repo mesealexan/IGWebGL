@@ -46,8 +46,7 @@ function loadAssets () {
           loadObject('rail', [addToScene,function(){          	
          	loadObject('plane', [addToScene, function(){
          	 loadObject('tambur_a', function(){
-         	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur, 
-         	  	moveMobileGlass.play, moveFixedGlass.play,
+         	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur,
          	  function(){         
          			plane.mesh.scale.z /= 2;
          	  		rotator.mesh.position.set(-8323.986, -142.658, -4.892);
@@ -56,6 +55,8 @@ function loadAssets () {
          	  		addSilverPlanes();
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
+          			moveMobileGlass.play();
+          			moveFixedGlass.play();
          	  }, animate], tambur_b);
          	 }, tambur_a);
            }], plane);

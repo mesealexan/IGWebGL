@@ -1,7 +1,7 @@
 function rotate (axis, direction, time, repeat) {
 	//direction 1 cw, -1 ccw
 	tween = new TWEEN.Tween( this.mesh.rotation );
-	tween.to( { [axis]: -Math.PI * 2 * direction}, time );
+	tween.to( { axis: -Math.PI * 2 * direction}, time );
 	if(repeat != undefined) tween.repeat( repeat );
 	tween.start();
 }
