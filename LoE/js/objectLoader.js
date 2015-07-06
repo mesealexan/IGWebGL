@@ -48,16 +48,14 @@ function loadAssets () {
          	 loadObject('tambur_a', function(){
          	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur,
          	  function(){         
-         			plane.mesh.scale.z /= 2;
+         			plane.mesh.scale.z /= 5;
          	  		rotator.mesh.position.set(-8323.986, -142.658, -4.892);
-         	  		rotator.rotate = rotate; 	
-         	  		rotator.rotate('z', -1, tamburRotateTime, Infinity);
-         	  		addSilverPlanes();
+         	  		rotator.rotateZ = rotateZ; 	
+         	  		rotator.rotateZ(-1, tamburRotateTime, Infinity);
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
-          			moveMobileGlass.play();
-          			moveFixedGlass.play();
-         	  }, animate], tambur_b);
+         	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, addPouringPlane,
+         	  	animate], tambur_b);
          	 }, tambur_a);
            }], plane);
           }], rail);
@@ -94,10 +92,10 @@ function placeTambur () {
 		newTambur_a.mesh.position.copy(newTambur_a_pos);
 		newTambur_b.mesh.position.copy(newTambur_b_pos);
 
-		newTambur_a.rotate = rotate;
-		newTambur_b.rotate = rotate;
-		newTambur_a.rotate('z', 1, tamburRotateTime, Infinity);
-		newTambur_b.rotate('z', 1, tamburRotateTime, Infinity);
+		newTambur_a.rotateZ = rotateZ;
+		newTambur_b.rotateZ = rotateZ;
+		newTambur_a.rotateZ(1, tamburRotateTime, Infinity);
+		newTambur_b.rotateZ(1, tamburRotateTime, Infinity);
 
 		if(tambur_a_pos.positions[i])addToScene(newTambur_a, rail.mesh);
 		if(tambur_b_pos.positions[i])addToScene(newTambur_b, rail.mesh);		
@@ -111,8 +109,7 @@ function addSilverPlanes () {
 
 	for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
 		var planeObj = {};		
-		planeObj.silverCoatingMaterial = new silverCoatingMaterial();
-		planeObj.mesh = new THREE.Mesh( geometry.clone(), planeObj.silverCoatingMaterial.material() );
+		planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(coatingStart, coatingEnd) );
 		planeObj.mesh.rotation.x += Math.PI / 2;
 		planeObj.mesh.rotation.z += Math.PI;																			             //magic
 		planeObj.mesh.position.set(silver_Planes_pos.positions[i].position.x + offsetX, 
@@ -120,18 +117,29 @@ function addSilverPlanes () {
 							    -silver_Planes_pos.positions[i].position.y);
 
 		fixed_glass['plane' + (i + 1).toString()] = planeObj;
-		fixed_glass.mesh.add(planeObj.mesh);
+		addToScene(planeObj, fixed_glass.mesh)
 	};
+	
+	planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(coatingStart, coatingEnd) );
+	planeObj.mesh.rotation.x += Math.PI / 2;	
+	planeObj.mesh.rotation.z += Math.PI;						             
+	planeObj.mesh.position.copy(mobile_glass.mesh.position);
+	planeObj.mesh.position.y += 10;
 
-	var mobilePlaneObj = {};		
-	mobilePlaneObj.silverCoatingMaterial = new silverCoatingMaterial();
-	mobilePlaneObj.mesh = new THREE.Mesh( geometry.clone(), mobilePlaneObj.silverCoatingMaterial.material() );
-	mobilePlaneObj.mesh.rotation.x += Math.PI / 2;	
-	mobilePlaneObj.mesh.rotation.z += Math.PI;						             
-	mobilePlaneObj.mesh.position.copy(mobile_glass.mesh.position);
-	mobilePlaneObj.mesh.position.y += 10;
+	mobile_glass.plane = planeObj;
+	addToScene(planeObj, mobile_glass.mesh)
+}
 
-	mobile_glass.plane = mobilePlaneObj;
-	mobile_glass.mesh.add(mobilePlaneObj.mesh);
+function addPouringPlane () {
+	pouring.mesh.visible = false;
+	var geometry = new THREE.PlaneBufferGeometry( 145, 785 );
+	plane.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(1.5, 1.51) );
+	plane.mesh.material.tween(coatingTime, 0, Infinity);
+	plane.mesh.rotation.y += Math.PI / 2;	
+	plane.mesh.rotation.x -= Math.PI / 2;	
+	plane.mesh.position.copy(rotator.mesh.position);
+	plane.mesh.position.y -= 145;		
+	plane.mesh.position.x += 10;	
+	addToScene(plane);
 }
 

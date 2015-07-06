@@ -196,51 +196,98 @@ function setMaterials(materialName){
 	return material
 }
 
-function silverCoatingMaterial () {
-	this.uniforms = {		
-		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
-		start: { type: 'f', value: 1.501}
-	},
-	this.material = function() {
-		var mat = new THREE.ShaderMaterial({ 
-			uniforms: this.uniforms, 
-			attributes: {}, 
-			vertexShader: this.vertexShader(), 
-			fragmentShader: this.fragmentShader(),
-			transparent: true,
-			side: 1
-		});
-		return mat;
-	},
-	this.vertexShader = function () {	
+// function silverCoatingMaterial () {
+// 	this.uniforms = {		
+// 		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
+// 		start: { type: 'f', value: 1.501}
+// 	},
+// 	this.material = function() {
+// 		var mat = new THREE.ShaderMaterial({ 
+// 			uniforms: this.uniforms, 
+// 			attributes: {}, 
+// 			vertexShader: this.vertexShader(), 
+// 			fragmentShader: this.fragmentShader(),
+// 			transparent: true,
+// 			side: 1
+// 		});
+// 		return mat;
+// 	},
+// 	this.vertexShader = function () {	
+// 		return ""+
+// 		"varying vec2 vUv;"+	
+// 		"void main(){"+
+// 		"vUv = uv;"+
+// 		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+// 	},
+// 	this.fragmentShader = function () {	
+// 		return ""+
+// 		"varying vec2 vUv;"+
+// 		"uniform sampler2D texture1;"+		
+// 		"uniform float start;"+
+// 		"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
+// 		"void main(){"+
+// 		"float color = 0.0;"+
+// 		"vec2 position = vUv;"+
+// 		"float noise = rand2(position.xy);"+
+// 		"color = (position.x + start);"+
+// 		"if(color > 1.5) discard;"+
+// 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
+// 	},
+// 	this.tween = function(time, delay, repeat){
+// 		tween = new TWEEN.Tween( this.uniforms.start )
+// 		if(repeat != undefined) tween.repeat( repeat );
+// 		if(delay != undefined) tween.delay( delay );
+// 		tween.to( { value: -1.0}, time );
+// 		tween.start();
+// 	}
+// 	return this;
+// }
+
+function silverCoatingMaterial (start, end) {
+	var material = new THREE.ShaderMaterial({ 
+		uniforms: {		
+			texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
+			start: { type: 'f', value: start},
+			end: { type: 'f', value: end}
+		},
+		attributes: {}, 
+		vertexShader: vShader(), 
+		fragmentShader: fShader(),
+		transparent: true,
+		side: 1
+	});
+	material.tween = tween;
+	return material;
+
+	function vShader() {	
 		return ""+
 		"varying vec2 vUv;"+	
 		"void main(){"+
 		"vUv = uv;"+
 		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
-	},
-	this.fragmentShader = function () {	
+	}
+
+	function fShader () {	
 		return ""+
 		"varying vec2 vUv;"+
 		"uniform sampler2D texture1;"+		
-		"uniform float start;"+
-		"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
+		"uniform float start;"+	
+		"uniform float end;"+
+		//"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
 		"void main(){"+
 		"float color = 0.0;"+
 		"vec2 position = vUv;"+
-		"float noise = rand2(position.xy);"+
+		//"float noise = rand2(position.xy);"+
 		"color = (position.x + start);"+
-		"if(color > 1.5) discard;"+
+		"if(color > end) discard;"+
 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
-	},
-	this.tween = function(time, delay, repeat){
+	}
+
+	function tween(time, delay, repeat){
 		tween = new TWEEN.Tween( this.uniforms.start )
 		if(repeat != undefined) tween.repeat( repeat );
 		if(delay != undefined) tween.delay( delay );
 		tween.to( { value: -1.0}, time );
 		tween.start();
 	}
-	return this;
 }
-
-

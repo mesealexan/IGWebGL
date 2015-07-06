@@ -1,7 +1,7 @@
-function rotate (axis, direction, time, repeat) {
+function rotateZ (direction, time, repeat) {
 	//direction 1 cw, -1 ccw
 	tween = new TWEEN.Tween( this.mesh.rotation );
-	tween.to( { axis: -Math.PI * 2 * direction}, time );
+	tween.to( { z: -Math.PI * 2 * direction}, time );
 	if(repeat != undefined) tween.repeat( repeat );
 	tween.start();
 }
@@ -17,7 +17,7 @@ var moveFixedGlass = {
 					-(fixed_window_animation.frames[moveFixedGlass.frame].position.y));
 			}
 			else clearInterval(glass_animation_interval);//reached the end
-		},1000/fixed_window_animation.fps)
+		},1000/fixed_window_animation.fps);
 	}
 }
 

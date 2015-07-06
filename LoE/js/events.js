@@ -5,8 +5,8 @@ function addControls() {
     controls.maxPolarAngle = 1.6;
     controls.minPolarAngle = 0.8;
    	controls.rotateSpeed = 0.11;
-    controls.minAzimuthAngle = - 0.3; 
-    controls.maxAzimuthAngle = 0.6;
+    controls.minAzimuthAngle = - 0.1; 
+    controls.maxAzimuthAngle = 0.8;
 
     hammer = new Hammer(container);
 
