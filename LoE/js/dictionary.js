@@ -11,12 +11,14 @@ var coatingTime = 4900;
 
 //var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;
 var _window = {}, text = {}, rotator = {}, rail = {}, plane = {}, tamburHolder = {}, 
-	tambur_a = {}, tambur_b = {}, fixed_glass = {}, mobile_glass = {},pouring = {};
+	backgroundPlane = {}, tambur_a = {}, tambur_b = {}, fixed_glass = {}, mobile_glass = {}, 
+	pouring = {};
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var cameraDestinationFrame = 499, cameraTweenSpeed = 5;
-var zoomedOnSlice = undefined;
-var initialMousePos = {};
 var animation_interval, glass_animation_interval;
+var zoomedOnSlice = undefined;
+var cold_t, hot_t, mixed_t;
+var initialMousePos = {};
 var textureCube;
 var hammer;
 var bmap;

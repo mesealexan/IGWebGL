@@ -36,7 +36,9 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
-
+	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", function(){},function(){
+	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", function(){},function(){
+	mixed_t = THREE.ImageUtils.loadTexture( "media/img/mixed.jpg", function(){},function(){
 	loadObject('window', [addToScene, function () {
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
@@ -45,6 +47,7 @@ function loadAssets () {
          loadObject('rotator', function(){
           loadObject('rail', [addToScene,function(){          	
          	loadObject('plane', [addToScene, function(){
+         	plane.mesh.material.materials[0].transparent = true;
          	plane.mesh.material.materials[0].tweenOpacity = tweenOpacity;
          	 loadObject('tambur_a', function(){
          	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur,
@@ -56,7 +59,7 @@ function loadAssets () {
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
          	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, /*addPouringPlane,*/
-         	  	animate], tambur_b);
+         	  	addBackground, animate], tambur_b);
          	 }, tambur_a);
            }], plane);
           }], rail);
@@ -66,7 +69,8 @@ function loadAssets () {
       }], pouring);
      }], mobile_glass);
 	}], _window);
- }
+ 	})})})
+}
 
 function placeTambur () {
 	var loopTo = 0;
@@ -145,6 +149,14 @@ function addPouringPlane () {
 }
 
 function addBackground () {
-	var geometry = new THREE.PlaneBufferGeometry( 1040, 785 );
+	var geometry = new THREE.PlaneBufferGeometry( 5000, 5000 );
+	backgroundPlane.mesh = new THREE.Mesh( geometry.clone(), new THREE.MeshBasicMaterial({map: cold_t}) );
+	backgroundPlane.mesh.position.set(-7264.75, 521.82, -2700);
+	backgroundPlane.mesh.scale.y = 1.5;
+	backgroundPlane.mesh.scale.x = 2;
+	backgroundPlane.mesh.material.transparent = true;
+	backgroundPlane.mesh.material.opacity = 0;
+	backgroundPlane.mesh.material.tweenOpacity = tweenOpacity;
+	addToScene(backgroundPlane);
 }
 

@@ -11,7 +11,7 @@ var imagesArray = [];
 
 	for(var i = 0, l = imagesArray.length; i < l; i++){
 		var img = new Image();
-			img.src = imagesArray[i]
+			img.src = imagesArray[i];
 	}
 
 var animation = parseJSON('media/camera/camera.JSON');
