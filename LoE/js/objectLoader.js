@@ -36,6 +36,7 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
+	coat2_t = THREE.ImageUtils.loadTexture( "media/models/rotator.png", function(){},function(){
 	coat1_t = THREE.ImageUtils.loadTexture( "media/models/coat1.png", function(){},function(){
 	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", function(){},function(){
 	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", function(){},function(){
@@ -88,7 +89,7 @@ function loadAssets () {
 	}], bck_3, false);
 	}], bck_2, false);
 	}], bck_1, false);
- 	})})})})
+ 	})})})})})
 }
 
 function placeTambur () {

@@ -373,7 +373,8 @@ function textureFadeMaterial (start, end) {
 function pouringMaterial () {
 	var material = new THREE.ShaderMaterial({ 
 		uniforms: {		
-			texture1: { type: "t", value: cold_t },	
+			texture1: { type: "t", value: coat2_t },	
+			resolution: { type: "v2", value: {x: window.innerWidth, y: window.innerHeight} }
 		},
 		attributes: {}, 
 		vertexShader: vShader(), 
@@ -381,7 +382,7 @@ function pouringMaterial () {
 		transparent: false,
 		side: 2
 	});
-	material.tween = tween;
+	//material.tween = tween;
 	return material;
 
 	function vShader() {	
@@ -396,10 +397,14 @@ function pouringMaterial () {
 		return ""+
 		"varying vec2 vUv;"+
 		"uniform sampler2D texture1;"+
+		"uniform vec2 resolution;"+
 		"void main(){"+
-		"float color = 1.0;"+
+		"vec2 frag_position = ( gl_FragCoord.xy / resolution.xy );"+
+   		"vec4 frag_color = texture2D(texture1, frag_position);"+
+		"vec4 color = texture2D(texture1, vUv);"+
 		"vec2 position = vUv;"+
-		"gl_FragColor = texture2D(texture1, vUv);}"
+		"if(frag_color.a < 0.7) discard;"+
+		"else gl_FragColor = color;}"
 	}
 }
 
