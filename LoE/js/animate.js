@@ -14,14 +14,14 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			fixed_glass.plane5.mesh.material.tween(coatingTime);
 			//fixed_glass.plane5.silverCoatingMaterial.tween(coatingTime);
 		break;
-		case 339:		
+		case 315:		
 			mobile_glass.plane.mesh.material.tween(coatingTime - 120);	
 			//mobile_glass.plane.silverCoatingMaterial.tween(coatingTime - 120);
 		break;
 		case 375:
 			_window.mesh.visible = true;
 		case 402:
-			moveRailDown();
+			//moveRailDown();
 		break;
 		case 410:
 			mobile_glass.mesh.visible = false;
@@ -31,8 +31,8 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			controls.target = camera.target;
 			text.mesh.visible = false;
 			toggleInput(true);
-			plane.mesh.material.materials[0].tweenOpacity(0, 2000);			
-			backgroundPlane.mesh.material.tweenOpacity(0, 2000);
+			plane.mesh.material.materials[0].tweenOpacity(0, 200);			
+			//backgroundPlane.mesh.material.tweenOpacity(0, 2000);
 		break;
 	}
 });

@@ -59,7 +59,7 @@ function loadAssets () {
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
          	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, /*addPouringPlane,*/
-         	  	addBackground, animate], tambur_b);
+         	  	moveWindow.play, addBackground, animate], tambur_b);
          	 }, tambur_a);
            }], plane);
           }], rail);
@@ -127,7 +127,7 @@ function addSilverPlanes () {
 	
 	planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(coatingStart, coatingEnd) );
 	planeObj.mesh.rotation.x += Math.PI / 2;	
-	planeObj.mesh.rotation.z += Math.PI;						             
+	planeObj.mesh.rotation.z += Math.PI / 2;						             
 	planeObj.mesh.position.copy(mobile_glass.mesh.position);
 	planeObj.mesh.position.y += 10;
 

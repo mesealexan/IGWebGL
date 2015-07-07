@@ -57,3 +57,26 @@ var moveMobileGlass = {
 		},1000/mobile_window_animation.fps)
 	}
 }
+
+var moveWindow = {	
+	frame: -1,
+	play: function(){
+		window_animation_interval = setInterval(function(){
+			if(moveWindow.frame++ < window_animation.frames.length - 1){
+				_window.mesh.position.set(
+					(window_animation.frames[moveWindow.frame].position.x),
+					(window_animation.frames[moveWindow.frame].position.z),
+					-(window_animation.frames[moveWindow.frame].position.y));
+
+				_window.mesh.rotation.setFromQuaternion (
+					new THREE.Quaternion(
+					(window_animation.frames[moveWindow.frame].rotation.x),
+					(window_animation.frames[moveWindow.frame].rotation.z),
+					-(window_animation.frames[moveWindow.frame].rotation.y),
+					(window_animation.frames[moveWindow.frame].rotation.w)
+					).normalize());
+			}
+			else clearInterval(window_animation_interval);//reached the end
+		},1000/window_animation.fps)
+	}
+}

@@ -13,9 +13,9 @@ var coatingTime = 4900;
 var _window = {}, text = {}, rotator = {}, rail = {}, plane = {}, tamburHolder = {}, 
 	backgroundPlane = {}, tambur_a = {}, tambur_b = {}, fixed_glass = {}, mobile_glass = {}, 
 	pouring = {};
+var animation_interval, glass_animation_interval, window_animation_interval;
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var cameraDestinationFrame = 499, cameraTweenSpeed = 5;
-var animation_interval, glass_animation_interval;
 var zoomedOnSlice = undefined;
 var cold_t, hot_t, mixed_t;
 var initialMousePos = {};
