@@ -57,11 +57,14 @@ function setMaterials(materialName){
 	        break;
 	   	case 'rotator':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(126,7,100)"),
-		    	ambient: new THREE.Color("rgb(126,7,100)"),
+		    	color: new THREE.Color("rgb(200,200,200)"),
+		    	ambient: new THREE.Color("rgb(211,211,211)"),
 		    	specular: new THREE.Color("rgb(222,222,222)"),
-		    	shininess: 22,
-		    	metal: true
+		    	shininess: 3,
+		    	metal: true,
+				vertexColors: THREE.VertexColors,
+				envMap: textureCube,
+				reflectivity: 0.69
 		    })
 	        break;
 		case 'rail':
@@ -185,7 +188,9 @@ function setMaterials(materialName){
 		    })	
 		    break;
 	    default:
-	    	material =  new THREE.MeshNormalMaterial()
+	    	material =  new THREE.MeshBasicMaterial();
+	    	material.depthTest = true;
+	    	material.depthWrite = true;
         	
 	}
 
@@ -254,9 +259,15 @@ function silverCoatingMaterial (start, end) {
 		vertexShader: vShader(), 
 		fragmentShader: fShader(),
 		transparent: true,
-		side: 1
+		side: 1,
+		color: new THREE.Color("rgb(200,200,0)"),
+    	ambient: new THREE.Color("rgb(211,211,0)"),
+    	specular: new THREE.Color("rgb(222,222,0)"),
+    	shininess: 3
 	});
 	material.tween = tween;
+	material.depthTest = true;
+	material.depthWrite = true;
 	return material;
 
 	function vShader() {	

@@ -36,6 +36,7 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
+	coat2_t = THREE.ImageUtils.loadTexture( "media/models/rotator.png", function(){},function(){
 	coat1_t = THREE.ImageUtils.loadTexture( "media/models/coat1.png", function(){},function(){
 	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", function(){},function(){
 	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", function(){},function(){
@@ -51,10 +52,13 @@ function loadAssets () {
 		addToScene(window_shadow, _window.mesh);
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
-      	pouring.mesh.material.materials[0].transparent = false;
-      	pouring.mesh.material.materials[0].map = coat1_t;      	
-      	pouring.mesh.material.materials[0].ambient = {r:0,g:0,b:0};   	
-      	pouring.mesh.material.materials[0].color = {r:0,g:1,b:0};
+      	//pouring.mesh.material.materials[0].transparent = false;
+      	pouring.mesh.material.materials[0].transparent = true;
+		//pouring.mesh.material.materials[0].depthTest = true;
+		//pouring.mesh.material.materials[0].depthWrite = true;
+      	pouring.mesh.material.materials[0].map = coat2_t;      	
+      	//pouring.mesh.material.materials[0].ambient = {r:0,g:0,b:0};   	
+      	//pouring.mesh.material.materials[0].color = {r:0,g:1,b:0};
        loadObject('fixed_glass', function(){ //add to scene later
         loadObject('text', [addToScene, function(){
          loadObject('rotator', function(){
@@ -87,7 +91,7 @@ function loadAssets () {
 	}], bck_3, false);
 	}], bck_2, false);
 	}], bck_1, false);
- 	})})})})
+ 	})})})})})
 }
 
 function placeTambur () {

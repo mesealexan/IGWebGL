@@ -37,8 +37,10 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 450:
 			enableBackground();
 		break;
-		case 499:
+		case 469:
 			window_shadow.mesh.visible = true;
+		break;
+		case 499:
 			toggleElement(menu, 'visible');		
 			scene.remove(rail.mesh);
 			controls.target = camera.target;
