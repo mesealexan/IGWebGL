@@ -45,6 +45,7 @@ function loadAssets () {
          loadObject('rotator', function(){
           loadObject('rail', [addToScene,function(){          	
          	loadObject('plane', [addToScene, function(){
+         	plane.mesh.material.materials[0].tweenOpacity = tweenOpacity;
          	 loadObject('tambur_a', function(){
          	  loadObject('tambur_b', [manageCameraAnimations.playAnim_1, placeTambur,
          	  function(){         
@@ -54,7 +55,7 @@ function loadAssets () {
          	  		rotator.rotateZ(-1, tamburRotateTime, Infinity);
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
-         	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, addPouringPlane,
+         	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, /*addPouringPlane,*/
          	  	animate], tambur_b);
          	 }, tambur_a);
            }], plane);
@@ -141,5 +142,9 @@ function addPouringPlane () {
 	plane.mesh.position.y -= 145;		
 	plane.mesh.position.x += 10;	
 	addToScene(plane);
+}
+
+function addBackground () {
+	var geometry = new THREE.PlaneBufferGeometry( 1040, 785 );
 }
 

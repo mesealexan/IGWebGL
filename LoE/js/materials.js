@@ -291,3 +291,9 @@ function silverCoatingMaterial (start, end) {
 		tween.start();
 	}
 }
+
+function tweenOpacity (to, time) {
+	tween = new TWEEN.Tween( this );
+	tween.to( { opacity: to}, time );
+	tween.start();
+}

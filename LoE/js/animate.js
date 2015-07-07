@@ -24,6 +24,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			controls.target = camera.target;
 			text.mesh.visible = false;
 			toggleInput(true);
+			plane.mesh.material.materials[0].tweenOpacity(0, 2000);
 		break;
 	}
 });
