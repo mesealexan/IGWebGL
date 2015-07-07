@@ -22,17 +22,19 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		break;
 		case 310:		
 			pouring.mesh.visible = true;
-			mobile_glass.plane.mesh.material.tween(coatingTime);	
+			mobile_glass.plane.mesh.material.tween(coatingTime + 120);	
 		break;
 		case 358:
 			pouring.mesh.visible = false;
 		break;
 		case 375:
 			_window.mesh.visible = true;
-		case 450:
-			//mobile_glass.mesh.visible = false;
 		break;
-		case 460:
+		case 410:
+			console.log("dasds")
+			mobile_glass.mesh.visible = false;
+		break;
+		case 450:
 			enableBackground();
 		break;
 		case 499:

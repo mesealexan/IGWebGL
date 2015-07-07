@@ -9,7 +9,7 @@ var tamburRotateTime = 2666;
 var coatingStart = 1.501;
 var coatingEnd = 1.5;
 var coatingTime = 4780; 
-var backgroundBlendSpeed = 500;
+var backgroundBlendSpeed = 1000;
 
 //var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;
 var _window = {}, text = {}, rotator = {}, rail = {}, plane = {}, tamburHolder = {}, 

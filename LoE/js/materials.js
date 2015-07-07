@@ -273,11 +273,9 @@ function silverCoatingMaterial (start, end) {
 		"uniform sampler2D texture1;"+		
 		"uniform float start;"+	
 		"uniform float end;"+
-		//"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
 		"void main(){"+
 		"float color = 0.0;"+
 		"vec2 position = vUv;"+
-		//"float noise = rand2(position.xy);"+
 		"color = (position.x + start);"+
 		"if(color > end) discard;"+
 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
@@ -365,7 +363,7 @@ function tweenOpacity (to, time, delayTime) {
 
 function enableBackground () {
 	bck_1.mesh.visible = true;	
-	plane.mesh.material.materials[0].tweenOpacity(0, 200);
+	plane.mesh.material.materials[0].tweenOpacity(0, backgroundBlendSpeed);
 }
 
 function manageBackgroundOpacity (to) {
