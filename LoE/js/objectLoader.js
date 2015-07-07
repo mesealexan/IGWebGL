@@ -103,7 +103,7 @@ function placeTambur () {
 } 
 
 function addSilverPlanes () {
-	var geometry = new THREE.PlaneBufferGeometry( 1040, 785 );
+	var geometry = new THREE.PlaneBufferGeometry( 1040 - 50 , 785 -25 );
 	var offsetX = 15074 / 2 + 505 + 519 / 2;
 	var offsetY = 359;
 
