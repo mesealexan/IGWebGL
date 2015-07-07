@@ -34,7 +34,8 @@ function setMaterials(materialName){
 		    	ambient: new THREE.Color("rgb(170,10,243)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
 		    	transparent: true,
-		    	opacity: 0.5,alphaTest: 0.5
+		    	opacity: 0.5,
+		    	blending: THREE.AdditiveBlending
 		    })
 	        break;
 		case 'tambur':
@@ -78,7 +79,7 @@ function setMaterials(materialName){
 		    	metal: true,
 				vertexColors: THREE.VertexColors,
 				envMap: textureCube,
-				reflectivity: 0.99
+				reflectivity: 0.19
 		    })
 	        break;
 	    case 'sealant a':
@@ -178,9 +179,6 @@ function setMaterials(materialName){
 		    material = new THREE.MeshLambertMaterial({
 		    	color: new THREE.Color("rgb(255,255,255)"),
 		    	ambient: new THREE.Color("rgb(255,255,255)")
-		    	//transparent: true,
-		    	//opacity: 0.75
-		    	
 		    })
 	        break;
 	    case 'Spacer slice':
@@ -208,52 +206,6 @@ function setMaterials(materialName){
 	return material
 }
 
-// function silverCoatingMaterial () {
-// 	this.uniforms = {		
-// 		texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/silver.jpg" ) },
-// 		start: { type: 'f', value: 1.501}
-// 	},
-// 	this.material = function() {
-// 		var mat = new THREE.ShaderMaterial({ 
-// 			uniforms: this.uniforms, 
-// 			attributes: {}, 
-// 			vertexShader: this.vertexShader(), 
-// 			fragmentShader: this.fragmentShader(),
-// 			transparent: true,
-// 			side: 1
-// 		});
-// 		return mat;
-// 	},
-// 	this.vertexShader = function () {	
-// 		return ""+
-// 		"varying vec2 vUv;"+	
-// 		"void main(){"+
-// 		"vUv = uv;"+
-// 		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
-// 	},
-// 	this.fragmentShader = function () {	
-// 		return ""+
-// 		"varying vec2 vUv;"+
-// 		"uniform sampler2D texture1;"+		
-// 		"uniform float start;"+
-// 		"float rand2(vec2 co){return fract(sin(dot(co.xy ,vec2(99.9898,78.233))) * 43758.5453);}"+
-// 		"void main(){"+
-// 		"float color = 0.0;"+
-// 		"vec2 position = vUv;"+
-// 		"float noise = rand2(position.xy);"+
-// 		"color = (position.x + start);"+
-// 		"if(color > 1.5) discard;"+
-// 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
-// 	},
-// 	this.tween = function(time, delay, repeat){
-// 		tween = new TWEEN.Tween( this.uniforms.start )
-// 		if(repeat != undefined) tween.repeat( repeat );
-// 		if(delay != undefined) tween.delay( delay );
-// 		tween.to( { value: -1.0}, time );
-// 		tween.start();
-// 	}
-// 	return this;
-// }
 
 function silverCoatingMaterial (start, end) {
 	var material = new THREE.ShaderMaterial({ 
@@ -296,7 +248,6 @@ function silverCoatingMaterial (start, end) {
 		"vec2 position = vUv;"+
 		"color = (position.x + start);"+
 		"if(color > end) discard;"+
-		//"else if (color < 1.0) gl_FragColor = (color) * texture2D(texture1, vUv) - 0.5;"+
 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
 	}
 
@@ -385,7 +336,6 @@ function pouringMaterial () {
 		transparent: false,
 		side: 2
 	});
-	//material.tween = tween;
 	return material;
 
 	function vShader() {	

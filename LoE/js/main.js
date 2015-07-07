@@ -16,8 +16,6 @@ function Init() {
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
-	//animate(); //called in objectLoader.js when all meshes are loaded
-	//addSkybox();
 }
 
 function addRenderer() {
@@ -30,9 +28,7 @@ function addRenderer() {
 function addLight () {
 	var ambientLight = new THREE.AmbientLight( 0x999999 );
 	scene.add( ambientLight );
-
-	//scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
-
+	
 	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
 		light1.position.set( -12170,1063,-2025 );
 		scene.add( light1 );

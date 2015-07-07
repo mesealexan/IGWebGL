@@ -15,7 +15,6 @@ var animateCamera = {
 		//decrement because 0 based
 		to--;
 		animation_interval = setInterval(function(){
-		//console.log(animateCamera.frame)
 		if(animateCamera.checkPlayback(from, to)){
 			var newUp = modifyCameraUp(animation.frames[animateCamera.frame].rollAngle);
 			camera.up.set(newUp.x, newUp.y, newUp.z);
@@ -101,53 +100,7 @@ var animateCamera = {
 var manageCameraAnimations = {
 	playAnim_1: function(){ //both windows perspective
 		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
-	}/*,	
-	playAnim_2: function () { //to slice
-		//replaced by tweening
-		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTick);
-							   manageVisibility.fadeOut(windowHorizontal, windowFadeTick); }, 350);	
-
-		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTick); }, 500);		
-		
-		animateCamera.play(camera_frames.animation_2.from, camera_frames.animation_2.to);
-		if(!slice.inScene) loadObject('cardinal_slice', undefined, addToScene, slice, false);
-		zoomedOnSlice = true;
-		manageCameraAnimations.playZoomInAnim();
-	},
-	playZoomInAnim: function (anim) { //zoom in further on slice
-		cancelAllTweens();
-		manageEmissive.resetAllSlice();
-		toggleInput(false);
-		manageEmissive.modify(camera_frames[anim].frame);
-		animateCamera.tween(camera_frames[anim].frame, cameraTweenSpeed, function () {
-			toggleElement(backButton, 'visible');
-			cameraTweenSpeed = 0.05;
-		});
-
-		if(zoomedOnSlice) return;		
-		setTimeout(function(){ manageVisibility.fadeOut(windowVertical, windowFadeTick);
-							   manageVisibility.fadeOut(windowHorizontal, windowFadeTick); }, 350);
-		setTimeout(function(){ manageVisibility.fadeIn(slice, windowFadeTick); }, 500);	
-		zoomedOnSlice = true;
-	},
-	back: function() { //multiple back options
-		if(zoomedOnSlice){	
-			toggleElement(backButton, 'hidden');
-			toggleElement(menu, 'hidden');	
-			cameraTweenSpeed = 1;
-			zoomedOnSlice = false;
-			manageEmissive.resetAllSlice();
-			cancelAllTweens();	
-			setTimeout(function(){ 		
-				manageVisibility.fadeIn(windowHorizontal, windowFadeTick);		
-				manageVisibility.fadeIn(windowVertical, windowFadeTick);	
-			}, 350);		
-			manageVisibility.fadeOut(slice, windowFadeTick);
-			animateCamera.tween(camera_frames.animation_1.to, cameraTweenSpeed, 
-				function () { toggleInput(true); });
-				toggleElement(menu, 'visible');	
-		}
-	}*/
+	}
 }
 
 function setInitialCameraPos () {
