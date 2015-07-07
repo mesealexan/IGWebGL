@@ -22,7 +22,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		break;
 		case 310:		
 			pouring.mesh.visible = true;
-			mobile_glass.plane.mesh.material.tween(coatingTime);	
+			mobile_glass.plane.mesh.material.tween(coatingTime + 120);	
 		break;
 		case 358:
 			pouring.mesh.visible = false;
