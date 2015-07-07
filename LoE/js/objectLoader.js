@@ -47,6 +47,8 @@ function loadAssets () {
 	loadObject('bck_3', [function () {
 		bck_3.mesh.material = new THREE.MeshBasicMaterial({map: mixed_t, opacity: 0});
 	loadObject('window', [addToScene, function () {
+	loadObject('window_shadow', [function () {
+		addToScene(window_shadow, _window.mesh);
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
       	//pouring.mesh.material.materials[0].map = coat1_t;
@@ -77,6 +79,7 @@ function loadAssets () {
        }, fixed_glass);
       }], pouring);
      }], mobile_glass);
+	}], window_shadow, false);
 	}], _window);
 	}], bck_3, false);
 	}], bck_2, false);

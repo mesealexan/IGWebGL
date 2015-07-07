@@ -144,7 +144,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(0,0,0)"),
 		    	ambient: new THREE.Color("rgb(0,0,0)"),
 		    	specular: new THREE.Color("rgb(0,0,0)"),
-		    	map:  THREE.ImageUtils.loadTexture(imagesArray[2]),
+		    	map:  THREE.ImageUtils.loadTexture(imagesArray[3]),
 		    	transparent: true
 		    })
 	        break;

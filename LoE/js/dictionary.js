@@ -14,7 +14,7 @@ var backgroundBlendSpeed = 500;
 //var textureFlare1, textureFlare2, textureFlare3, textureFlare4, textureFlare5, textureFlare6;
 var _window = {}, text = {}, rotator = {}, rail = {}, plane = {}, tamburHolder = {}, 
 	backgroundPlane = {}, tambur_a = {}, tambur_b = {}, fixed_glass = {}, mobile_glass = {}, 
-	pouring = {}, bck_1 = {}, bck_2 = {}, bck_3 = {};
+	pouring = {}, bck_1 = {}, bck_2 = {}, bck_3 = {}, window_shadow = {};
 var animation_interval, glass_animation_interval, window_animation_interval;
 var container, camera, scene, renderer, keyboard, frameID, controls;
 var cold_t, hot_t, mixed_t, coat1_t;
