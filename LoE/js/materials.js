@@ -106,7 +106,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(213,213,213)"),
 		    	ambient: new THREE.Color("rgb(116,116,116)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[0])
+		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[4])
 		    })
 	        break;
 	    case 'Glass':	
@@ -120,7 +120,7 @@ function setMaterials(materialName){
 				reflectivity: 0.99,
 				shininess: 30,
 				transparent: true,
-				opacity: 0.66
+				opacity: 0.61
 			});
 	        break;
 	    case 'Glass Sides':
