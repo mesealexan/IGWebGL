@@ -72,7 +72,11 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(0,49,174)"),
 		    	ambient: new THREE.Color("rgb(0,49,174)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	shininess: 6
+		    	shininess: 6,
+		    	metal: true,
+				vertexColors: THREE.VertexColors,
+				envMap: textureCube,
+				reflectivity: 0.69
 		    })
 	        break;
 	    case 'sealant a':
@@ -163,7 +167,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(113,106,76)"),
 		    	ambient: new THREE.Color("rgb(113,106,76)"),
 		    	specular: new THREE.Color("rgb(191,188,175)"),
-		    	emissive: new THREE.Color("rgb(225,225,225)")
+		    	emissive: new THREE.Color("rgb(113,106,76)")
 		    	
 		    })
 	        break;
