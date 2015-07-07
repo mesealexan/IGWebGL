@@ -39,6 +39,12 @@ function loadAssets () {
 	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", function(){},function(){
 	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", function(){},function(){
 	mixed_t = THREE.ImageUtils.loadTexture( "media/img/mixed.jpg", function(){},function(){
+	loadObject('bck_1', [addToScene, function () { 
+		bck_1.mesh.material = textureFadeMaterial();
+	loadObject('bck_2', [function () {
+		bck_2.mesh.material = new THREE.MeshBasicMaterial({map: hot_t, opacity: 0});
+	loadObject('bck_3', [function () {
+		bck_3.mesh.material = new THREE.MeshBasicMaterial({map: mixed_t, opacity: 0});
 	loadObject('window', [addToScene, function () {
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
@@ -58,8 +64,9 @@ function loadAssets () {
          	  		rotator.rotateZ(-1, tamburRotateTime, Infinity);
          	  		addToScene(rotator, rail.mesh);
           			addToScene(fixed_glass, rail.mesh);
+          			//addTestPlane();
          	  }, addSilverPlanes ,moveMobileGlass.play, moveFixedGlass.play, /*addPouringPlane,*/
-         	  	moveWindow.play, addBackground, animate], tambur_b);
+         	  	moveWindow.play, animate], tambur_b);
          	 }, tambur_a);
            }], plane);
           }], rail);
@@ -69,6 +76,9 @@ function loadAssets () {
       }], pouring);
      }], mobile_glass);
 	}], _window);
+	}], bck_3, false);
+	}], bck_2, false);
+	}], bck_1, false);
  	})})})
 }
 
@@ -129,7 +139,7 @@ function addSilverPlanes () {
 	planeObj.mesh.rotation.x += Math.PI / 2;	
 	planeObj.mesh.rotation.z += Math.PI / 2;						             
 	planeObj.mesh.position.copy(mobile_glass.mesh.position);
-	planeObj.mesh.position.y += 10;
+	planeObj.mesh.position.y += 5;
 
 	mobile_glass.plane = planeObj;
 	addToScene(planeObj, mobile_glass.mesh)
@@ -148,15 +158,15 @@ function addPouringPlane () {
 	addToScene(plane);
 }
 
-function addBackground () {
-	var geometry = new THREE.PlaneBufferGeometry( 5000, 5000 );
-	backgroundPlane.mesh = new THREE.Mesh( geometry.clone(), new THREE.MeshBasicMaterial({map: cold_t}) );
-	backgroundPlane.mesh.position.set(-7264.75, 521.82, -2700);
-	backgroundPlane.mesh.scale.y = 1.5;
-	backgroundPlane.mesh.scale.x = 2;
-	backgroundPlane.mesh.material.transparent = true;
-	backgroundPlane.mesh.material.opacity = 0;
-	backgroundPlane.mesh.material.tweenOpacity = tweenOpacity;
-	addToScene(backgroundPlane);
+var testPlane = {};
+function addTestPlane () {
+	var geometry = new THREE.PlaneBufferGeometry( 2000, 2000 );
+	testPlane.mesh = new THREE.Mesh( geometry.clone(), textureFadeMaterial() );
+	//testPlane.mesh.material.tween(coatingTime, 0, Infinity);
+	testPlane.mesh.rotation.y += Math.PI;	
+	testPlane.mesh.rotation.x -= Math.PI / 2;	
+	testPlane.mesh.position.set(-12194.1, 125.994, 925.417);
+	//testPlane.mesh.position.y -= 145;		
+	//testPlane.mesh.position.x += 10;	
+	addToScene(testPlane);
 }
-

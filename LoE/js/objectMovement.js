@@ -54,7 +54,7 @@ var moveMobileGlass = {
 					).normalize());
 			}
 			else clearInterval(glass_animation_interval);//reached the end
-		},1000/mobile_window_animation.fps)
+		},1000/mobile_window_animation.fps);
 	}
 }
 
@@ -77,6 +77,6 @@ var moveWindow = {
 					).normalize());
 			}
 			else clearInterval(window_animation_interval);//reached the end
-		},1000/window_animation.fps)
+		},1000/window_animation.fps);
 	}
 }

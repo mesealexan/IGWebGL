@@ -26,16 +26,12 @@ body{
   	z-index: 5;
 }
 
-#menu, #sliceMenu{
+#menu{
   visibility: hidden;
 	position:fixed;
 	bottom: 16%;
 	left: 30%;
   	z-index: 10;
-}
-
-#menu button, #sliceMenu button {
-  /*margin-left: 20px;*/
 }
 
 #backButton{

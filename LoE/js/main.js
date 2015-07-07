@@ -1,7 +1,5 @@
 var menu = document.getElementById("menu");
 var background = document.getElementById("background"); 
-var sliceMenu = document.getElementById("sliceMenu");
-var backButton = document.getElementById("backButton");
 var width = window.innerWidth, height = window.innerHeight;
 aspectRatio = width / height;
 
