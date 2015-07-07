@@ -167,9 +167,9 @@ function setMaterials(materialName){
 	    case 'text':
 		    material = new THREE.MeshLambertMaterial({
 		    	color: new THREE.Color("rgb(113,106,76)"),
-		    	ambient: new THREE.Color("rgb(113,106,76)"),
+		    	ambient: new THREE.Color("rgb(78,63,28)"),
 		    	specular: new THREE.Color("rgb(191,188,175)"),
-		    	emissive: new THREE.Color("rgb(113,106,76)")
+		    	emissive: new THREE.Color("rgb(78,66,37)")
 		    	
 		    })
 	        break;
