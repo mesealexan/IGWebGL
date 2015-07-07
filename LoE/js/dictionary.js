@@ -1,6 +1,6 @@
 var camera_frames = {
-	animation_1:{ from: 320, to: 321}
-	//animation_1:{ from: 0, to: 500}
+	//animation_1:{ from: 320, to: 321}
+	animation_1:{ from: 0, to: 500}
 }
 
 var camNear = 1000, camFar = 16500, fov = 45, fovModifier = 0, aspectRatio;

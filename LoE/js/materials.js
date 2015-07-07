@@ -30,9 +30,11 @@ function setMaterials(materialName){
 	switch(materialName){ 
 		case 'pouring':
 		    material = new THREE.MeshPhongMaterial({
-		    	map: THREE.ImageUtils.loadTexture(imagesArray[2]),
-		    	transparent: true,
-		    	shininess: 16,
+		    	color: new THREE.Color("rgb(170,10,243)"),
+		    	ambient: new THREE.Color("rgb(170,10,243)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	transparent: false,
+		    	opacity: 0.5
 		    })
 	        break;
 		case 'tambur':

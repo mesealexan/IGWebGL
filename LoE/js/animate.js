@@ -31,13 +31,12 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			_window.mesh.visible = true;
 		break;
 		case 410:
-			console.log("dasds")
 			mobile_glass.mesh.visible = false;
 		break;
 		case 450:
 			enableBackground();
 		break;
-		case 469:
+		case 472:
 			window_shadow.mesh.visible = true;
 		break;
 		case 499:

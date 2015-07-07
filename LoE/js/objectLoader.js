@@ -52,7 +52,7 @@ function loadAssets () {
 		addToScene(window_shadow, _window.mesh);
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
-      	pouring.mesh.material = pouringMaterial();
+      	//pouring.mesh.material = pouringMaterial();
       	// pouring.mesh.material.materials[0].transparent = false;
       	// pouring.mesh.material.materials[0].map = coat1_t;      	
       	// pouring.mesh.material.materials[0].ambient = {r:0,g:0,b:0};   	
