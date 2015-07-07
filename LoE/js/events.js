@@ -3,7 +3,7 @@ function addControls() {
     controls.noZoom = true;
     controls.noPan = true;
     controls.maxPolarAngle = 1.6;
-    controls.minPolarAngle = 1.6;
+    controls.minPolarAngle = 1.5;
    	controls.rotateSpeed = 0.11;
     controls.minAzimuthAngle = 0.3; 
     controls.maxAzimuthAngle = 0.5;

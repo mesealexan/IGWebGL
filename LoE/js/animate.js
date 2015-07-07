@@ -8,23 +8,29 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		break;
 		case 169:
 			fixed_glass.plane4.mesh.material.tween(coatingTime);
-			//fixed_glass.plane4.silverCoatingMaterial.tween(coatingTime);
+			pouring.mesh.visible = true;
+		break;
+		case 218:
+			pouring.mesh.visible = false;
 		break;
 		case 240:
+			pouring.mesh.visible = true;
 			fixed_glass.plane5.mesh.material.tween(coatingTime);
-			//fixed_glass.plane5.silverCoatingMaterial.tween(coatingTime);
+		break;
+		case 288:
+			pouring.mesh.visible = false;
 		break;
 		case 310:		
+			pouring.mesh.visible = true;
 			mobile_glass.plane.mesh.material.tween(coatingTime);	
-			//mobile_glass.plane.silverCoatingMaterial.tween(coatingTime - 120);
+		break;
+		case 358:
+			pouring.mesh.visible = false;
 		break;
 		case 375:
 			_window.mesh.visible = true;
-		case 402:
-			//moveRailDown();
-		break;
-		case 410:
-			mobile_glass.mesh.visible = false;
+		case 450:
+			//mobile_glass.mesh.visible = false;
 		break;
 		case 460:
 			enableBackground();

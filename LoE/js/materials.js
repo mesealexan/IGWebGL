@@ -246,7 +246,7 @@ function setMaterials(materialName){
 function silverCoatingMaterial (start, end) {
 	var material = new THREE.ShaderMaterial({ 
 		uniforms: {		
-			texture1: { type: "t", value: THREE.ImageUtils.loadTexture( "media/models/coat1.png" ) },
+			texture1: { type: "t", value: coat1_t },
 			start: { type: 'f', value: start},
 			end: { type: 'f', value: end}
 		},

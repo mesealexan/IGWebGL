@@ -17,7 +17,7 @@ var _window = {}, text = {}, rotator = {}, rail = {}, plane = {}, tamburHolder =
 	pouring = {}, bck_1 = {}, bck_2 = {}, bck_3 = {};
 var animation_interval, glass_animation_interval, window_animation_interval;
 var container, camera, scene, renderer, keyboard, frameID, controls;
-var cold_t, hot_t, mixed_t;
+var cold_t, hot_t, mixed_t, coat1_t;
 var initialMousePos = {};
 var textureCube;
 var hammer;

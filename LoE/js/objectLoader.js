@@ -36,6 +36,7 @@ function loadObject (name, callback, variable, initiallyVisible, initialOpacity)
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
+	coat1_t = THREE.ImageUtils.loadTexture( "media/models/coat1.png", function(){},function(){
 	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", function(){},function(){
 	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", function(){},function(){
 	mixed_t = THREE.ImageUtils.loadTexture( "media/img/mixed.jpg", function(){},function(){
@@ -48,6 +49,7 @@ function loadAssets () {
 	loadObject('window', [addToScene, function () {
  	 loadObject('mobile_glass', [addToScene, function(){
       loadObject('pouring', [addToScene, function(){
+      	//pouring.mesh.material.materials[0].map = coat1_t;
        loadObject('fixed_glass', function(){ //add to scene later
         loadObject('text', [addToScene, function(){
          loadObject('rotator', function(){
@@ -79,7 +81,7 @@ function loadAssets () {
 	}], bck_3, false);
 	}], bck_2, false);
 	}], bck_1, false);
- 	})})})
+ 	})})})})
 }
 
 function placeTambur () {
