@@ -33,8 +33,8 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(170,10,243)"),
 		    	ambient: new THREE.Color("rgb(170,10,243)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	transparent: false,
-		    	opacity: 0.5
+		    	transparent: true,
+		    	opacity: 0.5,alphaTest: 0.5
 		    })
 	        break;
 		case 'tambur':
@@ -71,14 +71,14 @@ function setMaterials(materialName){
 	        break;
 		case 'rail':
 		    material = new THREE.MeshPhongMaterial({
-		    	color: new THREE.Color("rgb(0,49,174)"),
+		    	color: new THREE.Color("rgb(47,83,174)"),
 		    	ambient: new THREE.Color("rgb(0,49,174)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	shininess: 6,
+		    	shininess: 11,
 		    	metal: true,
 				vertexColors: THREE.VertexColors,
 				envMap: textureCube,
-				reflectivity: 0.69
+				reflectivity: 0.99
 		    })
 	        break;
 	    case 'sealant a':
@@ -159,9 +159,10 @@ function setMaterials(materialName){
 	        break;
 	    case 'plane':
 		    material = new THREE.MeshLambertMaterial({
-		    	color: new THREE.Color("rgb(233,233,233)"),
-		    	ambient: new THREE.Color("rgb(233,233,233)"),
-		    	specular: new THREE.Color("rgb(255,255,255)")
+		    	color: new THREE.Color("rgb(250,250,250)"),
+		    	emissive: new THREE.Color("rgb(250,250,250)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	emissive: new THREE.Color("rgb(61,61,61)")
 		    })
 	        break;
 	    case 'text':

@@ -36,7 +36,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 450:
 			enableBackground();
 		break;
-		case 472:
+		case 469:
 			window_shadow.mesh.visible = true;
 		break;
 		case 499:
