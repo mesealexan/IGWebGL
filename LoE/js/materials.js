@@ -278,6 +278,7 @@ function silverCoatingMaterial (start, end) {
 		"vec2 position = vUv;"+
 		"color = (position.x + start);"+
 		"if(color > end) discard;"+
+		//"else if (color < 1.0) gl_FragColor = (color) * texture2D(texture1, vUv) - 0.5;"+
 		"else gl_FragColor = color * texture2D(texture1, vUv);}"
 	}
 
@@ -285,7 +286,7 @@ function silverCoatingMaterial (start, end) {
 		tween = new TWEEN.Tween( this.uniforms.start )
 		if(repeat != undefined) tween.repeat( repeat );
 		if(delay != undefined) tween.delay( delay );
-		tween.to( { value: -1.0}, time );
+		tween.to( { value: -1.0 }, time );
 		tween.start();
 	}
 }
