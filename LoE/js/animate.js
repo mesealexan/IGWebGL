@@ -1,5 +1,7 @@
 watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	switch (newvalue){
+		case 1:
+			_window.mesh.visible = false;
 		case 120:
 			fixed_glass.plane3.mesh.material.tween(coatingTime);
 			//fixed_glass.plane3.silverCoatingMaterial.tween(coatingTime);
@@ -16,8 +18,13 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			mobile_glass.plane.mesh.material.tween(coatingTime - 120);	
 			//mobile_glass.plane.silverCoatingMaterial.tween(coatingTime - 120);
 		break;
+		case 375:
+			_window.mesh.visible = true;
 		case 402:
 			moveRailDown();
+		break;
+		case 410:
+			mobile_glass.mesh.visible = false;
 		break;
 		case 499:
 			scene.remove(rail.mesh);

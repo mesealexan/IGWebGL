@@ -20,6 +20,7 @@ var mobile_window_animation = parseJSON('media/models/mobile_glass_anim.JSON');
 var tambur_a_pos = parseJSON('media/models/tambur_a_pos.JSON');
 var tambur_b_pos = parseJSON('media/models/tambur_b_pos.JSON');
 var silver_Planes_pos = parseJSON('media/models/silverPlanes.JSON');
+var window_animation = parseJSON('media/models/window_animation.JSON');
 
 parseJSON('media/models/plane.js');
 parseJSON('media/models/rail.js');
