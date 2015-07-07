@@ -355,6 +355,39 @@ function textureFadeMaterial (start, end) {
 	}
 }
 
+function pouringMaterial () {
+	var material = new THREE.ShaderMaterial({ 
+		uniforms: {		
+			texture1: { type: "t", value: cold_t },	
+		},
+		attributes: {}, 
+		vertexShader: vShader(), 
+		fragmentShader: fShader(),
+		transparent: false,
+		side: 2
+	});
+	material.tween = tween;
+	return material;
+
+	function vShader() {	
+		return ""+
+		"varying vec2 vUv;"+	
+		"void main(){"+
+		"vUv = uv;"+
+		"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+	}
+
+	function fShader () {	
+		return ""+
+		"varying vec2 vUv;"+
+		"uniform sampler2D texture1;"+
+		"void main(){"+
+		"float color = 1.0;"+
+		"vec2 position = vUv;"+
+		"gl_FragColor = texture2D(texture1, vUv);}"
+	}
+}
+
 function tweenOpacity (to, time, delayTime) {
 	tween = new TWEEN.Tween( this );
 	if(delayTime != undefined) tween.delay(delayTime);
