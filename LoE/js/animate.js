@@ -2,9 +2,6 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 	switch (newvalue){
 		case 1:
 			_window.mesh.visible = false;
-		case 94:
-			//fixed_glass.plane3.mesh.material.tween(coatingTime);
-			//fixed_glass.plane3.silverCoatingMaterial.tween(coatingTime);
 		break;
 		case 169:
 			fixed_glass.plane4.mesh.material.tween(coatingTime);
@@ -22,7 +19,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		break;
 		case 310:		
 			pouring.mesh.visible = true;
-			mobile_glass.plane.mesh.material.tween(coatingTime + 120);	
+			mobile_glass.plane.mesh.material.tween(coatingTime);	
 		break;
 		case 358:
 			pouring.mesh.visible = false;
@@ -37,10 +34,13 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 			enableBackground();
 		break;
 		case 469:
+			toggleElement(menu, 'visible');		
+		break;
+		case 479:
+			window_shadow.mesh.material.materials[0].tweenOpacity(1, window_shadow_appearTime, 300);
 			window_shadow.mesh.visible = true;
 		break;
 		case 499:
-			toggleElement(menu, 'visible');		
 			scene.remove(rail.mesh);
 			controls.target = camera.target;
 			text.mesh.visible = false;

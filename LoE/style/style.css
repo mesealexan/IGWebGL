@@ -27,10 +27,13 @@ body{
 }
 
 #menu{
+  left: -moz-calc(50% - 137px);
+  left: -webkit-calc(50% - 137px);
+  left: calc(50% - 137px);
   visibility: hidden;
 	position:fixed;
 	bottom: 16%;
-	left: 30%;
+	//left: 30%;
   	z-index: 10;
 }
 

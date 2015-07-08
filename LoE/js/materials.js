@@ -33,7 +33,7 @@ function setMaterials(materialName){
 		    	color: new THREE.Color("rgb(170,10,243)"),
 		    	ambient: new THREE.Color("rgb(170,10,243)"),
 		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	transparent: true,
+		    	transparent: false,
 		    	opacity: 0.5,
 		    	blending: THREE.AdditiveBlending
 		    })
@@ -206,13 +206,18 @@ function setMaterials(materialName){
 	return material
 }
 
-
-function silverCoatingMaterial (start, end) {
+function silverCoatingMaterial (size, secondary_t) {
+	var hasSecondary = 0;
+	if(secondary_t) hasSecondary = 1.0;
 	var material = new THREE.ShaderMaterial({ 
 		uniforms: {		
-			texture1: { type: "t", value: coat1_t },
-			start: { type: 'f', value: start},
-			end: { type: 'f', value: end}
+			primary_t: { type: "t", value: coat1_t },
+			secondary_t: { type: "t", value: secondary_t },			
+			hasSecondary: { type: "f", value: hasSecondary },
+			start: { type: 'f', value: 1.104 },
+			size: { type: 'f', value: size},
+			discard_f: { type: 'f', value: 1.1},
+			maxColor: { type: 'f', value: 1.0}
 		},
 		attributes: {}, 
 		vertexShader: vShader(), 
@@ -240,26 +245,38 @@ function silverCoatingMaterial (start, end) {
 	function fShader () {	
 		return ""+
 		"varying vec2 vUv;"+
-		"uniform sampler2D texture1;"+		
-		"uniform float start;"+	
-		"uniform float end;"+
+		"uniform sampler2D primary_t;"+	
+		"uniform sampler2D secondary_t;"+		
+		"uniform float start;"+			
+		"uniform float size;"+		
+		"uniform float maxColor;"+	
+		"uniform float discard_f;"+
+		"uniform float hasSecondary;"+
 		"void main(){"+
 		"float color = 0.0;"+
 		"vec2 position = vUv;"+
-		"color = (position.x + start);"+
-		"if(color > end) discard;"+
-		"else gl_FragColor = color * texture2D(texture1, vUv);}"
+		//flip uv coord for text
+		"vec2 vUvInv = vec2(1. - vUv.x, vUv.y);"+
+		"color = ((position.x * size) + maxColor) + start;"+
+		"if (hasSecondary == 1.0) {"+
+			"if (color >= discard_f + maxColor) discard;"+
+			"else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv)) + "+
+			"texture2D(secondary_t, vUvInv);" +
+			"else gl_FragColor = texture2D(secondary_t, vUvInv);}"+
+		"else {"+
+			"if (color >= discard_f + maxColor) discard;"+
+			"else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}}"
 	}
 
 	function tween(time, delay, repeat){
-		tween = new TWEEN.Tween( this.uniforms.start )
-		if(repeat != undefined) tween.repeat( repeat );
-		if(delay != undefined) tween.delay( delay );
-		tween.to( { value: -1.0 }, time );
-		tween.start();
+		tweenStart = new TWEEN.Tween( this.uniforms.start )
+		if(repeat != undefined) tweenStart.repeat( repeat );
+		if(delay != undefined) tweenStart.delay( delay );
+		tweenStart.to( { value: -this.uniforms.size.value - this.uniforms.maxColor.value }, 
+			time);
+		tweenStart.start();
 	}
 }
-
 
 function textureFadeMaterial (start, end) {
 	var material = new THREE.ShaderMaterial({ 
@@ -306,10 +323,11 @@ function textureFadeMaterial (start, end) {
 
 		var startVal = 0;
 		var endVal = 1;
+
 		if(this.uniforms.startValue.value == 1)
 			this.uniforms.texture2.value = to;
-		else {
-			startVal = 1;
+		else { 
+			startVal = 1; 
 			endVal = 0;
 			this.uniforms.texture1.value = to;
 		}
@@ -327,8 +345,7 @@ function textureFadeMaterial (start, end) {
 function pouringMaterial () {
 	var material = new THREE.ShaderMaterial({ 
 		uniforms: {		
-			texture1: { type: "t", value: coat2_t },	
-			resolution: { type: "v2", value: {x: window.innerWidth, y: window.innerHeight} }
+			texture1: { type: "t", value: coat2_t },
 		},
 		attributes: {}, 
 		vertexShader: vShader(), 
@@ -350,15 +367,13 @@ function pouringMaterial () {
 		return ""+
 		"varying vec2 vUv;"+
 		"uniform sampler2D texture1;"+
-		"uniform vec2 resolution;"+
 		"void main(){"+
-		"vec2 frag_position = ( gl_FragCoord.xy / resolution.xy );"+
-   		"vec4 frag_color = texture2D(texture1, frag_position);"+
-		"vec4 color = texture2D(texture1, vUv);"+
+		"vec4 tex = texture2D(texture1, vUv);"+
+		"float color = 0.;"+
 		"vec2 position = vUv;"+
-		"if(frag_color.a < 0.7) discard;"+
-		"else gl_FragColor = color;}"
-	}
+		"if(tex.r > 0.99) discard;"+
+		"gl_FragColor = vec4(tex.r, tex.g, tex.b, 1.);}"
+	}	
 }
 
 function tweenOpacity (to, time, delayTime) {
@@ -370,9 +385,9 @@ function tweenOpacity (to, time, delayTime) {
 
 function enableBackground () {
 	bck_1.mesh.visible = true;	
-	plane.mesh.material.materials[0].tweenOpacity(0, backgroundBlendSpeed);
+	plane.mesh.material.materials[0].tweenOpacity(0, backgroundBlendTime);
 }
 
 function manageBackgroundOpacity (to) {
-	bck_1.mesh.material.tween(to, backgroundBlendSpeed)
+	bck_1.mesh.material.tween(to, backgroundBlendTime)
 }
