@@ -203,7 +203,7 @@ function setMaterials(materialName){
 	material.defaultEmissive = material.emissive;
 	material.maxOpacity = material.opacity;
 
-	return material
+	return material;
 }
 
 function silverCoatingMaterial (size, secondary_t) {
@@ -234,7 +234,7 @@ function silverCoatingMaterial (size, secondary_t) {
 	material.depthWrite = true;
 	return material;
 
-	function vShader() {	
+	function vShader() {
 		return ""+
 		"varying vec2 vUv;"+	
 		"void main(){"+

@@ -5,6 +5,7 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		break;
 		case 169:
 			fixed_glass.plane4.mesh.material.tween(coatingTime);
+			setTimeout(function(){ removeFromScene(fixed_glass.plane4);}, coatingTime);
 			pouring.mesh.visible = true;
 		break;
 		case 218:
@@ -13,13 +14,15 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 		case 240:
 			pouring.mesh.visible = true;
 			fixed_glass.plane5.mesh.material.tween(coatingTime);
+			setTimeout(function(){ removeFromScene(fixed_glass.plane5);}, coatingTime);
 		break;
 		case 288:
 			pouring.mesh.visible = false;
 		break;
 		case 310:		
 			pouring.mesh.visible = true;
-			mobile_glass.plane.mesh.material.tween(coatingTime);	
+			mobile_glass.plane.mesh.material.tween(coatingTime);
+			setTimeout(function(){ removeFromScene(fixed_glass.plane6);}, coatingTime);	
 		break;
 		case 358:
 			pouring.mesh.visible = false;

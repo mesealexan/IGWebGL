@@ -33,6 +33,14 @@ function loadObject (name, variable, callback, initiallyVisible, initialOpacity)
 	if(parent) parent.add(obj.mesh); else scene.add(obj.mesh);
  }
 
+ function removeFromScene (obj) {
+ 	if(obj.mesh.material.materials)
+ 		for (var i = 0; i < obj.mesh.material.materials.length; i++) 
+ 			obj.mesh.material.materials[i].dispose();
+ 	else obj.mesh.material.dispose();
+ 	obj.mesh.parent.remove(obj.mesh);
+ }
+
 function loadAssets () {
 	setInitialCameraPos();
 	makeTextureCube();
@@ -139,7 +147,7 @@ function addSilverPlanes () {
 							    -silver_Planes_pos.positions[i].position.y);
 
 		fixed_glass['plane' + (i + 1).toString()] = planeObj;
-		addToScene(planeObj, fixed_glass.mesh)
+		addToScene(planeObj, fixed_glass.mesh)		
 	};
 	
 	planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, coat1_text) );
