@@ -1,0 +1,55 @@
+Graceful Degradation
+
+After today's discussion, I am firmly resolved to make sure we gracefully degrade for our users. Something this big must not have any failures on client devices. 
+
+There are a number of gotchas in this process, and so here is an outline:
+
+Check the browser version and/or the product type
+Use https://github.com/ded/bowser. 
+The benefit is that we can segregate content even between iPad and iPhone
+We need to make sure we have a correct list in case some devices can do what we want. Especially in the Android world.
+Looks like IE10 and back will all need the simplified, alternate content.
+Discreet alert ("For best results, please upgrade your browser").
+Check if WebGL is enabled:
+Use the code in this page. It works: https://www.browserleaks.com/webgl#howto-detect-webgl. You will see it checking your own browser right at the top of the page.
+If there is NO webgl, then show alternate content. If there IS webgl but is NOT enabled, then show alternate content with discreet alert ("Enable WebGL for best experience")
+Please know that Safari on Mac HAS webgl, but is NOT enabled by default. - See attached document for instruction on how to enable. We'll use that info in the popup message.
+Alex, I found a snippet that works in three.js, apparently: http://stackoverflow.com/questions/11871077/proper-way-to-detect-webgl-support (see bottom comment)
+Finally, we may just shut out Safari regardless of WebGL support - it seems like it is dog slow in any case, even with it enabled. So we might treat it like the previous bullet point ("Upgrade or change to FF/Chrome for best experience").
+
+Alternate Content:
+The alternate content for non-compliant browsers will have the following:
+Intro JS animation - Dan's making this
+Video thumbnail "Is there a Cardinal in your window?"
+Discreet footer link message "For Best Results..." (onclick: modal dialog with message)
+The "regular" content will be WITHOUT that footer link and WITH a "Start Now" button ->
+
+Web Audio
+
+We still need to get some audio in this. To that end, I put together a test page that uses the Howler 2.0 beta JS software. See here:
+
+http://cardinalanim.s3-website-us-east-1.amazonaws.com/audio-test/audio-test.html
+
+2.0 Beta tree of the software: https://github.com/goldfire/howler.js/tree/2.0
+
+Alex and Dan, note that I put in comments in the file to show what I did. A couple of things:
+
+There is a background sound that autoplays. The Howler folks say they can get the iOS devices to autoplay, but I didn't get it to work - I think Apple closed that loophole forever. HOWEVER, when the page loads, if you tap ANYWHERE on the screen, the background sound autoplays. So Dan, solution: above, where it says "Start Now" button, we can use THAT to unlock the mobile audio and it works through the WHOLE SESSION. Tap once, run forever.
+Alex and Dan, can you take those two mp3 files and try them out in the background and onclick events for the IG animation? The background audio starts when the animation starts.
+Guys, I committed and pushed my test code to Git. Do a pull and you will get everything that makes it run.
+
+******************************************************************************************************************************
+
+
+ I saw this issue looking around online, it's a new who posted 
+issues on iOS devices: 
+https://www.reddit.com/r/threejs/comments/396mgs/threejs_having_different_behavior_in_mobile_vs/
+
+I suppose we can't know unless we test. I will set up a testing process 
+to see what the Web Inspector in Safari says.
+
+I just looked at https://crazyskills.panasonic.com/en/ and it seems to 
+work incredibly fast in iphone and ipad. I'm sure there are shortcuts 
+made, I'd like to know what they are. :)
+
+

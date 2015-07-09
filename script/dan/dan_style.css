@@ -1,0 +1,255 @@
+/* CSS Document */
+
+body{
+  	margin: 0px;
+  	padding: 0px;
+	overflow:hidden;
+}
+
+
+.home_holder {
+width: 100%;
+height:100%;
+overflow:hidden;
+position:absolute;
+text-align: center;
+    
+}
+
+
+#background {
+
+  position:fixed;
+  background-color: #111111;
+  z-index: 1;
+}
+
+#webGL{
+position:fixed;
+	top: 0px;
+	left: 0px;
+  	width: 100%;
+  	height: 100%;
+  	z-index: 5;
+}
+
+
+
+
+.site_bar {
+ position: absolute;
+    width: 100%;
+    height: 60px;
+    float: left;
+    left: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 500;
+    border-top: 2px grey solid;
+}
+
+
+
+
+.views, views > div,
+
+#background,
+#webGL {
+width: 100%;
+height:100%;
+position:absolute;
+float:left;
+left:0;
+top:0;	
+}
+
+
+.hud_holder_ {
+	position:relative;
+	width:100%;
+    height: 100%;
+    max-width: 1200px;
+	z-index: 50;
+    text-align: center;
+    overflow: hidden;
+ pointer-events: none;
+  margin: auto;
+    display: inline-block;
+    
+}
+
+
+.hud_holder {
+	position:relative;
+	width:100%;
+    height: 100%;
+    max-width: 1200px;
+	z-index: 50;
+    text-align: center;
+    overflow: hidden;
+ 
+  margin: auto;
+    display: inline-block;
+    margin-top: 40px;
+    
+  pointer-events: none;
+    
+}
+
+.hud_item {
+	position:absolute;
+	width:100%;
+    height: 100%;
+    max-width: 1280px;
+    text-align: center;
+    float:left;
+    left: 0;
+    top:0;
+    overflow: hidden;
+ pointer-events: none;
+  margin: auto;
+    display: inline-block;
+   
+    
+}
+
+.svg-container { 
+
+display: inline-block;
+position: relative;
+width: 100%;
+padding-bottom: 100%; 
+vertical-align: middle; 
+overflow: hidden; 
+     
+
+}
+
+.svg-content { 
+
+display: inline-block;
+position: absolute;
+top: 0;
+left: 0;
+
+}
+
+/*-------------------- HUD---------------*/
+
+.burger-hit {
+ pointer-events: auto;
+    opacity: 0;
+    
+}
+.burger-hit:hover {
+ cursor: pointer;
+    
+}
+
+.close-icon {
+display: none;   
+    fill: white;
+}
+
+.svgMask {
+display: none;
+  
+}
+
+.navBlockerStrip {
+ fill-opacity: 0.5;
+fill: #222222;
+  
+}
+
+.nav-titles path, .nav-sub-titles path {
+ fill: white;   
+}
+
+.navStrip {
+pointer-events: all;
+fill-opacity: 0.2;
+fill: #C8DDF2;
+  
+}
+
+.navStrip:hover {
+
+fill-opacity: .8;
+    cursor: pointer;
+    /*
+    fill: red;
+    fill-opacity: .1;
+
+    transform-origin: 50% 100%;
+   transform: scale(1.5);
+*/
+      
+
+stroke: #FFF2B1;
+  stroke-dasharray: 2000 2000;  
+  stroke-dashoffset: 2000;
+  stroke-width: 2;
+  transition: stroke-dashoffset 2s linear;
+
+  
+}
+    
+    
+    
+.navStrip.selected {
+
+fill-opacity: 0.8;
+fill: orange;
+  
+);
+    
+}
+
+.nav_indicator {
+fill: white;
+    display: none;
+}
+
+.nav_indicator.selected {
+fill: white;
+    display: block;
+}
+
+.blueSide {
+ display: none;
+}
+
+.hideMe {
+ display:none;
+}
+
+
+
+
+
+
+#hit_secondary_seal_8_,
+.activateTouch
+{
+ pointer-events:all;
+    
+}
+
+
+#hit_secondary_seal_8_:hover,
+.activateTouch:hover {
+cursor: pointer;
+    fill: red;
+    
+}
+
+.newOrange {
+ fill:orange;
+   pointer-events:all; 
+}
+
+.newOrange:hover {
+ fill:red;
+   cursor: pointer;; 
+}
