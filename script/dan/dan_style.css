@@ -83,7 +83,7 @@ top:0;
 	position:relative;
 	width:100%;
     height: 100%;
-    max-width: 1200px;
+  max-width: 1600px;
 	z-index: 50;
     text-align: center;
     overflow: hidden;
@@ -92,7 +92,9 @@ top:0;
     display: inline-block;
     margin-top: 40px;
     
+    
   pointer-events: none;
+  
     
 }
 
@@ -100,7 +102,7 @@ top:0;
 	position:absolute;
 	width:100%;
     height: 100%;
-    max-width: 1280px;
+    max-width: 1600px;
     text-align: center;
     float:left;
     left: 0;
@@ -136,6 +138,7 @@ left: 0;
 
 /*-------------------- HUD---------------*/
 
+
 .burger-hit {
  pointer-events: auto;
     opacity: 0;
@@ -148,6 +151,21 @@ left: 0;
 
 .close-icon {
 display: none;   
+    fill: white;
+}
+
+.close-icon.navOpen {
+display: block;  
+    fill: white;
+}
+
+.burger {
+/*display: none;   */
+    fill: white;
+}
+
+.burger.navOpen {
+display: none;  
     fill: white;
 }
 
@@ -165,6 +183,15 @@ fill: #222222;
 .nav-titles path, .nav-sub-titles path {
  fill: white;   
 }
+
+.pressMe {
+   pointer-events: all; 
+}
+
+.pressMe:hover {
+  cursor:pointer;
+}
+
 
 .navStrip {
 pointer-events: all;
@@ -226,7 +253,18 @@ fill: white;
 
 
 
+#loe-set {
+ display: none;
+}
 
+.ig-txt {
+ display: none;
+}
+
+#TOP-INFO-LOE, 
+#TOP-INFO-IG {
+ display: none;
+}
 
 
 #hit_secondary_seal_8_,
@@ -253,3 +291,49 @@ cursor: pointer;
  fill:red;
    cursor: pointer;; 
 }
+
+
+/*---------------- THE ARE ACTUALLY ALL USED----------*/
+
+#hud-copy {
+display: none;
+
+}
+
+
+.nav_x002D_pad {
+     pointer-events: all; 
+       transition: all 0.2s ease;
+    }
+    .nav_x002D_pad {
+     display: none;
+    fill-opacity: 0.0;
+        
+    }
+    .nav_x002D_pad_selected {
+     display: none;
+    fill-opacity: 0.0;
+    fill:#aed332;
+        
+    }
+                                               
+     .nav_x002D_pad.on,
+     .nav_x002D_pad_selected.on
+      {
+     display: block;
+        fill-opacity: 0.8;
+         transition: all 0.5s ease;
+        
+    }
+                             
+     .nav_x002D_pad.on:hover {
+     cursor: pointer;
+         fill:#d37032;
+         fill-opacity: 0.95;
+    }
+          
+    .nav_x002D_pad_selected.on:hover {
+         cursor: pointer; 
+        fill-opacity: 1.00;
+    
+    }
