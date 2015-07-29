@@ -103,6 +103,7 @@ top:0;
 	width:100%;
     height: 100%;
     max-width: 1600px;
+	min-width: 960px;
     text-align: center;
     float:left;
     left: 0;
@@ -123,48 +124,54 @@ width: 100%;
 padding-bottom: 100%; 
 vertical-align: middle; 
 overflow: hidden; 
-     
-
+ 
 }
 
-.svg-content { 
-
+.svg-content, .svg-container svg { 
+width:100%;
+height:56%;
 display: inline-block;
 position: absolute;
 top: 0;
 left: 0;
 
+
+}
+
+#hud-copy {
+   width: 100%;
+    height: auto;
 }
 
 /*-------------------- HUD---------------*/
 
 
-.burger-hit {
+#burger-hit {
  pointer-events: auto;
     opacity: 0;
     
 }
-.burger-hit:hover {
+#burger-hit:hover {
  cursor: pointer;
     
 }
 
-.close-icon {
+#close-icon {
 display: none;   
     fill: white;
 }
 
-.close-icon.navOpen {
+#close-icon.navOpen {
 display: block;  
     fill: white;
 }
 
-.burger {
+#burger {
 /*display: none;   */
     fill: white;
 }
 
-.burger.navOpen {
+#burger.navOpen {
 display: none;  
     fill: white;
 }
@@ -192,46 +199,6 @@ fill: #222222;
   cursor:pointer;
 }
 
-
-.navStrip {
-pointer-events: all;
-fill-opacity: 0.2;
-fill: #C8DDF2;
-  
-}
-
-.navStrip:hover {
-
-fill-opacity: .8;
-    cursor: pointer;
-    /*
-    fill: red;
-    fill-opacity: .1;
-
-    transform-origin: 50% 100%;
-   transform: scale(1.5);
-*/
-      
-
-stroke: #FFF2B1;
-  stroke-dasharray: 2000 2000;  
-  stroke-dashoffset: 2000;
-  stroke-width: 2;
-  transition: stroke-dashoffset 2s linear;
-
-  
-}
-    
-    
-    
-.navStrip.selected {
-
-fill-opacity: 0.8;
-fill: orange;
-  
-);
-    
-}
 
 .nav_indicator {
 fill: white;
@@ -300,40 +267,72 @@ display: none;
 
 }
 
+#burger-hit {
+ fill-opacity: 0;
+pointer-events: all; 
+}
 
-.nav_x002D_pad {
+#burger-hit:hover {
+cursor: pointer;
+}
+
+.closed .nav_pad {
+    display: none;
+    
+}
+
+#close-icon {
+ display: block;
+}
+
+.closed #close-icon {
+ display: none;
+}
+
+.nav_pad {
      pointer-events: all; 
-       transition: all 0.2s ease;
+  /*  fill: #333333;
+   transition: all 0.2s ease;*/
     }
-    .nav_x002D_pad {
-     display: none;
-    fill-opacity: 0.0;
-        
-    }
-    .nav_x002D_pad_selected {
-     display: none;
-    fill-opacity: 0.0;
-    fill:#aed332;
+
+
+.nav_pad.selected,
+.nav_pad.selected:hover
+{
+   fill:#aed332; 
         
     }
                                                
-     .nav_x002D_pad.on,
-     .nav_x002D_pad_selected.on
-      {
-     display: block;
-        fill-opacity: 0.8;
-         transition: all 0.5s ease;
-        
-    }
-                             
-     .nav_x002D_pad.on:hover {
+.nav_pad:hover {
      cursor: pointer;
-         fill:#d37032;
-         fill-opacity: 0.95;
+   /*  fill:#d37032; */
+   
     }
           
-    .nav_x002D_pad_selected.on:hover {
+.nav_pad.selected:hover {
          cursor: pointer; 
-        fill-opacity: 1.00;
+        
     
     }
+
+
+
+
+
+.Blue_x0020_Neon{fill:none;stroke:#8AACDA;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;}
+	.navStrip{fill:#00A99D;}
+	.hud_btn{fill:#29ABE2;}
+	.hide_x0020_board{fill:#CCCCCC;}
+	.hide_x0020_zone{fill:#4D4D4D;}
+	.hide_x0020_board_x0020_2{fill:#CCCCCC;}
+	.hide_x0020_board_x0020_3{fill:#CCCCCC;}
+	.NAV_x0020_PAD{fill:#C69C6D;}
+	.hide_x0020_zone_x0020_2{fill:#4D4D4D;}
+	.nav_x002D_pad{fill:#333333;}
+	.st0{fill:#FFFFFF;}
+	.st1{opacity:0.38;fill:#B3B3B3;}
+	.st2{display:none;}
+	.st3{display:inline;}
+	.st4{fill:#E6E6E6;}
+	.st5{display:inline;fill:#E6E6E6;}
+	.st6{fill:#333333;}
