@@ -25,7 +25,7 @@ function startSVG() {
     
 function openNav() {
    
-     $("#svg-top").removeClass("closed");
+     $("#hud").removeClass("closed");
      burger.attr({visibility: "hidden"});
     
     //$("#hud-copy").fadeIn(2000);
@@ -44,7 +44,7 @@ function openNav() {
     function closeNav() {
         
         function closePart2 () {
-        $("#svg-top").addClass("closed");
+        $("#hud").addClass("closed");
         burger.attr({visibility: "visible"});
         }
      
@@ -54,7 +54,7 @@ function openNav() {
     
 function toggleNav() {
        
-    if ( $("#svg-top").hasClass("closed") ) { openNav() } else { closeNav() };
+    if ( $("#hud").hasClass("closed") ) { openNav() } else { closeNav() };
    
     }
     function delayClose() {
@@ -84,6 +84,7 @@ function toggleNav() {
         
     //add to scene
     topHUD.append(g);
+        g.transform("t1,50")
         
     //
         svgBlur = g.filter(Snap.filter.blur(3, 3));

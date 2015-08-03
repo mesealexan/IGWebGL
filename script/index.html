@@ -24,29 +24,11 @@
 
 
 
-        <div class="hud_holder">
+        <div id="hud" class="hud_holder closed">
             
-               <div class="hud_item">
-                   <div id="svg-bottom" class="svg-container">
+            <svg viewBox="0 0 1280 800"  id="svg-top-bottom"></svg>
+            <svg preserveAspectRatio="xMidYMid meet" viewBox="0 0 1280 800"  id="svg-top-svg"></svg>
 
-
-                </div>
-            </div>
-
-
-            <div class="hud_item top-item">
-                <div id="svg-top" class="svg-container closed">
-                    <svg  viewBox="0 0 1280 800"  id="svg-top-svg"></svg>
-                   
-                </div>
-            </div>
-
-
-           <div class="hud_item">
-               <div id="svg-top" class="svg-container">
-               <img id="hud-copy" src="rawSVG/hud-top.png">
-               </div>
-      </div>
             </div>
 
 
@@ -54,7 +36,22 @@
 
 
 
-        <div class="site_bar"></div>
+        <!--<div class="site_bar"></div>-->
+    </div>
+
+    <div class="site-page open">
+        
+        
+        <div class="wrapper"> 
+        <svg  viewBox="-267 357 80 80" class="site-logo"  id="site-logo" ></svg>
+            <div class="comment">site nav</div>
+        </div>
+        <div class="main"></div>
+        <div class="side">
+        <div class="back_btn">Back</div>
+        <svg   viewBox="0 0 440 80" class="site-logo"  id="side-logo" ></svg>
+        </div>
+    
     </div>
 
     <!--
@@ -107,6 +104,49 @@
 $( document ).ready(function()  {
 
 startSVG();
+    
+//LOAD LOGO SVG BUTTON
+var bird_btn_SVG = Snap("#site-logo");
+var side_logo_SVG = Snap("#side-logo");
+    
+var birdShapeSVG = Snap.load("rawSVG/birdShape.svg", function ( f) { 
+    
+    var gg = f;
+    var b = gg.select("#birdShape");
+    b.attr({fill: "#EE3424"});
+    bird_btn_SVG.append( b );
+    
+});
+    
+var logoSVG = Snap.load("rawSVG/cardinalLogo.svg", function ( loadedFragment ) {
+ 
+   g = loadedFragment;
+    birdShape = g.select("#BIRD_SHAPE");
+    birdShape.remove();
+  
+    side_logo_SVG.append( g );
+
+    
+                                        } );
+    
+//NAV SYS POSITION
+    
+//OPEN
+$("#site-logo").click(function(){
+  $(".site-page").addClass("open");
+$(".site-page .main").animate({"width": "100%"}, 1000, "easeInOutQuad");
+$(".site-page .side").delay(500).animate({"left": "0"}, 1000, "easeOutBack");  
+    
+});
+    
+//CLOSE    
+$(".back_btn").click(function(){
+$(".site-page").removeClass("open");
+$(".site-page .main").animate({"width": 0}, 1000, "easeInOutQuad");
+$(".site-page .side").delay(500).animate({"left": "-500px"}, 1000, "easeInBack");
+
+
+})    
    
 
 });
