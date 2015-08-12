@@ -6,16 +6,112 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <!-- Call the below js file -->
     <script type="text/javascript" src="howler.js-2.0/howler.core.min.js"></script>
+    <script type="text/javascript" src="howler.js-2.0/howler.effects.min.js"></script>
 </head>
 <body>
 
 <script type="text/javascript">
 // Call this function, just in case:
+
 Howler.iOSAutoEnable = true;
 
-// Create the sound object (this one will autoplay).
+
+// Create the sound objects, set the initial volume, add to array for reference when we unload
+
+var listOfHowlerObjects =[];
+var listOfObjectVolumes =[];
+
+var i89ColdNightIntroVolume = 0.0;
+listOfObjectVolumes.push(i89ColdNightIntroVolume);
+var i89ColdNightIntro = new Howl({
+  src: ['sounds/i89-coldnight-intro.mp3', 'sounds/i89-coldnight-intro.ogg', 'sounds/i89-coldnight-intro.m4a'],
+  autoplay: true,
+  volume: 0.0
+});
+listOfHowlerObjects.push(i89ColdNightIntro);
+
+var i89HeaterLoopVolume = 0.0;
+listOfObjectVolumes.push(i89HeaterLoopVolume);
+var i89HeaterLoop = new Howl({
+  src: ['sounds/i89-heater-loop.mp3', 'sounds/i89-heater-loop.ogg', 'sounds/i89-heater-loop.m4a'],
+  autoplay: true,
+  loop: true,
+  volume: 0.0
+});
+listOfHowlerObjects.push(i89HeaterLoop);
+
+var i89ColdNightLoopVolume = 0.0;
+listOfObjectVolumes.push(i89ColdNightLoopVolume);
+var i89ColdNightLoop = new Howl({
+  src: ['sounds/i89-coldnight-loop.mp3', 'sounds/i89-coldnight-loop.ogg', 'sounds/i89-coldnight-loop.m4a'],
+  autoplay: true,
+  loop: true,
+  volume: 0.0
+});
+listOfHowlerObjects.push(i89ColdNightLoop);
+
+
+var i89ToggleGlassType = new Howl({
+  src: ['sounds/i89-toggle-glasstype.mp3', 'sounds/i89-toggle-glasstype.ogg', 'sounds/i89-toggle-glasstype.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+listOfHowlerObjects.push(i89ToggleGlassType);
+
+
+
+var i89CameraZoom = new Howl({
+  src: ['sounds/i89-camera-zoom.mp3', 'sounds/i89-camera-zoom.ogg', 'sounds/i89-camera-zoom.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+listOfHowlerObjects.push(i89CameraZoom);
+
+
+
+var HUDActivate = new Howl({
+  src: ['sounds/HUD-activate.mp3', 'sounds/HUD-activate.ogg', 'sounds/HUD-activate.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+listOfHowlerObjects.push(HUDActivate);
+
+
+var HUDDeactivate = new Howl({
+  src: ['sounds/HUD-deactivate.mp3', 'sounds/HUD-deactivate.ogg', 'sounds/HUD-deactivate.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+listOfHowlerObjects.push(HUDDeactivate);
+
+
+function fadeAllObjects() {
+for (i = 0; i < listOfHowlerObjects.length; i++) 
+	{
+	 listOfHowlerObjects[i].fade(listOfObjectVolumes[i],0.0,3000);
+	}
+}
+
+function unloadAllObjects() {
+
+for (i = 0; i < listOfHowlerObjects.length; i++) 
+	{
+    listOfHowlerObjects[i].unload();
+	}
+}
+
+
+
+
+
+// IG related Sounds
 var backgroundspacesound = new Howl({
  src: ['002965538-space-impact-reverb_01.mp3'],
+  autoplay: false,
   sprite: {
     full: [0, 12000]
   }});
@@ -23,27 +119,165 @@ var backgroundspacesound = new Howl({
 // This will play on load. However, iOS devices still require the user to touch the screen.
 // We should put something in the on-load presentation to make the user touch the screen.
 // After that, the audio will be unlocked for the whole user session!
-backgroundspacesound.play('full');
+//backgroundspacesound.play('full');
 </script>
 
 <h1>Howler 2.0 beta test page</h1>
     
 
-<p>The background audio should play without consequence. The button below plays another mp3 file.</p>
+
 
 <h2> Audio Event Testing</h2>
 
-<button id="ex1-play">Play</button>
 
+
+
+
+<h3>i89 Related Sounds</h3>
+
+<p>NOTES: the following instructions are based on the button names and the i89 animation sequences.
+<ul>
+<li> When on load with 20deg F: Run Cold Night Intro. Hold establishing shot for 10 seconds.</li>
+<li> When first zoomed into room: Run Play Heater Loop, fading to 1.0. When you back up to the "rest" position, run Play Heater Fading Out to 0.6 volume.</li>
+<li> When intro animation is finished, Turn on HUD and run HUD Activate</li>
+<li> When you zoom in to the window, run Play Heater Loop, fading to 1.0 AND Camera Zoom.</li>
+<li> When you zoom out to the back position: run Play Heater Fading Out to 0.6 volume AND camera zoom.</li>
+<li> when you pan to the left: run Play Heater Fading Out to 0.2 volume AND Play Cold Night Loop Fade In to 1.0</li>
+<li> when you pan to the right: run Play Cold Night Loop Fade Out to 0.0 AND Play Heater Fading Out to 0.6 volume</li>
+<li> when you move on to another scene: Turn off HUD and run HUD Deactivate AND run Fade All (when it works) AND run Unload All</li> 
+</ul>
+
+</p>
+
+<button id="coldnight-intro">Play Cold Night Intro</button>
+<br/><br/>
+
+<button id="heater-loop10">Play Heater Loop, fading to 1.0</button>
+
+<br/><br/>
+<button id="heater-loop06">Play Heater Fading Out to 0.6 volume</button>
+
+<br/><br/>
+<button id="heater-loop02">Play Heater Fading Out to 0.2 volume</button>
+
+<br/><br/>
+<button id="coldnight-loop10">Play Cold Night Loop Fade In to 1.0</button>
+
+<br/><br/>
+
+<button id="coldnight-loop00">Play Cold Night Loop Fade Out to 0.0</button>
+
+<br/><br/>
+
+<button id="toggle-glasstype">Toggle Glass Type</button>
+
+<br/><br/>
+
+<button id="camera-zoom">Camera Zoom</button>
+
+<br/><br/>
+
+For Dan:
+
+<button id="hud-activate">HUD Activate</button>   <button id="hud-deactivate">HUD Deactivate</button>
+
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<button id="mute-on">Mute On</button>   <button id="mute-off">Mute Off</button>  
+
+<br/><br/>
+When we leave for another section: <button id="fade-all">Fade All (not working yet)</button> And dump the objects: <button id="unload-all">Unload All</button>
+
+<br/><br/>
+
+  
+ 
+ <br/><br/>
+<h3>IG/Endur Related Sounds</h3>
+
+<button id="ex1-play">Play Laser Burp</button>
+<br/><br/>
     
 <script type="text/javascript">
 // This event plays a sound on the click event.
 var zappersound = new Howl({
   src: ['036640938_prev_01c.mp3']
 });
-    
 $('#ex1-play').on('click', function(){zappersound.stop().play();})
+
+</script>
+
+
+
+<script type="text/javascript">
+   
+
+$('#coldnight-intro').on('click', function(){
+			i89ColdNightIntro.fade(i89ColdNightIntroVolume,1.0,2000);
+			i89ColdNightIntroVolume = 1.0;
+			})		
+			
+$('#heater-loop10').on('click', function(){
+			i89HeaterLoop.fade(i89HeaterLoopVolume,1.0, 5000);
+			i89HeaterLoopVolume = 1.0;
+			})
+			
+
+$('#heater-loop06').on('click', function(){
+			i89HeaterLoop.fade(i89HeaterLoopVolume,0.6,2000);
+			i89HeaterLoopVolume = 0.6;
+			})
+
+			
+
+$('#heater-loop02').on('click', function(){
+			i89HeaterLoop.fade(i89HeaterLoopVolume,0.2,2000);
+			i89HeaterLoopVolume = 0.2;
+			})
+
+$('#coldnight-loop10').on('click', function(){
+			i89ColdNightLoop.fade(i89ColdNightLoopVolume,1.0,3000);
+			i89ColdNightLoopVolume = 1.0;
+			})		
+
+$('#coldnight-loop00').on('click', function(){
+			i89ColdNightLoop.fade(i89ColdNightLoopVolume,0.0,3000);
+			i89ColdNightLoopVolume = 0.0;
+			})	
+			
+
+$('#toggle-glasstype').on('click', function(){i89ToggleGlassType.stop().play();})
+
+$('#camera-zoom').on('click', function(){i89CameraZoom.stop().play();})
+
+
+$('#hud-activate').on('click', function(){HUDActivate.stop().play();})
+
+$('#hud-deactivate').on('click', function(){HUDDeactivate.stop().play();})
+
+
+			
+$('#mute-on').on('click', function(){
+			Howler.mute(true);
+			})	
+			
+$('#mute-off').on('click', function(){
+			Howler.mute(false);
+			})	
+
+$('#fade-all').on('click', function(){
+			fadeAllObjects();
+
+			})			
+	
+$('#unload-all').on('click', function(){
+			unloadAllObjects();
+			})		
+
 
 </script>
 </body>
 </html>
+
