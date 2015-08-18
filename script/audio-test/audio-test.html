@@ -203,6 +203,9 @@ When we leave for another section: <button id="fade-all">Fade All (not working y
 <button id="neat-cardinal2">Play Neat Cardinal2 Sound</button> Play THIS one - we want it to start about 2.5 seconds in from the Guitar
 
 <br/><br/>
+<button id="neat-wind">Play Neat Wind Leaves</button> Play when the wind comes
+
+<br/><br/>
 <button id="neat-sunpass">Play Neat Sun Passing</button> Play when the sun passes
 
 <br/><br/>
@@ -243,6 +246,16 @@ var neatCardinal2 = new Howl({
 });
 
 $('#neat-cardinal2').on('click', function(){neatCardinal2.stop().play();})
+
+var neatWind = new Howl({
+  src: ['sounds/neat-wind-leaves.mp3', 'sounds/neat-wind-leaves.ogg', 'sounds/neat-wind-leaves.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-wind').on('click', function(){neatWind.stop().play();})
+
 
 var neatSunPass = new Howl({
   src: ['sounds/neat-heavenly-transition.mp3', 'sounds/neat-heavenly-transition.ogg', 'sounds/neat-heavenly-transition.m4a'],
