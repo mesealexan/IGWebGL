@@ -109,17 +109,16 @@ for (i = 0; i < listOfHowlerObjects.length; i++)
 
 
 // IG related Sounds
-var backgroundspacesound = new Howl({
+var backgroundSpaceSound = new Howl({
  src: ['002965538-space-impact-reverb_01.mp3'],
-  autoplay: false,
-  sprite: {
-    full: [0, 12000]
-  }});
+  autoplay: false
+ 	});
+  
+var zappersound = new Howl({
+  src: ['036640938_prev_01c.mp3']
+});
 
-// This will play on load. However, iOS devices still require the user to touch the screen.
-// We should put something in the on-load presentation to make the user touch the screen.
-// After that, the audio will be unlocked for the whole user session!
-//backgroundspacesound.play('full');
+
 </script>
 
 <h1>Howler 2.0 beta test page</h1>
@@ -192,22 +191,102 @@ When we leave for another section: <button id="fade-all">Fade All (not working y
 
 <br/><br/>
 
-  
- 
- <br/><br/>
-<h3>IG/Endur Related Sounds</h3>
+  <h3>NEAT Related Sounds</h3>
 
-<button id="ex1-play">Play Laser Burp</button>
+
+<button id="neat-guitar">Play Neat Guitar Intro</button> Start this when the animation flying zooming in starts
 <br/><br/>
-    
+
+<button id="neat-cardinal1">Play Neat Cardinal1 Sound</button>
+
+<br/><br/>
+<button id="neat-cardinal2">Play Neat Cardinal2 Sound</button> Play THIS one - we want it to start about 2.5 seconds in from the Guitar
+
+<br/><br/>
+<button id="neat-sunpass">Play Neat Sun Passing</button> Play when the sun passes
+
+<br/><br/>
+<button id="neat-rain">Play Neat Rain</button> Play when it rains. Note that it has a function to fade out after 8 seconds
+
+<br/><br/>
+
+<button id="neat-sparkle">Play Neat Sparkle of Gleaming Window</button> When water is gone, and Neat has a clean window, play this sound with a "twinkle" in the Neat glass
+
+<br/><br/>
+
 <script type="text/javascript">
-// This event plays a sound on the click event.
-var zappersound = new Howl({
-  src: ['036640938_prev_01c.mp3']
+
+
+var neatAcousticGuitar = new Howl({
+  src: ['sounds/neat-acoustic-guitar.mp3', 'sounds/neat-acoustic-guitar.ogg', 'sounds/neat-acoustic-guitar.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
 });
-$('#ex1-play').on('click', function(){zappersound.stop().play();})
+
+$('#neat-guitar').on('click', function(){neatAcousticGuitar.stop().play();})
+
+var neatCardinal1 = new Howl({
+  src: ['sounds/neat-cardinal1.mp3', 'sounds/neat-cardinal1.ogg', 'sounds/neat-cardinal1.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-cardinal1').on('click', function(){neatCardinal1.stop().play();})
+
+var neatCardinal2 = new Howl({
+  src: ['sounds/neat-cardinal2.mp3', 'sounds/neat-cardinal2.ogg', 'sounds/neat-cardinal2.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-cardinal2').on('click', function(){neatCardinal2.stop().play();})
+
+var neatSunPass = new Howl({
+  src: ['sounds/neat-heavenly-transition.mp3', 'sounds/neat-heavenly-transition.ogg', 'sounds/neat-heavenly-transition.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-sunpass').on('click', function(){neatSunPass.stop().play();})
+
+var neatRain = new Howl({
+  src: ['sounds/neat-rain-exterior-loop.mp3', 'sounds/neat-rain-exterior-loop.ogg', 'sounds/neat-rain-exterior-loop.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-rain').on('click', function(){
+			neatRain.stop().play();
+			neatRain.fade(1.0,0.2,8000);
+})
+
+var neatSparkle = new Howl({
+  src: ['sounds/neat-magic-wand.mp3', 'sounds/neat-magic-wand.ogg', 'sounds/neat-magic-wand.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+$('#neat-sparkle').on('click', function(){neatSparkle.stop().play();})
 
 </script>
+
+
+ <br/><br/>
+ 
+ 
+<h3>IG/Endur Related Sounds</h3>
+
+<button id="laser-burp">Play Laser Burp</button>
+<br/><br/>
+    
+<button id="background-space">Play Background Space (12 sec)</button>
+<br/><br/>
 
 
 
@@ -276,6 +355,11 @@ $('#unload-all').on('click', function(){
 			unloadAllObjects();
 			})		
 
+
+// IG Related Sounds
+$('#laser-burp').on('click', function(){zappersound.stop().play();})
+
+$('#background-space').on('click', function(){backgroundSpaceSound.stop().play();})
 
 </script>
 </body>
