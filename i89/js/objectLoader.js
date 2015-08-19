@@ -55,6 +55,6 @@ function loadAssets () {
 	loadObject('text', text, addToScene);	
 	loadObject('moon', moon, addToScene);
 	loadObject('moon', moon, addToScene);
-	loadObject('heat_wave', heat_wave, addToScene, true);
+	//loadObject('heat_wave', heat_wave, addToScene, true);
 	console.log('Loading assets')
 }
