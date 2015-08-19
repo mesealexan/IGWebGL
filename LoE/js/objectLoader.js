@@ -42,59 +42,7 @@ function loadObject (name, variable, callback, initiallyVisible, initialOpacity)
  }
 
 function loadAssets () {
-	setInitialCameraPos();
-	makeTextureCube();
-
-	coat1_text = THREE.ImageUtils.loadTexture( "media/models/coat1_text.png", {}, function(){
-	coat2_t = THREE.ImageUtils.loadTexture( "media/models/rotator.png", {}, function(){
-	coat1_t = THREE.ImageUtils.loadTexture( "media/models/coat1.png", {}, function(){
-	cold_t = THREE.ImageUtils.loadTexture( "media/img/cold.jpg", {}, function(){
-	hot_t = THREE.ImageUtils.loadTexture( "media/img/hot.jpg", {}, function(){
-	mixed_t = THREE.ImageUtils.loadTexture( "media/img/mixed.jpg", {}, function(){
-
-	loadObject('bck_1', bck_1, [addToScene, function () { 
-		bck_1.mesh.material = textureFadeMaterial();
-
-	loadObject('window', _window, [addToScene, function () {
-	loadObject('window_shadow', window_shadow, function () {
- 		window_shadow.mesh.material.materials[0].opacity = 0;
-		window_shadow.mesh.material.materials[0].tweenOpacity = tweenOpacity;
-		addToScene(window_shadow, _window.mesh);
-	loadObject('mobile_glass', mobile_glass, [addToScene, function(){
-	loadObject('pouring', pouring, [addToScene, function(){
-	loadObject('fixed_glass', fixed_glass, function(){
-	loadObject('text', text, [addToScene, function(){
-	loadObject('rotator', rotator, function(){
-	loadObject('rail', rail, [addToScene,function(){          	
- 	loadObject('plane', plane, [addToScene, function(){
- 		plane.mesh.material.materials[0].transparent = true;
- 		plane.mesh.material.materials[0].tweenOpacity = tweenOpacity;
-    loadObject('tambur_a', tambur_a, function(){
-    loadObject('tambur_b', tambur_b, [
-        function(){         
-			plane.mesh.scale.z /= 5;
-	  		rotator.mesh.position.set(-8323.986, -142.658, -4.892);
-	  		rotator.rotateZ = rotateZ; 	
-	  		rotator.rotateZ(-1, tamburRotateTime, Infinity);
-	  		addToScene(rotator, rail.mesh);
-			addToScene(fixed_glass, rail.mesh);
-			//addTestPlane();
-			addPouringPlane();
-			manageCameraAnimations.playAnim_1();
-        }, addSilverPlanes, moveMobileGlass.play, moveFixedGlass.play, moveWindow.play,
-        	placeTambur, animate], tambur_b);
-	});
-	}]);
-	}]);
-	});
-	}]);
-	});
-	}]);
-	}]);
-	}, false); //window_shadow
-	}]);
-	}], false); //bck_1
-	})})})})})})
+	animate();
 }
 
 function placeTambur () {

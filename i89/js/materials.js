@@ -1,4 +1,4 @@
-var imagePrefix = "media/skybox/cube_";
+var imagePrefix = "media/skybox/Cube_";
 var directions  = ["r", "l", "u", "d", "f", "b"]; 
 var imageSuffix = ".jpg";
 
@@ -12,13 +12,14 @@ function makeTextureCube (argument) {
 
 function addSkybox () {
 	var cubeGeom = new THREE.BoxGeometry(5000,5000,5000);
-
 	var materialArray = [];
-	for (var i = 0; i < 6; i++)
+	for (var i = 0; i < 6; i++){
 		materialArray.push( new THREE.MeshBasicMaterial({
 			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-			side: THREE.BackSide
+			side: THREE.DoubleSide
 		}));
+	console.log( imagePrefix + directions[i] + imageSuffix)
+	}
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
 	scene.add( skyBox );

@@ -1,1 +1,1 @@
-
+ var floor = {}, walls = {}, snow = {}, bck = {}, grid = {};

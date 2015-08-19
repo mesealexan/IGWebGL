@@ -9,6 +9,5 @@ watch(animateCamera, "frame", function(prop, action, newvalue, oldvalue){
 function animate(time) {
 	setInterval(function(){ 
 		renderer.render(scene, camera); 
-		TWEEN.update(undefined);	
-	}, 1000 / animation.fps);
+	}, 30);
 } 

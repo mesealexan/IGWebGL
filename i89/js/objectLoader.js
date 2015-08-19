@@ -4,15 +4,18 @@ function loadObject (name, variable, callback, initiallyVisible, initialOpacity)
 	var materialsArray = [];
 
 	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
+		/*
 		materialsArray = materials;
 		for (var i = materialsArray.length - 1; i >= 0; i--) {
 			if(initialOpacity != undefined) materialsArray[i].opacity = initialOpacity;
 			materialsArray[i] = setMaterials(materialsArray[i].name);
-		};
+
+			console.log(materialsArray[i])
+		};*/
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 
-		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
+		var faceMaterial = new THREE.MeshFaceMaterial( materials ); 
  	 	mesh = new THREE.Mesh( geometry, faceMaterial );
  	});
 
@@ -29,7 +32,7 @@ function loadObject (name, variable, callback, initiallyVisible, initialOpacity)
 }
 
  function addToScene (obj, parent) {
- 	obj.inScene = true;
+ 	//obj.inScene = true;
 	if(parent) parent.add(obj.mesh); else scene.add(obj.mesh);
  }
 
@@ -42,5 +45,11 @@ function loadObject (name, variable, callback, initiallyVisible, initialOpacity)
  }
 
 function loadAssets () {
-
+	loadObject('floor', floor, addToScene);
+	loadObject('walls', walls, addToScene);
+	loadObject('snow', snow, addToScene);
+	loadObject('bck', bck, addToScene);
+	loadObject('grid', grid, addToScene);
+	
+	console.log('Loading assets')
 }

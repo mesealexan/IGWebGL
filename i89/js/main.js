@@ -1,6 +1,9 @@
 var menu = document.getElementById("menu");
 var background = document.getElementById("background"); 
 var width = window.innerWidth, height = window.innerHeight;
+var fov = 45;
+var camNear = 1, camFar = 100000;
+
 aspectRatio = width / height;
 
 Init();
@@ -9,13 +12,15 @@ function Init() {
 	if(!webgl_detect()) return;	
 	container = document.getElementById( 'webGL' );	
 	scene = new THREE.Scene();
-	loadAssets();	
 	addRenderer();
 	detectOrientationChange();
 	addCamera();
+	addSkybox ();
+	loadAssets();
 	var winResize = new THREEx.WindowResize(renderer, camera);
 	addControls();	
 	addLight();
+	animate();
 }
 
 function addRenderer() {
@@ -26,11 +31,11 @@ function addRenderer() {
 }
 
 function addLight () {
-	var ambientLight = new THREE.AmbientLight( 0x999999 );
+	var ambientLight = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambientLight );
 	
 	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light1.position.set( 0,100,0 );
+		light1.position.set( 0,7000,0 );
 		scene.add( light1 );
 }
 
