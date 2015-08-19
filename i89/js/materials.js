@@ -29,7 +29,17 @@ function setMaterials(materialName){
 	var material;
 
 	switch(materialName){
-		
+		case 'heat wave':
+		material = new THREE.MeshPhongMaterial({
+	    	color: new THREE.Color("rgb(223,116,20)"),
+	    	ambient: new THREE.Color("rgb(223,116,20)"),
+	    	specular: new THREE.Color("rgb(230,220,60)"),
+	    	emissive: new THREE.Color("rgb(223,116,20)"),
+	    	opacity: 0.35,
+	    	transparent: true,
+	    	morphTargets : true
+	    });
+			break
 		case 'text':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(27,12,8)"),
@@ -132,7 +142,6 @@ function setMaterials(materialName){
 	    	break
         	
 	}
-	console.log(material)
 	material.name = materialName;
 	material.defaultEmissive = material.emissive;
 	material.maxOpacity = material.opacity;

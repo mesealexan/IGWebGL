@@ -7,14 +7,14 @@ function loadObject (name, variable, callback, animated) {
 		materialsArray = materials;
 			for (var i = materialsArray.length - 1; i >= 0; i--) {
 				materialsArray[i] = setMaterials(materialsArray[i].name);
-				console.log(materialsArray[i].name)
 			};
 
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray );
 		if(animated){
-			mesh = new THREE.Mesh( geometry, faceMaterial );
+			mesh = new THREE.SkinnedMesh( geometry, faceMaterial );
+			console.log(mesh)
 		}else{
 			mesh = new THREE.Mesh( geometry, faceMaterial );
 		}
@@ -56,6 +56,6 @@ function loadAssets () {
 	loadObject('text', text, addToScene);	
 	loadObject('moon', moon, addToScene);
 	loadObject('moon', moon, addToScene);
-	//loadObject('heat_wave', heat_wave, addToScene, true);
-	console.log('Loading assets')
+	loadObject('heat_wave', heat_wave, addToScene, true);
+
 }
