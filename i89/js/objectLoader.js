@@ -12,12 +12,13 @@ function loadObject (name, variable, callback, animated) {
 
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
+		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray );
 		if(animated){
 			mesh = new THREE.Mesh( geometry, faceMaterial );
 		}else{
 			mesh = new THREE.Mesh( geometry, faceMaterial );
 		}
-		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray ); 
+		 
  	 	
  	});
 
