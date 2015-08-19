@@ -1,1 +1,1 @@
- var floor = {}, walls = {}, snow = {}, bck = {}, grid = {};
+ var floor = {}, walls = {}, snow = {}, bck = {}, grid = {}, heat_source = {}, text = {}, moon = {}, heat_wave = {};

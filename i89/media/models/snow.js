@@ -16,16 +16,7 @@
 	"materials": [
 {
 "DbgIndex" : 0,
-"DbgName"  : "snow",
-"colorDiffuse"  : [0.5882, 0.5882, 0.5882],
-"colorAmbient"  : [0.5882, 0.5882, 0.5882],
-"colorSpecular"  : [0.9000, 0.9000, 0.9000],
-"transparency"  : 1.0,
-"specularCoef"  : 10.0,
-"mapDiffuse"    : "snow.jpg",
-"mapBump" 		: "snow_b.jpg",
-"vertexColors" : false,
-"shading":"Phong"
+"DbgName"  : "snow"
 }
 
 ],

@@ -34,9 +34,11 @@ function addLight () {
 	var ambientLight = new THREE.AmbientLight( 0xffffff );
 	scene.add( ambientLight );
 	
-	var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
-		light1.position.set( 0,7000,0 );
-		scene.add( light1 );
+
+	var spotLight = new THREE.SpotLight( 0xb99bfd);
+		spotLight.position.set( 980, 1049, -656 );
+		spotLight.target.position.set( 34, 0, 85 );
+		scene.add( spotLight );
 }
 
 function addCamera () {	
