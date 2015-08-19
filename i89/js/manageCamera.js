@@ -1,7 +1,14 @@
-function cameraControls() {
+var cc = new cameraControls();
+cc.setSource("media/camera/camera.JSON");
+cc.play();
+
+function cameraControls() {	
+	addWatch(this);
 	var animation, _this = this;
 	this.frame = -1;
-	this.setSource = function(path){ animation = parseJSON(path); }	
+
+	this.setSource = function(path){ animation = parseJSON(path); }
+
 	this.play = function(from, to){
 		if(!animation) {console.error("animation undefined!"); return;}
 		if(from == undefined) from = this.frame + 1;
@@ -38,27 +45,22 @@ function cameraControls() {
 		},1000/animation.fps)
 	};
 
-	this.stop = function(){clearInterval(this.animation_interval)};
+	this.pause = function(){clearInterval(this.animation_interval)};
+
+	this.stop = function(){this.pause(); this.frame = -1};
 
 	this.checkPlayback = function(from, to){
-		if (from <= to){ //regular playback
-			if (this.frame < to){ //still has to play
-				this.frame++;
-				return true;
-			}
+		if (from <= to) //regular playback
+			if (this.frame++ < to) return true; //still has to play
 			else return false; //reached the end
-		}	
-		else if (from > to){ //reverse playback
-			if (this.frame > to){ //still has to play
-				this.frame--;
-				return true;
-			}
+		
+		else if (from > to) //reverse playback
+			if (this.frame-- > to) return true; //still has to play						
 			else return false; //reached the end	
-		}
 	};
 
 	this.tween = function (frame, speed, onComplete) {
-		/**position**/
+		/***position***/
 		var startPos = camera.position;
 		var destination = new THREE.Vector3(
 			animation.frames[frame].position.x, 
@@ -73,19 +75,19 @@ function cameraControls() {
 	    posTween.start();
 	    posTween.onComplete(function() { if(onComplete) onComplete() });
 
-		/**rotation**/
+		/***rotation***/
     	var rollAngle = animation.frames[frame].rollAngle;
-    	var newUp = modifyCameraUp(rollAngle);
+    	var newUp = this.modifyCameraUp(rollAngle);
 
 	    var angleTween = new TWEEN.Tween( camera.up );
 	    angleTween.easing(TWEEN.Easing.Cubic.InOut);
 	    angleTween.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
 	    angleTween.start();  
 
-		/**target**/
+		/***target***/
 	    var target = new THREE.Vector3(animation.frames[frame].target.x, 
-			animation.frames[frame].target.z, 
-			-animation.frames[frame].target.y);
+									   animation.frames[frame].target.z, 
+			                          -animation.frames[frame].target.y);
 
 	    var targetTween = new TWEEN.Tween( camera.target )
 	    targetTween.easing(TWEEN.Easing.Cubic.InOut);
@@ -93,7 +95,7 @@ function cameraControls() {
 	    targetTween.start();
 	    targetTween.onUpdate( function () { camera.lookAt(camera.target) });
 
-		/**fov**/
+		/***fov***/
 	    var fovTween = new TWEEN.Tween( camera );
 	    fovTween.to( { fov: animation.frames[frame].fov + fovModifier }, time);
 	    fovTween.start();
@@ -108,7 +110,7 @@ function cameraControls() {
 		return newUp;
 	};
 
-	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180); }
+	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180) }
 }
 
 var manageCameraAnimations = {
@@ -120,5 +122,16 @@ var manageCameraAnimations = {
 function setInitialCameraPos () {
 	//position camera at start, no jitter when playback starts
 	animateCamera.play(0, 1);
+}
+
+function addWatch (obj) {
+	watch(obj, "frame", function(prop, action, newvalue, oldvalue){
+	//console.log(newvalue)
+	switch (newvalue){
+		case 1:
+			//
+		break;
+	}
+});
 }
 
