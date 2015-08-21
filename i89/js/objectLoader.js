@@ -56,6 +56,31 @@ function loadAssets () {
 	loadObject('text', text, addToScene);	
 	loadObject('moon', moon, addToScene);
 	loadObject('moon', moon, addToScene);
-	loadObject('heat_wave', heat_wave, addToScene, true);
-
+	loadObject('heat_wave', heat_wave, [addToScene, addHandlers], true);
 }
+
+function addHandlers () {
+	var heat_wave2 = heat_wave.mesh.clone();
+	var heat_wave3 = heat_wave.mesh.clone();
+
+	scene.add(heat_wave2);
+	scene.add(heat_wave3);
+
+	heat_wave.mesh.position.x += 4;
+	heat_wave2.position.x += 26;
+	heat_wave3.position.x += 46;
+
+	ah1.setMesh(heat_wave);
+	ah2.setMesh({mesh: heat_wave2});
+	ah3.setMesh({mesh: heat_wave3});
+
+	heat_wave.mesh.frustumCulled = false;
+	heat_wave2.frustumCulled = false;
+	heat_wave3.frustumCulled = false;
+
+	ah1.loop(86, 161);
+	ah2.loop(86, 161);	
+	ah3.loop(86, 161);	
+	ch.play();
+}
+

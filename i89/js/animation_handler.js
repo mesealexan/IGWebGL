@@ -101,8 +101,9 @@
 // };
 
 animationHandler.prototype = new genericHandler();
-var ah = new animationHandler();
-ah.setMesh(heat_wave);
+var ah1 = new animationHandler();
+var ah2 = new animationHandler();
+var ah3 = new animationHandler();
 
 function animationHandler(){
 	var mesh;
@@ -110,9 +111,6 @@ function animationHandler(){
 
 	this.setMesh = function(m) { mesh = m.mesh; }
 
-	this.play = function(from, to){
-		this.basePlay(from, to);
-	}
 	this.play = function(from, to){
 		this.basePlay(from, to);
 	}
@@ -128,7 +126,15 @@ function animationHandler(){
 			mesh.morphTargetInfluences[ this.frame ] = 1;
 			mesh.morphTargetInfluences[ this.frame + 1 ] = 0;
 		}
-		else {if(!looping) this.stop()} //reached the end
+		else { 			
+			if(loop){
+				this.stop();
+				mesh.morphTargetInfluences[ this.to ] = 0; 
+				mesh.morphTargetInfluences[ this.from ] = 1; 
+				this.basePlay(this.from, this.to + 1);
+			}
+			else this.stop();
+		} //reached the end
 	}
 }
 
