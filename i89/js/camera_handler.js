@@ -1,54 +1,26 @@
-var cc = new cameraControls();
-//cc.setSource("media/camera/camera.JSON");
-//cc.play();
+cameraHandler.prototype = new genericHandler();
+var ch = new cameraHandler();
+ch.setSource("media/camera/camera.JSON");
 
-function cameraControls() {	
-	addWatch(this);
-	var animation, _this = this;
-	//this.controls = new THREE.OrbitControls( camera, renderer.domElement );
+function genericHandler () {
+	_this = this;
 	this.frame = -1;
+	this.from = undefined;
+	this.to = undefined;
 
-	this.setSource = function(path){ animation = parseJSON(path); }
+	this.basePlay = function(from, to){
+		this.from = from;
+		this.frame = this.from - 1; 
+		this.to = --to;
 
-	this.play = function(from, to){
-		if(!animation) {console.error("animation undefined!"); return;}
-		if(from == undefined) from = this.frame + 1;
-		if(to == undefined) to = animation.frames.length - 1;
-
-		this.stop(this.animation_interval);
-
-		//decrement because check below first increments then returns true
-		this.frame = from - 1; 
-		//decrement because 0 based
-		to--;
-
-		this.animation_interval = setInterval(function(){
-			if(_this.checkPlayback(from, to)){
-				var newUp = _this.modifyCameraUp(animation.frames[_this.frame].rollAngle);
-				camera.up.set(newUp.x, newUp.y, newUp.z);
-
-				var lookAt = new THREE.Vector3(
-					animation.frames[_this.frame].target.x, 
-					animation.frames[_this.frame].target.z, 
-				   -animation.frames[_this.frame].target.y);
-
-				camera.target = lookAt;
-				camera.lookAt(lookAt);
-				camera.fov = animation.frames[_this.frame].fov + fovModifier;
-				camera.updateProjectionMatrix();
-
-				camera.position.set(
-					(animation.frames[_this.frame].position.x),
-					(animation.frames[_this.frame].position.z),
-					-(animation.frames[_this.frame].position.y));
-			}
-			else {camera.lookAt(camera.target); this.stop();} //reached the end
-		},1000/animation.fps)
+		updater.addHandler(this);
 	};
 
-	this.pause = function(){clearInterval(this.animation_interval)};
+	this.update = function() {};
 
-	this.stop = function(){this.pause(); this.frame = -1};
+	this.pause = function() { updater.removeHandler(this) };
+
+	this.stop = function() { this.pause(); this.frame = -1 };
 
 	this.checkPlayback = function(from, to){
 		if (from <= to) //regular playback
@@ -59,6 +31,41 @@ function cameraControls() {
 			if (this.frame-- > to) return true; //still has to play						
 			else return false; //reached the end	
 	};
+}
+
+function cameraHandler() {	
+	var animation;
+
+	this.setSource = function(p) { animation = parseJSON(p) }
+
+	this.play = function(from, to){
+		if(from == undefined) from = this.frame + 1;
+		if(to == undefined) to = animation.frames.length - 1;
+		this.basePlay(from, to);
+	}
+
+	this.update = function () {
+		if(this.checkPlayback(this.from, this.to)){
+			var newUp = this.modifyCameraUp(animation.frames[this.frame].rollAngle);
+			camera.up.set(newUp.x, newUp.y, newUp.z);
+
+			var lookAt = new THREE.Vector3(
+				animation.frames[this.frame].target.x, 
+				animation.frames[this.frame].target.z, 
+			   -animation.frames[this.frame].target.y);
+
+			camera.target = lookAt;
+			camera.lookAt(lookAt);
+			camera.fov = animation.frames[this.frame].fov + fovModifier;
+			camera.updateProjectionMatrix();
+
+			camera.position.set(
+				(animation.frames[this.frame].position.x),
+				(animation.frames[this.frame].position.z),
+			   -(animation.frames[this.frame].position.y));
+		}
+		else {camera.lookAt(camera.target); this.stop();} //reached the end
+	}
 
 	this.tween = function (frame, speed, onComplete) {
 		/***position***/
@@ -101,7 +108,7 @@ function cameraControls() {
 	    fovTween.to( { fov: animation.frames[frame].fov + fovModifier }, time);
 	    fovTween.start();
 	    fovTween.onUpdate( function () { camera.updateProjectionMatrix() }); 
-	};
+	}
 
 	this.modifyCameraUp = function (degrees) {	
 		var radians = this.degreesToRadians(degrees);
@@ -109,7 +116,7 @@ function cameraControls() {
 		var up = new THREE.Vector3( 0, 0, 1 );
 		newUp.applyAxisAngle( up, radians );
 		return newUp;
-	};
+	}
 
 	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180) }
 }
