@@ -1,0 +1,2 @@
+0 - 86 start
+87 - 161 loop wave
