@@ -5,6 +5,7 @@ var cc = new cameraControls();
 function cameraControls() {	
 	addWatch(this);
 	var animation, _this = this;
+	//this.controls = new THREE.OrbitControls( camera, renderer.domElement );
 	this.frame = -1;
 
 	this.setSource = function(path){ animation = parseJSON(path); }
@@ -65,7 +66,7 @@ function cameraControls() {
 		var destination = new THREE.Vector3(
 			animation.frames[frame].position.x, 
 			animation.frames[frame].position.z, 
-			-animation.frames[frame].position.y);
+		   -animation.frames[frame].position.y);
 		var distance = startPos.distanceTo(destination);
 		var time = distance / speed;
 
