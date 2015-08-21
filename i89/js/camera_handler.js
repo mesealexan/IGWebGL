@@ -1,6 +1,6 @@
 var cc = new cameraControls();
-cc.setSource("media/camera/camera.JSON");
-cc.play();
+//cc.setSource("media/camera/camera.JSON");
+//cc.play();
 
 function cameraControls() {	
 	addWatch(this);
@@ -112,26 +112,3 @@ function cameraControls() {
 
 	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180) }
 }
-
-var manageCameraAnimations = {
-	playAnim_1: function(){ //both windows perspective
-		animateCamera.play(camera_frames.animation_1.from, camera_frames.animation_1.to);
-	}
-}
-
-function setInitialCameraPos () {
-	//position camera at start, no jitter when playback starts
-	animateCamera.play(0, 1);
-}
-
-function addWatch (obj) {
-	watch(obj, "frame", function(prop, action, newvalue, oldvalue){
-	//console.log(newvalue)
-	switch (newvalue){
-		case 1:
-			//
-		break;
-	}
-});
-}
-
