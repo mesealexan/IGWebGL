@@ -56,6 +56,8 @@ function loadAssets () {
 	loadObject('text', text, addToScene);	
 	loadObject('moon', moon, addToScene);
 	loadObject('moon', moon, addToScene);
+	loadObject('frame', frame, addToScene);
+	loadObject('i89', i89, addToScene);
 	loadObject('heat_wave', heat_wave, [addToScene, addHandlers], true);
 }
 
@@ -81,6 +83,6 @@ function addHandlers () {
 	ah1.loop(86, 161);
 	ah2.loop(86, 161);	
 	ah3.loop(86, 161);	
-	ch.play();
+	//ch.play();
 }
 

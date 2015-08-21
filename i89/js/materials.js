@@ -2,7 +2,7 @@ var imagePrefix = "media/skybox/Cube_";
 var directions  = ["r", "l", "u", "d", "f", "b"]; 
 var imageSuffix = ".jpg";
 
-
+makeTextureCube();
 function makeTextureCube (argument) {
 	var urls = [];
 	for (var i = 0; i < 6; i++)
@@ -28,7 +28,72 @@ function addSkybox () {
 function setMaterials(materialName){
 	var material;
 
-	switch(materialName){
+	switch(materialName){	
+		case 'sealant a':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(161,161,161)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    })
+	        break;
+	    case 'sealant b':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	
+		    })
+	        break;
+	    case 'Spacer':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(222,222,222)"),
+		    	specular: new THREE.Color("rgb(255,255,255)")
+		    })
+	        break;
+	    case 'Spacer Cap':
+		    material = new THREE.MeshPhongMaterial({
+		    	color: new THREE.Color("rgb(213,213,213)"),
+		    	ambient: new THREE.Color("rgb(116,116,116)"),
+		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[4])
+		    })
+	        break;
+	    case 'Glass':	
+			material = new THREE.MeshPhongMaterial({ 
+				color: new THREE.Color("rgb(255,255,255)"),
+				//ambient: new THREE.Color("rgb(255,1,0)"),
+				specular: new THREE.Color("rgb(0,80,60)"),
+				vertexColors: THREE.VertexColors,
+				envMap: textureCube,
+				refractionRatio: 0.985, 
+				reflectivity: 0.99,
+				shininess: 30,
+				transparent: true,
+				opacity: 0.61
+			});
+	        break;
+	    case 'Glass Sides':
+			material = new THREE.MeshPhongMaterial({ 
+				color: new THREE.Color("rgb(46,56,31)"),
+				ambient: new THREE.Color("rgb(46,56,31)"),
+				emissive: new THREE.Color("rgb(46,56,31)"),
+				specular: new THREE.Color("rgb(0,80,60)"),
+				envMap: textureCube,
+				refractionRatio: 0.985, 
+				reflectivity: 0.99,
+				shininess: 30,
+				transparent: true,
+				opacity: 0.96
+			});
+	        break;	
+		case 'window frame':
+		material = new THREE.MeshLambertMaterial({
+	    	color: new THREE.Color("rgb(10,4,3)"),
+	    	ambient: new THREE.Color("rgb(22,16,15)"),
+	    	specular: new THREE.Color("rgb(255,255,255)")
+	    });
+			break
 		case 'heat wave':
 		material = new THREE.MeshPhongMaterial({
 	    	color: new THREE.Color("rgb(223,116,20)"),
@@ -37,7 +102,9 @@ function setMaterials(materialName){
 	    	emissive: new THREE.Color("rgb(223,116,20)"),
 	    	opacity: 0.35,
 	    	transparent: true,
-	    	morphTargets : true
+	    	morphTargets : true,
+	    	depthWrite: true,
+	    	depthTest: true
 	    });
 			break
 		case 'text':
@@ -103,7 +170,7 @@ function setMaterials(materialName){
 		case 'moon':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[5]);
 		material = new THREE.MeshPhongMaterial({
-	    	emissive: new THREE.Color("rgb(125,125,125)"),
+	    	emissive: new THREE.Color(0xb99bfd),
 	    	map: map
 	    });
 		    break
