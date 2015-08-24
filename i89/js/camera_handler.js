@@ -1,6 +1,4 @@
 cameraHandler.prototype = new genericHandler();
-var ch = new cameraHandler();
-ch.setSource("media/camera/camera.JSON");
 
 function genericHandler () {
 	_this = this;

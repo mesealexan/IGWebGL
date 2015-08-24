@@ -81,8 +81,12 @@ function addHandlers () {
 	heat_wave3.frustumCulled = false;
 
 	ah1.loop(86, 161);
-	ah2.loop(86, 161);	
-	ah3.loop(86, 161);	
-	//ch.play();
+	ah2.loop(86, 161);
+	ah3.loop(86, 161);
+
+    var ch = new cameraHandler();
+    ch.setSource("media/camera/camera.JSON");
+    addWatch(ch, "frame")
+	ch.play();
 }
 

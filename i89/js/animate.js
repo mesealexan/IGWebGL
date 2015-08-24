@@ -36,11 +36,11 @@ function updater () {
 	}	
 }
 
-
-addWatch(animSettings, "frame")
+//addWatch(animSettings, "frame")
 
 function addWatch (obj, val) {
 	watch(obj, val, function(prop, action, newvalue, oldvalue){
+    console.log(newvalue)
 		switch (newvalue){
 			case 0:
 				//
