@@ -86,7 +86,7 @@ function addHandlers () {
 
     var ch = new cameraHandler();
     ch.setSource("media/camera/camera.JSON");
-    addWatch(ch, "frame")
+    addWatch(ch, "frame");
 	ch.play();
 }
 
