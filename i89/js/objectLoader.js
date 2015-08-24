@@ -12,14 +12,9 @@ function loadObject (name, variable, callback, animated) {
 		geometry.computeFaceNormals();
 		geometry.computeVertexNormals();
 		var faceMaterial = new THREE.MeshFaceMaterial( materialsArray );
-		if(animated){
-			mesh = new THREE.SkinnedMesh( geometry, faceMaterial );
-			console.log(mesh)
-		}else{
-			mesh = new THREE.Mesh( geometry, faceMaterial );
-		}
-		 
- 	 	
+
+		if(animated) mesh = new THREE.SkinnedMesh( geometry, faceMaterial );
+		else mesh = new THREE.Mesh( geometry, faceMaterial );
  	});
 
 	loader.onLoadComplete = function(){
@@ -38,13 +33,13 @@ function loadObject (name, variable, callback, animated) {
 	if(parent) parent.add(obj.mesh); else scene.add(obj.mesh);
  }
 
- function removeFromScene (obj) {
- 	if(obj.mesh.material.materials)
- 		for (var i = 0; i < obj.mesh.material.materials.length; i++) 
- 			obj.mesh.material.materials[i].dispose();
- 	else obj.mesh.material.dispose();
- 	obj.mesh.parent.remove(obj.mesh);
- }
+ //function removeFromScene (obj) {
+ //	if(obj.mesh.material.materials)
+ //		for (var i = 0; i < obj.mesh.material.materials.length; i++)
+ //			obj.mesh.material.materials[i].dispose();
+ //	else obj.mesh.material.dispose();
+ //	obj.mesh.parent.remove(obj.mesh);
+ //}
 
 function loadAssets () {
 	loadObject('floor', floor, addToScene);
@@ -53,40 +48,62 @@ function loadAssets () {
 	loadObject('bck', bck, addToScene);
 	loadObject('grid', grid, addToScene);
 	loadObject('heat_source', heat_source, addToScene);
-	loadObject('text', text, addToScene);	
-	loadObject('moon', moon, addToScene);
+    loadObject('text', text, addToScene);
+    loadObject('text_2', text, addToScene);
+    loadObject('moon', moon, addToScene);
 	loadObject('moon', moon, addToScene);
 	loadObject('frame', frame, addToScene);
 	loadObject('i89', i89, addToScene);
-	loadObject('heat_wave', heat_wave, [addToScene, addHandlers], true);
+    loadObject('heat_wave', heat_wave, addToScene, true);
+    loadObject('heat_wave_refract', heat_wave_refract, addToScene, true);
+    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers], true);
 }
 
 function addHandlers () {
-	var heat_wave2 = heat_wave.mesh.clone();
-	var heat_wave3 = heat_wave.mesh.clone();
+	    heat_wave2 = heat_wave.mesh.clone();
+	    heat_wave3 = heat_wave.mesh.clone();
+        heat_wave_reflect2 = heat_wave_reflect.mesh.clone();
+        heat_wave_reflect3 = heat_wave_reflect.mesh.clone();
 
 	scene.add(heat_wave2);
 	scene.add(heat_wave3);
+    scene.add(heat_wave_reflect2);
+    scene.add(heat_wave_reflect3);
 
-	heat_wave.mesh.position.x += 4;
-	heat_wave2.position.x += 26;
-	heat_wave3.position.x += 46;
+    manageWaves();
 
-	ah1.setMesh(heat_wave);
-	ah2.setMesh({mesh: heat_wave2});
-	ah3.setMesh({mesh: heat_wave3});
+	ah1.setMesh([heat_wave, {mesh: heat_wave2}, {mesh: heat_wave3}]);
+	ah2.setMesh(heat_wave_refract);
+	ah3.setMesh([heat_wave_reflect, {mesh: heat_wave_reflect2}, {mesh: heat_wave_reflect3}]);
 
-	heat_wave.mesh.frustumCulled = false;
-	heat_wave2.frustumCulled = false;
-	heat_wave3.frustumCulled = false;
-
-	ah1.loop(86, 161);
-	ah2.loop(86, 161);
-	ah3.loop(86, 161);
-
-    var ch = new cameraHandler();
     ch.setSource("media/camera/camera.JSON");
     addWatch(ch, "frame");
 	ch.play();
+
+    function manageWaves(){
+        heat_wave.mesh.frustumCulled =
+        heat_wave2.frustumCulled =
+        heat_wave3.frustumCulled =
+        heat_wave.mesh.visible =
+        heat_wave2.visible = heat_wave3.visible =
+        heat_wave_refract.mesh.visible =
+        heat_wave_reflect.mesh.visible =
+        heat_wave_reflect2.visible =
+        heat_wave_reflect3.visible = false;
+
+        heat_wave.mesh.position.x += 4;
+        heat_wave2.position.x += 26;
+        heat_wave3.position.x += 46;
+
+        heat_wave_refract.mesh.position.x += 4;
+
+        heat_wave_reflect.mesh.position.y += 20;
+        heat_wave_reflect2.position.y += 20;
+        heat_wave_reflect3.position.y += 20;
+
+        heat_wave_reflect.mesh.position.x += 4;
+        heat_wave_reflect2.position.x += 26;
+        heat_wave_reflect3.position.x += 46;
+    }
 }
 

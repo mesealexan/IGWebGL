@@ -18,7 +18,7 @@ function addSkybox () {
 			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
 			side: THREE.DoubleSide
 		}));
-	console.log( imagePrefix + directions[i] + imageSuffix)
+	//console.log( imagePrefix + directions[i] + imageSuffix)
 	}
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );

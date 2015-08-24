@@ -1,4 +1,5 @@
 cameraHandler.prototype = new genericHandler();
+var ch = new cameraHandler();
 
 function genericHandler () {
 	_this = this;
@@ -53,6 +54,7 @@ function cameraHandler() {
 			   -animation.frames[this.frame].target.y);
 
 			camera.target = lookAt;
+            controls.target.copy(lookAt);
 			camera.lookAt(lookAt);
 			camera.fov = animation.frames[this.frame].fov + fovModifier;
 			camera.updateProjectionMatrix();
