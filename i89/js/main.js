@@ -26,7 +26,7 @@ function Init() {
 function addRenderer() {
 	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 	renderer.setClearColor( 0x000000, 0.0 );
-	renderer.setSize( width, height ); 
+	renderer.setSize( width, height );
 	container.appendChild( renderer.domElement );
 }
 

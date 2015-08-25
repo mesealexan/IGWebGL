@@ -28,29 +28,35 @@ function addSkybox () {
 function setMaterials(materialName){
 	var material;
 
-	switch(materialName){	
+	switch(materialName){
+        case "window_plane":
+            material = new RadialGradientMaterial();
+        break;
+
 		case 'sealant a':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(161,161,161)"),
 		    	ambient: new THREE.Color("rgb(116,116,116)"),
-		    	specular: new THREE.Color("rgb(255,255,255)"),
+		    	specular: new THREE.Color("rgb(255,255,255)")
 		    })
-	        break;
+	    break;
+
 	    case 'sealant b':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(213,213,213)"),
 		    	ambient: new THREE.Color("rgb(116,116,116)"),
-		    	specular: new THREE.Color("rgb(255,255,255)"),
-		    	
+		    	specular: new THREE.Color("rgb(255,255,255)")
 		    })
-	        break;
+	    break;
+
 	    case 'Spacer':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(213,213,213)"),
 		    	ambient: new THREE.Color("rgb(222,222,222)"),
 		    	specular: new THREE.Color("rgb(255,255,255)")
 		    })
-	        break;
+	    break;
+
 	    case 'Spacer Cap':
 		    material = new THREE.MeshPhongMaterial({
 		    	color: new THREE.Color("rgb(213,213,213)"),
@@ -58,11 +64,11 @@ function setMaterials(materialName){
 		    	specular: new THREE.Color("rgb(255,255,255)"),
 		    	normalMap: THREE.ImageUtils.loadTexture(imagesArray[4])
 		    })
-	        break;
+	    break;
+
 	    case 'Glass':	
 			material = new THREE.MeshPhongMaterial({ 
 				color: new THREE.Color("rgb(255,255,255)"),
-				//ambient: new THREE.Color("rgb(255,1,0)"),
 				specular: new THREE.Color("rgb(0,80,60)"),
 				vertexColors: THREE.VertexColors,
 				envMap: textureCube,
@@ -72,7 +78,8 @@ function setMaterials(materialName){
 				transparent: true,
 				opacity: 0.61
 			});
-	        break;
+	    break;
+
 	    case 'Glass Sides':
 			material = new THREE.MeshPhongMaterial({ 
 				color: new THREE.Color("rgb(46,56,31)"),
@@ -86,14 +93,16 @@ function setMaterials(materialName){
 				transparent: true,
 				opacity: 0.96
 			});
-	        break;	
+	    break;
+
 		case 'window frame':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(10,4,3)"),
 	    	ambient: new THREE.Color("rgb(22,16,15)"),
 	    	specular: new THREE.Color("rgb(255,255,255)")
 	    });
-			break
+		break;
+
 		case 'heat wave':
 		material = new THREE.MeshPhongMaterial({
 	    	color: new THREE.Color("rgb(223,116,20)"),
@@ -106,7 +115,8 @@ function setMaterials(materialName){
 	    	depthWrite: true,
 	    	depthTest: true
 	    });
-			break
+		break;
+
 		case 'text':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(27,12,8)"),
@@ -114,28 +124,31 @@ function setMaterials(materialName){
 	    	specular: new THREE.Color("rgb(27,12,8)"),
 	    	emissive: new THREE.Color("rgb(27,12,8)")
 	    });
-	    	break
+	    break;
+
 		case 'snow':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[4]);
 
 		material = new THREE.MeshLambertMaterial({
 	    	map: map
 	    });
-	    	break
+	    break;
+
 		case 'background':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[3]);
 
 		material = new THREE.MeshLambertMaterial({
 	    	map: map
 	    });
-	    	break
+	    break;
+
 		case 'wall1':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(69,30,15)"),
 	    	ambient: new THREE.Color("rgb(69,30,15)"),
 	    	specular: new THREE.Color("rgb(255,255,255)")
 	    });
-	    	break
+	    break;
 	    	
 	    case 'metal':
 		material = new THREE.MeshPhongMaterial({
@@ -145,35 +158,40 @@ function setMaterials(materialName){
 	    	metal: true,
 	    	shininess: 60
 	    });
-	    	break
+	    break;
+
 	    case 'wall2':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(212,175,122)"),
 	    	ambient: new THREE.Color("rgb(212,175,122)"),
 	    	specular: new THREE.Color("rgb(255,255,255)")
 	    });
-	    	break
+	    break;
+
 		case 'concrete':
 		material = new THREE.MeshLambertMaterial({
 	    	color: new THREE.Color("rgb(125,125,125)"),
 	    	ambient: new THREE.Color("rgb(125,125,125)"),
 	    	specular: new THREE.Color("rgb(255,255,255)")
 	    });
-	    	break
+	    break;
+
 		case 'outer wall':
 		material = new THREE.MeshPhongMaterial({
 	    	color: new THREE.Color("rgb(217,216,219)"),
 	    	ambient: new THREE.Color("rgb(125,125,125)"),
 	    	specular: new THREE.Color("rgb(191,172,233)")
 	    });
-		    break
+		break;
+
 		case 'moon':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[5]);
 		material = new THREE.MeshPhongMaterial({
 	    	emissive: new THREE.Color(0xb99bfd),
 	    	map: map
 	    });
-		    break
+		break;
+
 		case 'wood':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[1]);
 		var bump = THREE.ImageUtils.loadTexture(imagesArray[2]);
@@ -186,7 +204,8 @@ function setMaterials(materialName){
 	    	shininess: 8,
 	    	map: map
 	    });
-		    break
+		break;
+
 		case 'grid':
 		var map = THREE.ImageUtils.loadTexture(imagesArray[0]);
 			map.wrapS = THREE.RepeatWrapping;
@@ -201,13 +220,13 @@ function setMaterials(materialName){
 	    	map: map,
 	    	transparent: true
 	    });
-		    break
+		break;
+
 	    default:
 	    	material =  new THREE.MeshBasicMaterial();
 	    	material.depthTest = true;
 	    	material.depthWrite = true;
-	    	break
-        	
+	    break;
 	}
 	material.name = materialName;
 	material.defaultEmissive = material.emissive;
@@ -215,3 +234,18 @@ function setMaterials(materialName){
 
 	return material;
 }
+
+function RadialGradientMaterial (){
+    var canvas = document.createElement( 'canvas' );
+    canvas.width = canvas.height = 128;
+    var context = canvas.getContext( '2d' );
+    var gradient = context.createRadialGradient( canvas.width / 2,
+        canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+    gradient.addColorStop( 0.25, 'rgba(255,120,0,1)' );
+    gradient.addColorStop( 1, 'rgba(0,0,0,0)' );
+    context.fillStyle = gradient;
+    context.fillRect( 0, 0, canvas.width, canvas.height );
+    var shadowTexture = new THREE.Texture( canvas );
+    shadowTexture.needsUpdate = true;
+    return new THREE.MeshBasicMaterial( { map: shadowTexture, transparent: true } );
+};

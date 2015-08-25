@@ -54,9 +54,16 @@ function loadAssets () {
 	loadObject('moon', moon, addToScene);
 	loadObject('frame', frame, addToScene);
 	loadObject('i89', i89, addToScene);
+    loadObject('window_plane', window_plane, [addToScene, setupWindowPlane]);
     loadObject('heat_wave', heat_wave, addToScene, true);
     loadObject('heat_wave_refract', heat_wave_refract, addToScene, true);
     loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers], true);
+}
+
+function setupWindowPlane(){
+    window_plane.mesh.visible = false;
+    window_plane.mesh.scale.set(1.5, 1.5, 1);
+    window_plane.mesh.position.setY(-35);
 }
 
 function addHandlers () {
@@ -76,6 +83,8 @@ function addHandlers () {
 	ah2.setMesh(heat_wave_refract);
 	ah3.setMesh([heat_wave_reflect, {mesh: heat_wave_reflect2}, {mesh: heat_wave_reflect3}]);
 
+    window_plane.mesh.position.z = 2;
+    heatWaves.scaleWindowPlane();
     ch.setSource("media/camera/camera.JSON");
     addWatch(ch, "frame");
 	ch.play();

@@ -1,12 +1,12 @@
 function addControls() {	
     controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.noZoom = true;
+    controls.noZoom = false;
     controls.noPan = true;
-    /*controls.maxPolarAngle = 1.6;
-    controls.minPolarAngle = 1.55;
+    controls.maxAzimuthAngle = -0.9;
+    controls.minAzimuthAngle = -1.6;
+    controls.maxPolarAngle = Math.PI / 2;
+    controls.minPolarAngle = 1;
    	controls.rotateSpeed = 0.05;
-    controls.minAzimuthAngle = 0.3; 
-    controls.maxAzimuthAngle = 0.5;*/
 
     hammer = new Hammer(container);
 
@@ -14,7 +14,9 @@ function addControls() {
     hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
     //dont create simultaneous tweens, stop all, create new ones
-    hammer.on('panstart', function(ev) { cancelAllTweens(); });
+    hammer.on('panstart', function(ev) {
+        //cancelAllTweens();
+    });
 
     //trigger tween back
 	hammer.on('panend', function(ev) {
