@@ -60,10 +60,10 @@ function loadAssets () {
 }
 
 function addHandlers () {
-	    heat_wave2 = heat_wave.mesh.clone();
-	    heat_wave3 = heat_wave.mesh.clone();
-        heat_wave_reflect2 = heat_wave_reflect.mesh.clone();
-        heat_wave_reflect3 = heat_wave_reflect.mesh.clone();
+    heat_wave2 = heat_wave.mesh.clone();
+    heat_wave3 = heat_wave.mesh.clone();
+    heat_wave_reflect2 = heat_wave_reflect.mesh.clone();
+    heat_wave_reflect3 = heat_wave_reflect.mesh.clone();
 
 	scene.add(heat_wave2);
 	scene.add(heat_wave3);
@@ -96,11 +96,6 @@ function addHandlers () {
         heat_wave3.position.x += 46;
 
         heat_wave_refract.mesh.position.x += 4;
-
-        heat_wave_reflect.mesh.position.y += 20;
-        heat_wave_reflect2.position.y += 20;
-        heat_wave_reflect3.position.y += 20;
-
         heat_wave_reflect.mesh.position.x += 4;
         heat_wave_reflect2.position.x += 26;
         heat_wave_reflect3.position.x += 46;

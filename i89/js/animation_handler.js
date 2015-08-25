@@ -1,9 +1,9 @@
-animationHandler.prototype = new genericHandler();
-var ah1 = new animationHandler();
-var ah2 = new animationHandler();
-var ah3 = new animationHandler();
+AnimationHandler.prototype = new GenericHandler();
+var ah1 = new AnimationHandler();
+var ah2 = new AnimationHandler();
+var ah3 = new AnimationHandler();
 
-function animationHandler(){
+function AnimationHandler(){
 	var meshes = [];
 	var loop = false;
 

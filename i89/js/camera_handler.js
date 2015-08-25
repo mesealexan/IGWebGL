@@ -1,7 +1,7 @@
-cameraHandler.prototype = new genericHandler();
-var ch = new cameraHandler();
+CameraHandler.prototype = new GenericHandler();
+var ch = new CameraHandler();
 
-function genericHandler () {
+function GenericHandler () {
 	_this = this;
 	this.frame = -1;
 	this.from = undefined;
@@ -32,7 +32,7 @@ function genericHandler () {
 	};
 }
 
-function cameraHandler() {	
+function CameraHandler() {
 	var animation;
 
 	this.setSource = function(p) { animation = parseJSON(p) }
