@@ -7,7 +7,7 @@ function SnowHandler (s){
     this.deathCount = 0;
     var _this = this,
         numParticles = s.num,
-        height = 800,
+        height = 1000,
         systemGeometry = new THREE.Geometry(),
         flake = THREE.ImageUtils.loadTexture("media/snowflake.png"),
         systemMaterial = new THREE.PointCloudMaterial({ 
@@ -45,7 +45,7 @@ function SnowHandler (s){
         var geometry = this.particleSystem.geometry,
             vertices = geometry.vertices,
             numVertices = vertices.length,
-            speedY = 5;
+            speedY = 2;
 
         var check = {
             stopping: function  () {

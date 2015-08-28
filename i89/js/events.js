@@ -2,11 +2,12 @@ function addControls() {
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.noZoom = false;
     controls.noPan = true;
-    //controls.maxAzimuthAngle = -0.9;
-    //controls.minAzimuthAngle = -1.6;
-    //controls.maxPolarAngle = Math.PI / 2;
-    //controls.minPolarAngle = 1;
-   	//controls.rotateSpeed = 0.05;
+    controls.maxAzimuthAngle = -0.9;
+    controls.minAzimuthAngle = -1.6;
+    controls.maxPolarAngle = Math.PI / 2;
+    controls.minPolarAngle = 1;
+   	controls.rotateSpeed = 0.5;
+    controls.noZoom = true;
 
     hammer = new Hammer(container);
 
@@ -27,16 +28,15 @@ function addControls() {
     //toggleInput(false);
 }
 
-function setControlsMinMax (f) {
+function setControlsMinMax (af, pf) {
     var a = controls.getAzimuthalAngle(),
-        p = controls.getPolarAngle(),
-        f = 0.3;
+        p = controls.getPolarAngle();
+        console.log(a, p)
+    controls.maxAzimuthAngle = a + af;
+    controls.minAzimuthAngle = a - af;
 
-    controls.maxAzimuthAngle = a + f;
-    controls.minAzimuthAngle = a - f;
-
-    controls.maxPolarAngle = p + f;
-    controls.minPolarAngle = p - f;
+    controls.maxPolarAngle = p + pf;
+    controls.minPolarAngle = p - pf;
 }            
 
 function cancelAllTweens () {

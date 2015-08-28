@@ -47,40 +47,48 @@ function Updater () {
 function addWatch (obj, val) {
 	watch(obj, val, function(prop, action, newvalue/*, oldvalue*/){
 		switch (newvalue){
-			case 110:
-                //heatWaves.scaleWindowPlane();
-                heatWaves.playWave1();
-                updater.stopAllSnow();
+      case 0:
+        updater.stopAllSnow();
+        heat_wave_refract.mesh.visible = false;
+      break;
+      case 287:
+          //heatWaves.scaleWindowPlane();
+          heatWaves.playWave1();
 			break;
-            case 197:
-                heatWaves.loopWave1();
-                heatWaves.playWave2();
-            break;
-            case 285:
-                //ch.pause();
-                //toggleInput(true);
-                heatWaves.loopWave2();
-            break;
-            case 300:
-                switchWindow.i89_on();
-                heatWaves.playWave3();
-            break;
-            case 389:
-                heatWaves.loopWave3();
-            break;
-            case 719:
-                //setControlsMinMax();
-                $('#cameraButtons').toggle();
-                toggleInput(true);
-            break;
+      //case 197:
+      case 404:
+          heatWaves.loopWave1();
+          heatWaves.playWave2();
+      break;
+      case 521:
+          //ch.pause();
+          //toggleInput(true);
+          heatWaves.loopWave2();
+      break;
+      case 638:
+          switchWindow.i89_on();
+          heatWaves.playWave3();
+      break;
+      case 755:
+          heatWaves.loopWave3();
+      break;
+      case 868:
+          //setControlsMinMax(0.3, 0.1);
+          $('#cameraButtons').toggle();
+          toggleInput(true);
+      break;
 		}
 	})
 }
 
 var switchWindow = function () {
-  var fadeTime = 1000;
+  var fadeTime = 1000, fading = false, off = false, on = true;
 return{
   i89_on: function  () {
+    if(fading || on) return;
+    fading = true;
+    on = true;
+    off = false;
     fade.out(heat_wave_refract, fadeTime);
     fade.in(heat_wave_reflect, fadeTime);
     fade.in({mesh: heat_wave_reflect2}, fadeTime);
@@ -88,9 +96,14 @@ return{
 
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(logo, fadeTime);fade.in(i89, fadeTime) }, fadeTime);
+    setTimeout(function(){ fading = false;}, fadeTime * 2);
   }
   ,
   i89_off: function () {
+    if(fading || off) return;
+    fading = true;
+    off = true;
+    on = false;
     fade.in(heat_wave_refract, fadeTime);
     fade.out(heat_wave_reflect, fadeTime);
     fade.out({mesh: heat_wave_reflect2}, fadeTime);
@@ -99,6 +112,7 @@ return{
 
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(i89, fadeTime) }, fadeTime);
+    setTimeout(function(){ fading = false }, fadeTime * 2);
   }
 }
 }();
@@ -110,31 +124,35 @@ return{
        heat_wave.mesh.visible =
        heat_wave2.visible =
        heat_wave3.visible = true;
-       ah1.play(0, 86);
+       //ah1.play(0, 86);
+       ah1.play(0, 115);
    }
    ,
    loopWave1: function(){
-       ah1.loop(86, 161);
+       //ah1.loop(86, 161);
+       ah1.loop(115, 195);
    }
    ,
    playWave2: function(){
        heat_wave_refract.mesh.visible = true;
-       ah2.play(0, 86);
+       //ah2.play(0, 86);
+       ah2.play(0, 115);
    }
    ,
    loopWave2: function(){
-       ah2.loop(86, 162);
+       //ah2.loop(86, 162);
+       ah2.loop(115, 195)
    }
    ,
    playWave3: function(){
        heat_wave_reflect.mesh.visible =
        heat_wave_reflect2.visible =
        heat_wave_reflect3.visible = true;
-       ah3.play(0, 87);
+       ah3.play(0, 115);
    }
    ,
    loopWave3: function(){
-       ah3.loop(87, 162);
+       ah3.loop(115, 195);
    }
    ,
    scaleWindowPlane: function(){

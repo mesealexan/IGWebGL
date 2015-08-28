@@ -54,7 +54,7 @@ function loadAssets () {
     loadObject('moon', moon, addToScene);
 	loadObject('logo', logo, addToScene);
 	loadObject('frame', frame, addToScene);
-	loadObject('i89', i89, addToScene);
+	loadObject('i89', i89, [addToScene, function(){switchWindow.i89_off()}]);
     loadObject('window_plane', window_plane, [addToScene, setupWindowPlane]);
     loadObject('heat_wave', heat_wave, addToScene, true);
     loadObject('heat_wave_refract', heat_wave_refract, addToScene, true);
