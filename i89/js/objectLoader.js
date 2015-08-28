@@ -49,15 +49,16 @@ function loadAssets () {
 	loadObject('grid', grid, addToScene);
 	loadObject('heat_source', heat_source, addToScene);
     loadObject('text', text, addToScene);
-    loadObject('text_2', text, addToScene);
+    loadObject('winterNight', text, addToScene);
+    loadObject('winterNight', text, addToScene);
     loadObject('moon', moon, addToScene);
-	loadObject('moon', moon, addToScene);
+	loadObject('logo', logo, addToScene);
 	loadObject('frame', frame, addToScene);
 	loadObject('i89', i89, addToScene);
     loadObject('window_plane', window_plane, [addToScene, setupWindowPlane]);
     loadObject('heat_wave', heat_wave, addToScene, true);
     loadObject('heat_wave_refract', heat_wave_refract, addToScene, true);
-    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers], true);
+    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers, animate], true);
 }
 
 function setupWindowPlane(){
@@ -67,11 +68,17 @@ function setupWindowPlane(){
 }
 
 function addHandlers () {
+    bck2 = bck.mesh.clone();
+    bck2.scale.z = -1;
+    bck2.material.materials[0].side = 2;
+    bck2.quaternion.set ( 0, 1, 0, 0);
+
     heat_wave2 = heat_wave.mesh.clone();
     heat_wave3 = heat_wave.mesh.clone();
     heat_wave_reflect2 = heat_wave_reflect.mesh.clone();
     heat_wave_reflect3 = heat_wave_reflect.mesh.clone();
 
+    scene.add(bck2);
 	scene.add(heat_wave2);
 	scene.add(heat_wave3);
     scene.add(heat_wave_reflect2);
@@ -83,10 +90,14 @@ function addHandlers () {
 	ah2.setMesh(heat_wave_refract);
 	ah3.setMesh([heat_wave_reflect, {mesh: heat_wave_reflect2}, {mesh: heat_wave_reflect3}]);
 
-    window_plane.mesh.position.z = 2;
+    window_plane.mesh.position.z = 0;
     heatWaves.scaleWindowPlane();
     ch.setSource("media/camera/camera.JSON");
     addWatch(ch, "frame");
+
+    sh1.start();
+    sh2.start();
+    sh3.start();
 	ch.play();
 
     function manageWaves(){
@@ -110,4 +121,3 @@ function addHandlers () {
         heat_wave_reflect3.position.x += 46;
     }
 }
-

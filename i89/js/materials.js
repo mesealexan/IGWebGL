@@ -18,17 +18,19 @@ function addSkybox () {
 			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
 			side: THREE.DoubleSide
 		}));
-	//console.log( imagePrefix + directions[i] + imageSuffix)
 	}
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( cubeGeom, skyMaterial );
-	scene.add( skyBox );
+	//scene.add( skyBox );
 }
 
 function setMaterials(materialName){
 	var material;
-
 	switch(materialName){
+        case "logo":       
+            material = new THREE.MeshLambertMaterial({map: THREE.ImageUtils.loadTexture(imagesArray[7])});
+        break;
+
         case "window_plane":
             material = new RadialGradientMaterial();
         break;
@@ -241,8 +243,8 @@ function RadialGradientMaterial (){
     var context = canvas.getContext( '2d' );
     var gradient = context.createRadialGradient( canvas.width / 2,
         canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
-    gradient.addColorStop( 0.25, 'rgba(255,120,0,1)' );
-    gradient.addColorStop( 1, 'rgba(0,0,0,0)' );
+    gradient.addColorStop( 0, 'rgba(255, 120, 0, 1)' );
+    gradient.addColorStop( 1, 'rgba(0, 0, 0, 0)' );
     context.fillStyle = gradient;
     context.fillRect( 0, 0, canvas.width, canvas.height );
     var shadowTexture = new THREE.Texture( canvas );

@@ -34,18 +34,23 @@ function Updater () {
 
 	this.updateHandlers = function () {
 		for (var key in this.handlers) this.handlers[key].update();
-	}	;
+	};
+
+  this.stopAllSnow = function() {
+      for (var i = 0; i < this.handlers.length; i++) {
+          var h = this.handlers[i];
+          if(h.constructor == SnowHandler) h.stop();
+      }
+  }
 }
-//controls.maxAzimuthAngle = -0.9
-//controls.minAzimuthAngle = -1.6
-//controls.maxPolarAngle = Math.PI / 2
-//controls.minPolarAngle = 1
+
 function addWatch (obj, val) {
 	watch(obj, val, function(prop, action, newvalue/*, oldvalue*/){
 		switch (newvalue){
 			case 110:
                 //heatWaves.scaleWindowPlane();
                 heatWaves.playWave1();
+                updater.stopAllSnow();
 			break;
             case 197:
                 heatWaves.loopWave1();
@@ -57,17 +62,46 @@ function addWatch (obj, val) {
                 heatWaves.loopWave2();
             break;
             case 300:
+                switchWindow.i89_on();
                 heatWaves.playWave3();
             break;
             case 389:
                 heatWaves.loopWave3();
             break;
             case 719:
+                //setControlsMinMax();
+                $('#cameraButtons').toggle();
                 toggleInput(true);
             break;
 		}
 	})
 }
+
+var switchWindow = function () {
+  var fadeTime = 1000;
+return{
+  i89_on: function  () {
+    fade.out(heat_wave_refract, fadeTime);
+    fade.in(heat_wave_reflect, fadeTime);
+    fade.in({mesh: heat_wave_reflect2}, fadeTime);
+    fade.in({mesh: heat_wave_reflect3}, fadeTime);   
+
+    fade.out(i89, fadeTime - (fadeTime * 0.1));
+    setTimeout(function(){ fade.in(logo, fadeTime);fade.in(i89, fadeTime) }, fadeTime);
+  }
+  ,
+  i89_off: function () {
+    fade.in(heat_wave_refract, fadeTime);
+    fade.out(heat_wave_reflect, fadeTime);
+    fade.out({mesh: heat_wave_reflect2}, fadeTime);
+    fade.out({mesh: heat_wave_reflect3}, fadeTime);
+    fade.out(logo, fadeTime);
+
+    fade.out(i89, fadeTime - (fadeTime * 0.1));
+    setTimeout(function(){ fade.in(i89, fadeTime) }, fadeTime);
+  }
+}
+}();
 
 var heatWaves = function(){
 return{
@@ -89,13 +123,10 @@ return{
    }
    ,
    loopWave2: function(){
-       fade.out(i89, 200);
        ah2.loop(86, 162);
    }
    ,
    playWave3: function(){
-       fade.in(i89, 200);
-       fade.out(heat_wave_refract, 1000);
        heat_wave_reflect.mesh.visible =
        heat_wave_reflect2.visible =
        heat_wave_reflect3.visible = true;
@@ -115,7 +146,7 @@ return{
        scaleUp.start();
 
        var posTween = new TWEEN.Tween( window_plane.mesh.position );
-       posTween.to( { y: - 73 }, time );
+       posTween.to( { y: -69 }, time );
        posTween.repeat(Infinity);
        posTween.yoyo(true);
        posTween.start();

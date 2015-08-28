@@ -17,14 +17,13 @@ function Init() {
 	addCamera();
 	addSkybox ();
 	loadAssets();
-	var winResize = new THREEx.WindowResize(renderer, camera);
+	new THREEx.WindowResize(renderer, camera);
 	addControls();	
-	addLight();
-	animate();
+	addLight();	
 }
 
 function addRenderer() {
-	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 	renderer.setClearColor( 0x000000, 0.0 );
 	renderer.setSize( width, height );
 	container.appendChild( renderer.domElement );

@@ -27,8 +27,8 @@ function GenericHandler () {
 			else return false; //reached the end
 		
 		else if (from > to) //reverse playback
-			if (this.frame-- > to) return true; //still has to play						
-			else return false; //reached the end	
+			if (this.frame-- > to) return true; //still has to play
+			else return false; //reached the end
 	};
 }
 
@@ -45,6 +45,7 @@ function CameraHandler() {
 
 	this.update = function () {
 		if(this.checkPlayback(this.from, this.to)){
+			//return;
 			var newUp = this.modifyCameraUp(animation.frames[this.frame].rollAngle);
 			camera.up.set(newUp.x, newUp.y, newUp.z);
 
