@@ -33,14 +33,6 @@ function loadObject (name, variable, callback, animated) {
 	if(parent) parent.add(obj.mesh); else scene.add(obj.mesh);
  }
 
- //function removeFromScene (obj) {
- //	if(obj.mesh.material.materials)
- //		for (var i = 0; i < obj.mesh.material.materials.length; i++)
- //			obj.mesh.material.materials[i].dispose();
- //	else obj.mesh.material.dispose();
- //	obj.mesh.parent.remove(obj.mesh);
- //}
-
 function loadAssets () {
 	loadObject('floor', floor, addToScene);
 	loadObject('walls', walls, addToScene);
@@ -54,11 +46,16 @@ function loadAssets () {
     loadObject('moon', moon, addToScene);
 	loadObject('logo', logo, addToScene);
 	loadObject('frame', frame, addToScene);
-	loadObject('i89', i89, [addToScene, function(){switchWindow.i89_off()}]);
-    loadObject('window_plane', window_plane, [addToScene, setupWindowPlane]);
-    loadObject('heat_wave', heat_wave, addToScene, true);
-    loadObject('heat_wave_refract', heat_wave_refract, addToScene, true);
-    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers, animate], true);
+	loadObject('i89', i89, [addToScene, function(){
+    loadObject('window_plane', window_plane, [addToScene, setupWindowPlane, function(){
+    loadObject('heat_wave', heat_wave, [addToScene, function(){
+    loadObject('heat_wave_refract', heat_wave_refract, [addToScene, function(){
+    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers,
+        manageWaves, animate], true);
+    }], true);
+    }], true);
+    }]);
+    }]);
 }
 
 function setupWindowPlane(){
@@ -84,8 +81,6 @@ function addHandlers () {
     scene.add(heat_wave_reflect2);
     scene.add(heat_wave_reflect3);
 
-    manageWaves();
-
 	ah1.setMesh([heat_wave, {mesh: heat_wave2}, {mesh: heat_wave3}]);
 	ah2.setMesh(heat_wave_refract);
 	ah3.setMesh([heat_wave_reflect, {mesh: heat_wave_reflect2}, {mesh: heat_wave_reflect3}]);
@@ -100,24 +95,27 @@ function addHandlers () {
     sh3.start();
 	ch.play();
 
-    function manageWaves(){
-        heat_wave.mesh.frustumCulled =
-        heat_wave2.frustumCulled =
-        heat_wave3.frustumCulled =
-        heat_wave.mesh.visible =
-        heat_wave2.visible = heat_wave3.visible =
-        heat_wave_refract.mesh.visible =
-        heat_wave_reflect.mesh.visible =
-        heat_wave_reflect2.visible =
-        heat_wave_reflect3.visible = false;
 
-        heat_wave.mesh.position.x += 4;
-        heat_wave2.position.x += 26;
-        heat_wave3.position.x += 46;
+}
 
-        heat_wave_refract.mesh.position.x += 4;
-        heat_wave_reflect.mesh.position.x += 4;
-        heat_wave_reflect2.position.x += 26;
-        heat_wave_reflect3.position.x += 46;
-    }
+function manageWaves(){
+    heat_wave.mesh.frustumCulled =
+    heat_wave2.frustumCulled =
+    heat_wave3.frustumCulled =
+    heat_wave.mesh.visible =
+    heat_wave2.visible = heat_wave3.visible =
+    heat_wave_refract.mesh.visible =
+    heat_wave_reflect.mesh.visible =
+    heat_wave_reflect2.visible =
+    heat_wave_reflect3.visible = false;
+
+    heat_wave.mesh.position.x += 4;
+    heat_wave2.position.x += 26;
+    heat_wave3.position.x += 46;
+
+    heat_wave_refract.mesh.position.x += 4;
+    heat_wave_reflect.mesh.position.x += 4;
+    heat_wave_reflect2.position.x += 26;
+    heat_wave_reflect3.position.x += 46;
+    switchWindow.i89_off();
 }

@@ -14,7 +14,7 @@ function addControls() {
     //pan in all directions
     hammer.get('pan').set({ direction: Hammer.DIRECTION_ALL });
 
-    //dont create simultaneous tweens, stop all, create new ones
+    //don't create simultaneous tweens, stop all, create new ones
     hammer.on('panstart', function(ev) {
         //cancelAllTweens();
     });
@@ -25,7 +25,7 @@ function addControls() {
 	});
 
     //begin with no controls
-    //toggleInput(false);
+    toggleInput(false);
 }
 
 function setControlsMinMax (af, pf) {

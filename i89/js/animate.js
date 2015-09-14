@@ -47,14 +47,16 @@ function Updater () {
 function addWatch (obj, val) {
 	watch(obj, val, function(prop, action, newvalue/*, oldvalue*/){
 		switch (newvalue){
-      case 0:
+      case 5:
         updater.stopAllSnow();
+      break;
+      case 10:
         heat_wave_refract.mesh.visible = false;
       break;
       case 287:
           //heatWaves.scaleWindowPlane();
           heatWaves.playWave1();
-			break;
+          break;
       //case 197:
       case 404:
           heatWaves.loopWave1();
@@ -92,7 +94,8 @@ return{
     fade.out(heat_wave_refract, fadeTime);
     fade.in(heat_wave_reflect, fadeTime);
     fade.in({mesh: heat_wave_reflect2}, fadeTime);
-    fade.in({mesh: heat_wave_reflect3}, fadeTime);   
+    fade.in({mesh: heat_wave_reflect3}, fadeTime);
+    fade.in(window_plane, fadeTime);
 
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(logo, fadeTime);fade.in(i89, fadeTime) }, fadeTime);
@@ -108,8 +111,8 @@ return{
     fade.out(heat_wave_reflect, fadeTime);
     fade.out({mesh: heat_wave_reflect2}, fadeTime);
     fade.out({mesh: heat_wave_reflect3}, fadeTime);
+    fade.out(window_plane, fadeTime);
     fade.out(logo, fadeTime);
-
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(i89, fadeTime) }, fadeTime);
     setTimeout(function(){ fading = false }, fadeTime * 2);
@@ -175,6 +178,7 @@ return{
 var fade = function(obj, time){
     if(time == undefined) time = 1000;
     function tweenOpac(obj, val, time){
+        //console.log(obj)
         for (var i = 0; i < obj.mesh.material.materials.length; i++){
             var mat = obj.mesh.material.materials[i];
             var fade = new TWEEN.Tween( mat );
@@ -193,13 +197,9 @@ var fade = function(obj, time){
             fade.start();
         }
     }
-return{
-    out: function(obj, time){
-        tweenOpac(obj, 0, time);
+    return{
+        out: function(obj, time){ tweenOpac(obj, 0, time); }
+        ,
+        in: function(obj, time){ tweenOpac(obj, 1, time); }
     }
-    ,
-    in: function(obj, time){
-        tweenOpac(obj, 1, time);
-    }
-}
 }();

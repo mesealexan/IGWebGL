@@ -19,7 +19,7 @@ function Init() {
 	loadAssets();
 	new THREEx.WindowResize(renderer, camera);
 	addControls();	
-	addLight();	
+	addLight();
 }
 
 function addRenderer() {
