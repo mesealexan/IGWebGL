@@ -249,5 +249,27 @@ function RadialGradientMaterial (){
     context.fillRect( 0, 0, canvas.width, canvas.height );
     var shadowTexture = new THREE.Texture( canvas );
     shadowTexture.needsUpdate = true;
-    return new THREE.MeshBasicMaterial( { map: shadowTexture, transparent: true } );
-};
+    return new THREE.MeshPhongMaterial({
+        map: shadowTexture,
+        specular: new THREE.Color("rgb(0,80,60)"),
+        //vertexColors: THREE.VertexColors,
+       // envMap: textureCube,
+        refractionRatio: 0.985,
+        reflectivity: 0.99,
+        shininess: 30,
+        transparent: true,
+        //opacity: 0.61
+    });
+}
+
+/*material = new THREE.MeshPhongMaterial({
+    color: new THREE.Color("rgb(255,255,255)"),
+    specular: new THREE.Color("rgb(0,80,60)"),
+    vertexColors: THREE.VertexColors,
+    envMap: textureCube,
+    refractionRatio: 0.985,
+    reflectivity: 0.99,
+    shininess: 30,
+    transparent: true,
+    opacity: 0.61*/
+

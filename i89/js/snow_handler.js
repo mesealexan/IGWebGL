@@ -1,4 +1,4 @@
-var sh1 = new SnowHandler({posX: 0, posY:-200, width: 400, depth: 400, num: 500});
+var sh1 = new SnowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 500});
 var sh2 = new SnowHandler({posX: 190, posY: 250, width: 100, depth: 500, num: 400});
 var sh3 = new SnowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 500});
 
@@ -13,7 +13,7 @@ function SnowHandler (s){
         systemMaterial = new THREE.PointCloudMaterial({ 
             blending: THREE.AdditiveBlending, 
             map: flake, size: 8, transparent: true }),
-        clock = new THREE.Clock(),
+        //clock = new THREE.Clock(),
         stopping = false;
 
     function randomInitialPositions (){
@@ -31,15 +31,15 @@ function SnowHandler (s){
         updater.addHandler(this); 
         this.particleSystem.position.set(s.posX, 0, s.posY);
         scene.add( this.particleSystem );
-    }
+    };
 
     this.stop = function () {
         stopping = true;
-    }
+    };
 
     this.removeHandler = function () {
         updater.removeHandler(this);
-    }
+    };
 
     this.update = function() {
         var geometry = this.particleSystem.geometry,
@@ -64,7 +64,7 @@ function SnowHandler (s){
                     return true;
                 }
             }
-        }
+        };
 
         for(var i = 0; i < numVertices; i++) {
             var v = vertices[i];
@@ -80,7 +80,6 @@ function SnowHandler (s){
             if(check.stopping()){
                 if (check.death(v)) return;
                 check.remove();
-                return;
             } 
             else v.y = height;
         }

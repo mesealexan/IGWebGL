@@ -39,21 +39,23 @@ function loadAssets () {
 	loadObject('snow', snow, addToScene);
 	loadObject('bck', bck, addToScene);
 	loadObject('grid', grid, addToScene);
-	loadObject('heat_source', heat_source, addToScene);
+	loadObject('heat_source', heat_source, [addToScene, function(){
     loadObject('text', text, addToScene);
     loadObject('winterNight', text, addToScene);
     loadObject('winterNight', text, addToScene);
     loadObject('moon', moon, addToScene);
 	loadObject('logo', logo, addToScene);
-	loadObject('frame', frame, addToScene);
-	loadObject('i89', i89, [addToScene, function(){
-    loadObject('window_plane', window_plane, [addToScene, setupWindowPlane, function(){
-    loadObject('heat_wave', heat_wave, [addToScene, function(){
-    loadObject('heat_wave_refract', heat_wave_refract, [addToScene, function(){
-    loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers,
+	loadObject('frame', frame, [addToScene, function(){
+        loadObject('i89', i89, [addToScene, function(){
+        loadObject('window_plane', window_plane, [addToScene, setupWindowPlane, function(){
+        loadObject('heat_wave', heat_wave, [addToScene, function(){
+        loadObject('heat_wave_refract', heat_wave_refract, [addToScene, function(){
+        loadObject('heat_wave_reflect', heat_wave_reflect, [addToScene, addHandlers,
         manageWaves, animate], true);
+    }]);
     }], true);
     }], true);
+    }]);
     }]);
     }]);
 }
@@ -87,15 +89,12 @@ function addHandlers () {
 
     window_plane.mesh.position.z = 0;
     heatWaves.scaleWindowPlane();
-    ch.setSource("media/camera/camera.JSON");
     addWatch(ch, "frame");
 
     sh1.start();
     sh2.start();
     sh3.start();
 	ch.play();
-
-
 }
 
 function manageWaves(){
@@ -117,5 +116,4 @@ function manageWaves(){
     heat_wave_reflect.mesh.position.x += 4;
     heat_wave_reflect2.position.x += 26;
     heat_wave_reflect3.position.x += 46;
-    switchWindow.i89_off();
 }

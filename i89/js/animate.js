@@ -17,7 +17,7 @@ function animate (/*time*/) {
 
 	if (animSettings.delta > animSettings.interval){
 		animSettings.then = animSettings.now - (animSettings.delta % animSettings.interval);
-		updater.updateHandlers();	
+		updater.updateHandlers();
 		renderer.render(scene, camera); 
 	} 
 }
@@ -46,47 +46,73 @@ function Updater () {
 
 function addWatch (obj, val) {
 	watch(obj, val, function(prop, action, newvalue/*, oldvalue*/){
-		switch (newvalue){
-      case 5:
+    //console.log(newvalue)
+	switch (newvalue){
+    case 0:
+        coldnightIntro.play();
         updater.stopAllSnow();
-      break;
-      case 10:
+    break;
+    case 10:
+        logo.mesh.visible = false;
+        //switchWindow.i89_off();
         heat_wave_refract.mesh.visible = false;
-      break;
-      case 287:
-          //heatWaves.scaleWindowPlane();
-          heatWaves.playWave1();
-          break;
-      //case 197:
-      case 404:
-          heatWaves.loopWave1();
-          heatWaves.playWave2();
+    break;
+    case 220:
+        coldnightIntro.fade(1.0, 0.0, 3000);
+    break;
+    case 287:
+        heaterLoop.play();
+        heaterLoop.fade(0.0, 1.0, 1000);
+        heatWaves.playWave1();
+    break;
+    case 320:
+        heaterLoop.fade(1.0, 0.6, 2000);
+    break;
+    case 404:
+        heatWaves.loopWave1();
+        heatWaves.playWave2();
       break;
       case 521:
           //ch.pause();
           //toggleInput(true);
           heatWaves.loopWave2();
-      break;
-      case 638:
-          switchWindow.i89_on();
-          heatWaves.playWave3();
-      break;
+    break;
+    case 638:
+        heaterLoop.fade(0.6, 1.0, 2000);
+        switchWindow.i89_on();
+        //logo.mesh.visible = true;
+        heatWaves.playWave3();
+    break;
+    case 670:
+        cameraZoom.play();
+    break;
       case 755:
           heatWaves.loopWave3();
-      break;
-      case 868:
-          //setControlsMinMax(0.3, 0.1);
+    break;
+    case 830:
+        cameraZoom.play();
+    break;
+    case 868:
+        heaterLoop.fade(1.0, 0.0, 5000);
           $('#cameraButtons').toggle();
-          toggleInput(true);
-      break;
-		}
+          //toggleInput(true);
+    break;
+    }
 	})
 }
 
 var switchWindow = function () {
-  var fadeTime = 1000, fading = false, off = false, on = true;
+  var fadeTime = 300, fading = false, off = true, on = false;
 return{
-  i89_on: function  () {
+    toggleON: function(){
+        this.i89_on();
+        windowToggleS.play();
+    },
+    toggleOFF: function(){
+        this.i89_off();
+        windowToggleS.play();
+    },
+    i89_on: function  () {
     if(fading || on) return;
     fading = true;
     on = true;
@@ -100,9 +126,9 @@ return{
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(logo, fadeTime);fade.in(i89, fadeTime) }, fadeTime);
     setTimeout(function(){ fading = false;}, fadeTime * 2);
-  }
-  ,
-  i89_off: function () {
+    }
+    ,
+    i89_off: function () {
     if(fading || off) return;
     fading = true;
     off = true;
@@ -116,7 +142,7 @@ return{
     fade.out(i89, fadeTime - (fadeTime * 0.1));
     setTimeout(function(){ fade.in(i89, fadeTime) }, fadeTime);
     setTimeout(function(){ fading = false }, fadeTime * 2);
-  }
+    }
 }
 }();
 

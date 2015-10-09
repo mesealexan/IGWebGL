@@ -1,5 +1,5 @@
 CameraHandler.prototype = new GenericHandler();
-var ch = new CameraHandler();
+var ch = new CameraHandler("media/camera/camera.JSON");
 
 function GenericHandler () {
 	_this = this;
@@ -32,16 +32,17 @@ function GenericHandler () {
 	};
 }
 
-function CameraHandler() {
-	var animation;
+function CameraHandler(src) {
+	var animation = parseJSON(src);
 
-	this.setSource = function(p) { animation = parseJSON(p) }
+	this.setSource = function(p) { animation = parseJSON(p) };
 
 	this.play = function(from, to){
+        if(!animation) {console.error("missing animation!"); return;}
 		if(from == undefined) from = this.frame + 1;
 		if(to == undefined) to = animation.frames.length - 1;
 		this.basePlay(from, to);
-	}
+	};
 
 	this.update = function () {
 		if(this.checkPlayback(this.from, this.to)){
@@ -66,7 +67,7 @@ function CameraHandler() {
 			   -(animation.frames[this.frame].position.y));
 		}
 		else {camera.lookAt(camera.target); this.stop();} //reached the end
-	}
+	};
 
 	this.tween = function (frame, speed, onComplete) {
 		/***position***/
@@ -109,7 +110,7 @@ function CameraHandler() {
 	    fovTween.to( { fov: animation.frames[frame].fov + fovModifier }, time);
 	    fovTween.start();
 	    fovTween.onUpdate( function () { camera.updateProjectionMatrix() }); 
-	}
+	};
 
 	this.modifyCameraUp = function (degrees) {	
 		var radians = this.degreesToRadians(degrees);
@@ -117,7 +118,7 @@ function CameraHandler() {
 		var up = new THREE.Vector3( 0, 0, 1 );
 		newUp.applyAxisAngle( up, radians );
 		return newUp;
-	}
+	};
 
-	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180) }
+	this.degreesToRadians = function (deg) { return deg * (Math.PI / 180) };
 }

@@ -10,7 +10,7 @@ Init();
 
 function Init() {
 	if(!webgl_detect()) return;	
-	container = document.getElementById( 'webGL' );	
+	container = document.getElementById( 'webGL' );
 	scene = new THREE.Scene();
 	addRenderer();
 	detectOrientationChange();
