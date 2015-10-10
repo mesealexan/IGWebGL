@@ -1,16 +1,53 @@
-define(["three", "jquery"], function(THREE, jquery){
-    var pub = {}; //public functionality
+define(["three", "jquery", "loader", "animate"],
+    function(THREE, jquery, loader, animate){
+    var main = {}; //public functionality
+    /***private fields***/
+    var camFOV = 45; //camera field of view in degrees
     var width, height; //browser window dimension
     var container; //html element for webGL renderer
-    pub.scene = undefined;
+    var camNear = 1, camFar = 10000; //camera frustum near and far clip planes
+    /***end private fields***/
 
-    pub.Start = function(){
-        //first function called by require in app.js
+    /***private functions***/
+    function addRenderer() {
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        animate.renderer.setSize( width, height );
+        animate.renderer.setClearColor( 0x000000, 0.0 );
+        container.appendChild( animate.renderer.domElement );
+    }
+
+    function addCamera () {
+        animate.camera = new THREE.PerspectiveCamera( camFOV, width / height, camNear, camFar );
+        animate.camera.position.set(0, 1000, 1500);
+        main.loader.scene.add( animate.camera );
+    }
+
+    function addLight () {
+        var ambientLight = new THREE.AmbientLight( 0xffffff );
+        main.loader.scene.add( ambientLight );
+    }
+    /***end private functions***/
+
+    /***public fields***/
+    main.scene = undefined;
+    main.loader = undefined;
+    /***end public fields***/
+
+    /***public functions***/
+    main.Start = function(sceneID){
+        //entry point (first function called by require in app.js)
         width = $(window).width();
         height = $(window).height();
-        container = $('#webGL');
-        pub.scene = new THREE.Scene();
+        container = document.getElementById( 'webGL' );
+        main.scene = new THREE.Scene();
+        main.loader = new loader(main.scene, sceneID);
+        animate.loader = main.loader;
+        addRenderer();
+        addCamera();
+        addLight();
+        animate.Animate();
     };
+    /***end public functions***/
 
-    return pub;
+    return main;
 });

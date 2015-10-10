@@ -2,7 +2,7 @@ var menu = document.getElementById("menu");
 var background = document.getElementById("background"); 
 var width = window.innerWidth, height = window.innerHeight;
 var fov = 45;
-var camNear = 1, camFar = 100000;
+var camNear = 1, camFar = 10000;
 
 aspectRatio = width / height;
 
