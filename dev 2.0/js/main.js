@@ -40,12 +40,12 @@ define(["three", "jquery", "loader", "animate"],
         height = $(window).height();
         container = document.getElementById( 'webGL' );
         main.scene = new THREE.Scene();
-        main.loader = new loader(main.scene, sceneID);
+        main.scene.sceneID = sceneID;
+        main.loader = new loader(main.scene, animate);
         animate.loader = main.loader;
         addRenderer();
         addCamera();
         addLight();
-        animate.Animate();
     };
     /***end public functions***/
 

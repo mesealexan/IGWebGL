@@ -3,7 +3,8 @@ function loadObject (name, variable, callback, animated) {
 	var loader = new THREE.JSONLoader();
 	var materialsArray = [];
 
-	loader.load( "media/models/" + name + ".js", function( geometry, materials ) {
+	loader.load( "media/models/" + name + ".js", 
+        function( geometry, materials ) {
 		materialsArray = materials;
 			for (var i = materialsArray.length - 1; i >= 0; i--) {
 				materialsArray[i] = setMaterials(materialsArray[i].name);

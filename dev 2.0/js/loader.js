@@ -1,19 +1,39 @@
-define(["underscore","i89"], function(underscore, i89){
+define(["underscore", "cameraHandler", "i89"], function(underscore, cameraHandler, i89){
     var scenes = {//all possible scenes
         i89:i89
     };
 
-    var loader = function(scene, sceneID){//public functionality
+    var loader = function(scene, animationComponent){//public functionality
         var _this = this;
         this.scene = scene;
-        this.selectedScene = scenes[sceneID];
-        this.LoadAssets(sceneID, this.selectedScene.assetNames);
+
+        /***public functions***/
+        this.OnFinishedLoadingAssets = function(){
+            this.cameraHandler.play();
+            animationComponent.Animate();
+        };
+
+        this.ParseJSON = function(file){
+            var request = new XMLHttpRequest();
+            request.open("GET", file, false);
+            request.send(null);
+            return JSON.parse(request.responseText);
+        };
+
+        this.LoadAssets(scenes[scene.sceneID]);
     };
 
-    loader.prototype.LoadAssets = function(folderName, assetNames){
+    loader.prototype.LoadAssets = function(selectedScene){
         var _this = this;
-        var index = 0;
-        load(assetNames[index]);
+        var mesh = undefined;
+        var assetIndex = 0;
+        var folderName = selectedScene.folderName;
+        var assetNames = selectedScene.assetNames;
+        /***camera handler***/
+        var cameraJSON = this.ParseJSON("media/cameras/"+folderName+"/camera.JSON");
+        this.cameraHandler = new cameraHandler(cameraJSON);
+
+        load(assetNames[assetIndex]);
 
         function load(name){
             var l = new THREE.JSONLoader();
@@ -22,7 +42,6 @@ define(["underscore","i89"], function(underscore, i89){
         }
 
         function loadCallback(geometry, materials){
-            var mesh;
             _.each(materials, function(mat){
                 //todo: setMaterials()
             });
@@ -30,17 +49,24 @@ define(["underscore","i89"], function(underscore, i89){
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
 
-            mesh = new THREE.Mesh( geometry, materials );
+            if(geometry.morphTargets.length > 0)
+                mesh = new THREE.SkinnedMesh( geometry );//animated mesh
+            else mesh = new THREE.Mesh( geometry );//non-animated mesh
         }
 
         function onLoadComplete(){
-            index++;
-            if(index < assetNames.length){
+            var curAssetName = assetNames[assetIndex];
+            var onCompleteFunction = selectedScene.loadFunctions[curAssetName]; //function associated to current mesh
+            if(onCompleteFunction)onCompleteFunction(mesh);
+
+            if(++assetIndex < assetNames.length){//still has assets to load
+                var nextAssetName = assetNames[assetIndex];
                 _this.scene.add(mesh);
-                load(assetNames[index]);
-            }
+                load(nextAssetName);
+            } else _this.OnFinishedLoadingAssets();//done loading assets
         }
     };
+    /***end public functions***/
 
     return loader;
 });
