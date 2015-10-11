@@ -1,6 +1,8 @@
-define(["underscore", "cameraHandler", "i89"], function(underscore, cameraHandler, i89){
+define(["underscore", "cameraHandler", "i89", "LoE"],
+    function(underscore, cameraHandler, i89, LoE){
     var scenes = {//all possible scenes
-        i89:i89
+        i89:i89,
+        LoE:LoE
     };
 
     var loader = function(scene, animationComponent){//public functionality
@@ -56,7 +58,8 @@ define(["underscore", "cameraHandler", "i89"], function(underscore, cameraHandle
 
         function onLoadComplete(){
             var curAssetName = assetNames[assetIndex];
-            var onCompleteFunction = selectedScene.loadFunctions[curAssetName]; //function associated to current mesh
+            //function associated to current mesh, called for special features such as positioning
+            var onCompleteFunction = selectedScene.loadFunctions[curAssetName];
             if(onCompleteFunction)onCompleteFunction(mesh);
 
             if(++assetIndex < assetNames.length){//still has assets to load

@@ -9,7 +9,8 @@ require.config({
                "updater" : "updater",
         "genericHandler" : "genericHandler",
          "cameraHandler" : "cameraHandler",
-                   "i89" : "i89"
+                   "i89" : "i89",
+                   "LoE" : "LoE"
     }
     ,
     shim: {
@@ -18,5 +19,6 @@ require.config({
 });
 
 require(["main"], function(main){
-    main.Start("i89");//pass selected sceneID
+    main.Start("LoE");
+    //main.Start("i89");
 });
