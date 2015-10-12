@@ -18,7 +18,7 @@ define(["three", "jquery", "loader", "animate"],
 
     function addCamera () {
         animate.camera = new THREE.PerspectiveCamera( camFOV, width / height, camNear, camFar );
-        animate.camera.position.set(0, 1000, 1500);
+        animate.camera.position.set(0, 0, 0);
         main.loader.scene.add( animate.camera );
     }
 
@@ -45,7 +45,16 @@ define(["three", "jquery", "loader", "animate"],
         animate.loader = main.loader;
         addRenderer();
         addCamera();
-        addLight();
+        //addLight();
+    };
+
+    main.LoadScene = function(sceneID){
+        animate.updater.clearAllHandlers();
+        main.scene = new THREE.Scene();
+        main.scene.sceneID = sceneID;
+        main.loader = new loader(main.scene, animate);
+        animate.loader = main.loader;
+        addCamera();
     };
     /***end public functions***/
 

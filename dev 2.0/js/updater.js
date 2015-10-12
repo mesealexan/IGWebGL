@@ -14,6 +14,10 @@ define(["underscore"], function(underscore){
             for (var key in this.handlers) this.handlers[key].update();
         };
 
+        this.clearAllHandlers = function(){
+            this.handlers = [];
+        }
+
         this.stopAllSnow = function() {
             for (var i = 0; i < this.handlers.length; i++) {
                 var h = this.handlers[i];
