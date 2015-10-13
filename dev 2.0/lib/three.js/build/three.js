@@ -20946,7 +20946,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			if ( influences.length > morphTargets.length ) {
 
-				console.warn( 'THREE.WebGLRenderer: Influences array is bigger than morphTargets array.' );
+				//console.warn( 'THREE.WebGLRenderer: Influences array is bigger than morphTargets array.' );
 				influences.length = morphTargets.length;
 
 			}

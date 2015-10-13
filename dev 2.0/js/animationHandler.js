@@ -30,9 +30,9 @@ define(["genericHandler"], function(genericHandler){
             else {
                 if(loop){
                     this.stop();
-                    for(var i = 0; i < meshes.length; i++){
-                        meshes[i].morphTargetInfluences[ this.to ] = 0;
-                        meshes[i].morphTargetInfluences[ this.from ] = 1;
+                    for(var j = 0; j < meshes.length; j++){
+                        meshes[j].morphTargetInfluences[ this.from ] = 1;
+                        meshes[j].morphTargetInfluences[ this.to ] = 0;
                     }
                     this.basePlay(this.from, this.to + 1);
                 }

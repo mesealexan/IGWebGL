@@ -17,7 +17,7 @@ define(["animate"], function(animate){
 
         this.pause = function() { animate.updater.removeHandler(this) };
 
-        this.stop = function() { this.pause(); this.frame = -1 };
+        this.stop = function() { this.pause(); this.frame = -1; };
 
         this.checkPlayback = function(from, to){
             if (from <= to) //regular playback

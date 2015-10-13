@@ -1,5 +1,5 @@
-define(["underscore", "loader", "updater"],
-    function(underscore, loader, updater){
+define(["underscore", "loader", "updater", "tween"],
+    function(underscore, loader, updater, tween){
     var animate = {};//public functionality
 
     /***private fields***/
@@ -26,8 +26,46 @@ define(["underscore", "loader", "updater"],
         if(delta > interval){
             then = now - (delta % interval);
             animate.updater.UpdateHandlers();
+            TWEEN.update(undefined);//don't pass time, fixed tween.js for iOS
             animate.renderer.render(animate.loader.scene, animate.camera);
         }
+    };
+        
+    animate.StopAnimating = function () { cancelAnimationFrame(frameID); };
+
+    //handlers instantiated by scene meshes for updating transform data
+    animate.PositionHandler = function(mesh, animation){
+        this.frame = -1;
+        this.update = function(){
+            if(++this.frame < animation.frames.length){
+                var curFrame = animation.frames[this.frame];
+                mesh.position.set(curFrame.position.x, curFrame.position.z, curFrame.position.y);
+            }else animate.updater.removeHandler(this);
+        }
+    };
+
+    animate.PositionRotationHandler = function(mesh, animation){
+        this.frame = -1;
+        this.update = function(){
+            if(++this.frame < animation.frames.length){
+                var curFrame = animation.frames[this.frame];
+                mesh.position.set(curFrame.position.x, curFrame.position.z, curFrame.position.y);
+
+                mesh.rotation.setFromQuaternion (
+                    new THREE.Quaternion(
+                        curFrame.rotation.x, curFrame.rotation.z,
+                       -curFrame.rotation.y, curFrame.rotation.w
+                    ).normalize());
+            }else animate.updater.removeHandler(this);
+        }
+    };
+
+    animate.RotateZ = function(direction, time, repeat) {
+        //direction 1 cw, -1 ccw
+        var tween = new TWEEN.Tween( this.rotation );
+        tween.to( { z: -Math.PI * 2 * direction}, time );
+        if(repeat != undefined) tween.repeat( repeat );
+        tween.start();
     };
 
     return animate;

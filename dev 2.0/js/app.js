@@ -3,6 +3,8 @@ require.config({
                 "jquery" : "../lib/jquery/dist/jquery.min",
                  "three" : "../lib/three.js/build/three",
             "underscore" : "../lib/underscore/underscore",
+                 "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
+                 "watch" : "../lib/Watch.js/src/watch",
                   "main" : "main",
              "materials" : "materials",
                "animate" : "animate",
@@ -17,18 +19,21 @@ require.config({
     }
     ,
     shim: {
-        three: {exports: "THREE"}
+        three: {
+            exports: "THREE",
+            tween: "TWEEN"
+        }
     }
 });
+
 var nextScene = "LoE";
 require(["main"], function(main){
     main.Start("LoE");
     //main.Start("i89");
 
     /*setInterval(function(){
-        main.loader.UnloadScene();
         if(nextScene == "LoE")nextScene = "i89";
         else nextScene = "LoE";
-        main.LoadScene(nextScene);
+        main.LoadNewScene(nextScene);
     }, 3000);*/
 });

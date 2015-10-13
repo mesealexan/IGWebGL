@@ -27,6 +27,7 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE"],
     }
 
     var loader = function(scene, animationComponent){//public functionality
+        var _this = this;
         this.scene = scene;
         var selectedScene = scenes[scene.sceneID];
 
@@ -40,11 +41,17 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE"],
         }());
 
         this.OnFinishedLoadingAssets = function(){
+            //todo: clean up here
             //camera movement and rendering started here
             var ch = this.cameraHandler;
             ch.play();
-            //window.setTimeout(function(){ch.stop();}, 100);
+            //window.setTimeout(function(){ch.stop();}, 12100);
             animationComponent.Animate();
+
+            var onFinishLoadFunctions = _.functions(selectedScene.onFinishLoadFunctions);
+            _.each(onFinishLoadFunctions, function(fun){
+                selectedScene.onFinishLoadFunctions[fun](scene, _this);
+            });
         };
 
         this.ParseJSON = function(file){

@@ -386,5 +386,70 @@ define(["three"], function(THREE){
         return material;
     };
 
+    materials.textureFadeMaterial = function () {
+        var cold_t = THREE.ImageUtils.loadTexture('media/models/LoE/cold.jpg');
+        var material = new THREE.ShaderMaterial({
+            uniforms: {
+                texture1: { type: "t", value: cold_t },
+                texture2: { type: "t", value: cold_t },
+                startValue: { type: 'f', value: 1},
+                endValue: { type: 'f', value: 0}
+            },
+            attributes: {},
+            vertexShader: vShader(),
+            fragmentShader: fShader(),
+            transparent: false,
+            side: 2
+        });
+        material.tween = tween;
+        return material;
+
+        function vShader() {
+            return ""+
+                "varying vec2 vUv;"+
+                "void main(){"+
+                "vUv = uv;"+
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+        }
+
+        function fShader () {
+            return ""+
+                "varying vec2 vUv;"+
+                "uniform sampler2D texture1;"+
+                "uniform sampler2D texture2;"+
+                "uniform float startValue;"+
+                "uniform float endValue;"+
+                "void main(){"+
+                "float color = 1.0;"+
+                "vec2 position = vUv;"+
+                "gl_FragColor = startValue * texture2D(texture1, vUv) +" +
+                "endValue * texture2D(texture2, vUv);}"
+        }
+
+        function tween(to, time){
+            if(this.uniforms.startValue.value < 1
+                && this.uniforms.startValue.value > 0) return;
+
+            var startVal = 0;
+            var endVal = 1;
+
+            if(this.uniforms.startValue.value == 1)
+                this.uniforms.texture2.value = to;
+            else {
+                startVal = 1;
+                endVal = 0;
+                this.uniforms.texture1.value = to;
+            }
+
+            var tweenDown = new TWEEN.Tween( this.uniforms.startValue );
+            tweenDown.to( { value: startVal}, time );
+            tweenDown.start();
+
+            var tweenUp = new TWEEN.Tween( this.uniforms.endValue );
+            tweenUp.to( { value: endVal}, time );
+            tweenUp.start();
+        }
+    };
+
     return materials;
 });

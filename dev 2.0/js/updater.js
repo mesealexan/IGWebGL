@@ -14,14 +14,12 @@ define(["underscore"], function(underscore){
             for (var key in this.handlers) this.handlers[key].update();
         };
 
-        this.clearAllHandlers = function(){
-            this.handlers = [];
-        }
+        this.clearAll = function(){ this.handlers.length = 0; };
 
         this.stopAllSnow = function() {
             for (var i = 0; i < this.handlers.length; i++) {
                 var h = this.handlers[i];
-                if(h.constructor == SnowHandler) h.stop();
+                if(h.handlerType == "snowHandler") h.stop();
             }
         }
     }

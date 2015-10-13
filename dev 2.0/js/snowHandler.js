@@ -2,6 +2,8 @@ define(["animate", "three"], function(animate, THREE){
     function snowHandler (s){
         this.particleSystem = {};
         this.deathCount = 0;
+        this.handlerType = "snowHandler";
+
         var _this = this,
             numParticles = s.num,
             height = 1000,

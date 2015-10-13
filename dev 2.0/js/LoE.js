@@ -1,11 +1,14 @@
-define(["animate"], function(animate){
+define(["animate", "watch", "materials"], function(animate, watch, materials){
     var LoE = {};
+    var backgroundBlendTime = 800;
+    var coatingTime = 3150;
 
     LoE.folderName = "LoE";
     LoE.onStartFunctions = {};//called on scene start by loader
     LoE.onLoadFunctions = {};//functions called on load complete, MUST be same name as asset
-    LoE.assetNames = ['text', 'rail', 'plane', 'rotator', 'window', 'fixed_glass',
-        'mobile_glass', 'tambur_a', 'tambur_b'];
+    LoE.onFinishLoadFunctions = {};
+    LoE.assetNames = ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'];
     LoE.assets = {};
 
     /***on start functions***/
@@ -28,15 +31,37 @@ define(["animate"], function(animate){
     /***end on start functions***/
 
     /***on load functions***/
+
+    LoE.onLoadFunctions.fixed_glass = function(mesh){LoE.assets.fixed_glass = mesh;};
+    LoE.onLoadFunctions.pouring = function(mesh){LoE.assets.pouring = mesh;};
+
+    LoE.onLoadFunctions.rotator = function(mesh){
+        mesh.position.set(-8310, -150, 0);
+        mesh.rotateZ = animate.RotateZ;
+        mesh.rotateZ(-1, 2000, Infinity);
+    };
+
+    LoE.onLoadFunctions.bck_1 = function(mesh){
+        mesh.material = materials.textureFadeMaterial();
+        LoE.assets.bck_1 = mesh;
+    };
+
+    LoE.onLoadFunctions.plane = function(mesh){
+        LoE.assets.plane = mesh;
+        mesh.position.setZ(5500);
+        mesh.material.materials[0].tweenOpacity = tweenOpacity;
+    };
+
     LoE.onLoadFunctions.tambur_a = function(mesh){
         LoE.assets.tambur_a = mesh;
     };
 
     LoE.onLoadFunctions.tambur_b = function(mesh, loader){
+        var tamburRotateTime = 2777; //a complete rotation in ms
         var tambur_a_pos = loader.ParseJSON('media/models/LoE/tambur_a_pos.JSON');
         var tambur_b_pos = loader.ParseJSON('media/models/LoE/tambur_b_pos.JSON');
 
-        for (var i = 0; i < 29; i++) {
+        for (var i = 0; i < 29; i++) {//29 meshed required
             var newTambur_a = new THREE.Mesh(mesh.geometry.clone(), mesh.material);
             var newTambur_b = new THREE.Mesh(LoE.assets.tambur_a.geometry.clone(), mesh.material);
 
@@ -51,6 +76,11 @@ define(["animate"], function(animate){
             newTambur_a.position.copy(newTambur_a_pos);
             newTambur_b.position.copy(newTambur_b_pos);
 
+            newTambur_a.rotateZ = animate.RotateZ;
+            newTambur_b.rotateZ = animate.RotateZ;
+            newTambur_a.rotateZ(1, tamburRotateTime, Infinity);
+            newTambur_b.rotateZ(1, tamburRotateTime, Infinity);
+
             mesh.add(newTambur_a);
             mesh.add(newTambur_b);
         }
@@ -59,56 +89,194 @@ define(["animate"], function(animate){
 
     LoE.onLoadFunctions.fixed_glass = function(mesh, loader){
         var fixed_window_animation = loader.ParseJSON('media/models/LoE/fixed_glass_anim.JSON');
-        animate.updater.addHandler({
-            frame: -1,
-            update: function(){
-                if(++this.frame < fixed_window_animation.frames.length){
-                    var curFrame = fixed_window_animation.frames[this.frame];
-                    mesh.position.set(curFrame.position.x,curFrame.position.z,curFrame.position.y);
-                }else animate.updater.removeHandler(this);
-            }
-        });
+        animate.updater.addHandler(new animate.PositionHandler(mesh, fixed_window_animation));
+        LoE.assets.fixed_glass = mesh;
     };
 
     LoE.onLoadFunctions.mobile_glass = function(mesh, loader){
         var mobile_window_animation = loader.ParseJSON('media/models/LoE/mobile_glass_anim.JSON');
-        animate.updater.addHandler({
-            frame: -1,
-            update: function(){
-                if(++this.frame < mobile_window_animation.frames.length){
-                    var curFrame = mobile_window_animation.frames[this.frame];
-                    mesh.position.set(curFrame.position.x,curFrame.position.z,curFrame.position.y);
-
-                    mesh.rotation.setFromQuaternion (
-                        new THREE.Quaternion(
-                            curFrame.rotation.x, curFrame.rotation.z, -curFrame.rotation.y,
-                            curFrame.rotation.w
-                        ).normalize());
-                }else animate.updater.removeHandler(this);
-            }
-        });
+        animate.updater.addHandler(new animate.PositionRotationHandler(mesh, mobile_window_animation));
+        addSilverPlanes(loader);
     };
 
     LoE.onLoadFunctions.window = function(mesh, loader){
         var window_animation = loader.ParseJSON('media/models/LoE/window_animation.JSON');
-        animate.updater.addHandler({
-            frame: -1,
-            update: function(){
-                if(++this.frame < window_animation.frames.length){
-                    var curFrame = window_animation.frames[this.frame];
-                    mesh.position.set(curFrame.position.x,curFrame.position.z,curFrame.position.y);
+        animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
+    };
+    /***end on load functions***/
 
-                    mesh.rotation.setFromQuaternion (
-                        new THREE.Quaternion(
-                            curFrame.rotation.x, curFrame.rotation.z, -curFrame.rotation.y,
-                            curFrame.rotation.w
-                        ).normalize());
-                }else animate.updater.removeHandler(this);
-            }
+    /***on finish functions***/
+    LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
+        watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
+            reactToFrame(oldValue);
         });
     };
+    /***end on finish functions***/
 
-    /***end on load functions***/
+    function reactToFrame(frame){
+        switch (frame){
+            case 1:
+                //_window.mesh.visible = false;
+                break;
+            case 169:
+                //fixed_glass.plane4.mesh.material.tween(coatingTime);
+                //setTimeout(function(){ removeFromScene(fixed_glass.plane4);}, coatingTime);
+                LoE.assets.pouring.visible = true;
+                break;
+            case 218:
+                LoE.assets.pouring.visible = false;
+                break;
+            case 240:
+                LoE.assets.pouring.visible = true;
+                //fixed_glass.plane5.mesh.material.tween(coatingTime);
+                //setTimeout(function(){ removeFromScene(fixed_glass.plane5);}, coatingTime);
+                break;
+            case 288:
+                LoE.assets.pouring.visible = false;
+                break;
+            case 310:
+                LoE.assets.pouring.visible = true;
+                //mobile_glass.plane.mesh.material.tween(coatingTime);
+                //setTimeout(function(){ removeFromScene(fixed_glass.plane6);}, coatingTime);
+                break;
+            case 358:
+                LoE.assets.pouring.visible = false;
+                break;
+            case 375:
+                //_window.mesh.visible = true;
+                break;
+            case 410:
+                //mobile_glass.mesh.visible = false;
+                break;
+            case 450:
+                enableBackground();
+                break;
+            case 469:
+                //toggleElement(menu, 'visible');
+                break;
+            case 479:
+                //window_shadow.mesh.material.materials[0].tweenOpacity(1, window_shadow_appearTime, 300);
+                //window_shadow.mesh.visible = true;
+                break;
+            case 499:
+                //scene.remove(rail.mesh);
+                //controls.target = camera.target;
+                //text.mesh.visible = false;
+                //toggleInput(true);
+                break;
+        }
+    }
+
+    function enableBackground () {
+        LoE.assets.plane.material.materials[0].transparent = true;
+        LoE.assets.plane.material.materials[0].tweenOpacity(0, backgroundBlendTime);
+    }
+
+    function tweenOpacity (to, time, delayTime) {
+        var tween = new TWEEN.Tween( this );
+        if(delayTime != undefined) tween.delay(delayTime);
+        tween.to( { opacity: to }, time );
+        tween.start();
+    }
+
+    function addSilverPlanes (loader) {
+        var silver_Planes_pos = loader.ParseJSON('media/models/LoE/silverPlanes.JSON');
+        var geometry = new THREE.PlaneBufferGeometry( 990 , 760 );
+        var offsetX = 8301;
+        var offsetY = 365;
+
+        for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
+            var planeObj = new THREE.Mesh( geometry.clone()/*, silverCoatingMaterial(3.0)*/);
+            planeObj.rotation.x -= Math.PI / 2;
+            planeObj.rotation.z += Math.PI;																			             //magic
+            planeObj.position.set(
+                silver_Planes_pos.positions[i].position.x + offsetX,
+                silver_Planes_pos.positions[i].position.z + offsetY,
+               -silver_Planes_pos.positions[i].position.y);
+
+            LoE.assets.fixed_glass['plane' + (i + 1).toString()] = planeObj;
+            LoE.assets.fixed_glass.add(planeObj);
+            //planeObj.add(LoE.assets.fixed_glass);
+            //loader.scene.add(planeObj);
+        }
+
+        /*planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, coat1_text) );
+        planeObj.mesh.rotation.x += Math.PI / 2;
+        planeObj.mesh.rotation.z += Math.PI / 2;
+        planeObj.mesh.position.copy(mobile_glass.mesh.position);
+        planeObj.mesh.position.y += 5;
+
+        mobile_glass.plane = planeObj;
+        addToScene(planeObj, mobile_glass.mesh)*/
+    }
+
+    function silverCoatingMaterial (size, secondary_t) {
+        var hasSecondary = 0;
+        if (secondary_t) hasSecondary = 1.0;
+        var material = new THREE.ShaderMaterial({
+            uniforms: {
+                primary_t: {type: "t", value: coat1_t},
+                secondary_t: {type: "t", value: secondary_t},
+                hasSecondary: {type: "f", value: hasSecondary},
+                start: {type: 'f', value: 1.104},
+                size: {type: 'f', value: size},
+                discard_f: {type: 'f', value: 1.1},
+                maxColor: {type: 'f', value: 1.0}
+            },
+            attributes: {},
+            vertexShader: vShader(),
+            fragmentShader: fShader(),
+            transparent: true,
+            side: 1,
+            color: new THREE.Color("rgb(200,200,0)"),
+            ambient: new THREE.Color("rgb(211,211,0)"),
+            specular: new THREE.Color("rgb(222,222,0)"),
+            shininess: 3
+        });
+        material.tween = tween;
+        material.depthTest = true;
+        material.depthWrite = true;
+        return material;
+
+        function vShader() {
+            return "" +
+                "varying vec2 vUv;" +
+                "void main(){" +
+                "vUv = uv;" +
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+        }
+
+        function fShader() {
+            return "" +
+                "varying vec2 vUv;" +
+                "uniform sampler2D primary_t;" +
+                "uniform sampler2D secondary_t;" +
+                "uniform float start;" +
+                "uniform float size;" +
+                "uniform float maxColor;" +
+                "uniform float discard_f;" +
+                "uniform float hasSecondary;" +
+                "void main(){" +
+                "float color = 0.0;" +
+                "vec2 position = vUv;" +
+                    //flip uv coord for text
+                "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" +
+                "color = ((position.x * size) + maxColor) + start;" +
+                "if (hasSecondary == 1.0) {" +
+                "if (color >= discard_f + maxColor) discard;" +
+                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv)) + " +
+                "texture2D(secondary_t, vUvInv);" +
+                "else gl_FragColor = texture2D(secondary_t, vUvInv);}" +
+                "else {" +
+                "if (color >= discard_f + maxColor) discard;" +
+                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}}"
+        }
+    }
+
+    GlobalFunctions.LoE = {
+        enableBackground: enableBackground,
+        manageBackgroundTexture: undefined
+    };
 
     return LoE;
 });

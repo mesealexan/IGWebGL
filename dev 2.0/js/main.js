@@ -1,12 +1,12 @@
-define(["three", "jquery", "loader", "animate"],
-    function(THREE, jquery, loader, animate){
+var GlobalFunctions = new Object();
+define(["three", "jquery", "loader", "animate", "tween"],
+    function(THREE, jquery, loader, animate, tween){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV = 45; //camera field of view in degrees
     var width, height; //browser window dimension
     var container; //html element for webGL renderer
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
-    /***end private fields***/
 
     /***private functions***/
     function addRenderer() {
@@ -21,17 +21,11 @@ define(["three", "jquery", "loader", "animate"],
         animate.camera.position.set(0, 0, 0);
         main.loader.scene.add( animate.camera );
     }
-
-    function addLight () {
-        var ambientLight = new THREE.AmbientLight( 0xffffff );
-        main.loader.scene.add( ambientLight );
-    }
     /***end private functions***/
 
     /***public fields***/
     main.scene = undefined;
     main.loader = undefined;
-    /***end public fields***/
 
     /***public functions***/
     main.Start = function(sceneID){
@@ -45,11 +39,16 @@ define(["three", "jquery", "loader", "animate"],
         animate.loader = main.loader;
         addRenderer();
         addCamera();
-        //addLight();
+        //because they are unique, lights are added by each scene's individual file
     };
 
-    main.LoadScene = function(sceneID){
-        animate.updater.clearAllHandlers();
+    main.LoadNewScene = function(sceneID){
+        //only call after Start()
+        animate.updater.clearAll();
+        main.loader.UnloadScene();
+        animate.StopAnimating();
+        TWEEN.removeAll();
+
         main.scene = new THREE.Scene();
         main.scene.sceneID = sceneID;
         main.loader = new loader(main.scene, animate);
