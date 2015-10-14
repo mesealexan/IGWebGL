@@ -3,9 +3,13 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
     function CameraHandler(anim) {
         var animation = anim;
 
+        this.started = false;
+
         this.setSource = function(p) { animation = (p) };
 
-        this.play = function(from, to){
+        this.play = function(from, to, onComplete){
+            if(onComplete) this.onComplete = onComplete;
+            this.started = true;
             if(!animation) {console.error("missing animation!"); return;}
             if(from == undefined) from = this.frame + 1;
             if(to == undefined) to = animation.frames.length - 1;
@@ -14,25 +18,22 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
 
         this.update = function () {
             if(this.checkPlayback(this.from, this.to)){
-                var newUp = this.modifyCameraUp(animation.frames[this.frame].rollAngle);
+                var curFrame = animation.frames[this.frame];
+                var newUp = this.modifyCameraUp(curFrame.rollAngle);
                 animate.camera.up.set(newUp.x, newUp.y, newUp.z);
 
                 var lookAt = new THREE.Vector3(
-                    animation.frames[this.frame].target.x,
-                    animation.frames[this.frame].target.z,
-                    -animation.frames[this.frame].target.y);
+                    curFrame.target.x, curFrame.target.z, -curFrame.target.y);
 
                 animate.camera.target = lookAt;
                 //todo: link controls here
                 //controls.target.copy(lookAt);
                 animate.camera.lookAt(lookAt);
-                animate.camera.fov = animation.frames[this.frame].fov;
+                animate.camera.fov = curFrame.fov;
                 animate.camera.updateProjectionMatrix();
 
                 animate.camera.position.set(
-                    (animation.frames[this.frame].position.x),
-                    (animation.frames[this.frame].position.z),
-                    -(animation.frames[this.frame].position.y));
+                    curFrame.position.x, curFrame.position.z, -curFrame.position.y);
             }
             else {animate.camera.lookAt(animate.camera.target); this.stop();} //reached the end
         };
@@ -40,10 +41,9 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
         this.tween = function (frame, speed, onComplete) {
             /***position***/
             var startPos = animate.camera.position;
+            var targetFrame = animation.frames[frame];
             var destination = new THREE.Vector3(
-                animation.frames[frame].position.x,
-                animation.frames[frame].position.z,
-                -animation.frames[frame].position.y);
+                targetFrame.position.x, targetFrame.position.z, -targetFrame.position.y);
             var distance = startPos.distanceTo(destination);
             var time = distance / speed;
 
@@ -67,7 +67,7 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
                 animation.frames[frame].target.z,
                 -animation.frames[frame].target.y);
 
-            var targetTween = new TWEEN.Tween( animate.camera.target )
+            var targetTween = new TWEEN.Tween( animate.camera.target );
             targetTween.easing(TWEEN.Easing.Cubic.InOut);
             targetTween.to( { x: target.x, y: target.y, z: target.z }, time );
             targetTween.start();
@@ -75,7 +75,7 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
 
             /***fov***/
             var fovTween = new TWEEN.Tween( animate.camera );
-            fovTween.to( { fov: animation.frames[frame].fov + fovModifier }, time);
+            fovTween.to( { fov: animation.frames[frame].fov }, time);
             fovTween.start();
             fovTween.onUpdate( function () { animate.camera.updateProjectionMatrix() });
         };

@@ -1,14 +1,17 @@
-define(["animate", "watch", "materials"], function(animate, watch, materials){
+define(["animate", "watch", "materials", "tween"],
+    function(animate, watch, materials, tween){
     var LoE = {};
+    var coatingTime = 2600;
     var backgroundBlendTime = 800;
-    var coatingTime = 3150;
+    var coatTexture = undefined;
+    var LoE_textTexture = undefined;
 
     LoE.folderName = "LoE";
-    LoE.onStartFunctions = {};//called on scene start by loader
-    LoE.onLoadFunctions = {};//functions called on load complete, MUST be same name as asset
-    LoE.onFinishLoadFunctions = {};
     LoE.assetNames = ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'];
+    LoE.onStartFunctions = {};
+    LoE.onLoadFunctions = {};
+    LoE.onFinishLoadFunctions = {};
     LoE.assets = {};
 
     /***on start functions***/
@@ -49,7 +52,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
     LoE.onLoadFunctions.plane = function(mesh){
         LoE.assets.plane = mesh;
         mesh.position.setZ(5500);
-        mesh.material.materials[0].tweenOpacity = tweenOpacity;
+        mesh.material.materials[0].tweenOpacity = animate.TweenOpacity;
     };
 
     LoE.onLoadFunctions.tambur_a = function(mesh){
@@ -88,6 +91,8 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
     };
 
     LoE.onLoadFunctions.fixed_glass = function(mesh, loader){
+        coatTexture = THREE.ImageUtils.loadTexture('media/models/LoE/coat1.png');
+        LoE_textTexture = THREE.ImageUtils.loadTexture('media/models/LoE/coat1_text.png');
         var fixed_window_animation = loader.ParseJSON('media/models/LoE/fixed_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionHandler(mesh, fixed_window_animation));
         LoE.assets.fixed_glass = mesh;
@@ -96,6 +101,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
     LoE.onLoadFunctions.mobile_glass = function(mesh, loader){
         var mobile_window_animation = loader.ParseJSON('media/models/LoE/mobile_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, mobile_window_animation));
+        LoE.assets.mobile_glass = mesh;
         addSilverPlanes(loader);
     };
 
@@ -119,7 +125,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 //_window.mesh.visible = false;
                 break;
             case 169:
-                //fixed_glass.plane4.mesh.material.tween(coatingTime);
+                LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
                 //setTimeout(function(){ removeFromScene(fixed_glass.plane4);}, coatingTime);
                 LoE.assets.pouring.visible = true;
                 break;
@@ -128,7 +134,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 break;
             case 240:
                 LoE.assets.pouring.visible = true;
-                //fixed_glass.plane5.mesh.material.tween(coatingTime);
+                LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
                 //setTimeout(function(){ removeFromScene(fixed_glass.plane5);}, coatingTime);
                 break;
             case 288:
@@ -136,7 +142,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 break;
             case 310:
                 LoE.assets.pouring.visible = true;
-                //mobile_glass.plane.mesh.material.tween(coatingTime);
+                LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 //setTimeout(function(){ removeFromScene(fixed_glass.plane6);}, coatingTime);
                 break;
             case 358:
@@ -146,7 +152,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 //_window.mesh.visible = true;
                 break;
             case 410:
-                //mobile_glass.mesh.visible = false;
+                LoE.assets.mobile_glass.visible = false;
                 break;
             case 450:
                 enableBackground();
@@ -172,13 +178,6 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
         LoE.assets.plane.material.materials[0].tweenOpacity(0, backgroundBlendTime);
     }
 
-    function tweenOpacity (to, time, delayTime) {
-        var tween = new TWEEN.Tween( this );
-        if(delayTime != undefined) tween.delay(delayTime);
-        tween.to( { opacity: to }, time );
-        tween.start();
-    }
-
     function addSilverPlanes (loader) {
         var silver_Planes_pos = loader.ParseJSON('media/models/LoE/silverPlanes.JSON');
         var geometry = new THREE.PlaneBufferGeometry( 990 , 760 );
@@ -186,7 +185,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
         var offsetY = 365;
 
         for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
-            var planeObj = new THREE.Mesh( geometry.clone()/*, silverCoatingMaterial(3.0)*/);
+            var planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0));
             planeObj.rotation.x -= Math.PI / 2;
             planeObj.rotation.z += Math.PI;																			             //magic
             planeObj.position.set(
@@ -196,26 +195,25 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
 
             LoE.assets.fixed_glass['plane' + (i + 1).toString()] = planeObj;
             LoE.assets.fixed_glass.add(planeObj);
-            //planeObj.add(LoE.assets.fixed_glass);
-            //loader.scene.add(planeObj);
         }
 
-        /*planeObj.mesh = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, coat1_text) );
-        planeObj.mesh.rotation.x += Math.PI / 2;
-        planeObj.mesh.rotation.z += Math.PI / 2;
-        planeObj.mesh.position.copy(mobile_glass.mesh.position);
-        planeObj.mesh.position.y += 5;
+        planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, LoE_textTexture) );
+        planeObj.rotation.x += Math.PI / 2;
+        planeObj.rotation.z += Math.PI / 2;
+        planeObj.position.copy( LoE.assets.mobile_glass.position);
+        planeObj.position.y += 5;
 
-        mobile_glass.plane = planeObj;
-        addToScene(planeObj, mobile_glass.mesh)*/
+        LoE.assets.mobile_glass.plane = planeObj;
+        LoE.assets.mobile_glass.add(planeObj);
     }
 
     function silverCoatingMaterial (size, secondary_t) {
         var hasSecondary = 0;
         if (secondary_t) hasSecondary = 1.0;
+        //coat1
         var material = new THREE.ShaderMaterial({
             uniforms: {
-                primary_t: {type: "t", value: coat1_t},
+                primary_t: {type: "t", value: coatTexture},
                 secondary_t: {type: "t", value: secondary_t},
                 hasSecondary: {type: "f", value: hasSecondary},
                 start: {type: 'f', value: 1.104},
@@ -227,7 +225,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
             vertexShader: vShader(),
             fragmentShader: fShader(),
             transparent: true,
-            side: 1,
+            side: 2,
             color: new THREE.Color("rgb(200,200,0)"),
             ambient: new THREE.Color("rgb(211,211,0)"),
             specular: new THREE.Color("rgb(222,222,0)"),
@@ -258,8 +256,7 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 "uniform float hasSecondary;" +
                 "void main(){" +
                 "float color = 0.0;" +
-                "vec2 position = vUv;" +
-                    //flip uv coord for text
+                "vec2 position = vUv;" + //flip uv coord for text
                 "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" +
                 "color = ((position.x * size) + maxColor) + start;" +
                 "if (hasSecondary == 1.0) {" +
@@ -270,6 +267,15 @@ define(["animate", "watch", "materials"], function(animate, watch, materials){
                 "else {" +
                 "if (color >= discard_f + maxColor) discard;" +
                 "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}}"
+        }
+
+        function tween(time, delay, repeat){
+            var tweenStart = new TWEEN.Tween( this.uniforms.start );
+            if(repeat != undefined) tweenStart.repeat( repeat );
+            if(delay != undefined) tweenStart.delay( delay );
+            tweenStart.to( { value: -this.uniforms.size.value - this.uniforms.maxColor.value },
+                time);
+            tweenStart.start();
         }
     }
 

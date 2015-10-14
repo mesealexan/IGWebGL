@@ -15,18 +15,29 @@ define(["animate"], function(animate){
 
         this.update = function() {};
 
-        this.pause = function() { animate.updater.removeHandler(this) };
+        this.pause = function() { animate.updater.removeHandler(this); };
 
-        this.stop = function() { this.pause(); this.frame = -1; };
+        this.stop = function() { this.pause(); /*this.frame = -1;*/ };
+
+        this.onComplete = function(){ };
 
         this.checkPlayback = function(from, to){
-            if (from <= to) //regular playback
+            if (from <= to){ //regular playback
                 if (this.frame++ < to) return true; //still has to play
-                else return false; //reached the end
-
-            else if (from > to) //reverse playback
+                else {
+                    this.onComplete();
+                    this.onComplete = function(){ };
+                    return false;
+                } //reached the end
+            }
+            else if (from > to){ //reverse playback
                 if (this.frame-- > to) return true; //still has to play
-                else return false; //reached the end
+                else{
+                    this.onComplete();
+                    this.onComplete = function(){ };
+                    return false;
+                } //reached the end
+            }
         };
     }
 });

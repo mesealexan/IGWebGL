@@ -10,12 +10,14 @@ require.config({
                "animate" : "animate",
                 "loader" : "loader",
                "updater" : "updater",
+                "events" : "events",
         "genericHandler" : "genericHandler",
          "cameraHandler" : "cameraHandler",
       "animationHandler" : "animationHandler",
            "snowHandler" : "snowHandler",
                    "i89" : "i89",
-                   "LoE" : "LoE"
+                   "LoE" : "LoE",
+              "cardinal" : "cardinal"
     }
     ,
     shim: {
@@ -26,14 +28,13 @@ require.config({
     }
 });
 
-var nextScene = "LoE";
+var nextScene = ["LoE", "cardinal", "i89"];
 require(["main"], function(main){
-    main.Start("LoE");
+    //main.Start("LoE");
     //main.Start("i89");
+    main.Start("cardinal");
 
     /*setInterval(function(){
-        if(nextScene == "LoE")nextScene = "i89";
-        else nextScene = "LoE";
-        main.LoadNewScene(nextScene);
+        main.LoadNewScene(nextScene[Math.floor(Math.random() * 3)]);
     }, 3000);*/
 });

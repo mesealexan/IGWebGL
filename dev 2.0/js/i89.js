@@ -2,16 +2,15 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
     function(animationHandler, snowHandler, watch, animate){
     var i89 = {};
     i89.folderName = "i89";
-    i89.onStartFunctions = {};//called on scene start by loader
-    i89.onLoadFunctions = {};//called on load complete, MUST be same name as asset
+    i89.assetNames = ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
+        'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'i89',
+        'window_plane', 'heat_wave', 'heat_wave_refract', 'heat_wave_reflect'];
+    i89.onStartFunctions = {};
+    i89.onLoadFunctions = {};
     i89.onFinishLoadFunctions = {};
     i89.animationHandlers = {};
     i89.snowHandlers = {};
     i89.assets = {};
-
-    i89.assetNames = ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-        'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'i89',
-        'window_plane', 'heat_wave', 'heat_wave_refract', 'heat_wave_reflect'];
 
     /***on start functions***/
     i89.onStartFunctions.addSnow = function(scene){
@@ -161,6 +160,7 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
                 break;
         }
     }
+
     var switchWindow = function () {
         var fadeTime = 300, fading = false, off = true, on = false;
         return{
@@ -259,7 +259,6 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
     var fade = function(obj, time){
         if(time == undefined) time = 1000;
         function tweenOpacity(obj, val, time){
-            //console.log(obj)
             for (var i = 0; i < obj.material.materials.length; i++){
                 var mat = obj.material.materials[i];
                 var fade = new TWEEN.Tween( mat );

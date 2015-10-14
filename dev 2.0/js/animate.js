@@ -6,6 +6,9 @@ define(["underscore", "loader", "updater", "tween"],
     var frameID = 0;//keeps track of frame number, can be used to cancelAnimationFrame
     //delta time variables
     var then = _.now();
+    var start = then;
+    var total = 0;
+        var last = 0;
     var now = undefined;
     var fps = 30;//should NOT change, all JSON files exported at 30 fps
     var delta = undefined;//actual time between current and last frame
@@ -26,7 +29,8 @@ define(["underscore", "loader", "updater", "tween"],
         if(delta > interval){
             then = now - (delta % interval);
             animate.updater.UpdateHandlers();
-            TWEEN.update(undefined);//don't pass time, fixed tween.js for iOS
+            TWEEN.update(total);
+            total = now - start;
             animate.renderer.render(animate.loader.scene, animate.camera);
         }
     };
@@ -65,6 +69,14 @@ define(["underscore", "loader", "updater", "tween"],
         var tween = new TWEEN.Tween( this.rotation );
         tween.to( { z: -Math.PI * 2 * direction}, time );
         if(repeat != undefined) tween.repeat( repeat );
+        tween.start();
+    };
+
+    animate.TweenOpacity = function(obj, to, time, delayTime, onComp) {
+        var tween = new TWEEN.Tween( obj );
+        if(delayTime != undefined) tween.delay(delayTime);
+        if(onComp) tween.onComplete(function(){onComp();});
+        tween.to( { opacity: to }, time );
         tween.start();
     };
 

@@ -1,8 +1,9 @@
-define(["underscore", "cameraHandler", "materials", "i89", "LoE"],
-    function(underscore, cameraHandler, materials, i89, LoE){
+define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
+    function(underscore, cameraHandler, materials, i89, LoE, cardinal){
     var scenes = {//all possible scenes
         i89:i89,
-        LoE:LoE
+        LoE:LoE,
+        cardinal:cardinal
     };
 
     function disposeObject (obj) {
@@ -26,6 +27,10 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE"],
         fun(obj);
     }
 
+    function checkCameraAnimationState(l){
+        if(!l.cameraHandler.started)l.cameraHandler.play();
+    }
+
     var loader = function(scene, animationComponent){//public functionality
         var _this = this;
         this.scene = scene;
@@ -36,22 +41,17 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE"],
             //retrieve all functions in onStartFunctions object, then call each one
             var onStartFunctions = _.functions(selectedScene.onStartFunctions);
             _.each(onStartFunctions, function(fun){
-                selectedScene.onStartFunctions[fun](scene);
+                selectedScene.onStartFunctions[fun](scene, _this);
             });
         }());
 
         this.OnFinishedLoadingAssets = function(){
-            //todo: clean up here
-            //camera movement and rendering started here
-            var ch = this.cameraHandler;
-            ch.play();
-            //window.setTimeout(function(){ch.stop();}, 12100);
-            animationComponent.Animate();
-
             var onFinishLoadFunctions = _.functions(selectedScene.onFinishLoadFunctions);
             _.each(onFinishLoadFunctions, function(fun){
                 selectedScene.onFinishLoadFunctions[fun](scene, _this);
             });
+            checkCameraAnimationState(_this);
+            animationComponent.Animate();
         };
 
         this.ParseJSON = function(file){

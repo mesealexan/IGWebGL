@@ -1,6 +1,6 @@
 var GlobalFunctions = new Object();
-define(["three", "jquery", "loader", "animate", "tween"],
-    function(THREE, jquery, loader, animate, tween){
+define(["three", "jquery", "loader", "animate", "tween", "events"],
+    function(THREE, jquery, loader, animate, tween, events){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV = 45; //camera field of view in degrees
@@ -44,6 +44,7 @@ define(["three", "jquery", "loader", "animate", "tween"],
 
     main.LoadNewScene = function(sceneID){
         //only call after Start()
+        events.UnbindAll();
         animate.updater.clearAll();
         main.loader.UnloadScene();
         animate.StopAnimating();

@@ -12,28 +12,6 @@ define(["three"], function(THREE){
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }());
 
-    function RadialGradientMaterial (){
-        var canvas = document.createElement( 'canvas' );
-        canvas.width = canvas.height = 128;
-        var context = canvas.getContext( '2d' );
-        var gradient = context.createRadialGradient( canvas.width / 2,
-            canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
-        gradient.addColorStop( 0, 'rgba(255, 120, 0, 1)' );
-        gradient.addColorStop( 1, 'rgba(0, 0, 0, 0)' );
-        context.fillStyle = gradient;
-        context.fillRect( 0, 0, canvas.width, canvas.height );
-        var shadowTexture = new THREE.Texture( canvas );
-        shadowTexture.needsUpdate = true;
-        return new THREE.MeshPhongMaterial({
-            map: shadowTexture,
-            specular: new THREE.Color("rgb(0,80,60)"),
-            refractionRatio: 0.985,
-            reflectivity: 0.99,
-            shininess: 30,
-            transparent: true
-        });
-    }
-
     materials.setMaterials = function(folderName, materialName){
         var material;
         materialName = folderName + materialName;
@@ -241,7 +219,7 @@ define(["three"], function(THREE){
                 });
                 break;
 
-            case 'Glass Sides':
+            case 'i89Glass Sides':
                 material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(46,56,31)"),
                     ambient: new THREE.Color("rgb(46,56,31)"),
@@ -375,6 +353,119 @@ define(["three"], function(THREE){
                     map: map
                 });
                 break;
+            case 'cardinalsealant a':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(161,161,161)"),
+                    ambient: new THREE.Color("rgb(116,116,116)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                });
+                break;
+            case 'cardinalsealant b':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(213,213,213)"),
+                    ambient: new THREE.Color("rgb(116,116,116)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+
+                });
+                break;
+            case 'cardinalSpacer':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(213,213,213)"),
+                    ambient: new THREE.Color("rgb(222,222,222)"),
+                    specular: new THREE.Color("rgb(255,255,255)")
+                });
+                break;
+            case 'cardinalSpacer Cap':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(213,213,213)"),
+                    ambient: new THREE.Color("rgb(116,116,116)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')
+                });
+                break;
+            case 'cardinalGlass':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(255,255,255)"),
+                    //ambient: new THREE.Color("rgb(255,1,0)"),
+                    specular: new THREE.Color("rgb(0,80,60)"),
+                    vertexColors: THREE.VertexColors,
+                    envMap: textureCube,
+                    refractionRatio: 0.985,
+                    reflectivity: 0.99,
+                    shininess: 30,
+                    transparent: true,
+                    opacity: 0.66
+                });
+                break;
+            case 'cardinalGlass Sides':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(46,56,31)"),
+                    ambient: new THREE.Color("rgb(46,56,31)"),
+                    emissive: new THREE.Color("rgb(46,56,31)"),
+                    specular: new THREE.Color("rgb(0,80,60)"),
+                    envMap: textureCube,
+                    refractionRatio: 0.985,
+                    reflectivity: 0.99,
+                    shininess: 30,
+                    transparent: true,
+                    opacity: 0.96
+                });
+                break;
+            case 'cardinalp1 op':
+                material = new THREE.MeshLambertMaterial({
+                    color: new THREE.Color("rgb(0,0,0)"),
+                    ambient: new THREE.Color("rgb(0,0,0)"),
+                    specular: new THREE.Color("rgb(0,0,0)"),
+                    map: THREE.ImageUtils.loadTexture(url+'p1_op.png'),
+                    transparent: true
+                });
+                break;
+            case 'cardinalp2 op':
+                material = new THREE.MeshLambertMaterial({
+                    color: new THREE.Color("rgb(0,0,0)"),
+                    ambient: new THREE.Color("rgb(0,0,0)"),
+                    specular: new THREE.Color("rgb(0,0,0)"),
+                    map:  THREE.ImageUtils.loadTexture(url+'p2_op.png'),
+                    transparent: true
+                });
+                break;
+            case 'cardinalplane':
+                material = new THREE.MeshLambertMaterial({
+                    color: new THREE.Color("rgb(255,255,255)"),
+                    ambient: new THREE.Color("rgb(255,255,255)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                    visible: false
+                });
+                break;
+            case 'cardinaltext':
+                material = new THREE.MeshLambertMaterial({
+                    color: new THREE.Color("rgb(113,106,76)"),
+                    ambient: new THREE.Color("rgb(113,106,76)"),
+                    specular: new THREE.Color("rgb(191,188,175)"),
+                    emissive: new THREE.Color("rgb(113,106,76)")
+
+                });
+                break;
+            case 'cardinaldesicant':
+                material = new THREE.MeshLambertMaterial({
+                    color: new THREE.Color("rgb(198,204,151)"),
+                    ambient: new THREE.Color("rgb(198,204,151)"),
+                    transparent: true,
+                    opacity: 0.75
+
+                });
+                break;
+            case 'cardinalSpacer slice':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(213,213,213)"),
+                    ambient: new THREE.Color("rgb(222,222,222)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                    envMap: textureCube,
+                    refractionRatio: 0.985,
+                    reflectivity: 0.99,
+                    shininess: 30
+                });
+                break;
 
             default:
                 material =  new THREE.MeshBasicMaterial();
@@ -385,6 +476,28 @@ define(["three"], function(THREE){
         material.maxOpacity = material.opacity;
         return material;
     };
+
+    function RadialGradientMaterial (){
+        var canvas = document.createElement( 'canvas' );
+        canvas.width = canvas.height = 128;
+        var context = canvas.getContext( '2d' );
+        var gradient = context.createRadialGradient( canvas.width / 2,
+            canvas.height / 2, 0, canvas.width / 2, canvas.height / 2, canvas.width / 2 );
+        gradient.addColorStop( 0, 'rgba(255, 120, 0, 1)' );
+        gradient.addColorStop( 1, 'rgba(0, 0, 0, 0)' );
+        context.fillStyle = gradient;
+        context.fillRect( 0, 0, canvas.width, canvas.height );
+        var shadowTexture = new THREE.Texture( canvas );
+        shadowTexture.needsUpdate = true;
+        return new THREE.MeshPhongMaterial({
+            map: shadowTexture,
+            specular: new THREE.Color("rgb(0,80,60)"),
+            refractionRatio: 0.985,
+            reflectivity: 0.99,
+            shininess: 30,
+            transparent: true
+        });
+    }
 
     materials.textureFadeMaterial = function () {
         var cold_t = THREE.ImageUtils.loadTexture('media/models/LoE/cold.jpg');
