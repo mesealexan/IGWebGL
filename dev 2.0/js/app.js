@@ -23,7 +23,8 @@ require.config({
     shim: {
         three: {
             exports: "THREE",
-            tween: "TWEEN"
+            tween: "TWEEN",
+            watch: "watch"
         }
     }
 });
@@ -36,5 +37,5 @@ require(["main"], function(main){
 
     /*setInterval(function(){
         main.LoadNewScene(nextScene[Math.floor(Math.random() * 3)]);
-    }, 3000);*/
+    }, 5000);*/
 });

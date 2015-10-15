@@ -1,10 +1,13 @@
-define(["animate", "watch", "materials", "tween"],
-    function(animate, watch, materials, tween){
+define(["animate", "watch", "materials", "tween", "events"],
+    function(animate, watch, materials, tween, events){
     var LoE = {};
-    var coatingTime = 2600;
-    var backgroundBlendTime = 800;
+    var coatingTime = 2300;
+    var backgroundBlendTime = 600;
     var coatTexture = undefined;
     var LoE_textTexture = undefined;
+    var hot_t = undefined,
+        colt_t = undefined,
+        mixed_t = undefined; //background plane textures
 
     LoE.folderName = "LoE";
     LoE.assetNames = ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
@@ -30,6 +33,13 @@ define(["animate", "watch", "materials", "tween"],
         spotLight.position.set( 18398, 13569, 17048 );
         spotLight.intensity = 1;
         scene.add( spotLight );
+    };
+
+    LoE.onStartFunctions.loadBackgroundTextures = function(){
+        var folder = "media/models/LoE/";
+        hot_t = THREE.ImageUtils.loadTexture(folder + "hot.jpg");
+        cold_t = THREE.ImageUtils.loadTexture(folder + "cold.jpg");
+        mixed_t = THREE.ImageUtils.loadTexture(folder + "mixed.jpg");
     };
     /***end on start functions***/
 
@@ -109,6 +119,10 @@ define(["animate", "watch", "materials", "tween"],
         var window_animation = loader.ParseJSON('media/models/LoE/window_animation.JSON');
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
     };
+
+    LoE.onLoadFunctions.window_shadow = function(mesh, loader){
+        LoE.assets.window_shadow = mesh;
+    };
     /***end on load functions***/
 
     /***on finish functions***/
@@ -118,6 +132,30 @@ define(["animate", "watch", "materials", "tween"],
         });
     };
     /***end on finish functions***/
+
+    LoE.buttons = {
+        cold: {
+            add: function(){
+                events.AddButton({text:"cold",
+                    function: function(){manageBackgroundOpacity(cold_t)},
+                    id:"cold"});
+            }
+        },
+        hot: {
+            add: function(){
+                events.AddButton({text:"hot",
+                    function: function(){manageBackgroundOpacity(hot_t)},
+                    id:"hot"});
+            }
+        },
+        mixed: {
+            add: function(){
+                events.AddButton({text:"mixed",
+                    function: function(){manageBackgroundOpacity(mixed_t)},
+                    id:"mixed"});
+            }
+        }
+    };
 
     function reactToFrame(frame){
         switch (frame){
@@ -159,6 +197,9 @@ define(["animate", "watch", "materials", "tween"],
                 break;
             case 469:
                 //toggleElement(menu, 'visible');
+                LoE.buttons.cold.add();
+                LoE.buttons.hot.add();
+                LoE.buttons.mixed.add();
                 break;
             case 479:
                 //window_shadow.mesh.material.materials[0].tweenOpacity(1, window_shadow_appearTime, 300);
@@ -174,8 +215,9 @@ define(["animate", "watch", "materials", "tween"],
     }
 
     function enableBackground () {
-        LoE.assets.plane.material.materials[0].transparent = true;
-        LoE.assets.plane.material.materials[0].tweenOpacity(0, backgroundBlendTime);
+        var mat = LoE.assets.plane.material.materials[0];
+        mat.transparent = true;
+        mat.tweenOpacity(mat, 0, backgroundBlendTime);
     }
 
     function addSilverPlanes (loader) {
@@ -256,9 +298,8 @@ define(["animate", "watch", "materials", "tween"],
                 "uniform float hasSecondary;" +
                 "void main(){" +
                 "float color = 0.0;" +
-                "vec2 position = vUv;" + //flip uv coord for text
-                "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" +
-                "color = ((position.x * size) + maxColor) + start;" +
+                "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
+                "color = ((vUv.x * size) + maxColor) + start;" +
                 "if (hasSecondary == 1.0) {" +
                 "if (color >= discard_f + maxColor) discard;" +
                 "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv)) + " +
@@ -277,6 +318,10 @@ define(["animate", "watch", "materials", "tween"],
                 time);
             tweenStart.start();
         }
+    }
+
+    function manageBackgroundOpacity (to) {
+        LoE.assets.bck_1.material.tween(to, backgroundBlendTime);
     }
 
     GlobalFunctions.LoE = {

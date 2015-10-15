@@ -19,7 +19,7 @@ define(["three"], function(THREE){
 
         switch(materialName){
             case 'LoEpouring':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(170,10,243)"),
                     ambient: new THREE.Color("rgb(170,10,243)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
@@ -34,13 +34,13 @@ define(["three"], function(THREE){
                     ambient: new THREE.Color("rgb(125,125,125)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
                     map: THREE.ImageUtils.loadTexture(url+'tambur.jpg'),
-                    bumpMap: THREE.ImageUtils.loadTexture(url+'tambur_bump.jpg'),
-                    bumpScale: 1,
+                    //bumpMap: THREE.ImageUtils.loadTexture(url+'tambur_bump.jpg'),
+                    //bumpScale: 1,
                     shininess: 11
                 });
                 break;
             case 'LoEmetal':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(116,116,116)"),
                     ambient: new THREE.Color("rgb(66,66,66)"),
                     specular: new THREE.Color("rgb(222,222,222)"),
@@ -61,7 +61,7 @@ define(["three"], function(THREE){
                 });
             break;
             case 'LoErail':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(47,83,174)"),
                     ambient: new THREE.Color("rgb(0,49,174)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
@@ -73,28 +73,28 @@ define(["three"], function(THREE){
                 });
                 break;
             case 'LoEsealant a':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(161,161,161)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'LoEsealant b':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'LoESpacer':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(222,222,222)"),
                     specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'LoESpacer Cap':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
@@ -102,7 +102,7 @@ define(["three"], function(THREE){
                 });
                 break;
             case 'LoEGlass':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
                     vertexColors: THREE.VertexColors,
@@ -115,7 +115,7 @@ define(["three"], function(THREE){
                 });
                 break;
             case 'LoEGlass Sides':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(46,56,31)"),
                     ambient: new THREE.Color("rgb(46,56,31)"),
                     emissive: new THREE.Color("rgb(46,56,31)"),
@@ -500,7 +500,7 @@ define(["three"], function(THREE){
     }
 
     materials.textureFadeMaterial = function () {
-        var cold_t = THREE.ImageUtils.loadTexture('media/models/LoE/cold.jpg');
+        var cold_t = THREE.ImageUtils.loadTexture('media/models/LoE/mixed.jpg');
         var material = new THREE.ShaderMaterial({
             uniforms: {
                 texture1: { type: "t", value: cold_t },

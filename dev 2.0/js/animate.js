@@ -28,9 +28,9 @@ define(["underscore", "loader", "updater", "tween"],
         delta = now - then;
         if(delta > interval){
             then = now - (delta % interval);
-            animate.updater.UpdateHandlers();
-            TWEEN.update(total);
+            TWEEN.update(/*total - delta*/);
             total = now - start;
+            animate.updater.UpdateHandlers();
             animate.renderer.render(animate.loader.scene, animate.camera);
         }
     };

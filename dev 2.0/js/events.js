@@ -3,14 +3,16 @@ define([], function(){
 
     events.AddButton = function(btn){
         var b = $('<input type="button" class="'+btn.class+'" id="'+btn.id+'" value="'+btn.text+'"/>');
-
-        if(btn.once)$("#cameraButtons").append(b).one("click",btn.function);
-        else $("#cameraButtons").append(b).on("click",btn.function);
+        $("#cameraButtons").append(b);
+        if(btn.once)$("#"+btn.id).one("click",btn.function);
+        else $("#"+btn.id).on("click",btn.function);
     };
 
     events.RemoveElementByID = function(id){
         $("#"+id).off("click").remove();
     };
+
+    events.EmptyElementByID = function(id){ $("#"+id).empty(); };
 
     events.UnbindAll = function(){ $("body >* ").off(); };
 

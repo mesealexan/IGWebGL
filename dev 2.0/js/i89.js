@@ -1,10 +1,10 @@
-define(["animationHandler", "snowHandler", "watch", "animate"],
-    function(animationHandler, snowHandler, watch, animate){
+define(["animationHandler", "snowHandler", "watch", "animate", "events"],
+    function(animationHandler, snowHandler, watch, animate, events){
     var i89 = {};
     i89.folderName = "i89";
     i89.assetNames = ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-        'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'i89',
-        'window_plane', 'heat_wave', 'heat_wave_refract', 'heat_wave_reflect'];
+        'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
+        'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'];
     i89.onStartFunctions = {};
     i89.onLoadFunctions = {};
     i89.onFinishLoadFunctions = {};
@@ -14,12 +14,13 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
 
     /***on start functions***/
     i89.onStartFunctions.addSnow = function(scene){
-        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 500});
-        var sh2 = new snowHandler({posX: 190, posY: 250, width: 100, depth: 500, num: 400});
-        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 500});
+        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 300});
+        var sh2 = new snowHandler({posX: 190, posY: 250, width: 100, depth: 500, num: 200});
+        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 300});
         sh1.start(scene);
         sh2.start(scene);
         sh3.start(scene);
+        animate.updater.stopAllSnow();//stop snow as soon as it spawns
     };
 
     i89.onStartFunctions.addLights = function(scene){
@@ -34,6 +35,7 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
     /***on load functions***/
     i89.onLoadFunctions.i89 = function(mesh){
         i89.assets.i89 = mesh;
+        switchWindow.i89_off();
     };
 
     i89.onLoadFunctions.logo = function(mesh){
@@ -109,15 +111,23 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
     };
     /***end on finish functions***/
 
+    i89.buttons = {
+        i89_off: {
+            add: function(){
+                events.AddButton({text:"i89 off", function: switchWindow.toggleOFF, id:"i89_off"});
+            },
+            remove: function(){ events.RemoveElementByID("i89_off"); }
+        },
+        i89_on: {
+            add: function(){
+                events.AddButton({text:"i89 on", function: switchWindow.toggleON, id:"i89_on"});
+            },
+            remove: function(){ events.RemoveElementByID("i89_on"); }
+        }
+    };
+
     function reactToFrame(frame){
         switch (frame){
-            case 0:
-                //coldnightIntro.play();
-                animate.updater.stopAllSnow();
-                break;
-            case 10:
-                switchWindow.i89_off();
-                break;
             case 220:
                 //coldnightIntro.fade(1.0, 0.0, 3000);
                 break;
@@ -134,7 +144,6 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
                 heatWaves.playWave2();
                 break;
             case 521:
-                //ch.pause();
                 //toggleInput(true);
                 heatWaves.loopWave2();
                 break;
@@ -154,6 +163,7 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
                 //cameraZoom.play();
                 break;
             case 868:
+                i89.buttons.i89_off.add();
                 //heaterLoop.fade(1.0, 0.0, 5000);
                 //$('#cameraButtons').toggle();
                 //toggleInput(true);
@@ -165,46 +175,49 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
         var fadeTime = 300, fading = false, off = true, on = false;
         return{
             toggleON: function(){
-                this.i89_on();
+                if(fading || on) return;
+                i89.buttons.i89_off.add();
+                i89.buttons.i89_on.remove();
+                switchWindow.i89_on();
                 //windowToggleS.play();
             },
             toggleOFF: function(){
-                this.i89_off();
+                if(fading || off) return;
+                i89.buttons.i89_on.add();
+                i89.buttons.i89_off.remove();
+                switchWindow.i89_off();
                 //windowToggleS.play();
             },
             i89_on: function  () {
                 if(fading || on) return;
-                fading = true;
-                on = true;
-                off = false;
+                fading = true; on = true; off = false;
                 fade.out(i89.assets.heat_wave_refract, fadeTime);
                 fade.in(i89.assets.heat_wave_reflect, fadeTime);
                 fade.in(i89.assets.heat_wave_reflect2, fadeTime);
                 fade.in(i89.assets.heat_wave_reflect3, fadeTime);
                 fade.in(i89.assets.window_plane, fadeTime);
-
-                fade.out(i89.assets.i89, fadeTime - (fadeTime * 0.1));
-                setTimeout(function(){
+                fade.out(i89.assets.i89, fadeTime,
+                function(){//on complete
                     fade.in(i89.assets.logo, fadeTime);
-                    fade.in(i89.assets.i89, fadeTime)
-                }, fadeTime);
-                setTimeout(function(){ fading = false;}, fadeTime * 2);
+                    fade.in(i89.assets.i89, fadeTime,
+                        function(){fading = false;});//on complete
+                });
             }
             ,
             i89_off: function () {
                 if(fading || off) return;
-                fading = true;
-                off = true;
-                on = false;
+                fading = true; off = true; on = false;
                 fade.in(i89.assets.heat_wave_refract, fadeTime);
                 fade.out(i89.assets.heat_wave_reflect, fadeTime);
                 fade.out(i89.assets.heat_wave_reflect2, fadeTime);
                 fade.out(i89.assets.heat_wave_reflect3, fadeTime);
                 fade.out(i89.assets.window_plane, fadeTime);
                 fade.out(i89.assets.logo, fadeTime);
-                fade.out(i89.assets.i89, fadeTime - (fadeTime * 0.1));
-                setTimeout(function(){ fade.in(i89.assets.i89, fadeTime) }, fadeTime);
-                setTimeout(function(){ fading = false }, fadeTime * 2);
+                fade.out(i89.assets.i89, fadeTime,
+                    function(){//on complete
+                        fade.in(i89.assets.i89, fadeTime,
+                            function(){fading = false;})//on complete
+                    });
             }
         }
     }();
@@ -258,7 +271,7 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
 
     var fade = function(obj, time){
         if(time == undefined) time = 1000;
-        function tweenOpacity(obj, val, time){
+        function tweenOpacity(obj, val, time, onComp){
             for (var i = 0; i < obj.material.materials.length; i++){
                 var mat = obj.material.materials[i];
                 var fade = new TWEEN.Tween( mat );
@@ -273,14 +286,14 @@ define(["animationHandler", "snowHandler", "watch", "animate"],
                     obj.visible = true;
                     fade.to( { opacity: mat.maxOpacity }, time );
                 }
-
+                if(onComp)fade.onComplete(function(){onComp();});
                 fade.start();
             }
         }
         return{
-            out: function(obj, time){ tweenOpacity(obj, 0, time); }
+            out: function(obj, time, onComp){ tweenOpacity(obj, 0, time, onComp); }
             ,
-            in: function(obj, time){ tweenOpacity(obj, 1, time); }
+            in: function(obj, time, onComp){ tweenOpacity(obj, 1, time, onComp); }
         }
     }();
 

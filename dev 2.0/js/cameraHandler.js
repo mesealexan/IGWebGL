@@ -1,4 +1,5 @@
-define(["genericHandler", "animate"], function(genericHandler, animate){
+define(["genericHandler", "animate", "tween", "underscore"],
+    function(genericHandler, animate, tween, underscore){
     CameraHandler.prototype = new genericHandler();
     function CameraHandler(anim) {
         var animation = anim;
@@ -23,7 +24,9 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
                 animate.camera.up.set(newUp.x, newUp.y, newUp.z);
 
                 var lookAt = new THREE.Vector3(
-                    curFrame.target.x, curFrame.target.z, -curFrame.target.y);
+                    curFrame.target.x,
+                    curFrame.target.z,
+                   -curFrame.target.y);
 
                 animate.camera.target = lookAt;
                 //todo: link controls here
@@ -33,9 +36,14 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
                 animate.camera.updateProjectionMatrix();
 
                 animate.camera.position.set(
-                    curFrame.position.x, curFrame.position.z, -curFrame.position.y);
+                    curFrame.position.x,
+                    curFrame.position.z,
+                   -curFrame.position.y);
             }
-            else {animate.camera.lookAt(animate.camera.target); this.stop();} //reached the end
+            else {//reached the end
+                animate.camera.lookAt(animate.camera.target);
+                this.stop();
+            }
         };
 
         this.tween = function (frame, speed, onComplete) {
@@ -43,41 +51,43 @@ define(["genericHandler", "animate"], function(genericHandler, animate){
             var startPos = animate.camera.position;
             var targetFrame = animation.frames[frame];
             var destination = new THREE.Vector3(
-                targetFrame.position.x, targetFrame.position.z, -targetFrame.position.y);
+                targetFrame.position.x,
+                targetFrame.position.z,
+               -targetFrame.position.y);
             var distance = startPos.distanceTo(destination);
             var time = distance / speed;
 
             var posTween = new TWEEN.Tween( animate.camera.position );
             posTween.easing(TWEEN.Easing.Cubic.InOut);
             posTween.to( { x: destination.x, y: destination.y, z: destination.z }, time );
-            posTween.start();
             posTween.onComplete(function() { if(onComplete) onComplete() });
+            posTween.start();
 
             /***rotation***/
-            var rollAngle = animation.frames[frame].rollAngle;
+            var rollAngle = targetFrame.rollAngle;
             var newUp = this.modifyCameraUp(rollAngle);
-
             var angleTween = new TWEEN.Tween( animate.camera.up );
             angleTween.easing(TWEEN.Easing.Cubic.InOut);
             angleTween.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
             angleTween.start();
 
             /***target***/
-            var target = new THREE.Vector3(animation.frames[frame].target.x,
-                animation.frames[frame].target.z,
-                -animation.frames[frame].target.y);
+            var target = new THREE.Vector3(
+                targetFrame.target.x,
+                targetFrame.target.z,
+               -targetFrame.target.y);
 
             var targetTween = new TWEEN.Tween( animate.camera.target );
             targetTween.easing(TWEEN.Easing.Cubic.InOut);
             targetTween.to( { x: target.x, y: target.y, z: target.z }, time );
-            targetTween.start();
             targetTween.onUpdate( function () { animate.camera.lookAt(animate.camera.target) });
+            targetTween.start();
 
             /***fov***/
             var fovTween = new TWEEN.Tween( animate.camera );
-            fovTween.to( { fov: animation.frames[frame].fov }, time);
-            fovTween.start();
+            fovTween.to( { fov: targetFrame.fov }, time);
             fovTween.onUpdate( function () { animate.camera.updateProjectionMatrix() });
+            fovTween.start();
         };
 
         this.modifyCameraUp = function (degrees) {

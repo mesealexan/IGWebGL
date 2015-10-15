@@ -12,7 +12,7 @@ define(["animate", "three"], function(animate, THREE){
             systemMaterial = new THREE.PointCloudMaterial({
                 blending: THREE.AdditiveBlending,
                 map: flake,
-                size: 8,
+                size: 10,
                 transparent: true }),
                 stopping = false;
 

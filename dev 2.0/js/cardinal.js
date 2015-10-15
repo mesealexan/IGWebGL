@@ -95,7 +95,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     /***on finish functions***/
     cardinal.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(cameraAnimations.animation_1.from, cameraAnimations.animation_1.to,
-            function(){buttons.slice.add();});
+            function(){cardinal.buttons.slice.add();});
     };
 
     cardinal.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -148,39 +148,162 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         }
     }
 
-    var buttons ={
+    cardinal.buttons ={
         slice: {
             add: function(){
-                events.AddButton({text:"go to slice", function: playAnim2, id:"goSlice",
-                once: true});
+                events.AddButton({text:"go to slice", function: goToSlice,
+                    id:"goSlice", once: true});
             },
             remove: function(){ events.RemoveElementByID("goSlice"); }
         },
-        back: {
+        backToMain: {
             add: function(){
-                events.AddButton({text:"back", function: backToMain, id:"back", once: true});
+                events.AddButton({text:"back", function: backToMain, id:"backToMain", once: true});
             },
-            remove: function(){ events.RemoveElementByID("back"); }
+            remove: function(){ events.RemoveElementByID("backToMain"); }
+        },
+        backToSlice: {
+            add: function(){
+                events.AddButton({text:"back", function: zoomOnSlice.backToSlice,
+                    id:"backToSlice", once: true});
+            },
+            remove: function(){ events.RemoveElementByID("backToSlice"); }
         },
         sealantA:{
             add: function(){
-                events.AddButton({text:"sealantA", function: sealantA,
+                events.AddButton({text:"sealantA", function: zoomOnSlice.sealantA,
                     id:"sealantA", once: true});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
+        },
+        sealantB:{
+            add: function(){
+                events.AddButton({text:"sealantB", function: zoomOnSlice.sealantB,
+                    id:"sealantB", once: true});
+            },
+            remove: function(){ events.RemoveElementByID("sealantB"); }
+        },
+        spacer:{
+            add: function(){
+                events.AddButton({text:"spacer", function: zoomOnSlice.spacer,
+                    id:"spacer", once: true});
+            },
+            remove: function(){ events.RemoveElementByID("spacer"); }
+        },
+        dessicant:{
+            add: function(){
+                events.AddButton({text:"dessicant", function: zoomOnSlice.dessicant,
+                    id:"dessicant", once: true});
+            },
+            remove: function(){ events.RemoveElementByID("dessicant"); }
         }
     };
 
-    //var zoomOnSlice = {
-        function sealantA (){
-            cardinal.assets.loaderComponent.cameraHandler.tween(cameraAnimations.animation_3.frame,
-                cameraAnimations.animation_3.speed);
+    var zoomOnSlice = {
+         sealantA: function(){
+            var anim = cameraAnimations.animation_3;
+            cardinal.assets.loaderComponent.cameraHandler.tween(
+                191, 0.05,
+                function(){//on complete
+                    manageEmissive.modify(anim.frame);
+                    cardinal.buttons.sealantB.add();
+                    cardinal.buttons.spacer.add();
+                    cardinal.buttons.dessicant.add();
+                    cardinal.buttons.backToSlice.add();
+                });
+             manageEmissive.resetAllSlice();
+             events.EmptyElementByID("cameraButtons");
+        },
+        sealantB: function(){
+            var anim = cameraAnimations.animation_4;
+            cardinal.assets.loaderComponent.cameraHandler.tween(
+                anim.frame, anim.speed,
+                function(){//on complete
+                    manageEmissive.modify(anim.frame);
+                    cardinal.buttons.sealantA.add();
+                    cardinal.buttons.spacer.add();
+                    cardinal.buttons.dessicant.add();
+                    cardinal.buttons.backToSlice.add();
+                });
+            manageEmissive.resetAllSlice();
+            events.EmptyElementByID("cameraButtons");
+        },
+        spacer: function(){
+            var anim = cameraAnimations.animation_5;
+            cardinal.assets.loaderComponent.cameraHandler.tween(
+                anim.frame, anim.speed,
+                function(){//on complete
+                    manageEmissive.modify(anim.frame);
+                    cardinal.buttons.sealantA.add();
+                    cardinal.buttons.sealantB.add();
+                    cardinal.buttons.dessicant.add();
+                    cardinal.buttons.backToSlice.add();
+                });
+            manageEmissive.resetAllSlice();
+            events.EmptyElementByID("cameraButtons");
+        },
+        dessicant: function(){
+            var anim = cameraAnimations.animation_6;
+            cardinal.assets.loaderComponent.cameraHandler.tween(
+                anim.frame, anim.speed,
+                function(){//on complete
+                    manageEmissive.modify(anim.frame);
+                    cardinal.buttons.sealantA.add();
+                    cardinal.buttons.sealantB.add();
+                    cardinal.buttons.spacer.add();
+                    cardinal.buttons.backToSlice.add();
+                });
+            manageEmissive.resetAllSlice();
+            events.EmptyElementByID("cameraButtons");
+        },
+        backToSlice: function(){
+            var speed = 0.1;
+            cardinal.assets.loaderComponent.cameraHandler.tween(
+                cameraAnimations.animation_2.to, speed,
+                function(){//on complete
+                    cardinal.buttons.sealantA.add();
+                    cardinal.buttons.sealantB.add();
+                    cardinal.buttons.spacer.add();
+                    cardinal.buttons.dessicant.add();
+                    cardinal.buttons.backToMain.add();
+                });
+            manageEmissive.resetAllSlice();
+            events.EmptyElementByID("cameraButtons");
         }
-    //};
+    };
 
-    function playAnim2(){
+    var manageEmissive = {
+        sealantA_ID: 4,
+        sealantB_ID: 6,
+        spacerSlice_ID: 2,
+        dessicant_ID: 3,
+        modify: function (frame){
+            var sliceSelectedC = new THREE.Color(0x3498db);
+            var mats = cardinal.assets.cardinal_slice.material.materials;
+            switch (frame){
+                case 191:
+                    mats[manageEmissive.sealantA_ID].emissive = sliceSelectedC;
+                    break;
+                case 192:
+                    mats[manageEmissive.sealantB_ID].emissive = sliceSelectedC;
+                    break;
+                case 193:
+                    mats[manageEmissive.spacerSlice_ID].emissive = sliceSelectedC;
+                    break;
+                case 194:
+                    mats[manageEmissive.dessicant_ID].emissive = sliceSelectedC;
+                    break;
+            }
+        },
+        resetAllSlice: function () {
+            var mats = cardinal.assets.cardinal_slice.material.materials;
+            _.each(mats, function(m){ m.emissive = m.defaultEmissive; });
+        }
+    };
+
+    function goToSlice(){
         cardinal.assets.cardinal_slice.visible = true;
-        buttons.slice.remove();
+        cardinal.buttons.slice.remove();
 
         _.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
             mat.transparent = true;
@@ -198,17 +321,21 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
             function(mat){ animate.TweenOpacity(mat, mat.maxOpacity, fadeOutTime); });
 
         cardinal.assets.loaderComponent.cameraHandler.play(
-            cameraAnimations.animation_2.from, cameraAnimations.animation_2.to,
+            cameraAnimations.animation_2.from,
+            cameraAnimations.animation_2.to,
             function(){//on complete
-                buttons.sealantA.add();
-                buttons.back.add();
+                cardinal.buttons.sealantA.add();
+                cardinal.buttons.sealantB.add();
+                cardinal.buttons.spacer.add();
+                cardinal.buttons.dessicant.add();
+                cardinal.buttons.backToMain.add();
             }
         );
     }
 
     function backToMain(){
         cardinal.assets.cardinal_vertical.visible = true;
-        buttons.back.remove();
+        events.EmptyElementByID("cameraButtons");
 
         _.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
             animate.TweenOpacity(mat, mat.maxOpacity, fadeOutTime);
@@ -224,10 +351,15 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         });
 
         cardinal.assets.loaderComponent.cameraHandler.play(
-            cameraAnimations.animation_2.to, cameraAnimations.animation_2.from,
-            function(){buttons.slice.add();}//on complete
+            cameraAnimations.animation_2.to,
+            cameraAnimations.animation_2.from,
+            function(){cardinal.buttons.slice.add();}//on complete
         );
     }
+
+    GlobalFunctions.cardinal = {
+        zoomOnSlice: zoomOnSlice
+    };
 
     return cardinal;
 });
