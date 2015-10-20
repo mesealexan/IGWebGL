@@ -1,10 +1,13 @@
-define(["animationHandler", "snowHandler", "watch", "animate", "events"],
-    function(animationHandler, snowHandler, watch, animate, events){
+define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"],
+    function(animationHandler, snowHandler, watch, animate, events, audio){
     var i89 = {};
     i89.folderName = "i89";
     i89.assetNames = ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
         'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
         'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'];
+
+    i89.soundNames = ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"];
+
     i89.onStartFunctions = {};
     i89.onLoadFunctions = {};
     i89.onFinishLoadFunctions = {};
@@ -109,6 +112,25 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events"],
             reactToFrame(oldValue);
         });
     };
+
+    i89.onFinishLoadFunctions.addControls = function(){
+        var c = {
+            noZoom: true,
+            noPan: true,
+            maxPolarAngle: Math.PI / 2,
+            minPolarAngle: 1,
+            rotateSpeed: 0.5,
+            minAzimuthAngle: -1.6,
+            maxAzimuthAngle: -0.9
+        };
+
+        events.AddControls(c);
+        events.ToggleControls(false);
+    };
+
+    i89.onFinishLoadFunctions.playSound = function(){
+        audio.sounds.i89coldnightintro.play();
+    };
     /***end on finish functions***/
 
     i89.buttons = {
@@ -123,48 +145,173 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events"],
                 events.AddButton({text:"i89 on", function: switchWindow.toggleON, id:"i89_on"});
             },
             remove: function(){ events.RemoveElementByID("i89_on"); }
+        },
+        outside:{
+            add: function(){
+                events.AddButton({text:"outside",
+                    function: function(){tweenCamera("outside")},
+                    id:"outside"});
+            },
+            remove: function(){ events.RemoveElementByID("outside"); }
+        },
+        inside:{
+            add: function(){
+                events.AddButton({text:"inside",
+                    function: function(){tweenCamera("inside")},
+                    id:"inside"});
+            },
+            remove: function(){ events.RemoveElementByID("inside"); }
+        },
+        inClose:{
+            add: function(){
+                events.AddButton({text:"inClose",
+                    function: function(){tweenCamera("inClose")},
+                    id:"inClose"});
+            },
+            remove: function(){ events.RemoveElementByID("inClose"); }
         }
     };
+
+    function tweenCamera(pos){
+        //cancelAllTweens();
+        var outsidePos = new THREE.Vector3(-118, 111, -372),
+            inCloseLookAtPos = new THREE.Vector3( 14, 80, 0),
+            windowPos = new THREE.Vector3( 24, 38, 137),
+            facingWallPos = new THREE.Vector3( -300, 100 ,0),
+            insidePos = new THREE.Vector3(-424.235, 111.635, 326.101),
+            inClosePos = new THREE.Vector3( -172.235, 111.635, 102.101);
+        var tween = new TWEEN.Tween( animate.camera.position );
+        var tweenTime = 2000;
+        var lookAtTween = undefined;
+        switch(pos){
+            case "outside":
+                if(animate.camera.outside || animate.camera.inClose) return;
+                animate.camera.outside = true;
+                events.ToggleControls(false);
+                //$("#insideClose").toggle();
+                tween.to( { x: [facingWallPos.x, outsidePos.x],
+                    y: [facingWallPos.y, outsidePos.y],
+                    z: [facingWallPos.z, outsidePos.z]}, tweenTime );
+                tween.onComplete(function(){
+                    animate.camera.outside = true;
+                    animate.camera.inside = false;
+                    animate.camera.inClose = false;
+                });
+                tween.onUpdate( function () {animate.camera.lookAt(windowPos); });
+                break;
+            case "inside":
+                if(animate.camera.inside) return;
+                animate.camera.inside = true;
+                if(animate.camera.position.floor().equals(insidePos)) return;
+                tween.to( { x: [facingWallPos.x, insidePos.x],
+                    y: [facingWallPos.y, insidePos.y],
+                    z: [facingWallPos.z, insidePos.z]}, tweenTime );
+                tween.onComplete(function(){
+                    //$("#insideClose").toggle();
+                    //animate.camera.inside = true;
+                    animate.camera.outside = false;
+                    animate.camera.inClose = false;
+                    events.ToggleControls(true);
+                });
+                tween.onUpdate( function () {animate.camera.lookAt(windowPos); });
+
+                lookAtTween = new TWEEN.Tween( events.Controls.target );
+                lookAtTween.to( {
+                    x: windowPos.x,
+                    y: windowPos.y,
+                    z: windowPos.z}, tweenTime );
+                lookAtTween.onUpdate( function() {
+                    animate.camera.lookAt(events.Controls.target);
+                });
+                lookAtTween.start();
+                break;
+            case "inClose":
+                if(animate.camera.inClose) return;
+                animate.camera.inClose = true;
+                events.ToggleControls(false);
+                tween.to({
+                    x: inClosePos.x,
+                    y: inClosePos.y,
+                    z: inClosePos.z}, tweenTime );
+                tween.onComplete(function(){
+                    animate.camera.inside = false;
+                    animate.camera.outside = false;
+                });
+
+                lookAtTween = new TWEEN.Tween( events.Controls.target );
+                lookAtTween.to( {
+                    x: inCloseLookAtPos.x,
+                    y: inCloseLookAtPos.y,
+                    z: inCloseLookAtPos.z}, tweenTime );
+                lookAtTween.onUpdate( function() {
+                    animate.camera.lookAt(events.Controls.target);
+                });
+                lookAtTween.start();
+                break;
+            case "backOut":
+                //$("#backOut").toggle();
+                tween.to( { x: insidePos.x,
+                    y: insidePos.y,
+                    z: insidePos.z}, tweenTime );
+                tween.onUpdate( function() {camera.lookAt(windowPos) });
+                tween.onComplete(function(){
+                    //$("#insideClose").toggle();
+                    //$("#outside").toggle();
+                    //$("#inside").toggle();
+                    camera.inside = true;
+                    camera.outside = false;
+                    camera.inClose = false;
+                });
+                break;
+        }
+        tween.interpolation( TWEEN.Interpolation.CatmullRom );
+        tween.start();
+    }
 
     function reactToFrame(frame){
         switch (frame){
             case 220:
-                //coldnightIntro.fade(1.0, 0.0, 3000);
+                audio.sounds.i89coldnightintro.fade(1.0, 0.0, 3000);
                 break;
             case 287:
-                //heaterLoop.play();
-                //heaterLoop.fade(0.0, 1.0, 1000);
+                audio.sounds.i89heaterloop.play();
+                audio.sounds.i89heaterloop.fade(0.0, 1.0, 1000);
                 heatWaves.playWave1();
                 break;
             case 320:
-                //heaterLoop.fade(1.0, 0.6, 2000);
+                audio.sounds.i89heaterloop.fade(1.0, 0.6, 2000);
                 break;
             case 404:
                 heatWaves.loopWave1();
                 heatWaves.playWave2();
                 break;
             case 521:
-                //toggleInput(true);
                 heatWaves.loopWave2();
                 break;
             case 638:
-                //heaterLoop.fade(0.6, 1.0, 2000);
+                audio.sounds.i89heaterloop.fade(0.6, 1.0, 2000);
                 switchWindow.i89_on();
                 i89.assets.logo.visible = true;
                 heatWaves.playWave3();
+                audio.sounds.i89toggleglasstype.play();
                 break;
-            case 670:
-                //cameraZoom.play();
+            case 650:
+                audio.sounds.i89camerazoom.play();
                 break;
             case 755:
                 heatWaves.loopWave3();
                 break;
-            case 830:
-                //cameraZoom.play();
+            case 820:
+                audio.sounds.i89camerazoom.play();
                 break;
             case 868:
+                events.ToggleControls(true);
+                animate.camera.inside = true;
                 i89.buttons.i89_off.add();
-                //heaterLoop.fade(1.0, 0.0, 5000);
+                i89.buttons.outside.add();
+                i89.buttons.inside.add();
+                //i89.buttons.inClose.add();
+                audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
                 //$('#cameraButtons').toggle();
                 //toggleInput(true);
                 break;
@@ -179,14 +326,14 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events"],
                 i89.buttons.i89_off.add();
                 i89.buttons.i89_on.remove();
                 switchWindow.i89_on();
-                //windowToggleS.play();
+                audio.sounds.i89toggleglasstype.play();
             },
             toggleOFF: function(){
                 if(fading || off) return;
                 i89.buttons.i89_on.add();
                 i89.buttons.i89_off.remove();
                 switchWindow.i89_off();
-                //windowToggleS.play();
+                audio.sounds.i89toggleglasstype.play();
             },
             i89_on: function  () {
                 if(fading || on) return;

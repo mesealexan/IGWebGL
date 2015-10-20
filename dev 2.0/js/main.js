@@ -1,16 +1,17 @@
-var GlobalFunctions = new Object();
-define(["three", "jquery", "loader", "animate", "tween", "events"],
-    function(THREE, jquery, loader, animate, tween, events){
+var GlobalFunctions = {};
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
+    function(THREE, jquery, loader, animate, tween, events, audio){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV = 45; //camera field of view in degrees
     var width, height; //browser window dimension
     var container; //html element for webGL renderer
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
+    var loadingScene = true;
 
     /***private functions***/
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true });
         animate.renderer.setSize( width, height );
         animate.renderer.setClearColor( 0x000000, 0.0 );
         container.appendChild( animate.renderer.domElement );
@@ -39,24 +40,67 @@ define(["three", "jquery", "loader", "animate", "tween", "events"],
         animate.loader = main.loader;
         addRenderer();
         addCamera();
+        main.buttons.loadCardinal.add();
+        main.buttons.load_i89.add();
+        main.buttons.loadLoE.add();
+        main.buttons.loadNeat.add();
+        loadingScene = false;
         //because they are unique, lights are added by each scene's individual file
     };
 
     main.LoadNewScene = function(sceneID){
         //only call after Start()
-        events.UnbindAll();
-        animate.updater.clearAll();
-        main.loader.UnloadScene();
+        if(loadingScene) return;
+        loadingScene = true;
+        audio.StopAll();
         animate.StopAnimating();
+        events.UnbindAll();
+        events.EmptyElementByID("cameraButtons");
+        animate.updater.clearAll();
         TWEEN.removeAll();
+        main.loader.UnloadScene(newScene);
 
-        main.scene = new THREE.Scene();
-        main.scene.sceneID = sceneID;
-        main.loader = new loader(main.scene, animate);
-        animate.loader = main.loader;
-        addCamera();
+        function newScene(){
+            main.scene = new THREE.Scene();
+            main.scene.sceneID = sceneID;
+            main.loader = new loader(main.scene, animate);
+            animate.loader = main.loader;
+            addCamera();
+            loadingScene = false;
+        }
     };
     /***end public functions***/
+
+    main.buttons = {
+        loadCardinal:{
+            add: function(){
+                events.AddButton({text:"load cardinal", function: function(){
+                    main.LoadNewScene("cardinal")}, id:"load_cardinal", parent:"loadButtons"
+                });
+            }
+        },
+        load_i89:{
+            add: function(){
+                events.AddButton({text:"load i89", function: function(){
+                    main.LoadNewScene("i89")}, id:"load_i89", parent:"loadButtons"
+                });
+            }
+        },
+        loadLoE:{
+            add: function(){
+                events.AddButton({text:"load LoE", function: function(){
+                    main.LoadNewScene("LoE")}, id:"load_LoE", parent:"loadButtons"
+                });
+            }
+        },
+        loadNeat:{
+            add: function(){
+                events.AddButton({text:"load neat", function: function(){
+                    main.LoadNewScene("neat")}, id:"loadNeat", parent:"loadButtons"
+                });
+            }
+        }
+    };
 
     return main;
 });

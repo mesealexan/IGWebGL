@@ -14,7 +14,7 @@ define(["underscore"], function(underscore){
             for (var key in this.handlers) this.handlers[key].update();
         };
 
-        this.clearAll = function(){ this.handlers.length = 0; };
+        this.clearAll = function(){ this.handlers = []; };
 
         this.stopAllSnow = function() {
             for (var i = 0; i < this.handlers.length; i++) {

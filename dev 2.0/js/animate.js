@@ -28,7 +28,7 @@ define(["underscore", "loader", "updater", "tween"],
         delta = now - then;
         if(delta > interval){
             then = now - (delta % interval);
-            TWEEN.update(/*total - delta*/);
+            TWEEN.update();
             total = now - start;
             animate.updater.UpdateHandlers();
             animate.renderer.render(animate.loader.scene, animate.camera);

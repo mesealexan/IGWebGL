@@ -12,9 +12,9 @@ define(["three"], function(THREE){
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }());
 
-    materials.setMaterials = function(folderName, materialName){
+    materials.setMaterials = function(folderName, material){
         var material;
-        materialName = folderName + materialName;
+        var materialName = folderName + material.name;
         var url = "media/models/"+folderName+"/";
 
         switch(materialName){
@@ -466,16 +466,27 @@ define(["three"], function(THREE){
                     shininess: 30
                 });
                 break;
-
             default:
-                material =  new THREE.MeshBasicMaterial();
+                material = extractMaterialFromJSON(material);
+                //material.polygonOffset = true;
+                //material.polygonOffsetFactor = 5;
+                //material.polygonOffsetUnits = -0.1;
                 break;
         }
+
         material.name = materialName;
         material.defaultEmissive = material.emissive;
         material.maxOpacity = material.opacity;
         return material;
     };
+
+    function extractMaterialFromJSON(material){
+        console.log(material.map)
+        return new THREE.MeshLambertMaterial({
+            color: material.color,
+            emissive: material.emissive
+        });
+    }
 
     function RadialGradientMaterial (){
         var canvas = document.createElement( 'canvas' );

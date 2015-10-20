@@ -1,5 +1,5 @@
-define(["genericHandler", "animate", "tween", "underscore"],
-    function(genericHandler, animate, tween, underscore){
+define(["genericHandler", "animate", "tween", "underscore", "events"],
+    function(genericHandler, animate, tween, underscore, events){
     CameraHandler.prototype = new genericHandler();
     function CameraHandler(anim) {
         var animation = anim;
@@ -8,13 +8,14 @@ define(["genericHandler", "animate", "tween", "underscore"],
 
         this.setSource = function(p) { animation = (p) };
 
-        this.play = function(from, to, onComplete){
+        this.play = function(from, to, onComplete, onStart){
             if(onComplete) this.onComplete = onComplete;
             this.started = true;
             if(!animation) {console.error("missing animation!"); return;}
             if(from == undefined) from = this.frame + 1;
             if(to == undefined) to = animation.frames.length - 1;
             this.basePlay(from, to);
+            if(onStart)onStart();
         };
 
         this.update = function () {
@@ -29,8 +30,7 @@ define(["genericHandler", "animate", "tween", "underscore"],
                    -curFrame.target.y);
 
                 animate.camera.target = lookAt;
-                //todo: link controls here
-                //controls.target.copy(lookAt);
+                events.Controls.target.copy(lookAt);
                 animate.camera.lookAt(lookAt);
                 animate.camera.fov = curFrame.fov;
                 animate.camera.updateProjectionMatrix();
@@ -60,7 +60,9 @@ define(["genericHandler", "animate", "tween", "underscore"],
             var posTween = new TWEEN.Tween( animate.camera.position );
             posTween.easing(TWEEN.Easing.Cubic.InOut);
             posTween.to( { x: destination.x, y: destination.y, z: destination.z }, time );
-            posTween.onComplete(function() { if(onComplete) onComplete() });
+            posTween.onComplete(function() {
+                if(onComplete != undefined && typeof onComplete == "function") onComplete();
+            });
             posTween.start();
 
             /***rotation***/

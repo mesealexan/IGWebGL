@@ -12,8 +12,9 @@ define(["animate", "three"], function(animate, THREE){
             systemMaterial = new THREE.PointCloudMaterial({
                 blending: THREE.AdditiveBlending,
                 map: flake,
-                size: 10,
-                transparent: true }),
+                size: 12,
+                transparent: true
+            }),
                 stopping = false;
 
         function randomInitialPositions (){

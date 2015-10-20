@@ -1,7 +1,7 @@
 define(["animate", "watch", "materials", "tween", "events"],
     function(animate, watch, materials, tween, events){
     var LoE = {};
-    var coatingTime = 2300;
+    var coatingTime = 2700;
     var backgroundBlendTime = 600;
     var coatTexture = undefined;
     var LoE_textTexture = undefined;
@@ -120,7 +120,7 @@ define(["animate", "watch", "materials", "tween", "events"],
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
     };
 
-    LoE.onLoadFunctions.window_shadow = function(mesh, loader){
+    LoE.onLoadFunctions.window_shadow = function(mesh){
         LoE.assets.window_shadow = mesh;
     };
     /***end on load functions***/
@@ -130,6 +130,20 @@ define(["animate", "watch", "materials", "tween", "events"],
         watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
             reactToFrame(oldValue);
         });
+    };
+
+    LoE.onFinishLoadFunctions.addControls = function(){
+        var c = {
+            noZoom: true,
+            noPan: true,
+            maxPolarAngle: 1.6,
+            minPolarAngle: 1.55,
+            rotateSpeed: 0.05,
+            minAzimuthAngle: 0.3,
+            maxAzimuthAngle: 0.5
+        };
+        events.AddControls(c);
+        events.ToggleControls(false);
     };
     /***end on finish functions***/
 
@@ -210,6 +224,7 @@ define(["animate", "watch", "materials", "tween", "events"],
                 //controls.target = camera.target;
                 //text.mesh.visible = false;
                 //toggleInput(true);
+                events.ToggleControls(true);
                 break;
         }
     }

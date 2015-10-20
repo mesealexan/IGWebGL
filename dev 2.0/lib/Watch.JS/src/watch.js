@@ -766,7 +766,6 @@
                 dirtyChecklist.splice(i, 1);
             }
         }
-
     };    
 
     setInterval(loop, 50);

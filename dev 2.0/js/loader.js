@@ -1,9 +1,10 @@
-define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
-    function(underscore, cameraHandler, materials, i89, LoE, cardinal){
+define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal", "neat", "events", "audio"],
+function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events, audio){
     var scenes = {//all possible scenes
         i89:i89,
         LoE:LoE,
-        cardinal:cardinal
+        cardinal:cardinal,
+        neat: neat
     };
 
     function disposeObject (obj) {
@@ -27,8 +28,10 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
         fun(obj);
     }
 
-    function checkCameraAnimationState(l){
-        if(!l.cameraHandler.started)l.cameraHandler.play();
+    function checkCameraAnimationState(l, animationComponent){
+        if(!l.cameraHandler.started)l.cameraHandler.play(
+            undefined,undefined,undefined,//from, to and onComplete undefined
+            animationComponent.Animate);
     }
 
     var loader = function(scene, animationComponent){//public functionality
@@ -50,8 +53,7 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
             _.each(onFinishLoadFunctions, function(fun){
                 selectedScene.onFinishLoadFunctions[fun](scene, _this);
             });
-            checkCameraAnimationState(_this);
-            animationComponent.Animate();
+            checkCameraAnimationState(_this, animationComponent);
         };
 
         this.ParseJSON = function(file){
@@ -61,9 +63,10 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
             return JSON.parse(request.responseText);
         };
 
-        this.UnloadScene = function(){
+        this.UnloadScene = function(onComplete){
             for (var i = this.scene.children.length - 1; i >= 0; i--)
                 traverseChildren(this.scene.children[i], disposeObject);
+            onComplete();
         };
 
         this.LoadAssets(selectedScene);
@@ -75,6 +78,8 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
         var assetIndex = 0;
         var folderName = selectedScene.folderName;
         var assetNames = selectedScene.assetNames;
+        var soundNames = selectedScene.soundNames;
+
         /***camera handler***/
         var cameraJSON = this.ParseJSON("media/cameras/"+folderName+"/camera.JSON");
         this.cameraHandler = new cameraHandler(cameraJSON);
@@ -90,13 +95,14 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
         function loadCallback(geometry, mats){
             var assignedMats = [];
             _.each(mats, function(mat){
-                assignedMats.push(materials.setMaterials(folderName, mat.name));
+                assignedMats.push(materials.setMaterials(folderName, mat));
             });
 
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
 
             var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
+
             if(geometry.morphTargets.length > 0)
                 mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
             else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
@@ -111,8 +117,15 @@ define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal"],
             var nextAssetName = assetNames[++assetIndex];
             _this.scene.add(mesh);
 
-            if(nextAssetName != undefined)load(nextAssetName);//still has assets to load, go again
-            else _this.OnFinishedLoadingAssets();//done loading assets
+            if(nextAssetName != undefined){//still has assets to load, go again
+                load(nextAssetName);
+                return;
+            }
+            loadSounds();//done loading assets, load sounds
+        }
+
+        function loadSounds(){
+            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets);//call on load complete on all sounds loaded
         }
     };
     /***end public functions***/

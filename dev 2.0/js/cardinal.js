@@ -53,7 +53,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
+        //todo: fix lens flare! won't show up, blocks loading of 'neat'
+        /*var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
         var textureFlare2 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_2.png");
         var flareColor = new THREE.Color( 0xffffff );
         var smallCircles = 10;
@@ -71,7 +72,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
         lensFlare.position.set( -1127.008, 1232.292, -11  );
 
-        scene.add( lensFlare );
+        scene.add( lensFlare );*/
     };
     /***end on start functions***/
 
@@ -95,7 +96,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     /***on finish functions***/
     cardinal.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(cameraAnimations.animation_1.from, cameraAnimations.animation_1.to,
-            function(){cardinal.buttons.slice.add();});
+            function(){cardinal.buttons.slice.add();},
+            animate.Animate);
     };
 
     cardinal.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -106,16 +108,52 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
     cardinal.onFinishLoadFunctions.storeLoader = function(scene, loader){
         cardinal.assets.loaderComponent = loader;
-        //buttons.back.add();buttons.back.add();buttons.back.add();buttons.back.add();
+    };
+
+    cardinal.onFinishLoadFunctions.addControls = function(){
+        var c = {
+            noZoom: true,
+            noPan: true,
+            maxPolarAngle: 1.6,
+            minPolarAngle: 1.3,
+            rotateSpeed: 0.11,
+            minAzimuthAngle: -0.3,
+            maxAzimuthAngle: 0.3
+        };
+        events.AddControls(c);
+        events.ToggleControls(false);
+    };
+
+    cardinal.onFinishLoadFunctions.AddMouseDownEvent = function(){
+        events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
     };
     /***end on finish functions***/
+
+    function tweenCamToMain(fun){
+        var tweenBackSpeed = 2;
+        var anim = cameraAnimations.animation_2;
+        cardinal.assets.loaderComponent.cameraHandler.tween(
+            anim.from, tweenBackSpeed, fun);
+    }
+
+    function tweenCamToSliceMain(fun){
+        var tweenBackSpeed = 0.05;
+        var anim = cameraAnimations.animation_2;
+        cardinal.assets.loaderComponent.cameraHandler.tween(
+            anim.to, tweenBackSpeed, fun);
+    }
 
     function reactToFrame(frame){
         switch (frame){
             case 100: //anim 1 mid way, vertical window out of frustum
                 cardinal.assets.cardinal_vertical.visible = true;
                 break;
+            case 155:
+                events.AddMouseUpEvent( tweenCamToMain );
+                break;
             case 156: //finished anim 1
+                events.ToggleControls(true);
+                //events.AddMouseUpEvent( tweenCamToMain );
                 //controls.minAzimuthAngle = - 0.3;
                 //controls.maxAzimuthAngle = 0.3;
                 //cameraTweenSpeed = 1;
@@ -151,14 +189,16 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     cardinal.buttons ={
         slice: {
             add: function(){
-                events.AddButton({text:"go to slice", function: goToSlice,
+                events.AddButton({text:"go to slice",
+                    function: function(){ tweenCamToMain(goToSlice) },
                     id:"goSlice", once: true});
             },
             remove: function(){ events.RemoveElementByID("goSlice"); }
         },
         backToMain: {
             add: function(){
-                events.AddButton({text:"back", function: backToMain, id:"backToMain", once: true});
+                events.AddButton({text:"back", function: backToMain,
+                    id:"backToMain", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToMain"); }
         },
@@ -202,8 +242,10 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     var zoomOnSlice = {
          sealantA: function(){
             var anim = cameraAnimations.animation_3;
+             events.ToggleControls(false);
+             events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
-                191, 0.05,
+                anim.frame, anim.speed,
                 function(){//on complete
                     manageEmissive.modify(anim.frame);
                     cardinal.buttons.sealantB.add();
@@ -216,6 +258,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         },
         sealantB: function(){
             var anim = cameraAnimations.animation_4;
+            events.ToggleControls(false);
+            events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
@@ -230,6 +274,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         },
         spacer: function(){
             var anim = cameraAnimations.animation_5;
+            events.ToggleControls(false);
+            events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
@@ -244,6 +290,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         },
         dessicant: function(){
             var anim = cameraAnimations.animation_6;
+            events.ToggleControls(false);
+            events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
@@ -258,6 +306,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         },
         backToSlice: function(){
             var speed = 0.1;
+            events.ToggleControls(true);
+            events.AddMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 cameraAnimations.animation_2.to, speed,
                 function(){//on complete
@@ -304,6 +354,12 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     function goToSlice(){
         cardinal.assets.cardinal_slice.visible = true;
         cardinal.buttons.slice.remove();
+        events.RemoveMouseUpEvent(tweenCamToMain);
+        events.AddMouseUpEvent(tweenCamToSliceMain);
+
+        events.Controls.minAzimuthAngle = 0.1;
+        events.Controls.maxAzimuthAngle = 0.9;
+        events.ToggleControls(false);
 
         _.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
             mat.transparent = true;
@@ -329,6 +385,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
                 cardinal.buttons.spacer.add();
                 cardinal.buttons.dessicant.add();
                 cardinal.buttons.backToMain.add();
+                events.ToggleControls(true);
             }
         );
     }
@@ -336,6 +393,12 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     function backToMain(){
         cardinal.assets.cardinal_vertical.visible = true;
         events.EmptyElementByID("cameraButtons");
+        events.RemoveMouseUpEvent(tweenCamToSliceMain);
+        events.AddMouseUpEvent(tweenCamToMain);
+
+        events.Controls.minAzimuthAngle = - 0.3;
+        events.Controls.maxAzimuthAngle = 0.3;
+        events.ToggleControls(false);
 
         _.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
             animate.TweenOpacity(mat, mat.maxOpacity, fadeOutTime);
@@ -353,7 +416,10 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         cardinal.assets.loaderComponent.cameraHandler.play(
             cameraAnimations.animation_2.to,
             cameraAnimations.animation_2.from,
-            function(){cardinal.buttons.slice.add();}//on complete
+            function(){
+                cardinal.buttons.slice.add();
+                events.ToggleControls(true);
+            }//on complete
         );
     }
 
