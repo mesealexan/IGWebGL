@@ -11,7 +11,8 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
 
     /***private functions***/
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, logarithmicDepthBuffer: true });
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
+            logarithmicDepthBuffer: false});
         animate.renderer.setSize( width, height );
         animate.renderer.setClearColor( 0x000000, 0.0 );
         container.appendChild( animate.renderer.domElement );
@@ -31,6 +32,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
     /***public functions***/
     main.Start = function(sceneID){
         //entry point (first function called by require in app.js)
+        loader.LoadingScreen.add();
         width = $(window).width();
         height = $(window).height();
         container = document.getElementById( 'webGL' );
@@ -43,7 +45,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
         main.buttons.loadCardinal.add();
         main.buttons.load_i89.add();
         main.buttons.loadLoE.add();
-        main.buttons.loadNeat.add();
+        //main.buttons.loadNeat.add();
         loadingScene = false;
         //because they are unique, lights are added by each scene's individual file
     };
@@ -51,6 +53,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
     main.LoadNewScene = function(sceneID){
         //only call after Start()
         if(loadingScene) return;
+        loader.LoadingScreen.show();
         loadingScene = true;
         audio.StopAll();
         animate.StopAnimating();

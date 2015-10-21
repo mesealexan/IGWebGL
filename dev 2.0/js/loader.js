@@ -32,6 +32,7 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
         if(!l.cameraHandler.started)l.cameraHandler.play(
             undefined,undefined,undefined,//from, to and onComplete undefined
             animationComponent.Animate);
+        loader.LoadingScreen.hide();
     }
 
     var loader = function(scene, animationComponent){//public functionality
@@ -126,6 +127,21 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
 
         function loadSounds(){
             audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets);//call on load complete on all sounds loaded
+        }
+    };
+
+    loader.LoadingScreen = {
+        add: function(){
+            $('body').append('<div class="loader"></div>');
+            $('.loader').append('<h1 id="loadingText">loading</h1>');
+        },
+        show: function(){
+            $('#webGL').hide();
+            $('.loader').show();
+        },
+        hide: function(){
+            $('#webGL').show();
+            $('.loader').hide();
         }
     };
     /***end public functions***/

@@ -1,4 +1,4 @@
-define(["events"], function(events){
+define(["events", "animate"], function(events, animate){
     var neat = {};
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane'];
@@ -18,6 +18,11 @@ define(["events"], function(events){
         spotLight.position.set(980, 1049, -656);
         spotLight.target.position.set(34, 0, 85);
         scene.add( spotLight );*/
+    };
+
+    neat.onStartFunctions.LogarithmicDepthBuffer = function(){
+        //animate.renderer.logarithmicDepthBuffer = true;
+        //console.log(animate.renderer)
     };
     /***end on start functions***/
 

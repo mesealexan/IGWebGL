@@ -481,11 +481,12 @@ define(["three"], function(THREE){
     };
 
     function extractMaterialFromJSON(material){
-        console.log(material.map)
-        return new THREE.MeshLambertMaterial({
+        /*return new THREE.MeshLambertMaterial({
             color: material.color,
-            emissive: material.emissive
-        });
+            emissive: material.emissive,
+            specular: material.specular
+        });*/
+        return material;
     }
 
     function RadialGradientMaterial (){
