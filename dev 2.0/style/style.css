@@ -1,9 +1,14 @@
 body{
-    background-color: black;
+    background: url("../media/images/bck.jpg") no-repeat center center fixed;
+    background-size: 100% 100%;
+    /*background: url(images/bg.jpg) no-repeat center center fixed;*/
+    /*-webkit-background-size: cover;*/
+    /*-moz-background-size: cover;*/
+    /*-o-background-size: cover;*/
+    /*background-size: cover;*/
   	margin: 0px;
   	overflow: hidden;
   	padding: 0px;
-    background-color: black;
 }
 
 #webGL{
@@ -26,7 +31,7 @@ body{
 
 #loadButtons{
     position:fixed;
-    bottom: 0px;
+    bottom: 40px;
     left: 0px;
     width: 100%;
     z-index: 6;

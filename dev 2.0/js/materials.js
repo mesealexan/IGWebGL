@@ -1,6 +1,7 @@
 define(["three"], function(THREE){
     var materials = {};
     var textureCube = undefined;
+    var cloudCube = undefined;
 
     (function makeTextureCube(){
         var imagePrefix = "media/skybox/Cube_";
@@ -10,6 +11,17 @@ define(["three"], function(THREE){
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+    }());
+
+    (function makeCloudTextureCube(){
+        var imagePrefix = "media/skybox/clouds_scrolling2";
+        var directions  = ["r", "l", "u", "d", "f", "b"];
+        var imageSuffix = ".jpg";
+        var urls = [];
+        for (var a = 0; a < 6; a++)
+        urls.push(imagePrefix + imageSuffix);
+
+        cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }());
 
     materials.setMaterials = function(folderName, material){
@@ -102,6 +114,7 @@ define(["three"], function(THREE){
                 });
                 break;
             case 'LoEGlass':
+                console.log("Dsads")
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
@@ -466,6 +479,21 @@ define(["three"], function(THREE){
                     shininess: 30
                 });
                 break;
+
+            case 'neatGlass non animated':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(220,255,220)"),
+                    ambient: new THREE.Color("rgb(255,255,255)"),
+                    specular: new THREE.Color("rgb(0,80,60)"),
+                    //vertexColors: THREE.VertexColors,
+                    envMap: cloudCube,
+                    refractionRatio: 0.985,
+                    reflectivity: 0.99,
+                    shininess: 30,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                break;
             default:
                 material = extractMaterialFromJSON(material);
                 //material.polygonOffset = true;
@@ -473,7 +501,7 @@ define(["three"], function(THREE){
                 //material.polygonOffsetUnits = -0.1;
                 break;
         }
-
+/**/
         material.name = materialName;
         material.defaultEmissive = material.emissive;
         material.maxOpacity = material.opacity;
@@ -481,12 +509,17 @@ define(["three"], function(THREE){
     };
 
     function extractMaterialFromJSON(material){
-        /*return new THREE.MeshLambertMaterial({
-            color: material.color,
-            emissive: material.emissive,
-            specular: material.specular
-        });*/
-        return material;
+        if(material.map){
+            //console.log(material.map.sourceFile)
+            material.map = THREE.ImageUtils.loadTexture('media/models/neat/'+material.map.sourceFile);
+            material.color = new THREE.Color("rgb(255,255,255)");
+            return material;
+        }
+        else {
+            //console.log(material.name)
+            //return new THREE.MeshBasicMaterial();
+            return material;
+        }
     }
 
     function RadialGradientMaterial (){

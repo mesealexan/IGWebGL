@@ -25,7 +25,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     /***on start functions***/
     cardinal.onStartFunctions.addLights = function(scene){
         scene.add( new THREE.AmbientLight( 0x666666 ) );
-
         scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
 
         var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
@@ -42,6 +41,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
+        //todo: this clips frustum when log depth buffer
         var side = 10000;
         var geometry = new THREE.PlaneBufferGeometry( side, side );
         var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
@@ -49,12 +49,13 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         var plane = new THREE.Mesh( geometry, material );
         plane.rotation.x -= Math.PI / 2;
         plane.position.set(0, -100, 0);
+        plane.frustumCulled = false;
         scene.add( plane );
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
         //todo: fix lens flare! won't show up, blocks loading of 'neat'
-        /*var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
+        var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
         var textureFlare2 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_2.png");
         var flareColor = new THREE.Color( 0xffffff );
         var smallCircles = 10;
@@ -72,7 +73,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
         lensFlare.position.set( -1127.008, 1232.292, -11  );
 
-        scene.add( lensFlare );*/
+        scene.add( lensFlare );
     };
     /***end on start functions***/
 

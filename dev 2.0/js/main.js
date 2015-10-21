@@ -6,15 +6,16 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
     var camFOV = 45; //camera field of view in degrees
     var width, height; //browser window dimension
     var container; //html element for webGL renderer
-    var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
+    var camNear = 500, camFar = 17000; //camera frustum near and far clip planes
     var loadingScene = true;
 
     /***private functions***/
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,
             logarithmicDepthBuffer: false});
         animate.renderer.setSize( width, height );
-        animate.renderer.setClearColor( 0x000000, 0.0 );
+        animate.renderer.setClearColor( 0x000000, 0 );
+        animate.renderer.shadowMapType = THREE.PCFShadowMap;
         container.appendChild( animate.renderer.domElement );
     }
 
@@ -45,7 +46,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
         main.buttons.loadCardinal.add();
         main.buttons.load_i89.add();
         main.buttons.loadLoE.add();
-        //main.buttons.loadNeat.add();
+        main.buttons.loadNeat.add();
         loadingScene = false;
         //because they are unique, lights are added by each scene's individual file
     };
