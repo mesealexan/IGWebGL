@@ -10,7 +10,7 @@ define(["underscore", "loader", "updater", "tween"],
     var total = 0;
         var last = 0;
     var now = undefined;
-    var fps = 30;//should NOT change, all JSON files exported at 30 fps
+    var fps = 30;//should NOT change from 30, all JSON files exported at 30 fps
     var delta = undefined;//actual time between current and last frame
     var interval = 1000 / fps;//ideal time in ms between frames
     /***end private fields***/
@@ -20,6 +20,8 @@ define(["underscore", "loader", "updater", "tween"],
     animate.camera = undefined;
     animate.loader = undefined;
     animate.updater = new updater();
+    //todo: remove this
+    GlobalFunctions.updater = animate.updater;
     /***end public fields***/
 
     animate.Animate = function(){

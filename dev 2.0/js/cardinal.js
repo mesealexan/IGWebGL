@@ -41,7 +41,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
-        //todo: this clips frustum when log depth buffer
         var side = 10000;
         var geometry = new THREE.PlaneBufferGeometry( side, side );
         var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
@@ -54,7 +53,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        //todo: fix lens flare! won't show up, blocks loading of 'neat'
         var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
         var textureFlare2 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_2.png");
         var flareColor = new THREE.Color( 0xffffff );

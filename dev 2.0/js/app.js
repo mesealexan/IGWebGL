@@ -17,6 +17,7 @@ require.config({
         "genericHandler" : "genericHandler",
          "cameraHandler" : "cameraHandler",
       "animationHandler" : "animationHandler",
+        "particleSystem" : "particleSystem",
            "snowHandler" : "snowHandler",
                    "i89" : "i89",
                    "LoE" : "LoE",

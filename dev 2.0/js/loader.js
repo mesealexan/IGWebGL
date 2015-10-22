@@ -65,6 +65,13 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
         };
 
         this.UnloadScene = function(onComplete){
+            var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
+
+            _.each(onUnloadFunctions, function(fun){
+                selectedScene.onUnloadFunctions[fun](scene, _this);
+            });
+
+
             for (var i = this.scene.children.length - 1; i >= 0; i--)
                 traverseChildren(this.scene.children[i], disposeObject);
             onComplete();

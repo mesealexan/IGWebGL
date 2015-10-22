@@ -114,7 +114,6 @@ define(["three"], function(THREE){
                 });
                 break;
             case 'LoEGlass':
-                console.log("Dsads")
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
@@ -480,6 +479,8 @@ define(["three"], function(THREE){
                 });
                 break;
 
+            case 'neatneatGlass':
+            case 'neatstandardGlass':
             case 'neatGlass non animated':
                 material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(220,255,220)"),
@@ -494,32 +495,24 @@ define(["three"], function(THREE){
                     opacity: 0.7
                 });
                 break;
-            default:
-                material = extractMaterialFromJSON(material);
-                //material.polygonOffset = true;
-                //material.polygonOffsetFactor = 5;
-                //material.polygonOffsetUnits = -0.1;
+            default://no custom mat, extract it
+                material = extractMaterialFromJSON(folderName, material);
                 break;
         }
-/**/
+
         material.name = materialName;
         material.defaultEmissive = material.emissive;
         material.maxOpacity = material.opacity;
         return material;
     };
 
-    function extractMaterialFromJSON(material){
+    function extractMaterialFromJSON(folderName, material){
         if(material.map){
-            //console.log(material.map.sourceFile)
-            material.map = THREE.ImageUtils.loadTexture('media/models/neat/'+material.map.sourceFile);
+            material.map = THREE.ImageUtils.loadTexture('media/models/'+folderName+'/'+material.map.sourceFile);
             material.color = new THREE.Color("rgb(255,255,255)");
             return material;
         }
-        else {
-            //console.log(material.name)
-            //return new THREE.MeshBasicMaterial();
-            return material;
-        }
+        else return material;
     }
 
     function RadialGradientMaterial (){
