@@ -1,5 +1,5 @@
-define(["events", "animate", "particleSystem"],
-    function(events, animate, particleSystem){
+define(["events", "animate", "particleSystem", "materials"],
+    function(events, animate, particleSystem, materials){
     var neat = {};
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
@@ -22,12 +22,7 @@ define(["events", "animate", "particleSystem"],
         directionalLight.shadowCameraLeft = -shadowCam;
         directionalLight.shadowCameraTop = shadowCam;
         directionalLight.shadowCameraBottom = -shadowCam;
-
         scene.add( directionalLight );
-        /*var spotLight = new THREE.SpotLight(0xb99bfd);
-        spotLight.position.set(980, 1049, -656);
-        spotLight.target.position.set(34, 0, 85);
-        scene.add( spotLight );*/
     };
 
     /***on load functions***/
@@ -40,6 +35,26 @@ define(["events", "animate", "particleSystem"],
         mesh.receiveShadow = true;
     };
 
+    neat.onLoadFunctions.Glass_standard = function(mesh, loader){
+        materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
+        neat.assets.Glass_standard_clone = mesh.clone();
+        neat.assets.Glass_standard_clone.position.z ++;
+        //neat.assets.Glass_standard_clone.material = new materials.NeatGlassDirt({maxDirt: 0.6});
+        loader.scene.add(neat.assets.Glass_standard_clone);
+
+        materials.NeatRain.prototype = new THREE.ShaderMaterial();
+        neat.assets.Glass_standard_clone.material = new materials.NeatRain({maxOpac: 0.5});
+    };
+
+    neat.onLoadFunctions.Glass_neat = function(mesh, loader){
+        materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
+        neat.assets.Glass_neat_clone = mesh.clone();
+        neat.assets.Glass_neat_clone.position.z ++;
+        neat.assets.Glass_neat_clone.material =
+            new materials.NeatGlassDirt({maxDirt: 0.2});
+        loader.scene.add(neat.assets.Glass_neat_clone);
+    };
+
     /***on finish functions***/
     neat.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(undefined, undefined,
@@ -49,6 +64,11 @@ define(["events", "animate", "particleSystem"],
 
                 neat.assets.rain.Init(scene);
                 neat.assets.leaves.Init(scene);
+
+                neat.assets.Glass_standard_clone.material.Start();
+                /*neat.assets.Glass_standard_clone.material.Start();
+                neat.assets.Glass_neat_clone.material.Start();*/
+
             },
             animate.Animate);
     };

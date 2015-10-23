@@ -1,4 +1,4 @@
-define(["three"], function(THREE){
+define(["three", "animate"], function(THREE, animate){
     var materials = {};
     var textureCube = undefined;
     var cloudCube = undefined;
@@ -506,6 +506,91 @@ define(["three"], function(THREE){
         return material;
     };
 
+    materials.NeatGlassDirt = function(settings){
+        var _this = this;
+        var dirtMap = THREE.ImageUtils.loadTexture('media/models/neat/Dirt_wind_diff.jpg');
+        var dirtOpac = THREE.ImageUtils.loadTexture('media/models/neat/Dirt_opacity_map.jpg');
+        var dirtySpeed = 0.01;
+        var opacSpeed = 0.01;
+        var maxDirt = settings.maxDirt;
+        var clean = true;
+
+        this.uniforms = {
+            map: { type: 't', value: dirtMap },
+            opacMap: { type: 't', value: dirtOpac },
+            opacVal: { type: 'f', value: -0.1 },
+            minVal: { type: 'f', value: 0 },
+            maxVal: { type: 'f', value: maxDirt },
+            time: { type: 'f', value: 3 }
+        };
+
+        this.vertexShader = vSh();
+        this.fragmentShader = fSh();
+        this.transparent = true;
+        this.update = function(){
+            this.uniforms.minVal.value += dirtySpeed;
+            this.uniforms.opacVal.value += opacSpeed;
+
+            if(this.uniforms.minVal.value >= this.uniforms.maxVal.value)
+                this.Stop();
+
+            if(this.uniforms.minVal.value < 0) this.Stop();
+
+        };
+
+        function vSh(){
+            return[
+                "varying float time;",
+                "varying vec2 vUv;"+
+                "void main(){"+
+                "vUv = uv;"+
+                "vec3 pos = position;",
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );}"
+            ].join('\n');
+        }
+
+        function fSh(){
+            return[
+                "varying float time;",
+                "uniform sampler2D map;",
+                "uniform sampler2D opacMap;",
+                "uniform float opacVal;",
+                "uniform float minVal;",
+                "uniform float maxVal;",
+                "varying vec2 vUv;",
+
+                "void main() {",
+                "vec3 mapColor = texture2D( map, vUv ).xyz;",
+                "vec3 opacColor = texture2D( opacMap, vUv ).xyz;",
+                "if(opacColor.y >= minVal) discard; ",
+                "gl_FragColor = vec4(mapColor, opacVal);}"
+            ].join('\n');
+        }
+
+        this.Start = function(){
+            if(!clean) return;
+            clean = false;
+            this.Stop();
+            dirtySpeed = Math.abs(dirtySpeed);
+            opacSpeed = Math.abs(opacSpeed);
+            _this.uniforms.minVal.value = 0;
+            animate.updater.addHandler(this);
+        };
+
+        this.Stop = function(){
+            animate.updater.removeHandler(this);
+        };
+
+        this.Clean = function(){
+            if(clean) return;
+            clean = true;
+            this.Stop();
+            dirtySpeed = -Math.abs(dirtySpeed);
+            opacSpeed = -Math.abs(opacSpeed);
+            animate.updater.addHandler(this);
+        };
+    };
+
     function extractMaterialFromJSON(folderName, material){
         if(material.map){
             material.map = THREE.ImageUtils.loadTexture('media/models/'+folderName+'/'+material.map.sourceFile);
@@ -600,6 +685,108 @@ define(["three"], function(THREE){
             tweenUp.to( { value: endVal}, time );
             tweenUp.start();
         }
+    };
+
+    materials.NeatRain = function(settings){
+        var _this = this;
+        var dirtMap = THREE.ImageUtils.loadTexture('media/models/neat/rain.jpg');
+        var drop = THREE.ImageUtils.loadTexture('media/particles/water_drop.png');
+
+        dirtMap.wrapS = THREE.RepeatWrapping;
+        dirtMap.wrapT = THREE.RepeatWrapping;
+        var speed = 0.04;
+        var drops = 50;
+
+        this.uniforms = {
+            map: { type: 't', value: dirtMap },
+            drop: { type: 't', value: drop },
+            opacity: { type: 'f', value: 0 },
+            frequency: { type: 'f', value: 20 },
+            amplitude: { type: 'f', value: 10 },
+            pos: { type: 'f', value: 12 },
+            maxOpacity: { type: 'f', value: settings.maxOpac },
+            scrollVal: { type: 'f', value: 0 },
+            points: { type: "v2v", value: [] }
+        };
+
+        for (var i = 0; i <= drops; i++)
+            this.uniforms.points.value.push({x: Math.random(), y: Math.random()});
+
+        this.vertexShader = vSh();
+        this.fragmentShader = fSh();
+        this.transparent = true;
+
+        this.update = function(){
+            this.uniforms.pos.value -= speed;
+
+            if(this.uniforms.opacity.value <= this.uniforms.maxOpacity.value)
+                this.uniforms.opacity.value += 0.01;
+        };
+
+        function vSh(){
+            return[
+                "uniform vec3 lightPosition;",
+                "varying vec2 vUv;"+
+                "varying mat3 tbn;",
+                "varying vec3 vTangent;",
+                "varying vec3 vLightVector;",
+                "void main(){",
+                "vUv = uv;",
+                "vec3 pos = position;",
+                "vec3 vNormal = normalize(normalMatrix * normal);",
+                /*"vTangent = normalize(normalMatrix * tangent.xyz);",
+                "vec3 vBinormal = normalize(cross( vNormal, vTangent ) * tangent.w);",
+                "tbn = mat3(vTangent, vBinormal, vNormal);",
+                "vec4 lightVector = viewMatrix * vec4(lightPosition, 1.0);",
+                "vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);",
+                "vLightVector = normalize(lightVector.xyz - modelViewPosition.xyz);",*/
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}"
+            ].join('\n');
+        }
+
+        function fSh(){
+            return[
+                "#define ARRMAX " + drops + "\n" ,
+                "varying vec2 vUv;",
+                "uniform float scrollVal;",
+                "uniform sampler2D map;",
+                "uniform sampler2D drop;",
+                "uniform float opacity;",
+                "uniform float frequency;",
+                "uniform float amplitude;",
+                "uniform float pos;",
+                "uniform vec2 points[ARRMAX];",
+
+                "void main() {",
+                "",
+
+                "vec4 mapColor = texture2D( map, vec2(vUv.x, vUv.y));",
+                "vec4 dropColor = vec4( 0., 0., 0., 0.);",
+                "if((vUv.y * amplitude) - pos + sin(vUv.x * pos * 2.5) > ",
+                "(sin(vUv.x * frequency))) discard;",
+                "for (int i = 0; i < ARRMAX; i++) {",
+                    "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) *20.);",
+                "};",
+                //"gl_FragColor = dropColor;}"
+                "gl_FragColor = mix(mapColor, dropColor, 0.5);}"
+
+
+        ].join('\n');
+        }
+
+
+//+ (0.5 / smaller))* smaller
+        this.Start = function(){
+            animate.updater.addHandler(this);
+        };
+
+        this.Stop = function(){
+            animate.updater.removeHandler(this);
+        };
+
+        this.Clean = function(){
+
+        };
     };
 
     return materials;
