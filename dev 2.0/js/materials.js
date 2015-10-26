@@ -593,6 +593,9 @@ define(["three", "animate"], function(THREE, animate){
 
     function extractMaterialFromJSON(folderName, material){
         if(material.map){
+            //if(material.map.sourceFile == "wooden door.jpg")
+                //console.log(material)
+            console.log(material.map.sourceFile)
             material.map = THREE.ImageUtils.loadTexture('media/models/'+folderName+'/'+material.map.sourceFile);
             material.color = new THREE.Color("rgb(255,255,255)");
             return material;
