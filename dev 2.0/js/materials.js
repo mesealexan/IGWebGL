@@ -727,54 +727,51 @@ define(["three", "animate"], function(THREE, animate){
         };
 
         function vSh(){
-            return[
-                "uniform vec3 lightPosition;",
-                "varying vec2 vUv;"+
-                "varying mat3 tbn;",
-                "varying vec3 vTangent;",
-                "varying vec3 vLightVector;",
-                "void main(){",
-                "vUv = uv;",
-                "vec3 pos = position;",
-                "vec3 vNormal = normalize(normalMatrix * normal);",
-                /*"vTangent = normalize(normalMatrix * tangent.xyz);",
-                "vec3 vBinormal = normalize(cross( vNormal, vTangent ) * tangent.w);",
-                "tbn = mat3(vTangent, vBinormal, vNormal);",
-                "vec4 lightVector = viewMatrix * vec4(lightPosition, 1.0);",
-                "vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);",
-                "vLightVector = normalize(lightVector.xyz - modelViewPosition.xyz);",*/
-                "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}"
-            ].join('\n');
+          return[
+            "uniform vec3 lightPosition;",
+            "varying vec2 vUv;"+
+            "varying mat3 tbn;",
+            "varying vec3 vTangent;",
+            "varying vec3 vLightVector;",
+            "void main(){",
+            "vUv = uv;",
+            "vec3 pos = position;",
+            "vec3 vNormal = normalize(normalMatrix * normal);",
+            /*"vTangent = normalize(normalMatrix * tangent.xyz);",
+            "vec3 vBinormal = normalize(cross( vNormal, vTangent ) * tangent.w);",
+            "tbn = mat3(vTangent, vBinormal, vNormal);",
+            "vec4 lightVector = viewMatrix * vec4(lightPosition, 1.0);",
+            "vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);",
+            "vLightVector = normalize(lightVector.xyz - modelViewPosition.xyz);",*/
+            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}"
+          ].join('\n');
         }
 
         function fSh(){
-            return[
-                "#define ARRMAX " + drops + "\n" ,
-                "varying vec2 vUv;",
-                "uniform float scrollVal;",
-                "uniform sampler2D map;",
-                "uniform sampler2D drop;",
-                "uniform float opacity;",
-                "uniform float frequency;",
-                "uniform float amplitude;",
-                "uniform float pos;",
-                "uniform vec2 points[ARRMAX];",
+          return[
+            "#define ARRMAX " + drops + "\n" ,
+            "varying vec2 vUv;",
+            "uniform float scrollVal;",
+            "uniform sampler2D map;",
+            "uniform sampler2D drop;",
+            "uniform float opacity;",
+            "uniform float frequency;",
+            "uniform float amplitude;",
+            "uniform float pos;",
+            "uniform vec2 points[ARRMAX];",
 
-                "void main() {",
-                "",
+            "void main() {",
+            "",
 
-                "vec4 mapColor = texture2D( map, vec2(vUv.x, vUv.y));",
-                "vec4 dropColor = vec4( 0., 0., 0., 0.);",
-                "if((vUv.y * amplitude) - pos + sin(vUv.x * pos * 2.5) > ",
-                "(sin(vUv.x * frequency))) discard;",
-                "for (int i = 0; i < ARRMAX; i++) {",
-                    "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) *20.);",
-                "};",
-                //"gl_FragColor = dropColor;}"
-                "gl_FragColor = mix(mapColor, dropColor, 0.5);}"
-
-
-        ].join('\n');
+            "vec4 mapColor = texture2D( map, vec2(vUv.x, vUv.y));",
+            "vec4 dropColor = vec4( 0., 0., 0., 0.);",
+            "if((vUv.y * amplitude) - pos + sin(vUv.x * pos * 2.5) > ",
+            "(sin(vUv.x * frequency))) discard;",
+            "for (int i = 0; i < ARRMAX; i++) {",
+                "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) * 20.);",
+            "};",
+            "gl_FragColor = mix(mapColor, dropColor, 0.5);}"
+          ].join('\n');
         }
 
 

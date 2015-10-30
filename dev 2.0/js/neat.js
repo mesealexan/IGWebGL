@@ -1,14 +1,16 @@
-define(["events", "animate", "particleSystem", "materials"],
-    function(events, animate, particleSystem, materials){
+define(["events", "animate", "particleSystem", "materials", "animationHandler"],
+    function(events, animate, particleSystem, materials, animationHandler){
     var neat = {};
+
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-    'Glass_neat', 'Glass_standard'];
+    'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated'];
     neat.soundNames = [];
     neat.onStartFunctions = {};
     neat.onLoadFunctions = {};
     neat.onFinishLoadFunctions = {};
     neat.onUnloadFunctions = {};
+    neat.animationHandlers = {};
     neat.assets = {};
 
     /***on start functions***/
@@ -26,9 +28,18 @@ define(["events", "animate", "particleSystem", "materials"],
     };
 
     /***on load functions***/
-    neat.onLoadFunctions.House = function(mesh){
+    neat.onLoadFunctions.Cardinal_bird_animated = function(mesh, loader){
+      mesh.material.materials[0].morphTargets = true;
+      var birdAnim = loader.ParseJSON('media/models/neat/Cardinal_bird_positions.JSON');
+      animate.updater.addHandler(new animate.PositionRotationHandler(mesh, birdAnim));
+
+      neat.animationHandlers.ah1 = new animationHandler();
+      neat.animationHandlers.ah1.setMesh(mesh);
+      neat.animationHandlers.ah1.loop(0, 15);
+    };
+
+    neat.onLoadFunctions.House = function(mesh, loader){
         mesh.castShadow = true;
-        //mesh.receiveShadow = true;
     };
 
     neat.onLoadFunctions.Floor_grass = function(mesh){
@@ -36,14 +47,16 @@ define(["events", "animate", "particleSystem", "materials"],
     };
 
     neat.onLoadFunctions.Glass_standard = function(mesh, loader){
-        materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
         neat.assets.Glass_standard_clone = mesh.clone();
         neat.assets.Glass_standard_clone.position.z ++;
-        //neat.assets.Glass_standard_clone.material = new materials.NeatGlassDirt({maxDirt: 0.6});
         loader.scene.add(neat.assets.Glass_standard_clone);
+        //todo: remove this
+        GlobalFunctions.Glass_standard_clone = neat.assets.Glass_standard_clone;
 
-        materials.NeatRain.prototype = new THREE.ShaderMaterial();
-        neat.assets.Glass_standard_clone.material = new materials.NeatRain({maxOpac: 0.5});
+        materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
+        neat.assets.Glass_standard_clone.material = new materials.NeatGlassDirt({maxDirt: 0.6});
+        //materials.NeatRain.prototype = new THREE.ShaderMaterial();
+        //neat.assets.Glass_standard_clone.material = new materials.NeatRain({maxOpac: 0.5});
     };
 
     neat.onLoadFunctions.Glass_neat = function(mesh, loader){
@@ -52,6 +65,9 @@ define(["events", "animate", "particleSystem", "materials"],
         neat.assets.Glass_neat_clone.position.z ++;
         neat.assets.Glass_neat_clone.material =
             new materials.NeatGlassDirt({maxDirt: 0.2});
+        //todo: remove this
+        GlobalFunctions.Glass_neat_clone = neat.assets.Glass_neat_clone;
+
         loader.scene.add(neat.assets.Glass_neat_clone);
     };
 
@@ -66,8 +82,7 @@ define(["events", "animate", "particleSystem", "materials"],
                 neat.assets.leaves.Init(scene);
 
                 neat.assets.Glass_standard_clone.material.Start();
-                /*neat.assets.Glass_standard_clone.material.Start();
-                neat.assets.Glass_neat_clone.material.Start();*/
+                neat.assets.Glass_neat_clone.material.Start();
 
             },
             animate.Animate);
@@ -127,9 +142,6 @@ define(["events", "animate", "particleSystem", "materials"],
 
         neat.assets.leaves = new particleSystem(leavesSettings);
         neat.assets.rain = new particleSystem(rainSettings);
-
-        GlobalFunctions.rain = neat.assets.rain;
-        GlobalFunctions.camera = animate.camera;
     }
 
     return neat;

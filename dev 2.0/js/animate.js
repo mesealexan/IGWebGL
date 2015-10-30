@@ -36,7 +36,7 @@ define(["underscore", "loader", "updater", "tween"],
             animate.renderer.render(animate.loader.scene, animate.camera);
         }
     };
-        
+
     animate.StopAnimating = function () { cancelAnimationFrame(frameID); };
 
     //handlers instantiated by scene meshes for updating transform data
@@ -55,12 +55,14 @@ define(["underscore", "loader", "updater", "tween"],
         this.update = function(){
             if(++this.frame < animation.frames.length){
                 var curFrame = animation.frames[this.frame];
-                mesh.position.set(curFrame.position.x, curFrame.position.z, curFrame.position.y);
+                mesh.position.set(curFrame.position.x, curFrame.position.z, -curFrame.position.y);
 
                 mesh.rotation.setFromQuaternion (
                     new THREE.Quaternion(
-                        curFrame.rotation.x, curFrame.rotation.z,
-                       -curFrame.rotation.y, curFrame.rotation.w
+                        curFrame.rotation.x,
+                        curFrame.rotation.z,
+                       -curFrame.rotation.y,
+                        curFrame.rotation.w
                     ).normalize());
             }else animate.updater.removeHandler(this);
         }
