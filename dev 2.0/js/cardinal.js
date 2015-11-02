@@ -87,7 +87,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
     cardinal.onLoadFunctions.cardinal_slice = function(mesh){
         mesh.visible = false;
-        _.each(mesh.material.materials, function(m){m.opacity = 0;});
+        _.each(mesh.material.materials, function(m){m.opacity = 0});
         cardinal.assets.cardinal_slice = mesh;
     };
     /***end on load functions***/

@@ -13,6 +13,7 @@ return function(s){
     this.randomInitialRot = s.rndRotInit;
     this.rndSizeVariation = s.rndSizeVariation;
     this.stopped = false;
+    this.created = false;
     var geometry = undefined;
 
     function randomPos(){
@@ -69,10 +70,12 @@ return function(s){
     };
 
     this.Init = function(scene){
+        if(_this.created){ _this.Start(); return; }
         var ps = this.createPS();
         if(s.pos)ps.position.copy(_this.position);
         animate.updater.addHandler(this);
         scene.add(ps);
+        _this.created = true;
     };
 
     this.Start = function(){

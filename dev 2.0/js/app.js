@@ -37,9 +37,9 @@ require.config({
 var nextScene = ["LoE", "cardinal", "i89", "neat"];
 require(["main"], function(main){
     //main.Start("LoE");
-    main.Start("i89");
+    //main.Start("i89");
     //main.Start("cardinal");
-    //main.Start("neat");
+    main.Start("neat");
     //main.Start(nextScene[Math.floor(Math.random() * 3)]);
 
     /*

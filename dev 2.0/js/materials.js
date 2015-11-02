@@ -514,12 +514,15 @@ define(["three", "animate"], function(THREE, animate){
         var opacSpeed = 0.01;
         var maxDirt = settings.maxDirt;
         var clean = true;
+        this.startOnce = undefined;
+        this.keepOpac = undefined;
+        this.minVal = 0;
 
         this.uniforms = {
             map: { type: 't', value: dirtMap },
             opacMap: { type: 't', value: dirtOpac },
             opacVal: { type: 'f', value: -0.1 },
-            minVal: { type: 'f', value: 0 },
+            curVal: { type: 'f', value: 0 },
             maxVal: { type: 'f', value: maxDirt },
             time: { type: 'f', value: 3 }
         };
@@ -528,13 +531,13 @@ define(["three", "animate"], function(THREE, animate){
         this.fragmentShader = fSh();
         this.transparent = true;
         this.update = function(){
-            this.uniforms.minVal.value += dirtySpeed;
-            this.uniforms.opacVal.value += opacSpeed;
+            this.uniforms.curVal.value += dirtySpeed;
+            if(!this.keepOpac)this.uniforms.opacVal.value += opacSpeed;
 
-            if(this.uniforms.minVal.value >= this.uniforms.maxVal.value)
+            if(this.uniforms.curVal.value >= this.uniforms.maxVal.value)
                 this.Stop();
 
-            if(this.uniforms.minVal.value < 0) this.Stop();
+            if(this.uniforms.curVal.value < this.minVal) this.Stop();
 
         };
 
@@ -555,25 +558,27 @@ define(["three", "animate"], function(THREE, animate){
                 "uniform sampler2D map;",
                 "uniform sampler2D opacMap;",
                 "uniform float opacVal;",
-                "uniform float minVal;",
+                "uniform float curVal;",
                 "uniform float maxVal;",
                 "varying vec2 vUv;",
 
                 "void main() {",
                 "vec3 mapColor = texture2D( map, vUv ).xyz;",
                 "vec3 opacColor = texture2D( opacMap, vUv ).xyz;",
-                "if(opacColor.y >= minVal) discard; ",
+                "if(opacColor.y >= curVal) discard; ",
                 "gl_FragColor = vec4(mapColor, opacVal);}"
             ].join('\n');
         }
 
-        this.Start = function(){
+        this.Start = function(s){
             if(!clean) return;
+            if(this.startOnce) return;
+            if(s)this.startOnce = s.startOnce;
             clean = false;
             this.Stop();
             dirtySpeed = Math.abs(dirtySpeed);
             opacSpeed = Math.abs(opacSpeed);
-            _this.uniforms.minVal.value = 0;
+            _this.uniforms.curVal.value = this.minVal;
             animate.updater.addHandler(this);
         };
 
@@ -581,12 +586,16 @@ define(["three", "animate"], function(THREE, animate){
             animate.updater.removeHandler(this);
         };
 
-        this.Clean = function(){
+        this.Clean = function(s){
             if(clean) return;
             clean = true;
             this.Stop();
             dirtySpeed = -Math.abs(dirtySpeed);
             opacSpeed = -Math.abs(opacSpeed);
+            if(s){
+              if(s.minDirt) this.minVal = s.minDirt;
+              _this.keepOpac = s.keepOpac;
+            }
             animate.updater.addHandler(this);
         };
     };
@@ -697,33 +706,57 @@ define(["three", "animate"], function(THREE, animate){
 
         dirtMap.wrapS = THREE.RepeatWrapping;
         dirtMap.wrapT = THREE.RepeatWrapping;
-        var speed = 0.04;
+        var cleanSpeed = 0.1;
         var drops = 50;
+
+        this.vertexShader = vSh();
+        this.fragmentShader = fSh();
+        this.transparent = true;
+        this.opacSpeed = 0.01;
+        this.cleaning = false;
+        this.minPos = -2;
+        this.maxPos = 22;
+        this.maxOpac = settings.maxOpac;
+        this.startOnce = undefined;
 
         this.uniforms = {
             map: { type: 't', value: dirtMap },
             drop: { type: 't', value: drop },
             opacity: { type: 'f', value: 0 },
             frequency: { type: 'f', value: 20 },
-            amplitude: { type: 'f', value: 10 },
-            pos: { type: 'f', value: 12 },
-            maxOpacity: { type: 'f', value: settings.maxOpac },
+            amplitude: { type: 'f', value: 20 },
+            pos: { type: 'f', value: this.maxPos },
+            maxOpacity: { type: 'f', value: this.maxOpac },
             scrollVal: { type: 'f', value: 0 },
             points: { type: "v2v", value: [] }
         };
 
-        for (var i = 0; i <= drops; i++)
-            this.uniforms.points.value.push({x: Math.random(), y: Math.random()});
-
-        this.vertexShader = vSh();
-        this.fragmentShader = fSh();
-        this.transparent = true;
+        //for (var i = 0; i <= drops; i++)
+        //    this.uniforms.points.value.push({x: Math.random(), y: Math.random()});
 
         this.update = function(){
-            this.uniforms.pos.value -= speed;
 
-            if(this.uniforms.opacity.value <= this.uniforms.maxOpacity.value)
-                this.uniforms.opacity.value += 0.01;
+        //  this.uniforms.opacity.value += this.opacSpeed;
+          if(this.cleaning && this.uniforms.pos.value > this.minPos){
+            this.uniforms.pos.value -= cleanSpeed;
+            //this.uniforms.opacity.value -= this.opacSpeed;
+          }
+          else if(this.cleaning && this.uniforms.pos.value < this.minPos)
+            this.Stop();
+
+          if(!this.cleaning && this.uniforms.opacity.value < this.uniforms.maxOpacity.value){
+            this.uniforms.opacity.value += this.opacSpeed;
+          }
+          else if(!this.cleaning && this.uniforms.opacity.value > this.uniforms.maxOpacity.value)
+            this.Stop();
+          // if(this.uniforms.opacity.value < 0)
+          //   this.uniforms.opacity.value = 0;
+          //   //this.Stop();
+          //   if(this.uniforms.opacity.value > this.uniforms.maxOpacity.value){
+          //     this.uniforms.opacity.value = this.uniforms.maxOpacity.value;
+          //     this.Stop();
+          //   }
+
         };
 
         function vSh(){
@@ -737,12 +770,6 @@ define(["three", "animate"], function(THREE, animate){
             "vUv = uv;",
             "vec3 pos = position;",
             "vec3 vNormal = normalize(normalMatrix * normal);",
-            /*"vTangent = normalize(normalMatrix * tangent.xyz);",
-            "vec3 vBinormal = normalize(cross( vNormal, vTangent ) * tangent.w);",
-            "tbn = mat3(vTangent, vBinormal, vNormal);",
-            "vec4 lightVector = viewMatrix * vec4(lightPosition, 1.0);",
-            "vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);",
-            "vLightVector = normalize(lightVector.xyz - modelViewPosition.xyz);",*/
             "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}"
           ].join('\n');
         }
@@ -767,25 +794,29 @@ define(["three", "animate"], function(THREE, animate){
             "vec4 dropColor = vec4( 0., 0., 0., 0.);",
             "if((vUv.y * amplitude) - pos + sin(vUv.x * pos * 2.5) > ",
             "(sin(vUv.x * frequency))) discard;",
-            "for (int i = 0; i < ARRMAX; i++) {",
-                "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) * 20.);",
-            "};",
-            "gl_FragColor = mix(mapColor, dropColor, 0.5);}"
+            //"for (int i = 0; i < ARRMAX; i++) {",
+            //    "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) * 20.);",
+            //"};",
+            "gl_FragColor = vec4(mapColor.xyz, opacity);}"
           ].join('\n');
         }
 
-
-//+ (0.5 / smaller))* smaller
-        this.Start = function(){
-            animate.updater.addHandler(this);
+        this.Start = function(s){
+          if(this.startOnce) return;
+          if(s)this.startOnce = s.startOnce;
+          this.uniforms.opacity.value = 0;
+          this.uniforms.pos.value = this.maxPos;
+          this.cleaning = false;
+          animate.updater.addHandler(this);
         };
 
         this.Stop = function(){
-            animate.updater.removeHandler(this);
+          animate.updater.removeHandler(this);
         };
 
         this.Clean = function(){
-
+          this.cleaning = true;
+          animate.updater.addHandler(this);
         };
     };
 

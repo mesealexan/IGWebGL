@@ -1,5 +1,5 @@
-define(["events", "animate", "particleSystem", "materials", "animationHandler"],
-    function(events, animate, particleSystem, materials, animationHandler){
+define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween"],
+    function(events, animate, particleSystem, materials, animationHandler, underscore, tween){
     var neat = {};
 
     neat.folderName = "neat";
@@ -47,44 +47,37 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler"],
     };
 
     neat.onLoadFunctions.Glass_standard = function(mesh, loader){
-        neat.assets.Glass_standard_clone = mesh.clone();
-        neat.assets.Glass_standard_clone.position.z ++;
-        loader.scene.add(neat.assets.Glass_standard_clone);
-        //todo: remove this
-        GlobalFunctions.Glass_standard_clone = neat.assets.Glass_standard_clone;
+        neat.assets.Glass_standard_Rain = mesh.clone();
+        materials.NeatRain.prototype = new THREE.ShaderMaterial();
+        neat.assets.Glass_standard_Rain.material = new materials.NeatRain({maxOpac: 0.5});
+        loader.scene.add(neat.assets.Glass_standard_Rain);
 
+        neat.assets.Glass_standard_Dirt = mesh.clone();
         materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
-        neat.assets.Glass_standard_clone.material = new materials.NeatGlassDirt({maxDirt: 0.6});
-        //materials.NeatRain.prototype = new THREE.ShaderMaterial();
-        //neat.assets.Glass_standard_clone.material = new materials.NeatRain({maxOpac: 0.5});
+        neat.assets.Glass_standard_Dirt.material = new materials.NeatGlassDirt({maxDirt: 0.6});
+        loader.scene.add(neat.assets.Glass_standard_Dirt);
+
+        neat.assets.Glass_standard_Sun = mesh.clone();
     };
 
     neat.onLoadFunctions.Glass_neat = function(mesh, loader){
-        materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
-        neat.assets.Glass_neat_clone = mesh.clone();
-        neat.assets.Glass_neat_clone.position.z ++;
-        neat.assets.Glass_neat_clone.material =
-            new materials.NeatGlassDirt({maxDirt: 0.2});
-        //todo: remove this
-        GlobalFunctions.Glass_neat_clone = neat.assets.Glass_neat_clone;
+      neat.assets.Glass_neat_Rain = mesh.clone();
+      materials.NeatRain.prototype = new THREE.ShaderMaterial();
+      neat.assets.Glass_neat_Rain.material = new materials.NeatRain({maxOpac: 0.5});
+      loader.scene.add(neat.assets.Glass_neat_Rain);
 
-        loader.scene.add(neat.assets.Glass_neat_clone);
+      neat.assets.Glass_neat_Dirt = mesh.clone();
+      materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
+      neat.assets.Glass_neat_Dirt.material = new materials.NeatGlassDirt({maxDirt: 0.5});
+      loader.scene.add(neat.assets.Glass_neat_Dirt);
+
+      neat.assets.Glass_neat_Sun = mesh.clone();
     };
 
     /***on finish functions***/
     neat.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(undefined, undefined,
-            function(){
-                animate.camera.near = 1;
-                animate.camera.updateProjectionMatrix();
-
-                neat.assets.rain.Init(scene);
-                neat.assets.leaves.Init(scene);
-
-                neat.assets.Glass_standard_clone.material.Start();
-                neat.assets.Glass_neat_clone.material.Start();
-
-            },
+          function(){onCameraComplete(scene)},
             animate.Animate);
     };
 
@@ -111,6 +104,94 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler"],
         animate.camera.near = 1;
         animate.camera.updateProjectionMatrix();
     };
+
+    function onCameraComplete(scene){
+      animate.camera.near = 1;
+      animate.camera.updateProjectionMatrix();
+      neat.assets.scene = scene;
+
+      states.dirt.start();
+      setTimeout(function(){ states.sun.start(); }, 3000);
+      setTimeout(function(){ states.rain.start(); }, 6000);
+      setTimeout(function(){ states.sun.start(); }, 9000);
+      setTimeout(function(){
+        neat.buttons.sun.add();
+        neat.buttons.rain.add();
+        neat.buttons.dirt.add();
+      }, 12000);
+    }
+
+    neat.buttons = {
+      sun: {
+          add: function(){
+              events.AddButton({text:"sun", function: states.sun.start, id:"sun"});
+          },
+          remove: function(){ events.RemoveElementByID("sun"); }
+      },
+      rain: {
+          add: function(){
+              events.AddButton({text:"rain", function: states.rain.start, id:"rain"});
+          },
+          remove: function(){ events.RemoveElementByID("rain"); }
+      },
+      dirt: {
+          add: function(){
+              events.AddButton({text:"dirt", function: states.dirt.start, id:"dirt"});
+          },
+          remove: function(){ events.RemoveElementByID("dirt"); }
+      }
+    };
+
+    /***private functions***/
+
+    var states = function () {
+      var curState = undefined;
+      var ret =
+      {
+        sun:{
+          start: function(){
+            ret.stop("sun");
+          },
+          stop: function(){
+
+          }
+        }
+        ,
+        rain:{
+          start: function(){
+            neat.assets.rainPS.Init(neat.assets.scene);
+            neat.assets.Glass_standard_Rain.material.Start({startOnce: true});
+            neat.assets.Glass_neat_Rain.material.Start();
+            addRainDrops(neat.assets.Glass_neat_Rain);
+            ret.stop("rain");
+          },
+          stop: function(){
+            neat.assets.rainPS.Stop();
+            neat.assets.Glass_neat_Rain.material.Clean();
+          }
+        }
+        ,
+        dirt:{
+          start: function(){
+            neat.assets.leavesPS.Init(neat.assets.scene);
+            neat.assets.Glass_standard_Dirt.material.Start({startOnce: true});
+            neat.assets.Glass_neat_Dirt.material.Start();
+            ret.stop("dirt");
+          },
+          stop: function(){
+            neat.assets.leavesPS.Stop();
+            neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.01, keepOpac: true});
+          }
+        }
+        ,
+        stop: function (newState) {
+          //stops current, argument is new state
+          if(curState)ret[curState].stop();
+          curState = newState;
+        }
+      };
+      return ret;
+    }();
 
     function addParticles(scene){
         var leavesSettings = {
@@ -140,8 +221,34 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler"],
             speed: 20
         };
 
-        neat.assets.leaves = new particleSystem(leavesSettings);
-        neat.assets.rain = new particleSystem(rainSettings);
+        neat.assets.leavesPS = new particleSystem(leavesSettings);
+        neat.assets.rainPS = new particleSystem(rainSettings);
+    }
+
+    function addRainDrops(){
+      var rainDrops = 60;
+      var radius = 2;
+      var mat = materials.setMaterials("cardinal", {name:"Glass"});
+      for (var i = 0; i < rainDrops; i++) {
+        var curRad = radius * Math.random();
+        var sphere = new THREE.Mesh( new THREE.SphereGeometry(curRad, 6, 6 ), mat.clone());
+
+         sphere.material.opacity = 0;
+
+        sphere.position.set(_.random(-240, -180), _.random(460, 600), 366.287);
+        neat.assets.scene.add( sphere );
+
+        var tweenDown = new TWEEN.Tween(sphere.material);
+            tweenDown.to({ opacity: 0 }, 2000);
+
+        var tween = new TWEEN.Tween(sphere.material);
+          tween.to({ opacity: 1 }, 2000);
+          tween.delay(_.random(4000));
+          tween.chain(tweenDown);
+          tween.start();
+      }
+
+
     }
 
     return neat;

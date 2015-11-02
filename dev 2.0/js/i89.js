@@ -444,9 +444,5 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         }
     }();
 
-    GlobalFunctions.i89 = {
-        switchWindow: switchWindow
-    };
-
     return i89;
 });
