@@ -7,75 +7,93 @@ return function(s){
     this.particleCount = s.num;
     this.direction = s.dir;
     this.rotation = s.rot;
+    this.scene = undefined;
     this.holder = new THREE.Object3D();
     this.position = s.pos;
     this.speed = s.speed;
     this.randomInitialRot = s.rndRotInit;
     this.rndSizeVariation = s.rndSizeVariation;
     this.stopped = false;
+    this.mapNames = s.mapNames;
+    this.loadedMaps = [];
     this.created = false;
     var geometry = undefined;
 
     function randomPos(){
-        return new THREE.Vector3(
-            _.random(-_this.width / 2, _this.width / 2),
-            _.random(_this.height),
-            _.random(-_this.depth / 2, _this.depth / 2)
-        );
+      return new THREE.Vector3(
+        _.random(-_this.width / 2, _this.width / 2),
+        _.random(_this.height),
+        _.random(-_this.depth / 2, _this.depth / 2)
+      );
+    }
+
+    function loadMap(i) {
+      if(i == _this.mapNames.length){ addToScene(); return; }//done loading maps
+
+      var url = "media/particles/"+_this.mapNames[i]+".png";
+      var map = THREE.ImageUtils.loadTexture(url, undefined, onLoadComplete);
+
+      function onLoadComplete(tex) {
+        _this.loadedMaps.push(tex);
+        i++;
+        loadMap(i);
+      }
+    }
+
+    function addToScene() {
+      var ps = _this.createPS();
+      if(s.pos)ps.position.copy(_this.position);
+      animate.updater.addHandler(_this);
+      _this.scene.add(ps);
+      _this.created = true;
     }
 
     this.createPS = function(){
-        var maps = [];
-        var holder = new THREE.Object3D();
-        var loops = s.mapNames.length;
-        var individualCount = Math.round(this.particleCount / loops);
+      var maps = [];
+      var holder = new THREE.Object3D();
+      var loops = _this.loadedMaps.length;
+      var individualCount = Math.round(this.particleCount / loops);
 
-        _.each(s.mapNames, function(name){
-            maps.push(THREE.ImageUtils.loadTexture( "media/particles/"+name+".png" ))
+      if(!_this.rndSizeVariation)//just one geom
+      geometry = new THREE.PlaneBufferGeometry(s.size.w, s.size.h);
+
+      for(var l = 0; l < loops; l++){
+        var mat = new THREE.MeshLambertMaterial({
+          map: _this.loadedMaps[l],
+          transparent: true,
+          side: THREE.DoubleSide
         });
 
-        if(!_this.rndSizeVariation)//just one geom
-        geometry = new THREE.PlaneBufferGeometry(s.size.w, s.size.h);
+        for(var i = 0; i < individualCount; i++) {
+          if(_this.rndSizeVariation){
+            var rndSize = _.random(_this.rndSizeVariation) + 0.1;
+            geometry = new THREE.PlaneBufferGeometry(
+                s.size.w + s.size.w * rndSize,
+                s.size.h + s.size.h * rndSize);
+          }
+          var pos = randomPos();
+          var particlePlane = new THREE.Mesh(geometry.clone(), mat);
+          particlePlane.initialPos = pos;
+          particlePlane.minY = _this.position.y - (_this.height / 2);
+          particlePlane.maxY = _this.position.y + (_this.height / 2);
+          particlePlane.position.copy(pos);
 
-        for(var l = 0; l < loops; l++){
-            var mat = new THREE.MeshLambertMaterial({
-                map: maps[l],
-                transparent: true,
-                side: THREE.DoubleSide
-            });
-            for(var i = 0; i < individualCount; i++) {
-                if(_this.rndSizeVariation){
-                    var rndSize = _.random(_this.rndSizeVariation) + 0.1;
-                    geometry = new THREE.PlaneBufferGeometry(
-                        s.size.w + s.size.w * rndSize,
-                        s.size.h + s.size.h * rndSize);
-                }
-                var pos = randomPos();
-                var particlePlane = new THREE.Mesh(geometry.clone(), mat);
-                particlePlane.initialPos = pos;
-                particlePlane.minY = _this.position.y - (_this.height / 2);
-                particlePlane.maxY = _this.position.y + (_this.height / 2);
-                particlePlane.position.copy(pos);
+          if(_this.randomInitialRot) particlePlane.rotation.set(
+            _.random(Math.PI * 2),
+            _.random(Math.PI * 2),
+            _.random(Math.PI * 2));
+          else particlePlane.rotation.set(0, 0, _this.direction.x);
 
-                if(_this.randomInitialRot) particlePlane.rotation.set(
-                    _.random(Math.PI * 2),
-                    _.random(Math.PI * 2),
-                    _.random(Math.PI * 2));
-                else particlePlane.rotation.set(0, 0, _this.direction.x);
-
-                _this.holder.add(particlePlane);
-            }
+          _this.holder.add(particlePlane);
         }
-        return _this.holder;
+      }
+      return _this.holder;
     };
 
     this.Init = function(scene){
         if(_this.created){ _this.Start(); return; }
-        var ps = this.createPS();
-        if(s.pos)ps.position.copy(_this.position);
-        animate.updater.addHandler(this);
-        scene.add(ps);
-        _this.created = true;
+        loadMap(0);
+        _this.scene = scene;
     };
 
     this.Start = function(){

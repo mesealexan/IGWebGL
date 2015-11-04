@@ -5,6 +5,7 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
         var animation = anim;
 
         this.started = false;
+        this.camType = anim.type;
 
         this.setSource = function(p) { animation = (p) };
 
@@ -18,30 +19,51 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             if(onStart)onStart();
         };
 
+        this.Targetcamera = function(curFrame) {
+          var newUp = this.modifyCameraUp(curFrame.rollAngle);
+          animate.camera.up.set(newUp.x, newUp.y, newUp.z);
+
+          var lookAt = new THREE.Vector3(
+              curFrame.target.x,
+              curFrame.target.z,
+             -curFrame.target.y);
+
+          animate.camera.target = lookAt;
+          events.Controls.target.copy(lookAt);
+          animate.camera.lookAt(lookAt);
+          animate.camera.fov = curFrame.fov;
+          animate.camera.updateProjectionMatrix();
+
+          animate.camera.position.set(
+              curFrame.position.x,
+              curFrame.position.z,
+             -curFrame.position.y
+           );
+        };
+
+        this.Freecamera = function (curFrame) {
+          console.warn("FREECAM NOT SUPPORTED YET");
+          /*animate.camera.rotation.set (
+             curFrame.rotation.x - 0.7,
+             curFrame.rotation.z,
+             curFrame.rotation.y
+          );*/
+
+          animate.camera.fov = animation.fov;
+          animate.camera.updateProjectionMatrix();
+
+          animate.camera.position.set(
+              curFrame.position.x,
+              curFrame.position.z,
+             -curFrame.position.y
+           );
+        }
+
         this.update = function () {
-            if(this.checkPlayback(this.from, this.to)){
-                var curFrame = animation.frames[this.frame];
-                var newUp = this.modifyCameraUp(curFrame.rollAngle);
-                animate.camera.up.set(newUp.x, newUp.y, newUp.z);
-
-                var lookAt = new THREE.Vector3(
-                    curFrame.target.x,
-                    curFrame.target.z,
-                   -curFrame.target.y);
-
-                animate.camera.target = lookAt;
-                events.Controls.target.copy(lookAt);
-                animate.camera.lookAt(lookAt);
-                animate.camera.fov = curFrame.fov;
-                animate.camera.updateProjectionMatrix();
-
-                animate.camera.position.set(
-                    curFrame.position.x,
-                    curFrame.position.z,
-                   -curFrame.position.y);
-            }
+            if(this.checkPlayback(this.from, this.to))
+                this[this.camType](animation.frames[this.frame]);
             else {//reached the end
-                animate.camera.lookAt(animate.camera.target);
+                if(this.camType == "Targetcamera") animate.camera.lookAt(animate.camera.target);
                 this.stop();
             }
         };

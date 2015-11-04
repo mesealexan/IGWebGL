@@ -602,9 +602,6 @@ define(["three", "animate"], function(THREE, animate){
 
     function extractMaterialFromJSON(folderName, material){
         if(material.map){
-            //if(material.map.sourceFile == "wooden door.jpg")
-                //console.log(material)
-            console.log(material.map.sourceFile)
             material.map = THREE.ImageUtils.loadTexture('media/models/'+folderName+'/'+material.map.sourceFile);
             material.color = new THREE.Color("rgb(255,255,255)");
             return material;
@@ -702,7 +699,7 @@ define(["three", "animate"], function(THREE, animate){
     materials.NeatRain = function(settings){
         var _this = this;
         var dirtMap = THREE.ImageUtils.loadTexture('media/models/neat/rain.jpg');
-        var drop = THREE.ImageUtils.loadTexture('media/particles/water_drop.png');
+        //var drop = THREE.ImageUtils.loadTexture('media/particles/water_drop.png');
 
         dirtMap.wrapS = THREE.RepeatWrapping;
         dirtMap.wrapT = THREE.RepeatWrapping;
@@ -721,9 +718,9 @@ define(["three", "animate"], function(THREE, animate){
 
         this.uniforms = {
             map: { type: 't', value: dirtMap },
-            drop: { type: 't', value: drop },
+            //drop: { type: 't', value: drop },
             opacity: { type: 'f', value: 0 },
-            frequency: { type: 'f', value: 20 },
+            frequency: { type: 'f', value: 5 },
             amplitude: { type: 'f', value: 20 },
             pos: { type: 'f', value: this.maxPos },
             maxOpacity: { type: 'f', value: this.maxOpac },
@@ -731,32 +728,17 @@ define(["three", "animate"], function(THREE, animate){
             points: { type: "v2v", value: [] }
         };
 
-        //for (var i = 0; i <= drops; i++)
-        //    this.uniforms.points.value.push({x: Math.random(), y: Math.random()});
-
         this.update = function(){
 
-        //  this.uniforms.opacity.value += this.opacSpeed;
-          if(this.cleaning && this.uniforms.pos.value > this.minPos){
+          if(this.cleaning && this.uniforms.pos.value > this.minPos)
             this.uniforms.pos.value -= cleanSpeed;
-            //this.uniforms.opacity.value -= this.opacSpeed;
-          }
           else if(this.cleaning && this.uniforms.pos.value < this.minPos)
             this.Stop();
 
-          if(!this.cleaning && this.uniforms.opacity.value < this.uniforms.maxOpacity.value){
+          if(!this.cleaning && this.uniforms.opacity.value < this.uniforms.maxOpacity.value)
             this.uniforms.opacity.value += this.opacSpeed;
-          }
           else if(!this.cleaning && this.uniforms.opacity.value > this.uniforms.maxOpacity.value)
             this.Stop();
-          // if(this.uniforms.opacity.value < 0)
-          //   this.uniforms.opacity.value = 0;
-          //   //this.Stop();
-          //   if(this.uniforms.opacity.value > this.uniforms.maxOpacity.value){
-          //     this.uniforms.opacity.value = this.uniforms.maxOpacity.value;
-          //     this.Stop();
-          //   }
-
         };
 
         function vSh(){
@@ -780,7 +762,7 @@ define(["three", "animate"], function(THREE, animate){
             "varying vec2 vUv;",
             "uniform float scrollVal;",
             "uniform sampler2D map;",
-            "uniform sampler2D drop;",
+            //"uniform sampler2D drop;",
             "uniform float opacity;",
             "uniform float frequency;",
             "uniform float amplitude;",
@@ -788,15 +770,10 @@ define(["three", "animate"], function(THREE, animate){
             "uniform vec2 points[ARRMAX];",
 
             "void main() {",
-            "",
-
             "vec4 mapColor = texture2D( map, vec2(vUv.x, vUv.y));",
             "vec4 dropColor = vec4( 0., 0., 0., 0.);",
             "if((vUv.y * amplitude) - pos + sin(vUv.x * pos * 2.5) > ",
             "(sin(vUv.x * frequency))) discard;",
-            //"for (int i = 0; i < ARRMAX; i++) {",
-            //    "dropColor += texture2D(drop, vec2(vUv.xy - points[i].xy + (0.5 / 20.)) * 20.);",
-            //"};",
             "gl_FragColor = vec4(mapColor.xyz, opacity);}"
           ].join('\n');
         }
