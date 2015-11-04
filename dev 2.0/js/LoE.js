@@ -1,5 +1,5 @@
-define(["animate", "watch", "materials", "tween", "events"],
-    function(animate, watch, materials, tween, events){
+define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
+    function(animate, watch, materials, tween, events, particleSystem){
     var LoE = {};
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
@@ -18,6 +18,9 @@ define(["animate", "watch", "materials", "tween", "events"],
     LoE.assets = {};
 
     /***on start functions***/
+    LoE.onStartFunctions.storeScene = function(scene) {
+      LoE.assets.scene = scene;
+    }
     LoE.onStartFunctions.addLights = function(scene){
         scene.add( new THREE.AmbientLight( 0x999999 ) );
 
@@ -45,13 +48,20 @@ define(["animate", "watch", "materials", "tween", "events"],
 
     /***on load functions***/
 
-    LoE.onLoadFunctions.fixed_glass = function(mesh){LoE.assets.fixed_glass = mesh;};
-    LoE.onLoadFunctions.pouring = function(mesh){LoE.assets.pouring = mesh;};
+    LoE.onLoadFunctions.fixed_glass = function(mesh){
+      LoE.assets.fixed_glass = mesh;
+    };
+
+    LoE.onLoadFunctions.pouring = function(mesh){
+      LoE.assets.pouring = mesh;
+    };
 
     LoE.onLoadFunctions.rotator = function(mesh){
         mesh.position.set(-8310, -150, 0);
         mesh.rotateZ = animate.RotateZ;
         mesh.rotateZ(-1, 2000, Infinity);
+        LoE.assets.rotator = mesh;
+        addParticles(LoE.assets.scene);
     };
 
     LoE.onLoadFunctions.bck_1 = function(mesh){
@@ -343,6 +353,28 @@ define(["animate", "watch", "materials", "tween", "events"],
         enableBackground: enableBackground,
         manageBackgroundTexture: undefined
     };
+
+    function addParticles(scene){
+      var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+      var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+      var sphere = new THREE.Mesh( geometry, material );
+
+        var silverSettings = {
+            width: 500,
+            height: 500,
+            depth: 50,
+            num: 50,
+            meshes: [sphere],
+            pos: LoE.assets.rotator.position,
+            dir: new THREE.Vector3(-1, -0.5, 0),
+            speed: 6,
+            rot: {x: Math.PI / 100, y: Math.PI / 100, z: Math.PI / 100},
+            rndRotInit: true
+        };
+
+        //LoE.assets.silverPS = new particleSystem(silverSettings);
+        //LoE.assets.silverPS.Init(LoE.assets.scene);
+    }
 
     return LoE;
 });

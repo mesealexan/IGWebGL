@@ -121,12 +121,13 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       animate.camera.updateProjectionMatrix();
       neat.assets.scene = scene;
 
+      neat.assets.states = new states();
+      neat.assets.states.dirt.start();
       //neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.01, keepOpac: true});
-      states.curState = undefined;
-      states.dirt.start();
-      neat.timeouts.sun1 = setTimeout(function(){ states.sun.start(); }, stagesTime.sun1);
-      neat.timeouts.rain = setTimeout(function(){ states.rain.start(); }, stagesTime.rain);
-      neat.timeouts.sun2 = setTimeout(function(){ states.sun.start(); }, stagesTime.sun2);
+      //states.curState = undefined;
+      neat.timeouts.sun1 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun1);
+      neat.timeouts.rain = setTimeout(function(){ neat.assets.states.rain.start(); }, stagesTime.rain);
+      neat.timeouts.sun2 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun2);
       neat.timeouts.final = setTimeout(function(){
         neat.buttons.sun.add();
         neat.buttons.rain.add();
@@ -137,19 +138,19 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.buttons = {
       sun: {
           add: function(){
-              events.AddButton({text:"sun", function: states.sun.start, id:"sun"});
+              events.AddButton({text:"sun", function: neat.assets.states.sun.start, id:"sun"});
           },
           remove: function(){ events.RemoveElementByID("sun"); }
       },
       rain: {
           add: function(){
-              events.AddButton({text:"rain", function: states.rain.start, id:"rain"});
+              events.AddButton({text:"rain", function: neat.assets.states.rain.start, id:"rain"});
           },
           remove: function(){ events.RemoveElementByID("rain"); }
       },
       dirt: {
           add: function(){
-              events.AddButton({text:"dirt", function: states.dirt.start, id:"dirt"});
+              events.AddButton({text:"dirt", function: neat.assets.states.dirt.start, id:"dirt"});
           },
           remove: function(){ events.RemoveElementByID("dirt"); }
       }
@@ -157,7 +158,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
     /***private functions***/
 
-    var states = function () {
+    function states() {
       var curState = undefined;
       var ret =
       {
@@ -248,7 +249,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         }
       };
       return ret;
-    }();
+    };
 
     function addParticles(scene){
         var leavesSettings = {
@@ -287,7 +288,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       this.interval = 15;
       this.maxNum = 300;
       this.curNum = 0;
-      this.maxDrop = 1;
+      this.maxDrop = 2;
       this.minDrop = 0.85;
       this.mat = materials.setMaterials("cardinal", {name:"Glass"});
       this.lastT = _.now();
@@ -309,7 +310,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       };
 
       this.makeDrop = function () {
-        var curRad = _.random(this.minDrop, this.maxDrop);
+        //var curRad = _.random(this.minDrop, this.maxDrop);
+        var curRad = Math.random() * (this.maxDrop - this.minDrop) + this.minDrop;
         var sphere = new THREE.Mesh( new THREE.SphereGeometry(curRad, 6, 6 ), this.mat.clone());
         sphere.scale.z = 0.1;
         sphere.material.opacity = 0;
@@ -354,9 +356,10 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       this.tweenTime = 2000;
       this.colors = {
         sun: {r: 253, g: 184, b: 19},//0xfdb813,
-        rain: {r: 100, g: 100, b: 200},
+        rain: {r: 152, g: 184, b: 208},
         dirt: {r: 0, g: 0, b: 0},
-        rainAmb: {r: 170, g: 170, b: 200},
+
+        rainAmb: {r: 86, g: 102, b: 114},
         normalAmb: {r: 255, g: 255, b: 255}
       };
       this.spotLight = new THREE.SpotLight( new THREE.Color( 0, 0, 0 ), 0 );
@@ -398,9 +401,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
                      _this.tweenTime);
         colTween.start();
       }
-
-      console.log(this.spotLight)
-
       scene.add(this.spotLight);
     }
 

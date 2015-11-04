@@ -16,6 +16,7 @@ return function(s){
     this.stopped = false;
     this.mapNames = s.mapNames;
     this.loadedMaps = [];
+    this.meshes = s.meshes;
     this.created = false;
     var geometry = undefined;
 
@@ -43,9 +44,9 @@ return function(s){
     function addToScene() {
       var ps = _this.createPS();
       if(s.pos)ps.position.copy(_this.position);
-      animate.updater.addHandler(_this);
       _this.scene.add(ps);
       _this.created = true;
+      animate.updater.addHandler(_this);
     }
 
     this.createPS = function(){
@@ -56,7 +57,6 @@ return function(s){
 
       if(!_this.rndSizeVariation)//just one geom
       geometry = new THREE.PlaneBufferGeometry(s.size.w, s.size.h);
-
       for(var l = 0; l < loops; l++){
         var mat = new THREE.MeshLambertMaterial({
           map: _this.loadedMaps[l],
@@ -92,8 +92,8 @@ return function(s){
 
     this.Init = function(scene){
         if(_this.created){ _this.Start(); return; }
-        loadMap(0);
         _this.scene = scene;
+        if(!_this.meshes) loadMap(0);
     };
 
     this.Start = function(){
