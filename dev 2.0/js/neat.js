@@ -1,12 +1,13 @@
-define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween"],
-    function(events, animate, particleSystem, materials, animationHandler, underscore, tween){
+define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio"],
+    function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio){
     var neat = {};
-    var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 15000 };
+    var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 22000 };
+    var hasSparkled = false;
 
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
     'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated'];
-    neat.soundNames = [];
+    neat.soundNames = ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves', 'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'];
     neat.onStartFunctions = {};
     neat.onLoadFunctions = {};
     neat.onFinishLoadFunctions = {};
@@ -59,6 +60,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         loader.scene.add(neat.assets.Glass_standard_Rain);
 
         neat.assets.Glass_standard_Dirt = mesh.clone();
+        //neat.assets.Glass_standard_Dirt.position.z ++;
         materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
         neat.assets.Glass_standard_Dirt.material = new materials.NeatGlassDirt({maxDirt: 0.6});
         loader.scene.add(neat.assets.Glass_standard_Dirt);
@@ -104,6 +106,17 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         addParticles(scene);
     };
 
+    neat.onFinishLoadFunctions.addWatch = function (scene, loader) {
+        watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
+            reactToFrame(oldValue);
+        });
+    }
+
+    neat.onFinishLoadFunctions.playSound = function(){
+      audio.sounds.neatacousticguitar.play();
+      audio.sounds.neatacousticguitar.fade(0, 1, 1000);
+    }
+
     /***on unload functions***/
     neat.onUnloadFunctions.resetCamNear = function(){
         animate.camera.near = 1;
@@ -121,7 +134,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       animate.camera.updateProjectionMatrix();
       neat.assets.scene = scene;
 
-      neat.assets.states = new states();
+      neat.assets.states = new states(scene);
       neat.assets.states.dirt.start();
       //neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.01, keepOpac: true});
       //states.curState = undefined;
@@ -132,6 +145,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         neat.buttons.sun.add();
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
+        //sparkle
+        shootSparkle(scene, 0);
+        hasSparkled = true;
       }, stagesTime.final);
     }
 
@@ -157,9 +173,18 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     /***private functions***/
+    function reactToFrame(frame){
+      switch (frame) {
+        case 128: {
+          audio.sounds.neatcardinal2.play();
+          audio.sounds.neatcardinal2.fade(0, 1, 1000);
+          break;
+        }
+      } 
+    }
 
-    function states() {
-      var curState = undefined;
+    function states(scene) {
+      var curState = undefined, prevState = undefined;
       var ret =
       {
         sun:{
@@ -169,8 +194,17 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.sun.lightUp();
             neat.assets.sun.tweenColor("sun");
             neat.assets.sun.tweenAmbiental("normalAmb");
+
+            audio.sounds.neatheavenlytransition.play();
+            audio.sounds.neatheavenlytransition.fade(0, 1, 1000);
+            if (hasSparkled) {
+              console.log(curState);
+              if (prevState == "rain") shootSparkle(scene, 7000);
+              if (prevState == "dirt") shootSparkle(scene, 1500);
+            }
           },
           stop: function(){
+            audio.sounds.neatheavenlytransition.fade(1, 0, 500);
             //neat.assets.sun.lightDown();
           }
         }
@@ -213,6 +247,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.sun.lightUp();
             neat.assets.sun.tweenColor("rain");
             neat.assets.sun.tweenAmbiental("rainAmb");
+
+            audio.sounds.neatrainexteriorloop.play();
+            audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
           },
           stop: function(){
             //stop rain particle system
@@ -223,6 +260,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.Glass_neat_Rain.rainDrops.clean();
             if(neat.assets.Glass_standard_Rain.rainDrops)
             neat.assets.Glass_standard_Rain.rainDrops.stop();
+
+            audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
           }
         }
         ,
@@ -235,16 +274,22 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.Glass_neat_Dirt.material.Start();
             neat.assets.sun.lightDown();
             neat.assets.sun.tweenAmbiental("normalAmb");
+
+            audio.sounds.neatwindleaves.play();
+            audio.sounds.neatwindleaves.fade(0, 1, 1000);
           },
           stop: function(){
             neat.assets.leavesPS.Stop();
             neat.assets.Glass_neat_Dirt.material.Clean();
+
+            audio.sounds.neatwindleaves.fade(1, 0, 500);
           }
         }
         ,
         stop: function (newState) {
           //stops current, argument is new state
           if(curState)ret[curState].stop();
+          prevState = curState;
           curState = newState;
         }
       };
@@ -403,6 +448,71 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       }
       scene.add(this.spotLight);
     }
+
+    //testing
+    var tscene = null, tcamera = null;
+    var mouse = new THREE.Vector2();
+    //-----
+    function shootSparkle(scene, delay){
+      //sparkle
+      var sparkleMap = THREE.ImageUtils.loadTexture( "media/images/flare.png" );
+      var sparkleMat = new THREE.SpriteMaterial( { map: sparkleMap, opacity: 1 } );
+      var sprite = new THREE.Sprite( sparkleMat );
+      sprite.position.x = -207;
+      sprite.position.y = 567;
+      sprite.position.z = 368;
+      sprite.scale.set(0, 0, 0);
+      scene.add( sprite );
+      console.log("suprise motherfucker");
+      tscene = scene;
+      tcamera = animate.camera;
+
+      //tween
+      var tSpeed = 2000;
+        // var sparkleVector = new THREE.Vector3(-177, 598, 368);
+        // var sparkleTween = new TWEEN.Tween(sprite.position).to(sparkleVector, tSpeed).onComplete(function(){
+        //   scene.remove(sprite);
+        // }).delay(delay)
+        // .start();
+      //opacity
+      // sparkleTweenOpacity = new TWEEN.Tween(sprite.material).to({opacity: 1}, tSpeed/5).delay(delay);
+      // sparkleTweenOpacity2 = new TWEEN.Tween(sprite.material).to({opacity: 0}, tSpeed/5).delay(3*tSpeed/5);
+      // sparkleTweenOpacity.chain(sparkleTweenOpacity2);
+      // sparkleTweenOpacity.start();
+      //rotation
+      sparkleTweenRotation = new TWEEN.Tween(sprite.material).to({rotation: 2*Math.PI}, tSpeed).delay(delay).start();
+      //scale
+      var sparkleTweenScale = new TWEEN.Tween(sprite.scale).to({x: 24, y: 24, z: 1}, 9/2*tSpeed/10).delay(delay);
+      var sparkleTweenScale2 = new TWEEN.Tween(sprite.scale).to({x: 4, y: 4, z: 1}, 9/2*tSpeed/10);
+      var sparkleTweenScale3 = new TWEEN.Tween(sprite.scale).to({x: 8, y: 8, z: 1}, 1/2*tSpeed/10);
+      var sparkleTweenScale4 = new TWEEN.Tween(sprite.scale).to({x: 0, y: 0, z: 0}, 1/2*tSpeed/10);
+      sparkleTweenScale.interpolation( TWEEN.Interpolation.Bezier );
+      sparkleTweenScale2.interpolation( TWEEN.Interpolation.Bezier );
+      sparkleTweenScale3.interpolation( TWEEN.Interpolation.Bezier );
+      sparkleTweenScale4.interpolation( TWEEN.Interpolation.Bezier );
+      sparkleTweenScale.chain(sparkleTweenScale2);
+      sparkleTweenScale2.chain(sparkleTweenScale3);
+      sparkleTweenScale3.chain(sparkleTweenScale4);
+
+      sparkleTweenScale.start();
+    }
+
+    //testing
+      document.addEventListener('mousemove', onMouseMove, false);
+      document.addEventListener("click", onMouseClick, false);
+
+      function onMouseMove(event) {
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      }
+
+      function onMouseClick(event) {
+        var caster = new THREE.Raycaster();
+        caster.setFromCamera( mouse, tcamera);
+        var intersects = caster.intersectObjects(tscene.children);
+        console.log(intersects[0].point);
+      }
+    //-----
 
     return neat;
 });
