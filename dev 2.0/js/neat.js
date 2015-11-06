@@ -2,7 +2,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio){
     var neat = {};
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 22000 };
-    var hasSparkled = false;
 
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
@@ -15,6 +14,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.animationHandlers = {};
     neat.timeouts = {};
     neat.assets = {};
+    //testing
+    var tscene = null, tcamera = null;
+    var mouse = new THREE.Vector2();
 
     /***on start functions***/
     neat.onStartFunctions.addLights = function(scene){
@@ -60,7 +62,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         loader.scene.add(neat.assets.Glass_standard_Rain);
 
         neat.assets.Glass_standard_Dirt = mesh.clone();
-        //neat.assets.Glass_standard_Dirt.position.z ++;
+        neat.assets.Glass_standard_Dirt.position.z+=0.5;
         materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
         neat.assets.Glass_standard_Dirt.material = new materials.NeatGlassDirt({maxDirt: 0.6});
         loader.scene.add(neat.assets.Glass_standard_Dirt);
@@ -89,7 +91,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     neat.onFinishLoadFunctions.pause = function(scene, loader){
-        //setTimeout(function(){ loader.cameraHandler.pause(); }, 3500);
+        //setTimeou(function(){ loader.cameraHandler.pause(); }, 3500);
     };
 
     neat.onFinishLoadFunctions.addControls = function(){
@@ -145,9 +147,10 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         neat.buttons.sun.add();
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
-        //sparkle
-        shootSparkle(scene, 0);
-        hasSparkled = true;
+        //testing
+        tscene = scene;
+        tcamera = animate.camera;
+        //-----
       }, stagesTime.final);
     }
 
@@ -184,7 +187,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     function states(scene) {
-      var curState = undefined, prevState = undefined;
+      var curState = undefined;
       var ret =
       {
         sun:{
@@ -197,11 +200,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatheavenlytransition.play();
             audio.sounds.neatheavenlytransition.fade(0, 1, 1000);
-            if (hasSparkled) {
-              console.log(curState);
-              if (prevState == "rain") shootSparkle(scene, 7000);
-              if (prevState == "dirt") shootSparkle(scene, 1500);
-            }
           },
           stop: function(){
             audio.sounds.neatheavenlytransition.fade(1, 0, 500);
@@ -255,11 +253,12 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             //stop rain particle system
             neat.assets.rainPS.Stop();
             //clean materials and raindrops if present
+            neat.assets.Glass_standard_Rain.material.Clean();
             neat.assets.Glass_neat_Rain.material.Clean();
             if(neat.assets.Glass_neat_Rain.rainDrops)
             neat.assets.Glass_neat_Rain.rainDrops.clean();
             if(neat.assets.Glass_standard_Rain.rainDrops)
-            neat.assets.Glass_standard_Rain.rainDrops.stop();
+            neat.assets.Glass_standard_Rain.rainDrops.clean();
 
             audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
           }
@@ -289,7 +288,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         stop: function (newState) {
           //stops current, argument is new state
           if(curState)ret[curState].stop();
-          prevState = curState;
           curState = newState;
         }
       };
@@ -361,7 +359,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         sphere.scale.z = 0.1;
         sphere.material.opacity = 0;
         sphere.position.set(_.random(this.pos.xMin, this.pos.xMax),
-                            _.random(this.pos.yMin, this.pos.yMax), 366.287);
+                            _.random(this.pos.yMin, this.pos.yMax), 367.287);
         sphere.yPos = sphere.position.y;
 
         var tween = new TWEEN.Tween(sphere.material);
@@ -449,53 +447,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       scene.add(this.spotLight);
     }
 
-    //testing
-    var tscene = null, tcamera = null;
-    var mouse = new THREE.Vector2();
-    //-----
-    function shootSparkle(scene, delay){
-      //sparkle
-      var sparkleMap = THREE.ImageUtils.loadTexture( "media/images/flare.png" );
-      var sparkleMat = new THREE.SpriteMaterial( { map: sparkleMap, opacity: 1 } );
-      var sprite = new THREE.Sprite( sparkleMat );
-      sprite.position.x = -207;
-      sprite.position.y = 567;
-      sprite.position.z = 368;
-      sprite.scale.set(0, 0, 0);
-      scene.add( sprite );
-      console.log("suprise motherfucker");
-      tscene = scene;
-      tcamera = animate.camera;
-
-      //tween
-      var tSpeed = 2000;
-        // var sparkleVector = new THREE.Vector3(-177, 598, 368);
-        // var sparkleTween = new TWEEN.Tween(sprite.position).to(sparkleVector, tSpeed).onComplete(function(){
-        //   scene.remove(sprite);
-        // }).delay(delay)
-        // .start();
-      //opacity
-      // sparkleTweenOpacity = new TWEEN.Tween(sprite.material).to({opacity: 1}, tSpeed/5).delay(delay);
-      // sparkleTweenOpacity2 = new TWEEN.Tween(sprite.material).to({opacity: 0}, tSpeed/5).delay(3*tSpeed/5);
-      // sparkleTweenOpacity.chain(sparkleTweenOpacity2);
-      // sparkleTweenOpacity.start();
-      //rotation
-      sparkleTweenRotation = new TWEEN.Tween(sprite.material).to({rotation: 2*Math.PI}, tSpeed).delay(delay).start();
-      //scale
-      var sparkleTweenScale = new TWEEN.Tween(sprite.scale).to({x: 24, y: 24, z: 1}, 9/2*tSpeed/10).delay(delay);
-      var sparkleTweenScale2 = new TWEEN.Tween(sprite.scale).to({x: 4, y: 4, z: 1}, 9/2*tSpeed/10);
-      var sparkleTweenScale3 = new TWEEN.Tween(sprite.scale).to({x: 8, y: 8, z: 1}, 1/2*tSpeed/10);
-      var sparkleTweenScale4 = new TWEEN.Tween(sprite.scale).to({x: 0, y: 0, z: 0}, 1/2*tSpeed/10);
-      sparkleTweenScale.interpolation( TWEEN.Interpolation.Bezier );
-      sparkleTweenScale2.interpolation( TWEEN.Interpolation.Bezier );
-      sparkleTweenScale3.interpolation( TWEEN.Interpolation.Bezier );
-      sparkleTweenScale4.interpolation( TWEEN.Interpolation.Bezier );
-      sparkleTweenScale.chain(sparkleTweenScale2);
-      sparkleTweenScale2.chain(sparkleTweenScale3);
-      sparkleTweenScale3.chain(sparkleTweenScale4);
-
-      sparkleTweenScale.start();
-    }
+    
 
     //testing
       document.addEventListener('mousemove', onMouseMove, false);
@@ -511,7 +463,60 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         caster.setFromCamera( mouse, tcamera);
         var intersects = caster.intersectObjects(tscene.children);
         console.log(intersects[0].point);
+        glint(tscene);
+        defintelyNotTheSun(tscene);
       }
+
+      function glint(scene){
+        var glintMap = new THREE.ImageUtils.loadTexture( 'media/images/swipe.png' );
+        var glintGeo = new THREE.PlaneBufferGeometry(68,68);
+        var glintMat = new THREE.MeshPhongMaterial({map: glintMap, transparent: true, opacity: 0});
+        glintMat.blending = THREE['AdditiveBlending'];
+        var glint = new THREE.Mesh( glintGeo, glintMat );
+        glint.position.x = -208;
+        glint.position.y = 450;
+        glint.position.z = 367;
+        scene.add(glint);
+
+        var glintSpeed = 1000;
+        var glintTween = new TWEEN.Tween(glint.position).to({x: -208, y: 600, z: 367}, glintSpeed)
+        .onComplete(function(){
+          scene.remove(glint);
+        });
+        var glintOpacityIn = new TWEEN.Tween(glint.material).to({opacity: 1}, glintSpeed/10);
+        var glintOpacityOut = new TWEEN.Tween(glint.material).to({opacity: 0}, 9*glintSpeed/10);
+        glintOpacityIn.easing(TWEEN.Easing.Sinusoidal.InOut);
+        glintOpacityOut.easing(TWEEN.Easing.Sinusoidal.InOut);
+
+        glintOpacityIn.chain(glintOpacityOut);
+        glintTween.start();
+        glintOpacityIn.start();
+        audio.sounds.neatmagicwand.play();
+        audio.sounds.neatmagicwand.fade(1, 0.1, glintSpeed);
+      }
+
+      function defintelyNotTheSun(scene){
+        var theSunMap = new THREE.ImageUtils.loadTexture( 'media/images/sun.png' );
+        var theSunGeo = new THREE.PlaneBufferGeometry(42,42);
+        var theSunMat = new THREE.MeshPhongMaterial({map: theSunMap, transparent: true, opacity: 1});
+        theSunMat.blending = THREE['AdditiveBlending'];
+        var theSun = new THREE.Mesh( theSunGeo, theSunMat );
+        theSun.position.x = -325;
+        theSun.position.y = 598;
+        theSun.position.z = 367;
+        scene.add(theSun);
+
+        var theSunTween = new TWEEN.Tween(theSun.position).to({x: -165, y: 598, z: 367}, 3000)
+        .onComplete(function(){
+          scene.remove(theSun);
+        });
+
+        var theSunRotation = new TWEEN.Tween(theSun.rotation).to({z: -Math.PI/3}, 3000);
+
+        theSunTween.start();
+        theSunRotation.start();
+      }
+
     //-----
 
     return neat;
