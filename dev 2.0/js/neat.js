@@ -2,6 +2,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio){
     var neat = {};
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 22000 };
+    var didYouSeeTheSun = false, firstRain = false;
+    var sGlass = undefined, nGlass = undefined;
 
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
@@ -14,9 +16,12 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.animationHandlers = {};
     neat.timeouts = {};
     neat.assets = {};
+
     //testing
     var tscene = null, tcamera = null;
     var mouse = new THREE.Vector2();
+    var tframe = null;
+    //------
 
     /***on start functions***/
     neat.onStartFunctions.addLights = function(scene){
@@ -88,6 +93,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(undefined, undefined,
           function(){ onCameraComplete(scene) }, animate.Animate);
+        didYouSeeTheSun = false;
     };
 
     neat.onFinishLoadFunctions.pause = function(scene, loader){
@@ -187,7 +193,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     function states(scene) {
-      var curState = undefined;
+      var curState = undefined, prevState = undefined;
       var ret =
       {
         sun:{
@@ -200,6 +206,14 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatheavenlytransition.play();
             audio.sounds.neatheavenlytransition.fade(0, 1, 1000);
+            if (didYouSeeTheSun == false) {
+              defintelyNotTheSun(scene);
+              didYouSeeTheSun = true;
+            }
+            else {
+              if (prevState == 'rain') glint(scene, 7000);
+              if (prevState == 'dirt') glint(scene, 3500);
+            }
           },
           stop: function(){
             audio.sounds.neatheavenlytransition.fade(1, 0, 500);
@@ -224,8 +238,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.rainPS.Init(neat.assets.scene);
 
             //start rain materials (standard window only starts once)
-            neat.assets.Glass_standard_Rain.material.Start({startOnce: true});
-            neat.assets.Glass_neat_Rain.material.Start();
+            //neat.assets.Glass_standard_Rain.material.Start({startOnce: true});
+            //neat.assets.Glass_neat_Rain.material.Start();
 
             //add a new rainDrops object every rain state to neat window
             neat.assets.Glass_neat_Rain.rainDrops = new rainDrops(
@@ -234,33 +248,39 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             animate.updater.addHandler(neat.assets.Glass_neat_Rain.rainDrops);
 
             //only add new rainDrops object to standard, it never cleans
-            if(!neat.assets.Glass_standard_Rain.rainDrops){
+            //if(!neat.assets.Glass_standard_Rain.rainDrops){
               neat.assets.Glass_standard_Rain.rainDrops = new rainDrops(
                 { scene: neat.assets.scene, pos: standardRaindropsPos }
               );
               animate.updater.addHandler(neat.assets.Glass_standard_Rain.rainDrops);
-            }
+            //}
             //if it already spawned, just start it. will stop anyway if at max raindrops
-            else neat.assets.Glass_standard_Rain.rainDrops.start();
+            //else neat.assets.Glass_standard_Rain.rainDrops.start();
             neat.assets.sun.lightUp();
             neat.assets.sun.tweenColor("rain");
             neat.assets.sun.tweenAmbiental("rainAmb");
 
             audio.sounds.neatrainexteriorloop.play();
             audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
+            if (!firstRain) {
+              rainStuff(scene);
+              firstRain = true;
+            }
+            rainTweenIn();
           },
           stop: function(){
             //stop rain particle system
             neat.assets.rainPS.Stop();
             //clean materials and raindrops if present
-            neat.assets.Glass_standard_Rain.material.Clean();
-            neat.assets.Glass_neat_Rain.material.Clean();
+            //neat.assets.Glass_standard_Rain.material.Clean();
+            //neat.assets.Glass_neat_Rain.material.Clean();
             if(neat.assets.Glass_neat_Rain.rainDrops)
             neat.assets.Glass_neat_Rain.rainDrops.clean();
             if(neat.assets.Glass_standard_Rain.rainDrops)
             neat.assets.Glass_standard_Rain.rainDrops.clean();
 
             audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
+            rainTweenOut();
           }
         }
         ,
@@ -288,6 +308,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         stop: function (newState) {
           //stops current, argument is new state
           if(curState)ret[curState].stop();
+          prevState = curState;
           curState = newState;
         }
       };
@@ -447,27 +468,29 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       scene.add(this.spotLight);
     }
 
-    
+    function defintelyNotTheSun(scene){
+        var theSunMap = new THREE.ImageUtils.loadTexture( 'media/images/sun.png' );
+        var theSunGeo = new THREE.PlaneBufferGeometry(42,42);
+        var theSunMat = new THREE.MeshPhongMaterial({map: theSunMap, transparent: true, opacity: 1});
+        theSunMat.blending = THREE['AdditiveBlending'];
+        var theSun = new THREE.Mesh( theSunGeo, theSunMat );
+        theSun.position.x = -330;
+        theSun.position.y = 598;
+        theSun.position.z = 367;
+        scene.add(theSun);
 
-    //testing
-      document.addEventListener('mousemove', onMouseMove, false);
-      document.addEventListener("click", onMouseClick, false);
+        var theSunTween = new TWEEN.Tween(theSun.position).to({x: -160, y: 598, z: 367}, 3000).delay(512)
+        .onComplete(function(){
+          scene.remove(theSun);
+        });
 
-      function onMouseMove(event) {
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-      }
+        var theSunRotation = new TWEEN.Tween(theSun.rotation).to({z: -Math.PI/3}, 3000).delay(512);
 
-      function onMouseClick(event) {
-        var caster = new THREE.Raycaster();
-        caster.setFromCamera( mouse, tcamera);
-        var intersects = caster.intersectObjects(tscene.children);
-        console.log(intersects[0].point);
-        glint(tscene);
-        defintelyNotTheSun(tscene);
-      }
+        theSunTween.start();
+        theSunRotation.start();
+    }
 
-      function glint(scene){
+    function glint(scene, delay){
         var glintMap = new THREE.ImageUtils.loadTexture( 'media/images/swipe.png' );
         var glintGeo = new THREE.PlaneBufferGeometry(68,68);
         var glintMat = new THREE.MeshPhongMaterial({map: glintMap, transparent: true, opacity: 0});
@@ -479,11 +502,15 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         scene.add(glint);
 
         var glintSpeed = 1000;
-        var glintTween = new TWEEN.Tween(glint.position).to({x: -208, y: 600, z: 367}, glintSpeed)
+        var glintTween = new TWEEN.Tween(glint.position).to({x: -208, y: 600, z: 367.3}, glintSpeed).delay(delay)
+        .onStart(function(){
+          audio.sounds.neatmagicwand.play();
+          audio.sounds.neatmagicwand.fade(1, 0.1, glintSpeed);
+        })
         .onComplete(function(){
           scene.remove(glint);
         });
-        var glintOpacityIn = new TWEEN.Tween(glint.material).to({opacity: 1}, glintSpeed/10);
+        var glintOpacityIn = new TWEEN.Tween(glint.material).to({opacity: 1}, glintSpeed/10).delay(delay);
         var glintOpacityOut = new TWEEN.Tween(glint.material).to({opacity: 0}, 9*glintSpeed/10);
         glintOpacityIn.easing(TWEEN.Easing.Sinusoidal.InOut);
         glintOpacityOut.easing(TWEEN.Easing.Sinusoidal.InOut);
@@ -491,32 +518,58 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         glintOpacityIn.chain(glintOpacityOut);
         glintTween.start();
         glintOpacityIn.start();
-        audio.sounds.neatmagicwand.play();
-        audio.sounds.neatmagicwand.fade(1, 0.1, glintSpeed);
+    }
+
+
+    //testing
+      document.addEventListener('mousemove', onMouseMove, false);
+      document.addEventListener("click", onMouseClick, false);
+
+      function onMouseMove(event) {
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
       }
 
-      function defintelyNotTheSun(scene){
-        var theSunMap = new THREE.ImageUtils.loadTexture( 'media/images/sun.png' );
-        var theSunGeo = new THREE.PlaneBufferGeometry(42,42);
-        var theSunMat = new THREE.MeshPhongMaterial({map: theSunMap, transparent: true, opacity: 1});
-        theSunMat.blending = THREE['AdditiveBlending'];
-        var theSun = new THREE.Mesh( theSunGeo, theSunMat );
-        theSun.position.x = -325;
-        theSun.position.y = 598;
-        theSun.position.z = 367;
-        scene.add(theSun);
-
-        var theSunTween = new TWEEN.Tween(theSun.position).to({x: -165, y: 598, z: 367}, 3000)
-        .onComplete(function(){
-          scene.remove(theSun);
-        });
-
-        var theSunRotation = new TWEEN.Tween(theSun.rotation).to({z: -Math.PI/3}, 3000);
-
-        theSunTween.start();
-        theSunRotation.start();
+      function onMouseClick(event) {
+        // var caster = new THREE.Raycaster();
+        // caster.setFromCamera( mouse, tcamera);
+        // var intersects = caster.intersectObjects(tscene.children);
+        //console.log(intersects[0].point);
+        
       }
 
+      function rainStuff(scene) {
+        var rainMap = new THREE.ImageUtils.loadTexture( 'media/models/neat/rain.jpg' );
+        var rainGeo = new THREE.PlaneBufferGeometry(70,142);
+
+        var sMat = new THREE.MeshBasicMaterial({map: rainMap, transparent: true, opacity: 0});
+        sMat.blending = THREE['NormalBlending'];
+
+        var nMat = new THREE.MeshBasicMaterial({map: rainMap, transparent: true, opacity: 0});
+        nMat.blending = THREE['NormalBlending'];
+        
+        sGlass = new THREE.Mesh( rainGeo, sMat );
+        sGlass.position.x = -280;
+        sGlass.position.y = 528.5;
+        sGlass.position.z = 367.1;
+        scene.add(sGlass);
+
+        nGlass = new THREE.Mesh( rainGeo, nMat );
+        nGlass.position.x = -208;
+        nGlass.position.y = 528.5;
+        nGlass.position.z = 367.1;
+        scene.add(nGlass);
+      }
+
+      function rainTweenIn() {
+        var sTween = new TWEEN.Tween(sGlass.material).to({opacity: 0.64}, 3500).start();
+        var nTween = new TWEEN.Tween(nGlass.material).to({opacity: 0.64}, 3500).start();
+      }
+
+      function rainTweenOut() {
+        var sTween = new TWEEN.Tween(sGlass.material).to({opacity: 0.24}, 7000).start();
+        var nTween = new TWEEN.Tween(nGlass.material).to({opacity: 0}, 7000).start();
+      }
     //-----
 
     return neat;
