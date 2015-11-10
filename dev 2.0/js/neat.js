@@ -2,8 +2,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio){
     var neat = {};
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 22000 };
-    var didYouSeeTheSun = false, firstRain = false;
-    var sGlass = undefined, nGlass = undefined;
+    var didYouSeeTheSun = false;
 
     neat.folderName = "neat";
     neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
@@ -262,11 +261,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatrainexteriorloop.play();
             audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
-            if (!firstRain) {
-              rainStuff(scene);
-              firstRain = true;
-            }
-            rainTweenIn();
           },
           stop: function(){
             //stop rain particle system
@@ -280,7 +274,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.Glass_standard_Rain.rainDrops.clean();
 
             audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
-            rainTweenOut();
           }
         }
         ,
@@ -502,7 +495,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         scene.add(glint);
 
         var glintSpeed = 1000;
-        var glintTween = new TWEEN.Tween(glint.position).to({x: -208, y: 600, z: 367.3}, glintSpeed).delay(delay)
+        var glintTween = new TWEEN.Tween(glint.position).to({x: -208, y: 600, z: 367}, glintSpeed).delay(delay)
         .onStart(function(){
           audio.sounds.neatmagicwand.play();
           audio.sounds.neatmagicwand.fade(1, 0.1, glintSpeed);
@@ -535,40 +528,41 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         // caster.setFromCamera( mouse, tcamera);
         // var intersects = caster.intersectObjects(tscene.children);
         //console.log(intersects[0].point);
+        loadTheSheet();
         
       }
 
-      function rainStuff(scene) {
-        var rainMap = new THREE.ImageUtils.loadTexture( 'media/models/neat/rain.jpg' );
-        var rainGeo = new THREE.PlaneBufferGeometry(70,142);
+      function loadTheSheet() {
+        var loader = new THREE.JSONLoader();
+        loader.load('SHEETING_03.js', function (geometry, material) {
+          var mat = new THREE.MeshLambertMaterial(material[0]);
+          mat.morphTargets = true;
+          var sheet = new THREE.Mesh (geometry, mat);
+          sheet.position.x = -200;
+          sheet.position.y = 510;//450;
+          sheet.position.z = 367//367;
+          sheet.rotation.x = -Math.PI/2;
+          tscene.add(sheet);
 
-        var sMat = new THREE.MeshBasicMaterial({map: rainMap, transparent: true, opacity: 0});
-        sMat.blending = THREE['NormalBlending'];
+          //extra experimental
+          for (var i=0; i < sheet.geometry.vertices.length; i++) {
 
-        var nMat = new THREE.MeshBasicMaterial({map: rainMap, transparent: true, opacity: 0});
-        nMat.blending = THREE['NormalBlending'];
-        
-        sGlass = new THREE.Mesh( rainGeo, sMat );
-        sGlass.position.x = -280;
-        sGlass.position.y = 528.5;
-        sGlass.position.z = 367.1;
-        scene.add(sGlass);
+            XmTween = new TWEEN.Tween(sheet.geometry.vertices[i].x).to(sheet.geometry.morphTargets[0].vertices[i].x, 3000).start();
+            YmTween = new TWEEN.Tween(sheet.geometry.vertices[i].y).to(sheet.geometry.morphTargets[0].vertices[i].y, 3000).start();
+            ZmTween = new TWEEN.Tween(sheet.geometry.vertices[i].z).to(sheet.geometry.morphTargets[0].vertices[i].z, 3000).start();
 
-        nGlass = new THREE.Mesh( rainGeo, nMat );
-        nGlass.position.x = -208;
-        nGlass.position.y = 528.5;
-        nGlass.position.z = 367.1;
-        scene.add(nGlass);
-      }
+            //this works...
+            //sheet.geometry.vertices[i] = sheet.geometry.morphTargets[0].vertices[i];
 
-      function rainTweenIn() {
-        var sTween = new TWEEN.Tween(sGlass.material).to({opacity: 0.64}, 3500).start();
-        var nTween = new TWEEN.Tween(nGlass.material).to({opacity: 0.64}, 3500).start();
-      }
+            //testing 
+            if (sheet.geometry.vertices[i].x != sheet.geometry.morphTargets[0].vertices[i].x ||
+              sheet.geometry.vertices[i].y != sheet.geometry.morphTargets[0].vertices[i].y ||
+              sheet.geometry.vertices[i].z != sheet.geometry.morphTargets[0].vertices[i].z ) {
+              console.log(i);
+            }    
+          }
 
-      function rainTweenOut() {
-        var sTween = new TWEEN.Tween(sGlass.material).to({opacity: 0.24}, 7000).start();
-        var nTween = new TWEEN.Tween(nGlass.material).to({opacity: 0}, 7000).start();
+        });
       }
     //-----
 
