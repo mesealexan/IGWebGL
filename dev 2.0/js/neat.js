@@ -171,7 +171,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             neat.assets.sun.tweenAmbiental("normalAmb");
           },
           stop: function(){
-            //neat.assets.sun.lightDown();
+
           }
         }
         ,

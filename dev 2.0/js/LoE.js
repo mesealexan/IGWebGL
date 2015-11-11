@@ -54,6 +54,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
 
     LoE.onLoadFunctions.pouring = function(mesh){
       LoE.assets.pouring = mesh;
+      mesh.visible= false;
     };
 
     LoE.onLoadFunctions.rotator = function(mesh){
@@ -161,21 +162,21 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
         cold: {
             add: function(){
                 events.AddButton({text:"cold",
-                    function: function(){manageBackgroundOpacity(cold_t)},
+                    function: function(){LoE.manageBackgroundOpacity('cold')},
                     id:"cold"});
             }
         },
         hot: {
             add: function(){
                 events.AddButton({text:"hot",
-                    function: function(){manageBackgroundOpacity(hot_t)},
+                    function: function(){LoE.manageBackgroundOpacity('hot')},
                     id:"hot"});
             }
         },
         mixed: {
             add: function(){
                 events.AddButton({text:"mixed",
-                    function: function(){manageBackgroundOpacity(mixed_t)},
+                    function: function(){LoE.manageBackgroundOpacity('mixed')},
                     id:"mixed"});
             }
         }
@@ -183,63 +184,47 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
 
     function reactToFrame(frame){
         switch (frame){
-            case 1:
-                //_window.mesh.visible = false;
-                break;
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
-                //setTimeout(function(){ removeFromScene(fixed_glass.plane4);}, coatingTime);
-                LoE.assets.pouring.visible = true;
+                LoE.assets.silverPS.holder.visible = true;
                 break;
             case 218:
-                LoE.assets.pouring.visible = false;
+                LoE.assets.silverPS.holder.visible = false;
                 break;
             case 240:
-                LoE.assets.pouring.visible = true;
+                LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
-                //setTimeout(function(){ removeFromScene(fixed_glass.plane5);}, coatingTime);
                 break;
             case 288:
-                LoE.assets.pouring.visible = false;
+                LoE.assets.silverPS.holder.visible = false;
                 break;
             case 310:
-                LoE.assets.pouring.visible = true;
+                LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
-                //setTimeout(function(){ removeFromScene(fixed_glass.plane6);}, coatingTime);
                 break;
             case 358:
-                LoE.assets.pouring.visible = false;
+                LoE.assets.silverPS.holder.visible = false;
                 break;
             case 375:
-                //_window.mesh.visible = true;
                 break;
             case 410:
                 LoE.assets.mobile_glass.visible = false;
                 break;
             case 450:
-                enableBackground();
+                LoE.enableBackground();
                 break;
             case 469:
-                //toggleElement(menu, 'visible');
                 LoE.buttons.cold.add();
                 LoE.buttons.hot.add();
                 LoE.buttons.mixed.add();
                 break;
-            case 479:
-                //window_shadow.mesh.material.materials[0].tweenOpacity(1, window_shadow_appearTime, 300);
-                //window_shadow.mesh.visible = true;
-                break;
             case 499:
-                //scene.remove(rail.mesh);
-                //controls.target = camera.target;
-                //text.mesh.visible = false;
-                //toggleInput(true);
                 events.ToggleControls(true);
                 break;
         }
     }
 
-    function enableBackground () {
+     LoE.enableBackground = function () {
         var mat = LoE.assets.plane.material.materials[0];
         mat.transparent = true;
         mat.tweenOpacity(mat, 0, backgroundBlendTime);
@@ -345,35 +330,44 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
         }
     }
 
-    function manageBackgroundOpacity (to) {
-        LoE.assets.bck_1.material.tween(to, backgroundBlendTime);
+    LoE.manageBackgroundOpacity = function(to) {
+        var tweenTo;
+        switch (to){
+          case "cold":
+            tweenTo = cold_t;
+          break;
+          case "hot":
+            tweenTo = hot_t;
+          break;
+          case "mixed":
+            tweenTo = mixed_t;
+          break;
+          default:
+            console.error("Unspecified background!");
+        }
+
+        LoE.assets.bck_1.material.tween(tweenTo, backgroundBlendTime);
     }
 
-    GlobalFunctions.LoE = {
-        enableBackground: enableBackground,
-        manageBackgroundTexture: undefined
-    };
-
     function addParticles(scene){
-      var geometry = new THREE.SphereGeometry( 5, 32, 32 );
-      var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+      var geometry = new THREE.SphereGeometry( 10, 6, 6 );
+      var material = materials.setMaterials("LoE", {name:"metal"});
       var sphere = new THREE.Mesh( geometry, material );
 
-        var silverSettings = {
-            width: 500,
-            height: 500,
-            depth: 50,
-            num: 50,
-            meshes: [sphere],
-            pos: LoE.assets.rotator.position,
-            dir: new THREE.Vector3(-1, -0.5, 0),
-            speed: 6,
-            rot: {x: Math.PI / 100, y: Math.PI / 100, z: Math.PI / 100},
-            rndRotInit: true
-        };
+      var silverSettings = {
+          width: 50,
+          height: 100,
+          depth: 700,
+          num: 150,
+          meshes: [sphere],
+          pos: new THREE.Vector3(-8310, -150, 0),
+          dir: new THREE.Vector3(0, -1, 0),
+          speed: 20,
+          rndRotInit: true
+      };
 
-        //LoE.assets.silverPS = new particleSystem(silverSettings);
-        //LoE.assets.silverPS.Init(LoE.assets.scene);
+      LoE.assets.silverPS = new particleSystem(silverSettings);
+      LoE.assets.silverPS.Init(LoE.assets.scene);
     }
 
     return LoE;

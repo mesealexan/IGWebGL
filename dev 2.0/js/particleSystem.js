@@ -29,7 +29,7 @@ return function(s){
     }
 
     function loadMap(i) {
-      if(i == _this.mapNames.length){ addToScene(); return; }//done loading maps
+      if(i == _this.mapNames.length){ addToScene_Sprites(); return; }//done loading maps
 
       var url = "media/particles/"+_this.mapNames[i]+".png";
       var map = THREE.ImageUtils.loadTexture(url, undefined, onLoadComplete);
@@ -41,17 +41,23 @@ return function(s){
       }
     }
 
-    function addToScene() {
-      var ps = _this.createPS();
+    function addToScene_Sprites() {
+      var ps = _this.createPS_Sprites();
       if(s.pos)ps.position.copy(_this.position);
       _this.scene.add(ps);
       _this.created = true;
       animate.updater.addHandler(_this);
     }
 
-    this.createPS = function(){
-      var maps = [];
-      var holder = new THREE.Object3D();
+    function addToScene_Meshes() {
+      var ps = _this.createPS_Meshes();
+      if(s.pos)ps.position.copy(_this.position);
+      _this.scene.add(ps);
+      _this.created = true;
+      animate.updater.addHandler(_this);
+    }
+
+    this.createPS_Sprites = function(){
       var loops = _this.loadedMaps.length;
       var individualCount = Math.round(this.particleCount / loops);
 
@@ -90,10 +96,24 @@ return function(s){
       return _this.holder;
     };
 
+    this.createPS_Meshes = function () {
+      for (var i = 0; i < this.particleCount; i++) {
+        var mesh = this.meshes[0].clone();
+        var pos = randomPos();
+        mesh.initialPos = pos;
+        mesh.minY = _this.position.y - (_this.height / 2);
+        mesh.maxY = _this.position.y + (_this.height / 2);
+        mesh.position.copy(pos);
+        _this.holder.add(mesh);
+      }
+      return _this.holder;
+    }
+
     this.Init = function(scene){
         if(_this.created){ _this.Start(); return; }
         _this.scene = scene;
         if(!_this.meshes) loadMap(0);
+        else addToScene_Meshes();
     };
 
     this.Start = function(){
