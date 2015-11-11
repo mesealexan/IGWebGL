@@ -3,7 +3,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
     function(THREE, jquery, loader, animate, tween, events, audio){
     var main = {}; //public functionality
     /***private fields***/
-    var camFOV = 45; //camera field of view in degrees
+    var camFOV =  45; //camera field of view in degrees
     var width, height; //browser window dimension
     var container; //html element for webGL renderer
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
