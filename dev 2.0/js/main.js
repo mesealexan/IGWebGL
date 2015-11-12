@@ -1,6 +1,6 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
-    function(THREE, jquery, loader, animate, tween, events, audio){
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials"],
+    function(THREE, jquery, loader, animate, tween, events, audio, materials){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV =  45; //camera field of view in degrees
@@ -24,6 +24,10 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
         animate.camera.position.set(0, 0, 0);
         main.loader.scene.add( animate.camera );
     }
+
+    function getMediaFolderURL() {
+      return $('mediafolder').data("url");
+    }
     /***end private functions***/
 
     /***public fields***/
@@ -39,7 +43,10 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
         container = document.getElementById( 'webGL' );
         main.scene = new THREE.Scene();
         main.scene.sceneID = sceneID;
-        main.loader = new loader(main.scene, animate);
+        var mediaFolderUrl = getMediaFolderURL();
+        materials.makeTextureCube(mediaFolderUrl);
+        materials.makeCloudTextureCube(mediaFolderUrl);
+        main.loader = new loader(main.scene, animate, mediaFolderUrl);
         animate.loader = main.loader;
         addRenderer();
         addCamera();
@@ -67,7 +74,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio"],
         function newScene(){
             main.scene = new THREE.Scene();
             main.scene.sceneID = sceneID;
-            main.loader = new loader(main.scene, animate);
+            main.loader = new loader(main.scene, animate, getMediaFolderURL());
             animate.loader = main.loader;
             addCamera();
             loadingScene = false;

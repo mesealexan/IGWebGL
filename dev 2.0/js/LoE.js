@@ -82,8 +82,8 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
 
     LoE.onLoadFunctions.tambur_b = function(mesh, loader){
         var tamburRotateTime = 2777; //a complete rotation in ms
-        var tambur_a_pos = loader.ParseJSON('media/models/LoE/tambur_a_pos.JSON');
-        var tambur_b_pos = loader.ParseJSON('media/models/LoE/tambur_b_pos.JSON');
+        var tambur_a_pos = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/tambur_a_pos.JSON');
+        var tambur_b_pos = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/tambur_b_pos.JSON');
 
         for (var i = 0; i < 29; i++) {//29 meshed required
             var newTambur_a = new THREE.Mesh(mesh.geometry.clone(), mesh.material);
@@ -112,22 +112,22 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
     };
 
     LoE.onLoadFunctions.fixed_glass = function(mesh, loader){
-        coatTexture = THREE.ImageUtils.loadTexture('media/models/LoE/coat1.png');
-        LoE_textTexture = THREE.ImageUtils.loadTexture('media/models/LoE/coat1_text.png');
-        var fixed_window_animation = loader.ParseJSON('media/models/LoE/fixed_glass_anim.JSON');
+        coatTexture = THREE.ImageUtils.loadTexture(animate.loader.mediaFolderUrl+'/models/LoE/coat1.png');
+        LoE_textTexture = THREE.ImageUtils.loadTexture(animate.loader.mediaFolderUrl+'/models/LoE/coat1_text.png');
+        var fixed_window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/fixed_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionHandler(mesh, fixed_window_animation));
         LoE.assets.fixed_glass = mesh;
     };
 
     LoE.onLoadFunctions.mobile_glass = function(mesh, loader){
-        var mobile_window_animation = loader.ParseJSON('media/models/LoE/mobile_glass_anim.JSON');
+        var mobile_window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/mobile_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, mobile_window_animation));
         LoE.assets.mobile_glass = mesh;
         addSilverPlanes(loader);
     };
 
     LoE.onLoadFunctions.window = function(mesh, loader){
-        var window_animation = loader.ParseJSON('media/models/LoE/window_animation.JSON');
+        var window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/window_animation.JSON');
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
     };
 
@@ -231,7 +231,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
     }
 
     function addSilverPlanes (loader) {
-        var silver_Planes_pos = loader.ParseJSON('media/models/LoE/silverPlanes.JSON');
+        var silver_Planes_pos = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/silverPlanes.JSON');
         var geometry = new THREE.PlaneBufferGeometry( 990 , 760 );
         var offsetX = 8301;
         var offsetY = 365;

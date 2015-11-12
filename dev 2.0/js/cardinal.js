@@ -53,8 +53,10 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
-        var textureFlare2 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_2.png");
+        var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+          "/models/cardinal/Flare_1.png");
+        var textureFlare2 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+          "/models/cardinal/Flare_2.png");
         var flareColor = new THREE.Color( 0xffffff );
         var smallCircles = 10;
         var smallCircleMinSize = 1;

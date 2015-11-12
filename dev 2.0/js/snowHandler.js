@@ -8,7 +8,7 @@ define(["animate", "three"], function(animate, THREE){
             numParticles = s.num,
             height = 1000,
             systemGeometry = new THREE.Geometry(),
-            flake = THREE.ImageUtils.loadTexture("media/models/i89/snowflake.png"),
+            flake = THREE.ImageUtils.loadTexture(animate.loader.mediaFolderUrl+"/models/i89/snowflake.png"),
             systemMaterial = new THREE.PointCloudMaterial({
                 blending: THREE.AdditiveBlending,
                 map: flake,

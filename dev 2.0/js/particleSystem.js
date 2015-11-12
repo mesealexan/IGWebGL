@@ -18,6 +18,7 @@ return function(s){
     this.loadedMaps = [];
     this.meshes = s.meshes;
     this.created = false;
+    this.mediaFolderUrl = animate.loader.mediaFolderUrl;
     var geometry = undefined;
 
     function randomPos(){
@@ -31,7 +32,7 @@ return function(s){
     function loadMap(i) {
       if(i == _this.mapNames.length){ addToScene_Sprites(); return; }//done loading maps
 
-      var url = "media/particles/"+_this.mapNames[i]+".png";
+      var url = _this.mediaFolderUrl+"/particles/"+_this.mapNames[i]+".png";
       var map = THREE.ImageUtils.loadTexture(url, undefined, onLoadComplete);
 
       function onLoadComplete(tex) {

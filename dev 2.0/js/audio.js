@@ -9,12 +9,12 @@ define(["howler", "underscore"], function(howler, underscore){
         return name.replace(/-/g, "");
     }
 
-    function returnFormatsArray(name){
-        var pre = "media/audio/" + name;
+    function returnFormatsArray(name, mediaFolderUrl){
+        var pre = mediaFolderUrl+"/audio/" + name;
         return [pre + ".mp3", pre + ".ogg", pre + ".m4a"];
     }
 
-    function loadSound(arr, onComp){
+    function loadSound(arr, onComp, mediaFolderUrl){
         var url = undefined;
 
         if(!arr || !(url = arr[audioArrIndex])){
@@ -29,7 +29,7 @@ define(["howler", "underscore"], function(howler, underscore){
             return;
         }
 
-        var src = returnFormatsArray(url);
+        var src = returnFormatsArray(url, mediaFolderUrl);
         var sound = new Howl({
             src: src,
             onload: onLoad,
@@ -39,16 +39,16 @@ define(["howler", "underscore"], function(howler, underscore){
         function onLoad(){
             audio.sounds[cleanName(url)] = sound;
             audioArrIndex++;
-            loadSound(arr, onComp);
+            loadSound(arr, onComp, mediaFolderUrl);
         }
 
         function onStop(){
         }
     }
 
-    audio.LoadAll = function(arr, onComp){
+    audio.LoadAll = function(arr, onComp, mediaFolderUrl){
         audioArrIndex = 0;
-        loadSound(arr, onComp);
+        loadSound(arr, onComp, mediaFolderUrl);
     };
 
     audio.StopAll = function(){_.each(audio.sounds, function(s){
