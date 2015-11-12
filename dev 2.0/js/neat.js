@@ -16,9 +16,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.assets = {};
 
     //testing
-    var tscene = null, tcamera = null;
+    /*var tscene = null, tcamera = null;
     var mouse = new THREE.Vector2();
-    var tframe = null;
+    var tframe = null;*/
     //------
 
     /***on start functions***/
@@ -40,13 +40,13 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     neat.onStartFunctions.addRainSheet = function(scene){
-      var loader = new THREE.JSONLoader();      
-      materials.sheetingMat.prototype = new THREE.ShaderMaterial();
-      var mat = new materials.sheetingMat();    
-      materials.sheetingMat.prototype = new THREE.ShaderMaterial();
-      var tempMat = new materials.sheetingMat();
-      
-      loader.load('media/models/neat/RainSheet.js', function (geometry) {
+        var loader = new THREE.JSONLoader();
+        materials.sheetingMat.prototype = new THREE.ShaderMaterial();
+        var mat = new materials.sheetingMat();
+        materials.sheetingMat.prototype = new THREE.ShaderMaterial();
+        var tempMat = new materials.sheetingMat();
+
+        loader.load('media/models/neat/RainSheet.js', function (geometry) {
         neat.assets.leftSheet = new THREE.Mesh(geometry, mat);
         neat.assets.leftSheet.position.x = -276;
         neat.assets.leftSheet.position.y = 530;
@@ -57,7 +57,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         neat.assets.rightSheet.position.x = -203;
         neat.assets.rightSheet.position.y = 530;
         neat.assets.rightSheet.position.z = 364.5;
-        scene.add(neat.assets.rightSheet);    
+        scene.add(neat.assets.rightSheet);
 
         neat.animationHandlers.sh = new animationHandler();
         neat.animationHandlers.sh.setMesh(neat.assets.rightSheet);
@@ -86,7 +86,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
     neat.onLoadFunctions.Window_symbols = function(mesh){
       mesh.position.z++;
-    };   
+    };
 
     neat.onLoadFunctions.Floor_grass = function(mesh){
         mesh.receiveShadow = true;
@@ -125,10 +125,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.onFinishLoadFunctions.playCamera = function(scene, loader) {
         loader.cameraHandler.play(undefined, undefined,
           function(){ onCameraComplete(scene) }, animate.Animate);
-    };
-
-    neat.onFinishLoadFunctions.pause = function(scene, loader){
-        //setTimeou(function(){ loader.cameraHandler.pause(); }, 3500);
     };
 
     neat.onFinishLoadFunctions.addControls = function(){
@@ -185,8 +181,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
         //testing
-        tscene = scene;
-        tcamera = animate.camera;
+        //tscene = scene;
+        //tcamera = animate.camera;
         //-----
       }, stagesTime.final);
     };
@@ -220,7 +216,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
           audio.sounds.neatcardinal2.fade(0, 1, 1000);
           break;
         }
-      } 
+      }
     }
 
     function states(scene) {
@@ -248,12 +244,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             }
           },
           stop: function(){
-<<<<<<< HEAD
-
-=======
             audio.sounds.neatheavenlytransition.fade(1, 0, 500);
             //neat.assets.sun.lightDown();
->>>>>>> refs/remotes/origin/tudor
           }
         }
         ,
@@ -300,7 +292,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
             //resetVertices();
             var r_rainTween = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
-            var l_rainTween = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();            
+            var l_rainTween = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
             //neat.animationHandlers.sh.play(90,0);
           },
           stop: function(){
@@ -322,8 +314,14 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
 
             neat.animationHandlers.sh.play(0,91);
-            var r_rainTweenOut = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity).to({value: 0}, 2500).start();
-            var l_rainTweenOut = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.5}, 2500).start();
+            var r_rainTweenOut = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity)
+            .to({value: 0}, 0)
+            .delay(2500)
+            .start();
+
+            var l_rainTweenOut = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity)
+            .to({value: 0.5}, 2500)
+            .start();
           }
         }
         ,
@@ -363,7 +361,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             width: 500,
             height: 500,
             depth: 50,
-            num: 50,
+            num: 25,
             size: {w: 20, h: 20},
             mapNames: ["Leaf_1_diff", "Leaf_2_diff", "Leaf_3_diff"],
             pos: new THREE.Vector3(100, 250, 500),
@@ -428,11 +426,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
         var tween = new TWEEN.Tween(sphere.material);
           tween.to({ opacity: 1 }, 100);
-          //tween.start();
-
-        //this.curNum++;
         this.scene.add( sphere );
-        //this.drops.push(sphere);
 
         var tweenOut = new TWEEN.Tween(sphere.material).to({opacity: 0}, 500).onUpdate(function(){
           sphere.position.y -= 0.25;
@@ -576,7 +570,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     //testing
-    document.addEventListener('mousemove', onMouseMove, false);
+    /*document.addEventListener('mousemove', onMouseMove, false);
     document.addEventListener("click", onMouseClick, false);
 
     function onMouseMove(event) {
@@ -589,8 +583,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       // caster.setFromCamera( mouse, tcamera);
       // var intersects = caster.intersectObjects(tscene.children);
       //console.log(intersects[0].point);
-      //loadTheSheet(); 
-    }
+      //loadTheSheet();
+    }*/
     //-----
 
     return neat;

@@ -25,13 +25,14 @@ function(cardinal, i89, LoE, neat){
   //toggle i89 window on/off
   //i89.switchWindow.toggleON();
   //i89.switchWindow.toggleOFF();
+  //i89.onFinishLoadFunctions.testFunc = function(){...};
 
   //tween camera position
   //i89.tweenCamera("inside");
   //i89.tweenCamera("outside");
 
   /******LoE******/
-  //manageBackgroundOpacity("hot");
-  //manageBackgroundOpacity("cold");
-  //manageBackgroundOpacity("mixed");
+  //LoE.manageBackgroundOpacity("hot");
+  //LoE.manageBackgroundOpacity("cold");
+  //LoE.manageBackgroundOpacity("mixed");
 });

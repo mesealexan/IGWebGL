@@ -822,15 +822,15 @@ define(["three", "animate"], function(THREE, animate){
         }
 
         function fSh() {
-            return ""+
-                "varying vec2 vUv;"+
-                "uniform float opacity;"+
-                "uniform sampler2D map;"+
-                "void main(){"+
-                "vec4 mapColor = texture2D( map, vec2(gl_FragCoord.x / 1000., gl_FragCoord.y / 1000.));"+
-                //"if(vUv.y > 0.9){gl_FragColor = vec4(1., 0., 0., smoothstep(0., 1., abs(0.9-vUv.y));return;}"+
-                "gl_FragColor = vec4(mapColor.xyz, opacity);}"
-        }
+          return ""+
+            "varying vec2 vUv;"+
+            "uniform float opacity;"+
+            "uniform sampler2D map;"+
+            "void main(){"+
+            "vec4 mapColor = texture2D( map, vec2(gl_FragCoord.x / 1000., gl_FragCoord.y / 1000.));"+
+            "if(vUv.y >= 0.9)gl_FragColor = vec4(mapColor.xyz, ((1.-vUv.y)/((1.+vUv.y)/2.)));"+
+            "else gl_FragColor = vec4(mapColor.xyz, opacity);}"
+      }
     }
 
     return materials;
