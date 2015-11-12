@@ -797,5 +797,41 @@ define(["three", "animate"], function(THREE, animate){
         };
     };
 
+    materials.sheetingMat = function () {
+        var map = THREE.ImageUtils.loadTexture('media/models/neat/rain.jpg');
+        map.wrapS = THREE.RepeatWrapping;
+        map.wrapT = THREE.RepeatWrapping;
+
+        this.uniforms = {
+            map: { type: 't', value: map },
+            opacity: { type: 'f', value: 0 }
+        };
+        this.morphTargets = true;
+        this.transparent = true;
+        this.vertexShader = vSh();
+        this.fragmentShader = fSh();
+
+        function vSh() {
+            return ""+
+                "varying vec2 vUv;\n"+
+                THREE.ShaderChunk[ "morphtarget_pars_vertex" ]+
+                "\nvoid main(){\n"+
+                "vUv = uv;\n"+
+                THREE.ShaderChunk[ "morphtarget_vertex" ]+"\n"+
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(morphed, 1.0);}"
+        }
+
+        function fSh() {
+            return ""+
+                "varying vec2 vUv;"+
+                "uniform float opacity;"+
+                "uniform sampler2D map;"+
+                "void main(){"+
+                "vec4 mapColor = texture2D( map, vec2(gl_FragCoord.x / 1000., gl_FragCoord.y / 1000.));"+
+                //"if(vUv.y > 0.9){gl_FragColor = vec4(1., 0., 0., smoothstep(0., 1., abs(0.9-vUv.y));return;}"+
+                "gl_FragColor = vec4(mapColor.xyz, opacity);}"
+        }
+    }
+
     return materials;
 });
