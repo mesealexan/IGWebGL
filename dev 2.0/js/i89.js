@@ -38,7 +38,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     /***on load functions***/
     i89.onLoadFunctions.i89 = function(mesh){
         i89.assets.i89 = mesh;
-        switchWindow.i89_off();
+        i89.switchWindow.i89_off();
     };
 
     i89.onLoadFunctions.logo = function(mesh){
@@ -136,20 +136,20 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     i89.buttons = {
         i89_off: {
             add: function(){
-                events.AddButton({text:"i89 off", function: switchWindow.toggleOFF, id:"i89_off"});
+                events.AddButton({text:"i89 off", function: i89.switchWindow.toggleOFF, id:"i89_off"});
             },
             remove: function(){ events.RemoveElementByID("i89_off"); }
         },
         i89_on: {
             add: function(){
-                events.AddButton({text:"i89 on", function: switchWindow.toggleON, id:"i89_on"});
+                events.AddButton({text:"i89 on", function: i89.switchWindow.toggleON, id:"i89_on"});
             },
             remove: function(){ events.RemoveElementByID("i89_on"); }
         },
         outside:{
             add: function(){
                 events.AddButton({text:"outside",
-                    function: function(){tweenCamera("outside")},
+                    function: function(){i89.tweenCamera("outside")},
                     id:"outside"});
             },
             remove: function(){ events.RemoveElementByID("outside"); }
@@ -157,7 +157,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         inside:{
             add: function(){
                 events.AddButton({text:"inside",
-                    function: function(){tweenCamera("inside")},
+                    function: function(){i89.tweenCamera("inside")},
                     id:"inside"});
             },
             remove: function(){ events.RemoveElementByID("inside"); }
@@ -165,14 +165,14 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         inClose:{
             add: function(){
                 events.AddButton({text:"inClose",
-                    function: function(){tweenCamera("inClose")},
+                    function: function(){i89.tweenCamera("inClose")},
                     id:"inClose"});
             },
             remove: function(){ events.RemoveElementByID("inClose"); }
         }
     };
 
-    function tweenCamera(pos){
+    i89.tweenCamera = function(pos){
         //cancelAllTweens();
         var outsidePos = new THREE.Vector3(-118, 111, -372),
             inCloseLookAtPos = new THREE.Vector3( 14, 80, 0),
@@ -290,7 +290,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 break;
             case 638:
                 audio.sounds.i89heaterloop.fade(0.6, 1.0, 2000);
-                switchWindow.i89_on();
+                i89.switchWindow.i89_on();
                 i89.assets.logo.visible = true;
                 heatWaves.playWave3();
                 audio.sounds.i89toggleglasstype.play();
@@ -318,21 +318,21 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         }
     }
 
-    var switchWindow = function () {
+    i89.switchWindow = function () {
         var fadeTime = 300, fading = false, off = true, on = false;
         return{
             toggleON: function(){
                 if(fading || on) return;
                 i89.buttons.i89_off.add();
                 i89.buttons.i89_on.remove();
-                switchWindow.i89_on();
+                i89.switchWindow.i89_on();
                 audio.sounds.i89toggleglasstype.play();
             },
             toggleOFF: function(){
                 if(fading || off) return;
                 i89.buttons.i89_on.add();
                 i89.buttons.i89_off.remove();
-                switchWindow.i89_off();
+                i89.switchWindow.i89_off();
                 audio.sounds.i89toggleglasstype.play();
             },
             i89_on: function  () {

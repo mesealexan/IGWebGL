@@ -35,10 +35,15 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
         loader.LoadingScreen.hide();
     }
 
-    var loader = function(scene, animationComponent){//public functionality
+    var loader = function(scene, animationComponent, mediaFolderUrl){//public functionality
         var _this = this;
         this.scene = scene;
         var selectedScene = scenes[scene.sceneID];
+
+        this.mediaFolderUrl =
+        selectedScene.mediaFolderUrl =
+        materials.mediaFolderUrl =
+        mediaFolderUrl;
 
         /***public functions***/
         (function OnStartScene (){
@@ -89,14 +94,14 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
         var soundNames = selectedScene.soundNames;
 
         /***camera handler***/
-        var cameraJSON = this.ParseJSON("media/cameras/"+folderName+"/camera.JSON");
+        var cameraJSON = this.ParseJSON(_this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON");
         this.cameraHandler = new cameraHandler(cameraJSON);
 
         load(assetNames[assetIndex]);
 
         function load(name){
             var l = new THREE.JSONLoader();
-            l.load("media/models/"+folderName+"/"+name+".js", loadCallback);
+            l.load(_this.mediaFolderUrl+"/models/"+folderName+"/"+name+".js", loadCallback);
             l.onLoadComplete = onLoadComplete;
         }
 
@@ -133,7 +138,7 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, events,
         }
 
         function loadSounds(){
-            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets);//call on load complete on all sounds loaded
+            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets, _this.mediaFolderUrl);//call on load complete on all sounds loaded
         }
     };
 

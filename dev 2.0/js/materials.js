@@ -1,33 +1,33 @@
 define(["three", "animate"], function(THREE, animate){
-    var materials = {};
     var textureCube = undefined;
     var cloudCube = undefined;
 
-    (function makeTextureCube(){
-        var imagePrefix = "media/skybox/Cube_";
+    var materials = {
+      makeTextureCube: function(mediaFolderUrl){
+        var imagePrefix = mediaFolderUrl+"/skybox/Cube_";
         var directions  = ["r", "l", "u", "d", "f", "b"];
         var imageSuffix = ".jpg";
         var urls = [];
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
-    }());
-
-    (function makeCloudTextureCube(){
-        var imagePrefix = "media/skybox/clouds_scrolling2";
+    }
+    ,
+    makeCloudTextureCube: function(mediaFolderUrl){
+        var imagePrefix = mediaFolderUrl+"/skybox/clouds_scrolling2";
         var directions  = ["r", "l", "u", "d", "f", "b"];
         var imageSuffix = ".jpg";
         var urls = [];
         for (var a = 0; a < 6; a++)
         urls.push(imagePrefix + imageSuffix);
-
         cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
-    }());
+    }
+  };
 
     materials.setMaterials = function(folderName, material){
         var material;
         var materialName = folderName + material.name;
-        var url = "media/models/"+folderName+"/";
+        var url = this.mediaFolderUrl+"/models/"+folderName+"/";
 
         switch(materialName){
             case 'LoEpouring':
@@ -508,8 +508,8 @@ define(["three", "animate"], function(THREE, animate){
 
     materials.NeatGlassDirt = function(settings){
         var _this = this;
-        var dirtMap = THREE.ImageUtils.loadTexture('media/models/neat/Dirt_wind_diff.jpg');
-        var dirtOpac = THREE.ImageUtils.loadTexture('media/models/neat/Dirt_opacity_map.jpg');
+        var dirtMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/neat/Dirt_wind_diff.jpg');
+        var dirtOpac = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/neat/Dirt_opacity_map.jpg');
         var dirtySpeed = 0.01;
         var opacSpeed = 0.01;
         var maxDirt = settings.maxDirt;
@@ -602,7 +602,8 @@ define(["three", "animate"], function(THREE, animate){
 
     function extractMaterialFromJSON(folderName, material){
         if(material.map){
-            material.map = THREE.ImageUtils.loadTexture('media/models/'+folderName+'/'+material.map.sourceFile);
+            material.map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/'+
+              folderName+'/'+material.map.sourceFile);
             material.color = new THREE.Color("rgb(255,255,255)");
             return material;
         }
@@ -632,7 +633,7 @@ define(["three", "animate"], function(THREE, animate){
     }
 
     materials.textureFadeMaterial = function () {
-        var cold_t = THREE.ImageUtils.loadTexture('media/models/LoE/mixed.jpg');
+        var cold_t = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/LoE/mixed.jpg');
         var material = new THREE.ShaderMaterial({
             uniforms: {
                 texture1: { type: "t", value: cold_t },
@@ -698,8 +699,7 @@ define(["three", "animate"], function(THREE, animate){
 
     materials.NeatRain = function(settings){
         var _this = this;
-        var dirtMap = THREE.ImageUtils.loadTexture('media/models/neat/rain.jpg');
-        //var drop = THREE.ImageUtils.loadTexture('media/particles/water_drop.png');
+        var dirtMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/neat/rain.jpg');
 
         dirtMap.wrapS = THREE.RepeatWrapping;
         dirtMap.wrapT = THREE.RepeatWrapping;
@@ -822,15 +822,15 @@ define(["three", "animate"], function(THREE, animate){
         }
 
         function fSh() {
-            return ""+
-                "varying vec2 vUv;"+
-                "uniform float opacity;"+
-                "uniform sampler2D map;"+
-                "void main(){"+
-                "vec4 mapColor = texture2D( map, vec2(gl_FragCoord.x / 1000., gl_FragCoord.y / 1000.));"+
-                //"if(vUv.y > 0.9){gl_FragColor = vec4(1., 0., 0., smoothstep(0., 1., abs(0.9-vUv.y));return;}"+
-                "gl_FragColor = vec4(mapColor.xyz, opacity);}"
-        }
+          return ""+
+            "varying vec2 vUv;"+
+            "uniform float opacity;"+
+            "uniform sampler2D map;"+
+            "void main(){"+
+            "vec4 mapColor = texture2D( map, vec2(gl_FragCoord.x / 1000., gl_FragCoord.y / 1000.));"+
+            "if(vUv.y >= 0.9)gl_FragColor = vec4(mapColor.xyz, ((1.-vUv.y)/((1.+vUv.y)/2.)));"+
+            "else gl_FragColor = vec4(mapColor.xyz, opacity);}"
+      }
     }
 
     return materials;

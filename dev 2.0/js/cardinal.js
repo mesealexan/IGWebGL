@@ -53,8 +53,10 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        var textureFlare1 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_1.png");
-        var textureFlare2 = THREE.ImageUtils.loadTexture( "media/models/cardinal/Flare_2.png");
+        var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+          "/models/cardinal/Flare_1.png");
+        var textureFlare2 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+          "/models/cardinal/Flare_2.png");
         var flareColor = new THREE.Color( 0xffffff );
         var smallCircles = 10;
         var smallCircleMinSize = 1;
@@ -189,56 +191,56 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         slice: {
             add: function(){
                 events.AddButton({text:"go to slice",
-                    function: function(){ tweenCamToMain(goToSlice) },
+                    function: function(){ tweenCamToMain(cardinal.goToSlice) },
                     id:"goSlice", once: true});
             },
             remove: function(){ events.RemoveElementByID("goSlice"); }
         },
         backToMain: {
             add: function(){
-                events.AddButton({text:"back", function: backToMain,
+                events.AddButton({text:"back", function: cardinal.backToMain,
                     id:"backToMain", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToMain"); }
         },
         backToSlice: {
             add: function(){
-                events.AddButton({text:"back", function: zoomOnSlice.backToSlice,
+                events.AddButton({text:"back", function: cardinal.zoomOnSlice.backToSlice,
                     id:"backToSlice", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToSlice"); }
         },
         sealantA:{
             add: function(){
-                events.AddButton({text:"sealantA", function: zoomOnSlice.sealantA,
+                events.AddButton({text:"sealantA", function: cardinal.zoomOnSlice.sealantA,
                     id:"sealantA", once: true});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
         },
         sealantB:{
             add: function(){
-                events.AddButton({text:"sealantB", function: zoomOnSlice.sealantB,
+                events.AddButton({text:"sealantB", function: cardinal.zoomOnSlice.sealantB,
                     id:"sealantB", once: true});
             },
             remove: function(){ events.RemoveElementByID("sealantB"); }
         },
         spacer:{
             add: function(){
-                events.AddButton({text:"spacer", function: zoomOnSlice.spacer,
+                events.AddButton({text:"spacer", function: cardinal.zoomOnSlice.spacer,
                     id:"spacer", once: true});
             },
             remove: function(){ events.RemoveElementByID("spacer"); }
         },
         dessicant:{
             add: function(){
-                events.AddButton({text:"dessicant", function: zoomOnSlice.dessicant,
+                events.AddButton({text:"dessicant", function: cardinal.zoomOnSlice.dessicant,
                     id:"dessicant", once: true});
             },
             remove: function(){ events.RemoveElementByID("dessicant"); }
         }
     };
 
-    var zoomOnSlice = {
+    cardinal.zoomOnSlice = {
          sealantA: function(){
             var anim = cameraAnimations.animation_3;
              events.ToggleControls(false);
@@ -350,7 +352,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         }
     };
 
-    function goToSlice(){
+    cardinal.goToSlice = function(){
         cardinal.assets.cardinal_slice.visible = true;
         cardinal.buttons.slice.remove();
         events.RemoveMouseUpEvent(tweenCamToMain);
@@ -389,7 +391,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         );
     }
 
-    function backToMain(){
+    cardinal.backToMain = function(){
         cardinal.assets.cardinal_vertical.visible = true;
         events.EmptyElementByID("cameraButtons");
         events.RemoveMouseUpEvent(tweenCamToSliceMain);
@@ -421,10 +423,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
             }//on complete
         );
     }
-
-    GlobalFunctions.cardinal = {
-        zoomOnSlice: zoomOnSlice
-    };
 
     return cardinal;
 });

@@ -1,5 +1,5 @@
-define(["underscore", "loader", "updater", "tween"],
-    function(underscore, loader, updater, tween){
+define(["underscore", "updater", "tween"],
+    function(underscore, updater, tween){
     var animate = {};//public functionality
 
     /***private fields***/
