@@ -513,7 +513,7 @@ define(["three", "animate"], function(THREE, animate){
         var dirtySpeed = 0.01;
         var opacSpeed = 0.01;
         var maxDirt = settings.maxDirt;
-        var clean = true;
+        this.isClean = true;
         this.startOnce = undefined;
         this.keepOpac = undefined;
         this.minVal = 0;
@@ -537,7 +537,7 @@ define(["three", "animate"], function(THREE, animate){
             if(this.uniforms.curVal.value >= this.uniforms.maxVal.value)
                 this.Stop();
 
-            if(this.uniforms.curVal.value < this.minVal) this.Stop();
+            if(this.uniforms.curVal.value < _this.minVal) this.Stop();
 
         };
 
@@ -571,10 +571,10 @@ define(["three", "animate"], function(THREE, animate){
         }
 
         this.Start = function(s){
-            if(!clean) return;
+            if(!_this.isClean) return;
             if(this.startOnce) return;
             if(s)this.startOnce = s.startOnce;
-            clean = false;
+            _this.isClean = false;
             this.Stop();
             dirtySpeed = Math.abs(dirtySpeed);
             opacSpeed = Math.abs(opacSpeed);
@@ -587,13 +587,13 @@ define(["three", "animate"], function(THREE, animate){
         };
 
         this.Clean = function(s){
-            if(clean) return;
-            clean = true;
+            //if(_this.isClean) return;
+            _this.isClean = true;
             this.Stop();
             dirtySpeed = -Math.abs(dirtySpeed);
             opacSpeed = -Math.abs(opacSpeed);
             if(s){
-              if(s.minDirt) this.minVal = s.minDirt;
+              if(s.minDirt!== undefined) _this.minVal = s.minDirt;
               _this.keepOpac = s.keepOpac;
             }
             animate.updater.addHandler(this);
@@ -703,14 +703,14 @@ define(["three", "animate"], function(THREE, animate){
 
         dirtMap.wrapS = THREE.RepeatWrapping;
         dirtMap.wrapT = THREE.RepeatWrapping;
-        var cleanSpeed = 0.1;
+        var isCleanSpeed = 0.1;
         var drops = 50;
 
         this.vertexShader = vSh();
         this.fragmentShader = fSh();
         this.transparent = true;
         this.opacSpeed = 0.01;
-        this.cleaning = false;
+        this.isCleaning = false;
         this.minPos = -2;
         this.maxPos = 22;
         this.maxOpac = settings.maxOpac;
@@ -730,14 +730,14 @@ define(["three", "animate"], function(THREE, animate){
 
         this.update = function(){
 
-          if(this.cleaning && this.uniforms.pos.value > this.minPos)
-            this.uniforms.pos.value -= cleanSpeed;
-          else if(this.cleaning && this.uniforms.pos.value < this.minPos)
+          if(this.isCleaning && this.uniforms.pos.value > this.minPos)
+            this.uniforms.pos.value -= isCleanSpeed;
+          else if(this.isCleaning && this.uniforms.pos.value < this.minPos)
             this.Stop();
 
-          if(!this.cleaning && this.uniforms.opacity.value < this.uniforms.maxOpacity.value)
+          if(!this.isCleaning && this.uniforms.opacity.value < this.uniforms.maxOpacity.value)
             this.uniforms.opacity.value += this.opacSpeed;
-          else if(!this.cleaning && this.uniforms.opacity.value > this.uniforms.maxOpacity.value)
+          else if(!this.isCleaning && this.uniforms.opacity.value > this.uniforms.maxOpacity.value)
             this.Stop();
         };
 
@@ -783,7 +783,7 @@ define(["three", "animate"], function(THREE, animate){
           if(s)this.startOnce = s.startOnce;
           this.uniforms.opacity.value = 0;
           this.uniforms.pos.value = this.maxPos;
-          this.cleaning = false;
+          this.isCleaning = false;
           animate.updater.addHandler(this);
         };
 
@@ -792,7 +792,7 @@ define(["three", "animate"], function(THREE, animate){
         };
 
         this.Clean = function(){
-          this.cleaning = true;
+          this.isCleaning = true;
           animate.updater.addHandler(this);
         };
     };
