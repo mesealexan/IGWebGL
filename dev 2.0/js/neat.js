@@ -46,7 +46,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         materials.sheetingMat.prototype = new THREE.ShaderMaterial();
         var tempMat = new materials.sheetingMat();
 
-        loader.load('media/models/neat/RainSheet.js', function (geometry) {
+        loader.load(neat.mediaFolderUrl+'/models/neat/RainSheet.js', function (geometry) {
         neat.assets.leftSheet = new THREE.Mesh(geometry, mat);
         neat.assets.leftSheet.position.x = -276;
         neat.assets.leftSheet.position.y = 530;
@@ -73,7 +73,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     /***on load functions***/
     neat.onLoadFunctions.Cardinal_bird_animated = function(mesh, loader){
       mesh.material.materials[0].morphTargets = true;
-      var birdAnim = loader.ParseJSON('media/models/neat/Cardinal_bird_positions.JSON');
+      var birdAnim = loader.ParseJSON(neat.mediaFolderUrl+'/models/neat/Cardinal_bird_positions.JSON');
       animate.updater.addHandler(new animate.PositionRotationHandler(mesh, birdAnim));
 
       neat.animationHandlers.ah1 = new animationHandler();
@@ -528,7 +528,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     function defintelyNotTheSun(scene){
-        var theSunMap = new THREE.ImageUtils.loadTexture( 'media/models/neat/sun.png' );
+        var theSunMap = new THREE.ImageUtils.loadTexture( neat.mediaFolderUrl+'/models/neat/sun.png' );
         var theSunGeo = new THREE.PlaneBufferGeometry(42,42);
         var theSunMat = new THREE.MeshPhongMaterial({map: theSunMap, transparent: true, opacity: 1});
         theSunMat.blending = THREE['AdditiveBlending'];
@@ -550,7 +550,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     function glint(scene, delay){
-        var glintMap = new THREE.ImageUtils.loadTexture( 'media/models/neat/swipe.png' );
+        var glintMap = new THREE.ImageUtils.loadTexture( neat.mediaFolderUrl+'/models/neat/swipe.png' );
         var glintGeo = new THREE.PlaneBufferGeometry(68,68);
         var glintMat = new THREE.MeshPhongMaterial({map: glintMap, transparent: true, opacity: 0});
         glintMat.blending = THREE['AdditiveBlending'];
