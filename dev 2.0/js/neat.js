@@ -67,6 +67,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     neat.onStartFunctions.addFlags = function(){
       neat.assets.didYouSeeTheSun = false;
       neat.assets.timeToGlint = false;
+      neat.assets.intro = false;
     };
 
     /***on load functions***/
@@ -177,7 +178,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       neat.timeouts.rain = setTimeout(function(){ neat.assets.states.rain.start(); }, stagesTime.rain);
       neat.timeouts.sun2 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun2);
       neat.timeouts.final = setTimeout(function(){
-        neat.buttons.sun.add();
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
         //testing
@@ -188,12 +188,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     neat.buttons = {
-      sun: {
-          add: function(){
-              events.AddButton({text:"sun", function: neat.assets.states.sun.start, id:"sun"});
-          },
-          remove: function(){ events.RemoveElementByID("sun"); }
-      },
       rain: {
           add: function(){
               events.AddButton({text:"rain", function: neat.assets.states.rain.start, id:"rain"});
@@ -220,7 +214,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     }
 
     function states(scene) {
-      var curState = undefined, prevState = undefined;
+      var curState = undefined, prevState = undefined, idle = true;
       var ret =
       {
         sun:{
@@ -233,15 +227,23 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatheavenlytransition.play();
             audio.sounds.neatheavenlytransition.fade(0, 1, 1000);
-            if (neat.assets.timeToGlint) {
-              glint(scene, 3000);
-              neat.assets.timeToGlint = false;
+            if (neat.assets.intro) {
+              if (prevState == 'dirt') defintelyNotTheSun(scene);
+              if (prevState == 'rain') glint(scene, 2500);
             }
-            if (neat.assets.didYouSeeTheSun == false) {
-              defintelyNotTheSun(scene);
-              neat.assets.didYouSeeTheSun = true;
-              neat.assets.timeToGlint = true;
+            else {
+              if (neat.assets.timeToGlint) {
+                glint(scene, 3000);
+                neat.assets.timeToGlint = false;
+                neat.assets.intro = true;
+              }
+              if (neat.assets.didYouSeeTheSun == false) {
+                defintelyNotTheSun(scene);
+                neat.assets.didYouSeeTheSun = true;
+                neat.assets.timeToGlint = true;
+              }
             }
+            setTimeout(function(){idle = true;}, 3500);
           },
           stop: function(){
             audio.sounds.neatheavenlytransition.fade(1, 0, 500);
@@ -252,6 +254,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         rain:{
           start: function(){
             if(curState == "rain") return;
+            if(idle == false) return;
+            idle = false;
             ret.stop("rain");
             //possible raindrop locations between these values
             var neatRaindropsPos = {
@@ -261,6 +265,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             var standardRaindropsPos = {
               xMin:-310, xMax:-250,
               yMin: 460, yMax: 600};
+
+            //neat.assets.Glass_neat_Dirt.material.isClean = false;
+            neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.0, keepOpac: false});
 
             //start rain particle system
             neat.assets.rainPS.Init(neat.assets.scene);
@@ -290,10 +297,9 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatrainexteriorloop.play();
             audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
-            //resetVertices();
             var r_rainTween = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
             var l_rainTween = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
-            //neat.animationHandlers.sh.play(90,0);
+            if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
           },
           stop: function(){
             //stop rain particle system
@@ -328,6 +334,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         dirt:{
           start: function(){
             if(curState == "dirt") return;
+            if(idle == false) return;
+            idle = false;
             ret.stop("dirt");
             neat.assets.leavesPS.Init(neat.assets.scene);
             neat.assets.Glass_standard_Dirt.material.Start({startOnce: true});
@@ -337,10 +345,12 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
             audio.sounds.neatwindleaves.play();
             audio.sounds.neatwindleaves.fade(0, 1, 1000);
+            if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
           },
           stop: function(){
             neat.assets.leavesPS.Stop();
-            neat.assets.Glass_neat_Dirt.material.Clean();
+            neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.2, keepOpac: false});
+            //neat.assets.Glass_neat_Dirt.material.Clean();
 
             audio.sounds.neatwindleaves.fade(1, 0, 500);
           }
