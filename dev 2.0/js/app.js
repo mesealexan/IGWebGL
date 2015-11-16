@@ -23,7 +23,8 @@ require(["main"], function(main){
     //main.Start("LoE");
     //main.Start("i89");
     //main.Start("cardinal");
-    main.Start("neat");
+    //main.Start("neat");
+    main.Start("sound");
 });
 
 require(["sample"]);
