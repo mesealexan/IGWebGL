@@ -294,17 +294,53 @@ $('#neat-sparkle').on('click', function(){neatSparkle.stop().play();})
  
  
 <h3>IG/Endur Related Sounds</h3>
+    
+<br/><br/>
 
-<button id="laser-burp">Play Laser Burp</button>
+<script type="text/javascript">    
+var igSpaceIntro = new Howl({
+  src: ['sounds/ig-space-intro.mp3', 'sounds/ig-space-intro.ogg', 'sounds/ig-space-intro.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+    
+    
+listOfHowlerObjects.push(igSpaceIntro);
+    
+    
+var igWhoosh = new Howl({
+  src: ['sounds/ig-whoosh.mp3', 'sounds/ig-whoosh.ogg', 'sounds/ig-whoosh.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+    
+    
+listOfHowlerObjects.push(igWhoosh);
+</script>
+
+
+    
+    
+<button id="ig-space-intro">Play Intro Space Sound</button> This goes in the very beginning. Make sure it plays as soon as the animation starts, no delay.
 <br/><br/>
     
-<button id="background-space">Play Background Space (12 sec)</button>
+<button id="ig-whoosh">Play Whoosh</button> This is the whoosh sound when any of the side views of the IG units are activated. 
 <br/><br/>
 
-
+<button id="laser-burp">Play Laser Burp</button> (do not use - just here for reference)
+<br/><br/>
+    
+<button id="background-space">Play Background Space (12 sec)</button> (do not use - just here for reference)
+<br/><br/>
 
 <script type="text/javascript">
-   
+
+$('#ig-space-intro').on('click', function(){igSpaceIntro.stop().play();})
+
+$('#ig-whoosh').on('click', function(){igWhoosh.stop().play();})
+
 
 $('#coldnight-intro').on('click', function(){
 			i89ColdNightIntro.fade(i89ColdNightIntroVolume,1.0,2000);
@@ -375,6 +411,53 @@ $('#laser-burp').on('click', function(){zappersound.stop().play();})
 $('#background-space').on('click', function(){backgroundSpaceSound.stop().play();})
 
 </script>
-</body>
+
+<h3>LoE Related Sounds</h3>
+    
+<script type="text/javascript">    
+var loeFactoryLoopVolume = 1.0;
+listOfObjectVolumes.push(loeFactoryLoopVolume);
+var loeFactoryLoop = new Howl({
+  src: ['sounds/loe-factory-loop.mp3', 'sounds/loe-factory-loop.ogg', 'sounds/loe-factory-loop.m4a'],
+  autoplay: false,
+  loop: true,
+  volume: 1.0
+});
+listOfHowlerObjects.push(loeFactoryLoop);
+    
+
+var loeApplyCoating = new Howl({
+  src: ['sounds/loe-apply-coating.mp3', 'sounds/loe-apply-coating.ogg', 'sounds/loe-apply-coating.m4a'],
+  autoplay: false,
+  loop: false,
+  volume: 1.0
+});
+
+    
+</script>    
+<button id="loe-factory-loop">1. Play LoE Factory Sound</button> <button id="loe-factory-loop06">2. Then Reduce to 60%</button> <button id="loe-factory-loop00">3. Finally, Reduce to 0%</button>This goes in the very beginning. Keep looping until the camera zooms back. When it zooms back, reduce sound to 60%. Then, when the factory line goes off camera, reduce to 0%.
+<br/><br/>
+<button id="loe-apply-coating">Play LoE Apply Coating Sound</button> This needs to be repeated while the animation of the LoE coating is being applied to the glass. When out of view of the camera, do not play.
+
+    
+    <script type="text/javascript">
+    
+    $('#loe-factory-loop').on('click', function(){loeFactoryLoop.stop().play();})
+    
+    $('#loe-factory-loop06').on('click', function(){
+			loeFactoryLoop.fade(loeFactoryLoopVolume,0.6,1000);
+			loeFactoryLoopVolume = 0.6;
+			})
+    
+    $('#loe-factory-loop00').on('click', function(){
+			loeFactoryLoop.fade(loeFactoryLoopVolume,0.0,2000);
+			loeFactoryLoopVolume = 0.0;
+			})
+    
+    $('#loe-apply-coating').on('click', function(){loeApplyCoating.stop().play();})
+
+    </script>
+    
+    </body>
 </html>
 
