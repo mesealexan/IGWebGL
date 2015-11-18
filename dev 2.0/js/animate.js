@@ -20,8 +20,6 @@ define(["underscore", "updater", "tween"],
     animate.camera = undefined;
     animate.loader = undefined;
     animate.updater = new updater();
-    //todo: remove this
-    GlobalFunctions.updater = animate.updater;
     /***end public fields***/
 
     animate.Animate = function(){

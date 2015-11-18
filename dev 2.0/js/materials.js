@@ -600,7 +600,7 @@ define(["three", "animate"], function(THREE, animate){
         };
     };
 
-    function extractMaterialFromJSON(folderName, material){
+    function extractMaterialFromJSON(folderName, material){   
         if(material.map){
             material.map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/'+
               folderName+'/'+material.map.sourceFile);

@@ -1,5 +1,5 @@
-define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
-    function(animate, watch, materials, tween, events, particleSystem){
+define(["animate", "watch", "materials", "tween", "events", "particleSystem", "audio"],
+    function(animate, watch, materials, tween, events, particleSystem, audio){
     var LoE = {};
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
@@ -9,6 +9,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
         colt_t = undefined,
         mixed_t = undefined; //background plane textures
 
+    LoE.soundNames = ['loe-factory-loop', 'loe-apply-coating'];
     LoE.folderName = "LoE";
     LoE.assetNames = ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'];
@@ -184,6 +185,11 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
 
     function reactToFrame(frame){
         switch (frame){
+            case 0: {
+                audio.sounds.loefactoryloop.play();
+                audio.sounds.loefactoryloop.fade(1, 0.6, 7000);
+                break;
+            }
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
                 LoE.assets.silverPS.holder.visible = true;
@@ -195,6 +201,10 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
                 break;
+            case 245: {
+                audio.sounds.loeapplycoating.play();
+                break;
+            }
             case 288:
                 LoE.assets.silverPS.holder.visible = false;
                 break;
@@ -202,6 +212,11 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem"],
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 break;
+            case 315: {
+                audio.sounds.loeapplycoating.play();
+                audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
+                break;
+            }
             case 358:
                 LoE.assets.silverPS.holder.visible = false;
                 break;
