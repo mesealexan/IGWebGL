@@ -93,7 +93,6 @@
 "transparency"  : 1.0,
 "specularCoef"  : 50.0,
 "mapDiffuse"    : "tiling.jpg",
-"mapBump"    : "tiling bump.jpg",
 "vertexColors" : false
 },
 
@@ -128,7 +127,6 @@
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 50.0,
-"mapBump"    : "concrete bump.jpg",
 "vertexColors" : false
 },
 

@@ -1,5 +1,5 @@
-define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal", "neat", "sound", "events", "audio"],
-function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, events, audio){
+define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal", "neat", "sound", "events", "audio", "watch"],
+function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, events, audio, watch){
     var scenes = {//all possible scenes
         i89:i89,
         LoE:LoE,
@@ -22,10 +22,9 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
 
     function traverseChildren (obj, fun) {
         //also calls a function provided as an argument for all children
-        if(obj.children.length > 0){
+        if(obj.children.length > 0)
             for (var i = obj.children.length - 1; i >= 0; i--)
                 traverseChildren(obj.children[i], fun);
-        }
         fun(obj);
     }
 
@@ -38,6 +37,7 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
 
     var loader = function(scene, animationComponent, mediaFolderUrl){//public functionality
         var _this = this;
+        this.loadingScene = true;
         this.scene = scene;
         var selectedScene = scenes[scene.sceneID];
 
@@ -61,6 +61,7 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
                 selectedScene.onFinishLoadFunctions[fun](scene, _this);
             });
             checkCameraAnimationState(_this, animationComponent);
+            _this.loadingScene = false;
         };
 
         this.ParseJSON = function(file){
@@ -101,9 +102,9 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
         load(assetNames[assetIndex]);
 
         function load(name){
-            var l = new THREE.JSONLoader();
-            l.load(_this.mediaFolderUrl+"/models/"+folderName+"/"+name+".js", loadCallback);
-            l.onLoadComplete = onLoadComplete;
+            var loader = new THREE.JSONLoader();
+            loader.load(_this.mediaFolderUrl+"/models/"+folderName+"/"+name+".js", loadCallback);
+            loader.onLoadComplete = onLoadComplete;
         }
 
         function loadCallback(geometry, mats){

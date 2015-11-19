@@ -4,18 +4,37 @@ define(["underscore", "updater", "tween"],
 
     /***private fields***/
     var frameID = 0;//keeps track of frame number, can be used to cancelAnimationFrame
-    //delta time variables
+    //delta time (capped framerate) variables
     var then = _.now();
     var start = then;
-    var total = 0;
-        var last = 0;
     var now = undefined;
     var fps = 30;//should NOT change from 30, all JSON files exported at 30 fps
     var delta = undefined;//actual time between current and last frame
     var interval = 1000 / fps;//ideal time in ms between frames
     /***end private fields***/
 
+    /***private functions***/
+    function resizeWindow(){
+      var newSize = {
+        width: $(animate.container).width(),
+        height: $(animate.container).height()
+      };
+      animate.renderer.setSize( newSize.width, newSize.height );
+		  animate.camera.aspect	= newSize.width / newSize.height;
+		  animate.camera.updateProjectionMatrix();
+    }
+
+    function startWindowAutoResize() {
+      window.addEventListener('resize', resizeWindow, false);
+    }
+
+    function stopWindowAutoResize() {
+      window.removeEventListener('resize', resizeWindow);
+    }
+    /***end private functions***/
+
     /***public fields***/
+    animate.container = undefined;//html element for webGL renderer
     animate.renderer = undefined;
     animate.camera = undefined;
     animate.loader = undefined;
@@ -29,7 +48,6 @@ define(["underscore", "updater", "tween"],
         if(delta > interval){
             then = now - (delta % interval);
             TWEEN.update();
-            total = now - start;
             animate.updater.UpdateHandlers();
             animate.renderer.render(animate.loader.scene, animate.camera);
         }
@@ -44,7 +62,8 @@ define(["underscore", "updater", "tween"],
             if(++this.frame < animation.frames.length){
                 var curFrame = animation.frames[this.frame];
                 mesh.position.set(curFrame.position.x, curFrame.position.z, curFrame.position.y);
-            }else animate.updater.removeHandler(this);
+            }
+            else animate.updater.removeHandler(this);
         }
     };
 
@@ -81,6 +100,10 @@ define(["underscore", "updater", "tween"],
         tween.to( { opacity: to }, time );
         tween.start();
     };
+
+    animate.StartWindowAutoResize = startWindowAutoResize;
+    animate.StopWindowAutoResize = stopWindowAutoResize;
+    animate.ResizeWindow = resizeWindow;
 
     return animate;
 });

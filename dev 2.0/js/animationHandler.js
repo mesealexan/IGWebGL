@@ -3,6 +3,11 @@ define(["genericHandler"], function(genericHandler){
     function animationHandler(){
         var meshes = [];
         var loop = false;
+        var influence = 1;
+
+        this.setInfluence = function (newInfluence) {
+          influence = newInfluence;
+        };
 
         this.setMesh = function(m) {
             if(m.constructor === Array)
@@ -23,7 +28,7 @@ define(["genericHandler"], function(genericHandler){
             if(this.checkPlayback(this.from, this.to)){
                 for(var i = 0; i < meshes.length; i++){
                     meshes[i].morphTargetInfluences[ this.frame - 1 ] = 0;
-                    meshes[i].morphTargetInfluences[ this.frame ] = 1;
+                    meshes[i].morphTargetInfluences[ this.frame ] = influence;
                     meshes[i].morphTargetInfluences[ this.frame + 1 ] = 0;
                 }
             }

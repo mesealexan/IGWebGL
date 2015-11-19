@@ -23,7 +23,6 @@
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
 "mapDiffuse"    : "neat_logo_diff.jpg",
-"mapAlpha"    : "Neat_logo_mask.jpg",
 "vertexColors" : false
 },
 
