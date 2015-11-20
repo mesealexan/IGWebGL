@@ -1,11 +1,10 @@
-define(['events', 'animate', 'events', 'tween', 'animationHandler'], 
-function (events, animate, events, tween, animationHandler) {
+define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'], 
+function (events, animate, events, tween, animationHandler, watch) {
 	var sound = {};
 	sound.folderName = 'sound';
 	sound.assetNames = ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder', 
 	'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
-    'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB'
-	];
+    'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB'];
 	//sound.soundNames = [];
 	sound.onStartFunctions = {};
 	sound.onLoadFunctions = {};
@@ -32,6 +31,15 @@ function (events, animate, events, tween, animationHandler) {
       }
     };
 
+    sound.dummyFrame = {
+        maxFrame: 750,
+        frame: 0,
+        update: function  () {
+            if (this.frame == this.maxFrame) animate.updater.removeHandler(this);
+            this.frame++;
+        }
+    };
+
 	//on start loading
 	sound.onStartFunctions.addLights = function (scene) {
 		sound.assets.ambientLight = new THREE.AmbientLight(0xffffff);
@@ -40,20 +48,21 @@ function (events, animate, events, tween, animationHandler) {
 
 	sound.onStartFunctions.addFlags = function () {
 		sound.flags.didYouSeeThePlane = false;
+        sound.flags.didYouSeeTheTruck = false;
 	};
 
 	//on loading
 	sound.onLoadFunctions.avion_mesh = function (mesh, loader) {
 		sound.assets.avion_mesh = mesh;
 		sound.assets.avion_mesh.visible = false;
-		sound.assets.avion_01_key = loader.ParseJSON('media/models/sound/avion_01_key.json');
-		sound.assets.avion_02_key = loader.ParseJSON('media/models/sound/avion_02_key.json');
+		sound.assets.avion_01_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/avion_01_key.JSON');
+		sound.assets.avion_02_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/avion_02_key.JSON');
 	};
 
 	sound.onLoadFunctions.truck_mesh = function (mesh, loader) {
 		sound.assets.truck_mesh = mesh;
 		sound.assets.truck_mesh.visible = false;
-		sound.assets.truck_key = loader.ParseJSON('media/models/sound/truck_01_key.json');
+		sound.assets.truck_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/truck_01_key.json');
 	};
 
 	sound.onLoadFunctions.ground_plane_mesh = function (mesh) {
@@ -110,37 +119,13 @@ function (events, animate, events, tween, animationHandler) {
         events.ToggleControls(false);
     };
 
-    sound.onFinishLoadFunctions.playStuff = function (scene) {
+    sound.onFinishLoadFunctions.playStuff = function (scene, loader) {
     	sound.assets.states = new states(scene);
-
-    	//truck outside
-    	setTimeout(function(){
-    		sound.assets.states.truck.start();
-    	}, 1000);
-
-    	//plane outside
-    	setTimeout(function(){
-    		sound.assets.states.plane.start();
-    	}, 9000);
-
- 		//truck inside
-    	setTimeout(function(){
-    		sound.assets.states.truck.start();
-    		insideRings(scene);
-    	}, 16000);
-
-    	//plane inside
-    	setTimeout(function(){
-    		sound.assets.states.plane.start();
-    	}, 22000);
-
-    	//to states
-    	setTimeout(function(){
-    		sound.buttons.truck.add();
-    		sound.buttons.plane.add();
-    	}, 27000);
-    	outsideRings(scene);
-        soundGraph(scene, 'outside');
+        sound.assets.rings = new soundRings(scene);
+        animate.updater.addHandler(sound.dummyFrame);
+        watch.watch(sound.dummyFrame, "frame", function(prop, action, newValue, oldValue) {
+            reactToFrame(oldValue);
+        });
     };
 
     //on unloading
@@ -154,12 +139,14 @@ function (events, animate, events, tween, animationHandler) {
 		        start: function () {
 		            ret.stop("truck"); 
 		            temp_mesh = sound.assets.truck_mesh.clone();
-		            temp_mesh.visible = true;
 		            scene.add(temp_mesh);
 		            temp_anim = new animate.PositionRotationHandler(temp_mesh, sound.assets.truck_key);
-                    //in case we will need to cut short the animation
-                    //temp_anim.frame = 100;
+                    if (sound.flags.didYouSeeTheTruck) {
+                        temp_anim.frame = 90;
+                    }
+                    else sound.flags.didYouSeeTheTruck = true;
 		            animate.updater.addHandler(temp_anim);
+                    temp_mesh.visible = true;
 		        },
 
 		        stop: function () {
@@ -173,16 +160,21 @@ function (events, animate, events, tween, animationHandler) {
 
 	          	start: function () {
 		            ret.stop("plane");
-		            if (sound.flags.didYouSeeThePlane) temp_key = sound.assets.avion_02_key;
+                    temp_mesh = sound.assets.avion_mesh.clone();
+                    scene.add(temp_mesh);
+		            if (sound.flags.didYouSeeThePlane) {
+                        temp_key = sound.assets.avion_02_key;
+                        temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
+                        temp_anim.frame = 90;
+                        animate.updater.addHandler(temp_anim);
+                    }
 		            else {
 		            	temp_key = sound.assets.avion_01_key;
 		            	sound.flags.didYouSeeThePlane = true;
+                        temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
+                        animate.updater.addHandler(temp_anim);
 		            }
-		            temp_mesh = sound.assets.avion_mesh.clone();
-		            temp_mesh.visible = true;
-		            scene.add(temp_mesh);
-					temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
-		            animate.updater.addHandler(temp_anim);
+                    temp_mesh.visible = true;
 	          	},
 
 	          	stop: function () {
@@ -198,6 +190,45 @@ function (events, animate, events, tween, animationHandler) {
 	        }
 	    };
       	return ret;
+    }
+
+    function reactToFrame (frame) {
+        console.log(frame);
+        switch (frame) {
+
+            case 50: {
+                sound.assets.states.truck.start();
+                sound.assets.rings.outside.start();
+                break;
+            }
+
+            case 250: {
+                sound.assets.states.plane.start();
+                break;
+            }
+
+            case 420: {
+                sound.assets.rings.outside.stop();
+                break;
+            }
+
+            case 500: {
+                sound.assets.states.truck.start();
+                break;
+            }
+
+            case 650: {
+                sound.assets.states.plane.start();
+                break;
+            }
+
+            case 750: {
+                sound.buttons.truck.add();
+                sound.buttons.plane.add();
+                break;
+            }
+
+        }
     }
 
     //testing
@@ -342,6 +373,150 @@ function (events, animate, events, tween, animationHandler) {
     	tween_03a.start();
     }
 
+// Do not delete this or I will kill you
+/*    function soundRings (scene) {
+        var temp_ring_01 = sound.assets.ring_01_mesh.clone();
+        var temp_ring_02 = sound.assets.ring_02_mesh.clone();
+        var temp_ring_03 = sound.assets.ring_03_mesh.clone();
+
+        var ring_scale_01, ring_scale_02, ring_scale_03, ring_max_scale, ringTween01, ringTween02, ringTween03;
+
+        temp_ring_01.visible = true;
+        temp_ring_01.material.materials[0].transparent = true;
+        temp_ring_01.material.materials[0].opacity = 1; //will be 0 when tweens are done
+
+        temp_ring_02.visible = true;
+        temp_ring_02.material.materials[0].transparent = true;
+        temp_ring_02.material.materials[0].opacity = 1; //will be 0 when tweens are done
+
+        temp_ring_03.visible = true;
+        temp_ring_03.material.materials[0].transparent = true;
+        temp_ring_03.material.materials[0].opacity = 1; //will be 0 when tweens are done
+
+        var ret = {
+
+            outside: {
+
+                start: function () {
+                    ring_scale_01 = new THREE.Vector3(0.8, 0.8, 0.8);
+                    ring_scale_02 = new THREE.Vector3(0.6, 0.6, 0.6);
+                    ring_scale_03 = new THREE.Vector3(0.5, 0.5, 0.5);
+                    ring_max_scale = new THREE.Vector3(1, 1, 1);
+
+                    temp_ring_01.position.y += 110;
+                    temp_ring_01.position.z -= 330;
+                    temp_ring_01.scale.copy(ring_scale_01);
+
+
+                    temp_ring_02.position.y += 110;
+                    temp_ring_02.position.z -= 330;
+                    temp_ring_02.scale.copy(ring_scale_02);
+
+                    temp_ring_03.position.y += 110;
+                    temp_ring_03.position.z -= 330;
+                    temp_ring_03.scale.copy(ring_scale_03);
+
+                    ringTween01 = new TWEEN.Tween(temp_ring_01.scale).to(ring_max_scale, 1000)
+                    .onComplete(function(){
+                        temp_ring_01.scale.copy(ring_scale_01);
+                        ringTween01.start();
+                    });
+
+                    ringTween02 = new TWEEN.Tween(temp_ring_02.scale).to(ring_max_scale, 1000)
+                    .onComplete(function(){
+                        temp_ring_02.scale.copy(ring_scale_02);
+                        ringTween02.start();
+                    });
+
+                    ringTween03 = new TWEEN.Tween(temp_ring_03.scale).to(ring_max_scale, 1000)
+                    .onComplete(function(){
+                        temp_ring_03.scale.copy(ring_scale_03);
+                        ringTween03.start();
+                    });
+
+                    ringTween01.start();
+                    ringTween02.start();
+                    ringTween03.start();
+
+                    scene.add(temp_ring_01);
+                    scene.add(temp_ring_02);
+                    scene.add(temp_ring_03);
+                },
+
+                stop: function () {
+                    ringTween01.stop();
+                    ringTween02.stop();
+                    ringTween03.stop();
+                    scene.remove(temp_ring_01);
+                    scene.remove(temp_ring_02);
+                    scene.remove(temp_ring_03);
+                }
+    
+            },
+
+            inside: {
+
+            }
+
+        };
+        return ret;
+    }*/
+
+    function soundRings (scene) {
+        var temp_rings = [], ring_scales = [], ring_max_scale, ring_tweens = [];
+
+        temp_rings[0] = sound.assets.ring_01_mesh.clone();
+        temp_rings[1] = sound.assets.ring_02_mesh.clone();
+        temp_rings[2] = sound.assets.ring_03_mesh.clone();
+
+        for (var i = 0; i < 3; i ++) {
+            temp_rings[i].material.materials[0].transparent = true;
+            temp_rings[i].material.materials[0].opacity = 1; //will be 0 when tweens are implemented correctly
+            temp_rings[i].visible = true;
+        }
+
+        var ret = {
+
+            outside: {
+
+                start: function () {
+                    ring_scales[0] = new THREE.Vector3(0.8, 0.8, 0.8);
+                    ring_scales[1] = new THREE.Vector3(0.6, 0.6, 0.6);
+                    ring_scales[2] = new THREE.Vector3(0.5, 0.5, 0.5);
+                    ring_max_scale = new THREE.Vector3(1, 1, 1);
+
+                    for (var i = 0; i < 3; i ++) {
+                        temp_rings[i].position.y = 110;
+                        temp_rings[i].position.z = -330;
+                        temp_rings[i].scale.copy(ring_scales[i]);
+
+                        ring_tweens[i] = new TWEEN.Tween(temp_rings[i].scale).to(ring_max_scale, 1000);
+                        ring_tweens[i+3] = new TWEEN.Tween(temp_rings[i].scale).to(ring_scales[i], 1000);
+                        ring_tweens[i].chain(ring_tweens[i+3]);
+                        ring_tweens[i+3].chain(ring_tweens[i]);
+                        ring_tweens[i].start();
+                        scene.add(temp_rings[i]);
+                    }
+                },
+
+                stop: function () {
+                    for (var i = 0; i < 3; i ++) {
+                        ring_tweens[i].stop();
+                        ring_tweens[i+3].stop();
+                        scene.remove(temp_rings[i]);
+                    }
+                }
+    
+            },
+
+            inside: {
+
+            }
+
+        };
+        return ret;
+    }
+
     function soundGraph (scene, location) {
         //setup
         var temp_graph = sound.assets.graphic_bars_mesh.clone();
@@ -371,28 +546,33 @@ function (events, animate, events, tween, animationHandler) {
         temp_anim = new animationHandler();
         temp_anim.setMesh(temp_graph);
 
-        var graphOpacityTween01 = new TWEEN.Tween(temp_graph.material.materials[0]).to({opacity: 1}, 2000).delay(1000);
+        var graphOpacityTween01 = new TWEEN.Tween(temp_graph.material.materials[0]).to({opacity: 1}, 1000);
         var graphOpacityTweenOut01 = new TWEEN.Tween(temp_graph.material.materials[0]).to({opacity: 0}, 2000)
         .onComplete(function(){
             scene.remove(temp_graph);
         }).delay(9000);
 
-        var graphOpacityTween02 = new TWEEN.Tween(temp_graph_plane.material.materials[0]).to({opacity: 1}, 2000).delay(1000);
+        var graphOpacityTween02 = new TWEEN.Tween(temp_graph_plane.material.materials[0]).to({opacity: 1}, 1000);
         var graphOpacityTweenOut02 = new TWEEN.Tween(temp_graph_plane.material.materials[0]).to({opacity: 0}, 2000)
         .onComplete(function(){
             //scene.remove(temp_graph);
         }).delay(9000);
 
-        var graphOpacityTween03 = new TWEEN.Tween(temp_graph_plane.material.materials[1]).to({opacity: 0.35}, 2000).delay(1000);
+        var graphOpacityTween03 = new TWEEN.Tween(temp_graph_plane.material.materials[1]).to({opacity: 0.35}, 1000);
         var graphOpacityTweenOut03 = new TWEEN.Tween(temp_graph_plane.material.materials[1]).to({opacity: 0}, 2000)
         .onComplete(function(){
             scene.remove(temp_graph);
         }).delay(9000);
 
         var text100Tween = new TWEEN.Tween(temp_text100db.material.materials[0]).to({opacity: 1}, 1000).delay(1000);
-        var text100TweenOut = new TWEEN.Tween(temp_text100db.material.materials[0]).to({opacity: 0}, 1000).delay(4200);
+        var text100TweenOut = new TWEEN.Tween(temp_text100db.material.materials[0]).to({opacity: 0}, 1000).delay(4200).onComplete(function(){
+            scene.remove(temp_text100db);
+        });
+
         var text160Tween = new TWEEN.Tween(temp_text160db.material.materials[0]).to({opacity: 1}, 1000).delay(2100);
-        var text160TweenOut = new TWEEN.Tween(temp_text160db.material.materials[0]).to({opacity: 0}, 1000).delay(2000);
+        var text160TweenOut = new TWEEN.Tween(temp_text160db.material.materials[0]).to({opacity: 0}, 1000).delay(2000).onComplete(function(){
+            scene.remove(temp_text160db);
+        });
 
         text100Tween.chain(text100TweenOut);
         text100TweenOut.chain(text160Tween);
@@ -434,10 +614,6 @@ function (events, animate, events, tween, animationHandler) {
         graphOpacityTween02.start();
         graphOpacityTween03.start();
         text100Tween.start();
-    }
-
-    function insideGraph (scene) {
-
     }
     //-----
 
