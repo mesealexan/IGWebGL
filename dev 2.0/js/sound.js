@@ -1,15 +1,15 @@
-define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'], 
+define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'],
 function (events, animate, events, tween, animationHandler, watch) {
 	var sound = {};
 	sound.folderName = 'sound';
-	sound.assetNames = ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder', 
+	sound.assetNames = ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
 	'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
     'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB', 'graphic_text80dB'];
 	//sound.soundNames = [];
 	sound.onStartFunctions = {};
 	sound.onLoadFunctions = {};
 	sound.onFinishLoadFunctions = {};
-	//sound.onUnloadFunctions = {};
+	sound.onUnloadFunctions = {};
 	sound.animationHandlers = {};
 	//sound.timeouts = {};
 	//sound.animations = {};
@@ -51,12 +51,12 @@ function (events, animate, events, tween, animationHandler, watch) {
 	//on start loading
 	sound.onStartFunctions.addLights = function (scene) {
 		sound.assets.ambientLight = new THREE.AmbientLight(0xffffff);
-        scene.add(sound.assets.ambientLight);
+    scene.add(sound.assets.ambientLight);
 	};
 
 	sound.onStartFunctions.addFlags = function () {
-		sound.flags.isCardinal = false; 
-        sound.flags.perspective = 'outside';
+		sound.flags.isCardinal = false;
+    sound.flags.perspective = 'outside';
 	};
 
 	//on loading
@@ -75,8 +75,8 @@ function (events, animate, events, tween, animationHandler, watch) {
 
 	sound.onLoadFunctions.ground_plane_mesh = function (mesh) {
 		var map = mesh.material.materials[0].map;
-        map.wrapS = THREE.RepeatWrapping;
-        map.wrapT = THREE.RepeatWrapping;
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.RepeatWrapping;
 		map.repeat.set(128, 128);
 	};
 
@@ -86,25 +86,25 @@ function (events, animate, events, tween, animationHandler, watch) {
 	};
 
 	sound.onLoadFunctions.ring_01_mesh = function (mesh) {
-        mesh.material.materials[0]
+    mesh.material.materials[0]
 		mesh.visible = false;
-		sound.assets.ring_01_mesh = mesh.clone();
+		sound.assets.ring_01_mesh = mesh;
 	};
 
 	sound.onLoadFunctions.ring_02_mesh = function (mesh) {
 		mesh.visible = false;
-		sound.assets.ring_02_mesh = mesh.clone();
+		sound.assets.ring_02_mesh = mesh;
 	};
 
 	sound.onLoadFunctions.ring_03_mesh = function (mesh) {
 		mesh.visible = false;
-		sound.assets.ring_03_mesh = mesh.clone();
+		sound.assets.ring_03_mesh = mesh;
 	};
 
-    sound.onLoadFunctions.graphic_bars_mesh = function (mesh) {
-        sound.assets.graphic_bars_mesh = mesh;
-        sound.assets.graphic_bars_mesh.visible = false;
-    };
+  sound.onLoadFunctions.graphic_bars_mesh = function (mesh) {
+    sound.assets.graphic_bars_mesh = mesh;
+    sound.assets.graphic_bars_mesh.visible = false;
+  };
 
     sound.onLoadFunctions.graphic_plane = function (mesh) {
         sound.assets.graphic_plane = mesh;
@@ -113,29 +113,29 @@ function (events, animate, events, tween, animationHandler, watch) {
     };
 
     sound.onLoadFunctions.graphic_text100dB = function (mesh) {
-        sound.assets.graphic_text100dB = mesh.clone();
+        sound.assets.graphic_text100dB = mesh;
         sound.assets.graphic_text100dB.visible = false;
     };
 
     sound.onLoadFunctions.graphic_text160dB = function (mesh) {
-        sound.assets.graphic_text160dB = mesh.clone();
+        sound.assets.graphic_text160dB = mesh;
         sound.assets.graphic_text160dB.visible = false;
     };
 
     sound.onLoadFunctions.graphic_text50dB = function (mesh) {
         mesh.visible = false;
-        sound.assets.graphic_text50dB = mesh.clone();
+        sound.assets.graphic_text50dB = mesh;
     };
 
     sound.onLoadFunctions.graphic_text80dB = function (mesh) {
         mesh.visible = false;
-        sound.assets.graphic_text80dB = mesh.clone();
+        sound.assets.graphic_text80dB = mesh;
     };
 
     sound.onLoadFunctions.window_mesh = function (mesh) {
         mesh.material.materials[0].transparent = true;
         mesh.material.materials[0].color.set(0x331a00);
-        sound.assets.window_mesh = mesh.clone();
+        sound.assets.window_mesh = mesh;
     };
 
 	//on finish loading
@@ -152,8 +152,12 @@ function (events, animate, events, tween, animationHandler, watch) {
             reactToFrame(oldValue);
         });
     };
-
     //on unloading
+		sound.onUnloadFunctions.unload = function(){
+			sound.dummyFrame.frame = 0;
+			animate.updater.removeHandler(sound.dummyFrame);
+
+		};
 
     //private
     function states (scene) {
@@ -162,7 +166,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	        truck: {
 
 		        start: function () {
-		            ret.stop("truck"); 
+		            ret.stop("truck");
 		            temp_mesh = sound.assets.truck_mesh.clone();
 		            scene.add(temp_mesh);
 		            temp_anim = new animate.PositionRotationHandler(temp_mesh, sound.assets.truck_key);
@@ -209,7 +213,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	         	}
 
 	        },
-	        
+
 	        stop: function (newState) {
 	          	if(curState)ret[curState].stop();
 	          	curState = newState;
@@ -219,8 +223,7 @@ function (events, animate, events, tween, animationHandler, watch) {
     }
 
     function reactToFrame (frame) {
-        switch (frame) {
-
+			  switch (frame) {
             case 50: {
                 sound.assets.states.truck.start();
                 sound.assets.rings.outside.start();
@@ -282,7 +285,7 @@ function (events, animate, events, tween, animationHandler, watch) {
         side_graph.material.materials[0].opacity = 0;
         side_graph.visible = true;
 
-        for (var i = 0; i < temp_graph_plane.material.materials.length; i ++ ) {
+        for (var i = 0; i < temp_graph_plane.material.materials.length; i++ ) {
             temp_graph_plane.material.materials[i].transparent = true;
             temp_graph_plane.material.materials[i].opacity = 0;
         }
@@ -363,13 +366,13 @@ function (events, animate, events, tween, animationHandler, watch) {
                 truck_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text100db_tween_out.delay(4000);
                     if (sound.flags.perspective == 'inside') {
-                        temp_text100db_tween_out.delay(2000); 
+                        temp_text100db_tween_out.delay(2000);
                         if (sound.flags.isCardinal) {
                             side_text100db.visible = false;
                             side_text50db.visible = true;
                             side_text50db_tween_out.delay(2000);
                             side_text50db_tween.start();
-                        }  
+                        }
                         else {
                             side_text50db.visible = false;
                             side_text100db.visible = true;
@@ -382,14 +385,14 @@ function (events, animate, events, tween, animationHandler, watch) {
                 plane_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text160db_tween_out.delay(4000);
                     if (sound.flags.perspective == 'inside') {
-                        temp_text160db_tween_out.delay(2000); 
+                        temp_text160db_tween_out.delay(2000);
                         if (sound.flags.isCardinal) {
                             side_text160db.visible = false;
                             side_text80db.visible = true;
                             side_text80db_tween_out.delay(2000);
                             side_text80db_tween.start();
 
-                        }  
+                        }
                         else {
                             side_text80db.visible = false;
                             side_text160db.visible = true;
@@ -475,7 +478,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                     graph_opacity_tween_03_out.start();
 
                 }
-    
+
             },
 
             inside: {
