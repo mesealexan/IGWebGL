@@ -23,9 +23,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.loader.scene.add( animate.camera );
     }
 
-    function getMediaFolderURL() {
-      return $('mediafolder').data("url");
-    }
+    function getMediaFolderURL() { return $('mediafolder').data("url"); }
     /***end private functions***/
 
     /***public fields***/

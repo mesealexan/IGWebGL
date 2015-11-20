@@ -45,7 +45,7 @@ define(["underscore", "updater", "tween"],
         frameID = requestAnimationFrame(animate.Animate);
         now = _.now();
         delta = now - then;
-        if(delta > interval){
+        if(delta >= interval){
             then = now - (delta % interval);
             TWEEN.update();
             animate.updater.UpdateHandlers();
