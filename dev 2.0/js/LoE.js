@@ -187,7 +187,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
         switch (frame){
             case 0: {
                 audio.sounds.loefactoryloop.play();
-                audio.sounds.loefactoryloop.fade(1, 0.6, 7000);
+                audio.sounds.loefactoryloop.fade(0, 0.6, 7000);
                 break;
             }
             case 169:

@@ -4,7 +4,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	sound.folderName = 'sound';
 	sound.assetNames = ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder', 
 	'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
-    'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB'];
+    'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB', 'graphic_text80dB'];
 	//sound.soundNames = [];
 	sound.onStartFunctions = {};
 	sound.onLoadFunctions = {};
@@ -23,11 +23,19 @@ function (events, animate, events, tween, animationHandler, watch) {
           },
           remove: function(){ events.RemoveElementByID("truck"); }
       },
+
       plane: {
           add: function(){
               events.AddButton({text:"plane", function: sound.assets.states.plane.start, id:"plane"});
           },
           remove: function(){ events.RemoveElementByID("plane"); }
+      },
+
+      cardinal: {
+          add: function(){
+              events.AddButton({text:"toggle cardinal", function: toggleCardinal, id:"cardinal"});
+          },
+          remove: function(){ events.RemoveElementByID("cardinal"); }
       }
     };
 
@@ -47,7 +55,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	};
 
 	sound.onStartFunctions.addFlags = function () {
-		sound.flags.isNeat = false; //this will be useful when implementing the Neat condition
+		sound.flags.isCardinal = false; 
         sound.flags.perspective = 'outside';
 	};
 
@@ -62,7 +70,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	sound.onLoadFunctions.truck_mesh = function (mesh, loader) {
 		sound.assets.truck_mesh = mesh;
 		sound.assets.truck_mesh.visible = false;
-		sound.assets.truck_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/truck_01_key.json');
+		sound.assets.truck_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/truck_01_key.JSON');
 	};
 
 	sound.onLoadFunctions.ground_plane_mesh = function (mesh) {
@@ -93,7 +101,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 		sound.assets.ring_03_mesh = mesh.clone();
 	};
 
-    sound.onLoadFunctions.graphic_bars_mesh = function (mesh, loader) {
+    sound.onLoadFunctions.graphic_bars_mesh = function (mesh) {
         sound.assets.graphic_bars_mesh = mesh;
         sound.assets.graphic_bars_mesh.visible = false;
     };
@@ -112,6 +120,22 @@ function (events, animate, events, tween, animationHandler, watch) {
     sound.onLoadFunctions.graphic_text160dB = function (mesh) {
         sound.assets.graphic_text160dB = mesh.clone();
         sound.assets.graphic_text160dB.visible = false;
+    };
+
+    sound.onLoadFunctions.graphic_text50dB = function (mesh) {
+        mesh.visible = false;
+        sound.assets.graphic_text50dB = mesh.clone();
+    };
+
+    sound.onLoadFunctions.graphic_text80dB = function (mesh) {
+        mesh.visible = false;
+        sound.assets.graphic_text80dB = mesh.clone();
+    };
+
+    sound.onLoadFunctions.window_mesh = function (mesh) {
+        mesh.material.materials[0].transparent = true;
+        mesh.material.materials[0].color.set(0x331a00);
+        sound.assets.window_mesh = mesh.clone();
     };
 
 	//on finish loading
@@ -228,6 +252,7 @@ function (events, animate, events, tween, animationHandler, watch) {
             case 750: {
                 sound.buttons.truck.add();
                 sound.buttons.plane.add();
+                sound.buttons.cardinal.add();
                 break;
             }
 
@@ -239,30 +264,59 @@ function (events, animate, events, tween, animationHandler, watch) {
 
         var temp_graph = sound.assets.graphic_bars_mesh.clone();
         var temp_graph_plane = sound.assets.graphic_plane.clone();
+        var side_graph = sound.assets.graphic_bars_mesh.clone();
+        var side_graph_plane = sound.assets.graphic_plane.clone();
         var temp_text100db = sound.assets.graphic_text100dB.clone();
         var temp_text160db = sound.assets.graphic_text160dB.clone();
+        var side_text100db = sound.assets.graphic_text100dB.clone();
+        var side_text160db = sound.assets.graphic_text160dB.clone();
+
+        var side_text50db = sound.assets.graphic_text50dB.clone();
+        var side_text80db = sound.assets.graphic_text80dB.clone();
 
         temp_graph.material.materials[0].transparent = true;
         temp_graph.material.materials[0].opacity = 0;
         temp_graph.visible = true;
 
+        side_graph.material.materials[0].transparent = true;
+        side_graph.material.materials[0].opacity = 0;
+        side_graph.visible = true;
+
         for (var i = 0; i < temp_graph_plane.material.materials.length; i ++ ) {
             temp_graph_plane.material.materials[i].transparent = true;
             temp_graph_plane.material.materials[i].opacity = 0;
         }
+
         temp_graph_plane.visible = true;
+        side_graph_plane.visible = true;
 
         temp_text100db.material.materials[0].transparent = true;
         temp_text100db.material.materials[0].opacity = 0;
         temp_text100db.visible = true;
 
+        side_text100db.material.materials[0].transparent = true;
+        side_text100db.material.materials[0].opacity = 0;
+
         temp_text160db.material.materials[0].transparent = true;
         temp_text160db.material.materials[0].opacity = 0;
         temp_text160db.visible = true;
 
+        side_text160db.material.materials[0].transparent = true;
+        side_text160db.material.materials[0].opacity = 0;
+
         temp_graph.material.materials[0].morphTargets = true;
         temp_anim = new animationHandler();
         temp_anim.setMesh(temp_graph);
+
+        side_graph.material.materials[0].morphTargets = true;
+        side_anim = new animationHandler();
+        side_anim.setMesh(side_graph);
+
+        side_text50db.material.materials[0].transparent = true;
+        side_text50db.material.materials[0].opacity = 0;
+
+        side_text80db.material.materials[0].transparent = true;
+        side_text80db.material.materials[0].opacity = 0;
 
         var graph_opacity_tween_01 = new TWEEN.Tween(temp_graph.material.materials[0]).to({opacity: 1}, 1000);
         var graph_opacity_tween_02 = new TWEEN.Tween(temp_graph_plane.material.materials[0]).to({opacity: 1}, 1000);
@@ -279,6 +333,14 @@ function (events, animate, events, tween, animationHandler, watch) {
         var temp_text160db_tween = new TWEEN.Tween(temp_text160db.material.materials[0]).to({opacity: 1}, 1000);
         var temp_text160db_tween_out = new TWEEN.Tween(temp_text160db.material.materials[0]).to({opacity: 0}, 1000);
         temp_text160db_tween.chain(temp_text160db_tween_out);
+
+        var side_text50db_tween = new TWEEN.Tween(side_text50db.material.materials[0]).to({opacity: 1}, 1000);
+        var side_text50db_tween_out = new TWEEN.Tween(side_text50db.material.materials[0]).to({opacity: 0}, 1000);
+        side_text50db_tween.chain(side_text50db_tween_out);
+
+        var side_text80db_tween = new TWEEN.Tween(side_text80db.material.materials[0]).to({opacity: 1}, 1000);
+        var side_text80db_tween_out = new TWEEN.Tween(side_text80db.material.materials[0]).to({opacity: 0}, 1000);
+        side_text80db_tween.chain(side_text80db_tween_out);
 
         temp_rings[0] = sound.assets.ring_01_mesh.clone();
         temp_rings[1] = sound.assets.ring_02_mesh.clone();
@@ -300,13 +362,40 @@ function (events, animate, events, tween, animationHandler, watch) {
             dummy: {
                 truck_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text100db_tween_out.delay(4000);
-                    if (sound.flags.perspective == 'inside') temp_text100db_tween_out.delay(2000);
+                    if (sound.flags.perspective == 'inside') {
+                        temp_text100db_tween_out.delay(2000); 
+                        if (sound.flags.isCardinal) {
+                            side_text100db.visible = false;
+                            side_text50db.visible = true;
+                            side_text50db_tween_out.delay(2000);
+                            side_text50db_tween.start();
+                        }  
+                        else {
+                            side_text50db.visible = false;
+                            side_text100db.visible = true;
+                        }
+                    }
+
                     temp_text100db_tween.start();
                 },
 
                 plane_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text160db_tween_out.delay(4000);
-                    if (sound.flags.perspective == 'inside') temp_text160db_tween_out.delay(2000);
+                    if (sound.flags.perspective == 'inside') {
+                        temp_text160db_tween_out.delay(2000); 
+                        if (sound.flags.isCardinal) {
+                            side_text160db.visible = false;
+                            side_text80db.visible = true;
+                            side_text80db_tween_out.delay(2000);
+                            side_text80db_tween.start();
+
+                        }  
+                        else {
+                            side_text80db.visible = false;
+                            side_text160db.visible = true;
+                        }
+                    }
+
                     temp_text160db_tween.start();
                 },
             },
@@ -321,7 +410,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                     temp_graph_plane.position.y = 110;
                     temp_graph_plane.position.z = -330;
 
-                    temp_text100db.position.x = -2;
+                    temp_text100db.position.x = -1;
                     temp_text100db.position.y = 110;
                     temp_text100db.position.z = -330;
 
@@ -338,7 +427,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                     scene.add(temp_text100db);
                     scene.add(temp_text160db);
 
-                    temp_anim.loop(0,30);
+                    temp_anim.loop(0, 30);
 
                     ring_scales[0] = new THREE.Vector3(0.8, 0.8, 0.8);
                     ring_scales[1] = new THREE.Vector3(0.6, 0.6, 0.6);
@@ -373,6 +462,8 @@ function (events, animate, events, tween, animationHandler, watch) {
                         ring_tweens[i+3].stop();
                     }
 
+                    temp_anim.stop();
+
                     graph_opacity_tween_01_out.onComplete(function(){
                         scene.remove(temp_graph);
                     }).start();
@@ -396,11 +487,23 @@ function (events, animate, events, tween, animationHandler, watch) {
                     temp_graph.rotation.y = Math.PI/2;
                     temp_graph.scale.set(0.5, 0.5, 0.5);
 
+                    side_graph.position.y = 99;
+                    side_graph.position.z = -180;
+                    side_graph.position.x = -100;
+                    side_graph.rotation.y = Math.PI/2;
+                    side_graph.scale.set(0.5, 0.5, 0.5);
+
                     temp_graph_plane.position.x = 7;
                     temp_graph_plane.position.y = 109;
                     temp_graph_plane.position.z = -200;
                     temp_graph_plane.rotation.y = Math.PI/2;
                     temp_graph_plane.scale.set(0.5, 0.5, 0.5);
+
+                    side_graph_plane.position.x = -99;
+                    side_graph_plane.position.y = 109;
+                    side_graph_plane.position.z = -181;
+                    side_graph_plane.rotation.y = Math.PI/2;
+                    side_graph_plane.scale.set(0.5, 0.5, 0.5);
 
                     temp_text100db.position.x = 6;
                     temp_text100db.position.y = 110;
@@ -408,11 +511,35 @@ function (events, animate, events, tween, animationHandler, watch) {
                     temp_text100db.rotation.y = Math.PI/2;
                     temp_text100db.scale.set(0.5, 0.5, 0.5);
 
+                    side_text100db.position.x = -100;
+                    side_text100db.position.y = 110;
+                    side_text100db.position.z = -180;
+                    side_text100db.rotation.y = Math.PI/2;
+                    side_text100db.scale.set(0.5, 0.5, 0.5);
+
                     temp_text160db.position.x = 6;
                     temp_text160db.position.y = 110;
-                    temp_text160db.position.z = -200;
+                    temp_text160db.position.z = -200.5;
                     temp_text160db.rotation.y = Math.PI/2;
                     temp_text160db.scale.set(0.5, 0.5, 0.5);
+
+                    side_text160db.position.x = -100;
+                    side_text160db.position.y = 110;
+                    side_text160db.position.z = -179.5;
+                    side_text160db.rotation.y = Math.PI/2;
+                    side_text160db.scale.set(0.5, 0.5, 0.5);
+
+                    side_text80db.position.x = -100;
+                    side_text80db.position.y = 93;
+                    side_text80db.position.z = -177;
+                    side_text80db.rotation.y = Math.PI/2;
+                    side_text80db.scale.set(0.5, 0.5, 0.5);
+
+                    side_text50db.position.x = -100;
+                    side_text50db.position.y = 93;
+                    side_text50db.position.z = -178;
+                    side_text50db.rotation.y = Math.PI/2;
+                    side_text50db.scale.set(0.5, 0.5, 0.5);
 
                     graph_opacity_tween_01.start();
                     graph_opacity_tween_02.start();
@@ -420,10 +547,16 @@ function (events, animate, events, tween, animationHandler, watch) {
 
                     scene.add(temp_graph);
                     scene.add(temp_graph_plane);
-                    scene.add(temp_text100db);
-                    scene.add(temp_text160db);
 
-                    temp_anim.loop(0,30);
+                    scene.add(side_graph);
+                    scene.add(side_graph_plane);
+                    scene.add(side_text100db);
+                    scene.add(side_text160db);
+                    scene.add(side_text50db);
+                    scene.add(side_text80db);
+
+                    temp_anim.loop(0, 30);
+                    side_anim.loop(0, 30);
 
                     ring_scales[0] = new THREE.Vector3(0.4, 0.4, 0.4);
                     ring_scales[1] = new THREE.Vector3(0.3, 0.3, 0.3);
@@ -456,6 +589,18 @@ function (events, animate, events, tween, animationHandler, watch) {
 
         };
         return ret;
+    }
+
+    function toggleCardinal () {
+        sound.flags.isCardinal = !sound.flags.isCardinal;
+        var tween_01_out = new TWEEN.Tween(sound.assets.window_mesh.material.materials[0]).to({opacity: 0}, 500)
+        .onComplete(function(){
+            if (sound.flags.isCardinal) sound.assets.window_mesh.material.materials[0].color.set(0xffffff);
+            else sound.assets.window_mesh.material.materials[0].color.set(0x331a00);
+        });
+        var tween_01_in = new TWEEN.Tween(sound.assets.window_mesh.material.materials[0]).to({opacity: 1}, 500);
+        tween_01_out.chain(tween_01_in);
+        tween_01_out.start();
     }
 
 	return sound;
