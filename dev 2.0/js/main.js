@@ -57,6 +57,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.buttons.loadLoE.add();
         main.buttons.loadNeat.add();
         main.buttons.loadSound.add();
+        main.buttons.loadPreserve.add();
         //because they are unique, lights are added by each scene's individual file
     };
 
@@ -115,6 +116,13 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
             add: function(){
                 events.AddButton({text:"load sound", function: function(){
                     main.LoadNewScene("sound")}, id:"loadSound", parent:"loadButtons"
+                });
+            }
+        },
+        loadPreserve:{
+            add: function(){
+                events.AddButton({text:"load preserve", function: function(){
+                    main.LoadNewScene("preserve")}, id:"loadPreserve", parent:"loadButtons"
                 });
             }
         }

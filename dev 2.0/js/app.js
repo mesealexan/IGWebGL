@@ -24,6 +24,7 @@ require(["main"], function(main){
     //main.Start("webGL", "i89");
     //main.Start("webGL", "cardinal");
     //main.Start("webGL", "neat");
-    main.Start("webGL", "sound");
+    //main.Start("webGL", "sound");
+    main.Start("webGL", "preserve");
     //console.log(require("tornado"));
 });

@@ -1,14 +1,15 @@
 define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal", "neat", "sound", "events",
-"audio", "watch", "tornado"],
+"audio", "watch", "tornado", "preserve"],
 function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, events,
-  audio, watch, tornado){
+  audio, watch, tornado, preserve){
     var scenes = {//all possible scenes
         i89:i89,
         LoE:LoE,
         cardinal:cardinal,
         neat: neat,
         sound: sound,
-        tornado: tornado
+        tornado: tornado,
+        preserve: preserve
     };
 
     function disposeObject (obj) {
