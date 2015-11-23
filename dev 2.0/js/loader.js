@@ -1,6 +1,6 @@
-define(["underscore", "cameraHandler", "materials", "i89", "LoE", "cardinal", "neat", "sound", "events",
+define(["underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
 "audio", "watch", "tornado"],
-function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, events,
+function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
   audio, watch, tornado){
     var scenes = {//all possible scenes
         i89:i89,
@@ -15,9 +15,10 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
         //.dispose() removes the object (geometry, material and/or texture) from memory
         if(obj.geometry) obj.geometry.dispose();
         if(obj.material){
-            if(obj.material.materials)
-                for (var j = obj.material.materials.length - 1; j >= 0; j--)
-                    obj.material.materials[j].dispose();
+            if(obj.material.materials){
+              for (var j = obj.material.materials.length - 1; j >= 0; j--)
+                obj.material.materials[j].dispose();                      
+            }
             else obj.material.dispose();
         }
         obj.parent.remove(obj);
@@ -43,6 +44,7 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
         this.loadingScene = true;
         this.scene = scene;
         var selectedScene = scenes[scene.sceneID];
+        this.animationComponent = animationComponent;
 
         this.mediaFolderUrl =
         selectedScene.mediaFolderUrl =
@@ -91,18 +93,19 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
     };
 
     loader.prototype.LoadAssets = function(selectedScene){
-        var _this = this;
-        var mesh = undefined;
-        var assetIndex = 0;
-        var folderName = selectedScene.folderName;
-        var assetNames = selectedScene.assetNames;
-        var soundNames = selectedScene.soundNames;
+        var _this = this,
+            mesh = undefined,
+            assetIndex = 0,
+            folderName = selectedScene.folderName,
+            assetNames = selectedScene.assetNames,
+            soundNames = selectedScene.soundNames,
+            nextAsset = undefined;
 
-        /***camera handler***/
+        //camera handler
         var cameraJSON = this.ParseJSON(_this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON");
         this.cameraHandler = new cameraHandler(cameraJSON);
 
-        load(assetNames[assetIndex]);
+        if((nextAsset = assetNames[assetIndex]) !== undefined)load(nextAsset); //load next asset if it exists
 
         function load(name){
             var loader = new THREE.JSONLoader();
@@ -128,22 +131,23 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
 
         function onLoadComplete(){
             var curAssetName = assetNames[assetIndex];
+            var nextAssetName = assetNames[++assetIndex];
+
             //function associated to current mesh, called for features such as positioning
             var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
             if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
 
-            var nextAssetName = assetNames[++assetIndex];
             _this.scene.add(mesh);
 
-            if(nextAssetName != undefined){//still has assets to load, go again
-                load(nextAssetName);
-                return;
-            }
-            loadSounds();//done loading assets, load sounds
+            //still has assets to load, go again
+            if(nextAssetName !== undefined){ load(nextAssetName); return; }
+            //done loading assets, load sounds
+            loadSounds();
         }
 
         function loadSounds(){
-            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets, _this.mediaFolderUrl);//call on load complete on all sounds loaded
+            //call on load complete on all sounds loaded
+            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets, _this.mediaFolderUrl);
         }
     };
 
@@ -153,11 +157,10 @@ function(underscore, cameraHandler, materials, i89, LoE, cardinal, neat, sound, 
             $('.loader').append('<h1 id="loadingText">loading</h1>');
         },
         show: function(){
-            $('#webGL').hide();
+            animate.renderer.clear()
             $('.loader').show();
         },
         hide: function(){
-            $('#webGL').show();
             $('.loader').hide();
         }
     };

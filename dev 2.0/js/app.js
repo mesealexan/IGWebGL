@@ -2,7 +2,14 @@ require.config({
     paths: {
                 "jquery" : "../lib/jquery/dist/jquery.min",
          "orbitControls" : "../lib/three.js/OrbitControls",
-                 "three" : "../lib/three.js/build/three",
+                 "three" : "../lib/three.js/build/three71",
+              "MaskPass" : "../lib/EffectComposer/MaskPass",
+     "ConvolutionShader" : "../lib/EffectComposer/ConvolutionShader",
+             "BloomPass" : "../lib/EffectComposer/BloomPass",
+            "RenderPass" :  "../lib/EffectComposer/RenderPass",
+            "ShaderPass" : "../lib/EffectComposer/ShaderPass",
+            "CopyShader" : "../lib/EffectComposer/CopyShader",
+        "EffectComposer" : "../lib/EffectComposer/EffectComposer",
             "underscore" : "../lib/underscore/underscore",
                  "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
                  "watch" : "../lib/Watch.js/src/watch",
@@ -24,6 +31,7 @@ require(["main"], function(main){
     //main.Start("webGL", "i89");
     //main.Start("webGL", "cardinal");
     //main.Start("webGL", "neat");
-    main.Start("webGL", "sound");
+    //main.Start("webGL", "sound");
+    main.Start("webGL", "tornado");
     //console.log(require("tornado"));
 });

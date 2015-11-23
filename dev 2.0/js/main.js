@@ -39,7 +39,8 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         //entry point (first function called by require in app.js)
         loader.LoadingScreen.add();
         width = $('#'+containerID).width();
-        height = $('#'+containerID).height();
+        height = $('#'+containerID).height();        
+        animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
         main.scene = new THREE.Scene();
         main.scene.sceneID = sceneID;
@@ -52,11 +53,13 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         animate.StartWindowAutoResize();
         addRenderer();
         addCamera();
+        animate.SetDefaultRenderFunction();
         main.buttons.loadCardinal.add();
         main.buttons.load_i89.add();
         main.buttons.loadLoE.add();
         main.buttons.loadNeat.add();
         main.buttons.loadSound.add();
+        main.buttons.loadTornado.add();
         //because they are unique, lights are added by each scene's individual file
     };
 
@@ -73,11 +76,12 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.loader.UnloadScene(newScene);
 
         function newScene(){
-            main.scene = new THREE.Scene();
+            //main.scene = new THREE.Scene();
+            addCamera();
             main.scene.sceneID = sceneID;
+            //console.log(main.scene.uuid)
             main.loader = new loader(main.scene, animate, getMediaFolderURL());
             animate.loader = main.loader;
-            addCamera();
         }
     };
     /***end public functions***/
@@ -115,6 +119,13 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
             add: function(){
                 events.AddButton({text:"load sound", function: function(){
                     main.LoadNewScene("sound")}, id:"loadSound", parent:"loadButtons"
+                });
+            }
+        },
+        loadTornado:{
+            add: function(){
+                events.AddButton({text:"load tornado", function: function(){
+                    main.LoadNewScene("tornado")}, id:"loadTornado", parent:"loadButtons"
                 });
             }
         }

@@ -2,9 +2,11 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     function(three, watch, events, tween, underscore, animate){
     var cardinal = {
       folderName: "cardinal",
+      assetNames: ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'],
       onStartFunctions: {},
       onLoadFunctions: {},
       onFinishLoadFunctions: {},
+      onUnloadFunctions: {},
       animationHandlers: {},
       snowHandlers: {},
       assets: {}
@@ -20,7 +22,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         animation_6:{ frame: 194, speed: 0.05}
     };
 
-    cardinal.assetNames = ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'];
 
     /***on start functions***/
     cardinal.onStartFunctions.addLights = function(scene){
@@ -41,15 +42,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
-        /*var side = 10000;
-        var geometry = new THREE.PlaneBufferGeometry( side, side );
-        var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
-            specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
-        var plane = new THREE.Mesh( geometry, material );
-        plane.rotation.x -= Math.PI / 2;
-        plane.position.set(0, -100, 0);
-        plane.frustumCulled = false;
-        scene.add( plane );*/
         var radius = 10000;
         var geometry = new THREE.CylinderGeometry( radius, radius, 1, 32 );
         var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
@@ -136,6 +128,10 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
     };
     /***end on finish functions***/
+
+    cardinal.onUnloadFunctions.removeFog = function(scene) {
+      scene.fog = undefined;
+    }
 
     function tweenCamToMain(fun){
         var tweenBackSpeed = 2;

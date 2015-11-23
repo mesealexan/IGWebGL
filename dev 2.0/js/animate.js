@@ -1,6 +1,10 @@
-define(["underscore", "updater", "tween"],
-    function(underscore, updater, tween){
-    var animate = {};//public functionality
+define(["underscore", "updater", "tween", "EffectComposer",
+"CopyShader", "ShaderPass", "RenderPass", "BloomPass", "ConvolutionShader", "MaskPass"],
+    function(underscore, updater, tween, EffectComposer,
+      CopyShader, ShaderPass, RenderPass, BloomPass, ConvolutionShader, MaskPass){
+    var animate = {
+      fps: 30
+    };//public functionality
 
     /***private fields***/
     var frameID = 0;//keeps track of frame number, can be used to cancelAnimationFrame
@@ -8,9 +12,8 @@ define(["underscore", "updater", "tween"],
     var then = _.now();
     var start = then;
     var now = undefined;
-    var fps = 30;//should NOT change from 30, all JSON files exported at 30 fps
     var delta = undefined;//actual time between current and last frame
-    var interval = 1000 / fps;//ideal time in ms between frames
+    var interval = 1000 / animate.fps;//ideal time in ms between frames
     /***end private fields***/
 
     /***private functions***/
@@ -31,6 +34,7 @@ define(["underscore", "updater", "tween"],
     function stopWindowAutoResize() {
       window.removeEventListener('resize', resizeWindow);
     }
+
     /***end private functions***/
 
     /***public fields***/
@@ -39,9 +43,10 @@ define(["underscore", "updater", "tween"],
     animate.camera = undefined;
     animate.loader = undefined;
     animate.updater = new updater();
+		animate.composer = undefined;
     /***end public fields***/
 
-    animate.Animate = function(){
+    animate.Animate = function(systemDelta){
         frameID = requestAnimationFrame(animate.Animate);
         now = _.now();
         delta = now - then;
@@ -49,11 +54,31 @@ define(["underscore", "updater", "tween"],
             then = now - (delta % interval);
             TWEEN.update();
             animate.updater.UpdateHandlers();
-            animate.renderer.render(animate.loader.scene, animate.camera);
+            //animate.renderer.render(animate.loader.scene, animate.camera);
+            //animate.composer.render();
+            animate.RenderFunction();
         }
     };
 
     animate.StopAnimating = function () { cancelAnimationFrame(frameID); };
+
+    animate.RenderFunction = function () {
+
+    }
+
+    animate.SetDefaultRenderFunction = function () {
+      animate.RenderFunction = function(){animate.renderer.render(animate.loader.scene, animate.camera)};
+    };
+    animate.SetCustomRenderFunction = function (fun) { animate.RenderFunction = fun; };
+
+    animate.SetCustomFramerate = function (f) {
+      animate.fps = f;
+      interval = 1000 / animate.fps
+    };
+    animate.SetDefaultFramerate = function () {
+      animate.fps = 30;
+      interval = 1000 / animate.fps;
+  };
 
     //handlers instantiated by scene meshes for updating transform data
     animate.PositionHandler = function(mesh, animation){
