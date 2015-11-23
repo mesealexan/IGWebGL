@@ -25,5 +25,5 @@ require(["main"], function(main){
     //main.Start("webGL", "cardinal");
     //main.Start("webGL", "neat");
     main.Start("webGL", "sound");
-    require(["sample"]);
+    //console.log(require("tornado"));
 });

@@ -24,6 +24,10 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     }
 
     function getMediaFolderURL() { return $('mediafolder').data("url"); }
+
+    function setBackground(containerID, mediaFolderUrl) {
+      $('#'+containerID).css('background', 'url('+mediaFolderUrl+'/images/bck.jpg) no-repeat center center fixed');
+    }
     /***end private functions***/
 
     /***public fields***/
@@ -40,6 +44,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.scene = new THREE.Scene();
         main.scene.sceneID = sceneID;
         var mediaFolderUrl = getMediaFolderURL();
+        setBackground(containerID, mediaFolderUrl);
         materials.makeTextureCube(mediaFolderUrl);
         materials.makeCloudTextureCube(mediaFolderUrl);
         main.loader = new loader(main.scene, animate, mediaFolderUrl);

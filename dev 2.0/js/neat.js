@@ -1,25 +1,20 @@
 define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio"],
     function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio){
-    var neat = {};
+    var neat = {
+      folderName: "neat",
+      assetNames: ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
+      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated'],
+      soundNames: ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves', 'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'],
+      onStartFunctions: {},
+      onLoadFunctions: {},
+      onFinishLoadFunctions: {},
+      onUnloadFunctions: {},
+      animationHandlers: {},
+      timeouts: {},
+      assets: {}
+    }
+
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
-
-    neat.folderName = "neat";
-    neat.assetNames = ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-    'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated'];
-    neat.soundNames = ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves', 'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'];
-    neat.onStartFunctions = {};
-    neat.onLoadFunctions = {};
-    neat.onFinishLoadFunctions = {};
-    neat.onUnloadFunctions = {};
-    neat.animationHandlers = {};
-    neat.timeouts = {};
-    neat.assets = {};
-
-    //testing
-    /*var tscene = null, tcamera = null;
-    var mouse = new THREE.Vector2();
-    var tframe = null;*/
-    //------
 
     /***on start functions***/
     neat.onStartFunctions.addLights = function(scene){

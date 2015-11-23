@@ -1,8 +1,16 @@
 define(["three", "watch", "events", "tween", "underscore", "animate"],
     function(three, watch, events, tween, underscore, animate){
-    var cardinal = {};
-    var fadeOutTime = 700;
+    var cardinal = {
+      folderName: "cardinal",
+      onStartFunctions: {},
+      onLoadFunctions: {},
+      onFinishLoadFunctions: {},
+      animationHandlers: {},
+      snowHandlers: {},
+      assets: {}
+    };
 
+    var fadeOutTime = 700;
     var cameraAnimations = {
         animation_1:{ from: 0, to: 158},
         animation_2:{ from: 158, to: 190},
@@ -11,14 +19,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         animation_5:{ frame: 193, speed: 0.05},
         animation_6:{ frame: 194, speed: 0.05}
     };
-
-    cardinal.folderName = "cardinal";
-    cardinal.onStartFunctions = {};
-    cardinal.onLoadFunctions = {};
-    cardinal.onFinishLoadFunctions = {};
-    cardinal.animationHandlers = {};
-    cardinal.snowHandlers = {};
-    cardinal.assets = {};
 
     cardinal.assetNames = ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'];
 

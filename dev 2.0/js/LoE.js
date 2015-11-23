@@ -1,6 +1,16 @@
 define(["animate", "watch", "materials", "tween", "events", "particleSystem", "audio"],
     function(animate, watch, materials, tween, events, particleSystem, audio){
-    var LoE = {};
+    var LoE = {
+      soundNames: ['loe-factory-loop', 'loe-apply-coating'],
+      folderName: "LoE",
+      assetNames: ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+          'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'],
+      onStartFunctions: {},
+      onLoadFunctions: {},
+      onFinishLoadFunctions: {},
+      assets: {}
+    };
+
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
     var coatTexture = undefined;
@@ -8,15 +18,6 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     var hot_t = undefined,
         colt_t = undefined,
         mixed_t = undefined; //background plane textures
-
-    LoE.soundNames = ['loe-factory-loop', 'loe-apply-coating'];
-    LoE.folderName = "LoE";
-    LoE.assetNames = ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
-        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'];
-    LoE.onStartFunctions = {};
-    LoE.onLoadFunctions = {};
-    LoE.onFinishLoadFunctions = {};
-    LoE.assets = {};
 
     /***on start functions***/
     LoE.onStartFunctions.storeScene = function(scene) {

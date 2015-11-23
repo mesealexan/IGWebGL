@@ -1,20 +1,29 @@
-define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'], 
+define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'],
 function (events, animate, events, tween, animationHandler, watch) {
-	var sound = {};
-	sound.folderName = 'sound';
-	sound.assetNames = ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder', 
-	'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
-    'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB', 'graphic_text80dB'];
-	//sound.soundNames = [];
-	sound.onStartFunctions = {};
-	sound.onLoadFunctions = {};
-	sound.onFinishLoadFunctions = {};
-	//sound.onUnloadFunctions = {};
-	sound.animationHandlers = {};
-	//sound.timeouts = {};
-	//sound.animations = {};
-	sound.assets = {};
-	sound.flags = {};
+	var sound = {
+		folderName: 'sound',
+		assetNames: ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
+		'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
+	  'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB',
+		'graphic_text80dB'],
+		onStartFunctions: {},
+		onLoadFunctions: {},
+		onFinishLoadFunctions: {},
+		onUnloadFunctions: {},
+		animationHandlers: {},
+		assets: {},
+		flags: {},
+		dummyFrame: undefined
+	};
+
+	var dummyFrame = function(){
+		this.maxFrame = 750;
+		this.frame = 0;
+		this.update = function () {
+				if (this.frame == this.maxFrame) animate.updater.removeHandler(this);
+				this.frame++;
+		};
+	}
 
 	sound.buttons = {
       truck: {
@@ -23,14 +32,12 @@ function (events, animate, events, tween, animationHandler, watch) {
           },
           remove: function(){ events.RemoveElementByID("truck"); }
       },
-
       plane: {
           add: function(){
               events.AddButton({text:"plane", function: sound.assets.states.plane.start, id:"plane"});
           },
           remove: function(){ events.RemoveElementByID("plane"); }
       },
-
       cardinal: {
           add: function(){
               events.AddButton({text:"toggle cardinal", function: toggleCardinal, id:"cardinal"});
@@ -39,24 +46,15 @@ function (events, animate, events, tween, animationHandler, watch) {
       }
     };
 
-    sound.dummyFrame = {
-        maxFrame: 750,
-        frame: 0,
-        update: function  () {
-            if (this.frame == this.maxFrame) animate.updater.removeHandler(this);
-            this.frame++;
-        }
-    };
-
 	//on start loading
 	sound.onStartFunctions.addLights = function (scene) {
 		sound.assets.ambientLight = new THREE.AmbientLight(0xffffff);
-        scene.add(sound.assets.ambientLight);
+    scene.add(sound.assets.ambientLight);
 	};
 
 	sound.onStartFunctions.addFlags = function () {
-		sound.flags.isCardinal = false; 
-        sound.flags.perspective = 'outside';
+		sound.flags.isCardinal = false;
+    sound.flags.perspective = 'outside';
 	};
 
 	//on loading
@@ -75,8 +73,8 @@ function (events, animate, events, tween, animationHandler, watch) {
 
 	sound.onLoadFunctions.ground_plane_mesh = function (mesh) {
 		var map = mesh.material.materials[0].map;
-        map.wrapS = THREE.RepeatWrapping;
-        map.wrapT = THREE.RepeatWrapping;
+    map.wrapS = THREE.RepeatWrapping;
+    map.wrapT = THREE.RepeatWrapping;
 		map.repeat.set(128, 128);
 	};
 
@@ -86,25 +84,25 @@ function (events, animate, events, tween, animationHandler, watch) {
 	};
 
 	sound.onLoadFunctions.ring_01_mesh = function (mesh) {
-        mesh.material.materials[0]
+    //mesh.material.materials[0]
 		mesh.visible = false;
-		sound.assets.ring_01_mesh = mesh.clone();
+		sound.assets.ring_01_mesh = mesh;
 	};
 
 	sound.onLoadFunctions.ring_02_mesh = function (mesh) {
 		mesh.visible = false;
-		sound.assets.ring_02_mesh = mesh.clone();
+		sound.assets.ring_02_mesh = mesh;
 	};
 
 	sound.onLoadFunctions.ring_03_mesh = function (mesh) {
 		mesh.visible = false;
-		sound.assets.ring_03_mesh = mesh.clone();
+		sound.assets.ring_03_mesh = mesh;
 	};
 
-    sound.onLoadFunctions.graphic_bars_mesh = function (mesh) {
-        sound.assets.graphic_bars_mesh = mesh;
-        sound.assets.graphic_bars_mesh.visible = false;
-    };
+  sound.onLoadFunctions.graphic_bars_mesh = function (mesh) {
+    sound.assets.graphic_bars_mesh = mesh;
+    sound.assets.graphic_bars_mesh.visible = false;
+  };
 
     sound.onLoadFunctions.graphic_plane = function (mesh) {
         sound.assets.graphic_plane = mesh;
@@ -113,29 +111,29 @@ function (events, animate, events, tween, animationHandler, watch) {
     };
 
     sound.onLoadFunctions.graphic_text100dB = function (mesh) {
-        sound.assets.graphic_text100dB = mesh.clone();
+        sound.assets.graphic_text100dB = mesh;
         sound.assets.graphic_text100dB.visible = false;
     };
 
     sound.onLoadFunctions.graphic_text160dB = function (mesh) {
-        sound.assets.graphic_text160dB = mesh.clone();
+        sound.assets.graphic_text160dB = mesh;
         sound.assets.graphic_text160dB.visible = false;
     };
 
     sound.onLoadFunctions.graphic_text50dB = function (mesh) {
         mesh.visible = false;
-        sound.assets.graphic_text50dB = mesh.clone();
+        sound.assets.graphic_text50dB = mesh;
     };
 
     sound.onLoadFunctions.graphic_text80dB = function (mesh) {
         mesh.visible = false;
-        sound.assets.graphic_text80dB = mesh.clone();
+        sound.assets.graphic_text80dB = mesh;
     };
 
     sound.onLoadFunctions.window_mesh = function (mesh) {
         mesh.material.materials[0].transparent = true;
         mesh.material.materials[0].color.set(0x331a00);
-        sound.assets.window_mesh = mesh.clone();
+        sound.assets.window_mesh = mesh;
     };
 
 	//on finish loading
@@ -145,62 +143,60 @@ function (events, animate, events, tween, animationHandler, watch) {
     };
 
     sound.onFinishLoadFunctions.playStuff = function (scene, loader) {
+			sound.dummyFrame = new dummyFrame();
     	sound.assets.states = new states(scene);
-        sound.assets.rings = new soundRings(scene);
-        animate.updater.addHandler(sound.dummyFrame);
-        watch.watch(sound.dummyFrame, "frame", function(prop, action, newValue, oldValue) {
-            reactToFrame(oldValue);
-        });
+      sound.assets.rings = new soundRings(scene);
+      animate.updater.addHandler(sound.dummyFrame);
+      watch.watch(sound.dummyFrame, "frame", function(prop, action, newValue, oldValue) {
+          reactToFrame(oldValue);
+      });
     };
 
     //on unloading
+		sound.onUnloadFunctions.unload = function(){
+		};
 
     //private
     function states (scene) {
     	var curState = undefined, temp_mesh = undefined, temp_anim = undefined;
       	var ret = {
 	        truck: {
-
 		        start: function () {
-		            ret.stop("truck"); 
+		            ret.stop("truck");
 		            temp_mesh = sound.assets.truck_mesh.clone();
 		            scene.add(temp_mesh);
 		            temp_anim = new animate.PositionRotationHandler(temp_mesh, sound.assets.truck_key);
-                    if (sound.flags.perspective == 'inside') {
-                        temp_anim.frame = 90;
-                    }
-
+                if (sound.flags.perspective == 'inside') temp_anim.frame = 90;
 		            animate.updater.addHandler(temp_anim);
-                    temp_mesh.visible = true;
-                    sound.assets.rings.dummy.truck_text();
-		        },
-
+                temp_mesh.visible = true;
+                sound.assets.rings.dummy.truck_text();
+		        }
+						,
 		        stop: function () {
 		        	animate.updater.removeHandler(temp_anim);
-		          	scene.remove(temp_mesh);
+		          scene.remove(temp_mesh);
 		        }
-
-	        },
-
+	        }
+					,
 	        plane: {
-
 	          	start: function () {
+								var temp_key;
 		            ret.stop("plane");
                     temp_mesh = sound.assets.avion_mesh.clone();
                     scene.add(temp_mesh);
 		            if (sound.flags.perspective == 'inside') {
-                        temp_key = sound.assets.avion_02_key;
-                        temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
-                        temp_anim.frame = 90;
-                        animate.updater.addHandler(temp_anim);
-                    }
+                  temp_key = sound.assets.avion_02_key;
+                  temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
+                  temp_anim.frame = 90;
+                  animate.updater.addHandler(temp_anim);
+                }
 		            else {
 		            	temp_key = sound.assets.avion_01_key;
-                        temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
-                        animate.updater.addHandler(temp_anim);
+                  temp_anim = new animate.PositionRotationHandler(temp_mesh, temp_key);
+                  animate.updater.addHandler(temp_anim);
 		            }
-                    temp_mesh.visible = true;
-                    sound.assets.rings.dummy.plane_text();
+                temp_mesh.visible = true;
+                sound.assets.rings.dummy.plane_text();
 	          	},
 
 	          	stop: function () {
@@ -209,7 +205,7 @@ function (events, animate, events, tween, animationHandler, watch) {
 	         	}
 
 	        },
-	        
+
 	        stop: function (newState) {
 	          	if(curState)ret[curState].stop();
 	          	curState = newState;
@@ -219,43 +215,30 @@ function (events, animate, events, tween, animationHandler, watch) {
     }
 
     function reactToFrame (frame) {
-        switch (frame) {
-
-            case 50: {
+			  switch (frame) {
+            case 50:
                 sound.assets.states.truck.start();
                 sound.assets.rings.outside.start();
                 break;
-            }
-
-            case 250: {
+            case 250:
                 sound.assets.states.plane.start();
                 break;
-            }
-
-            case 420: {
+            case 420:
                 sound.assets.rings.outside.stop();
                 break;
-            }
-
-            case 500: {
+            case 500:
                 sound.flags.perspective = 'inside';
                 sound.assets.states.truck.start();
                 sound.assets.rings.inside.start();
                 break;
-            }
-
-            case 650: {
+            case 650:
                 sound.assets.states.plane.start();
                 break;
-            }
-
-            case 750: {
+            case 750:
                 sound.buttons.truck.add();
                 sound.buttons.plane.add();
                 sound.buttons.cardinal.add();
                 break;
-            }
-
         }
     }
 
@@ -282,7 +265,7 @@ function (events, animate, events, tween, animationHandler, watch) {
         side_graph.material.materials[0].opacity = 0;
         side_graph.visible = true;
 
-        for (var i = 0; i < temp_graph_plane.material.materials.length; i ++ ) {
+        for (var i = 0; i < temp_graph_plane.material.materials.length; i++ ) {
             temp_graph_plane.material.materials[i].transparent = true;
             temp_graph_plane.material.materials[i].opacity = 0;
         }
@@ -305,11 +288,13 @@ function (events, animate, events, tween, animationHandler, watch) {
         side_text160db.material.materials[0].opacity = 0;
 
         temp_graph.material.materials[0].morphTargets = true;
-        temp_anim = new animationHandler();
+
+        var temp_anim = new animationHandler();
         temp_anim.setMesh(temp_graph);
 
         side_graph.material.materials[0].morphTargets = true;
-        side_anim = new animationHandler();
+
+        var side_anim = new animationHandler();
         side_anim.setMesh(side_graph);
 
         side_text50db.material.materials[0].transparent = true;
@@ -358,18 +343,17 @@ function (events, animate, events, tween, animationHandler, watch) {
         }
 
         var ret = {
-
             dummy: {
                 truck_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text100db_tween_out.delay(4000);
                     if (sound.flags.perspective == 'inside') {
-                        temp_text100db_tween_out.delay(2000); 
+                        temp_text100db_tween_out.delay(2000);
                         if (sound.flags.isCardinal) {
                             side_text100db.visible = false;
                             side_text50db.visible = true;
                             side_text50db_tween_out.delay(2000);
                             side_text50db_tween.start();
-                        }  
+                        }
                         else {
                             side_text50db.visible = false;
                             side_text100db.visible = true;
@@ -382,14 +366,14 @@ function (events, animate, events, tween, animationHandler, watch) {
                 plane_text: function() {
                     if (sound.flags.perspective == 'outside') temp_text160db_tween_out.delay(4000);
                     if (sound.flags.perspective == 'inside') {
-                        temp_text160db_tween_out.delay(2000); 
+                        temp_text160db_tween_out.delay(2000);
                         if (sound.flags.isCardinal) {
                             side_text160db.visible = false;
                             side_text80db.visible = true;
                             side_text80db_tween_out.delay(2000);
                             side_text80db_tween.start();
 
-                        }  
+                        }
                         else {
                             side_text80db.visible = false;
                             side_text160db.visible = true;
@@ -401,7 +385,6 @@ function (events, animate, events, tween, animationHandler, watch) {
             },
 
             outside: {
-
                 start: function () {
                     temp_graph.position.y = 92;
                     temp_graph.position.z = -330;
@@ -426,7 +409,6 @@ function (events, animate, events, tween, animationHandler, watch) {
                     scene.add(temp_graph_plane);
                     scene.add(temp_text100db);
                     scene.add(temp_text160db);
-
                     temp_anim.loop(0, 30);
 
                     ring_scales[0] = new THREE.Vector3(0.8, 0.8, 0.8);
@@ -475,7 +457,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                     graph_opacity_tween_03_out.start();
 
                 }
-    
+
             },
 
             inside: {
