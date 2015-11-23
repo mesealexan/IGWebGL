@@ -20,11 +20,10 @@ require.config({
 });
 
 require(["main"], function(main){
-    //main.Start("LoE");
-    //main.Start("i89");
-    //main.Start("cardinal");
-    //main.Start("neat");
-    main.Start("sound");
+    //main.Start("webGL", "LoE");
+    //main.Start("webGL", "i89");
+    //main.Start("webGL", "cardinal");
+    //main.Start("webGL", "neat");
+    main.Start("webGL", "sound");
+    require(["sample"]);
 });
-
-require(["sample"]);

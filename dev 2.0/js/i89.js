@@ -188,7 +188,6 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 if(animate.camera.outside || animate.camera.inClose) return;
                 animate.camera.outside = true;
                 events.ToggleControls(false);
-                //$("#insideClose").toggle();
                 tween.to( { x: [facingWallPos.x, outsidePos.x],
                     y: [facingWallPos.y, outsidePos.y],
                     z: [facingWallPos.z, outsidePos.z]}, tweenTime );
@@ -207,8 +206,6 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                     y: [facingWallPos.y, insidePos.y],
                     z: [facingWallPos.z, insidePos.z]}, tweenTime );
                 tween.onComplete(function(){
-                    //$("#insideClose").toggle();
-                    //animate.camera.inside = true;
                     animate.camera.outside = false;
                     animate.camera.inClose = false;
                     events.ToggleControls(true);
@@ -249,15 +246,11 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 lookAtTween.start();
                 break;
             case "backOut":
-                //$("#backOut").toggle();
                 tween.to( { x: insidePos.x,
                     y: insidePos.y,
                     z: insidePos.z}, tweenTime );
                 tween.onUpdate( function() {camera.lookAt(windowPos) });
                 tween.onComplete(function(){
-                    //$("#insideClose").toggle();
-                    //$("#outside").toggle();
-                    //$("#inside").toggle();
                     camera.inside = true;
                     camera.outside = false;
                     camera.inClose = false;
@@ -310,10 +303,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 i89.buttons.i89_off.add();
                 i89.buttons.outside.add();
                 i89.buttons.inside.add();
-                //i89.buttons.inClose.add();
                 audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
-                //$('#cameraButtons').toggle();
-                //toggleInput(true);
                 break;
         }
     }

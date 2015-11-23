@@ -41,7 +41,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
     };
 
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
-        var side = 10000;
+        /*var side = 10000;
         var geometry = new THREE.PlaneBufferGeometry( side, side );
         var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
             specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
@@ -49,7 +49,14 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
         plane.rotation.x -= Math.PI / 2;
         plane.position.set(0, -100, 0);
         plane.frustumCulled = false;
-        scene.add( plane );
+        scene.add( plane );*/
+        var radius = 10000;
+        var geometry = new THREE.CylinderGeometry( radius, radius, 1, 32 );
+        var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
+            specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
+        var cylinder = new THREE.Mesh( geometry, material );
+        cylinder.position.set(0, -100, 0);
+        scene.add( cylinder );
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {

@@ -40,7 +40,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     };
 
     LoE.onStartFunctions.loadBackgroundTextures = function(){
-        var folder = "media/models/LoE/";
+        var folder = animate.loader.mediaFolderUrl+"/models/LoE/";
         hot_t = THREE.ImageUtils.loadTexture(folder + "hot.jpg");
         cold_t = THREE.ImageUtils.loadTexture(folder + "cold.jpg");
         mixed_t = THREE.ImageUtils.loadTexture(folder + "mixed.jpg");

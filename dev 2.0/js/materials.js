@@ -154,8 +154,7 @@ define(["three", "animate"], function(THREE, animate){
                     color: new THREE.Color("rgb(0,0,0)"),
                     ambient: new THREE.Color("rgb(0,0,0)"),
                     specular: new THREE.Color("rgb(0,0,0)"),
-                    map:  THREE.ImageUtils.loadTexture(url+'p2_op.png'),
-                    transparent: true
+                    map:  THREE.ImageUtils.loadTexture(url+'p2_op.png')
                 });
                 break;
             case 'LoEplane':
@@ -600,7 +599,7 @@ define(["three", "animate"], function(THREE, animate){
         };
     };
 
-    function extractMaterialFromJSON(folderName, material){   
+    function extractMaterialFromJSON(folderName, material){
         if(material.map){
             material.map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/'+
               folderName+'/'+material.map.sourceFile);

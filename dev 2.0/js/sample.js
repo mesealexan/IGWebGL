@@ -1,9 +1,18 @@
-define(["cardinal", "i89", "LoE", "neat"],
-function(cardinal, i89, LoE, neat){
+var resize;
+define(["cardinal", "i89", "LoE", "neat", "animate"],
+function(cardinal, i89, LoE, neat, animate){
   console.info('cardinal:', cardinal);
   console.info('i89:', i89);
   console.info('LoE:', LoE);
   console.info('neat:', neat);
+  console.info('animate:', animate);
+  /******animate******/
+  //start window auto resize. default is 'on'
+  //animate.StartWindowAutoResize();
+  //stop window auto resize
+  //animate.StopWindowAutoResize();
+  //call window resize
+  //animate.ResizeWindow();
 
   /******cardinal******/
   //zoom from main view to slice
