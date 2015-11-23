@@ -1,19 +1,18 @@
 define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"],
     function(animationHandler, snowHandler, watch, animate, events, audio){
-    var i89 = {};
-    i89.folderName = "i89";
-    i89.assetNames = ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-        'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
-        'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'];
-
-    i89.soundNames = ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"];
-
-    i89.onStartFunctions = {};
-    i89.onLoadFunctions = {};
-    i89.onFinishLoadFunctions = {};
-    i89.animationHandlers = {};
-    i89.snowHandlers = {};
-    i89.assets = {};
+    var i89 = {
+      folderName: "i89",
+      assetNames: ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
+          'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
+          'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'],
+      soundNames: ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"],
+      onStartFunctions: {},
+      onLoadFunctions: {},
+      onFinishLoadFunctions: {},
+      animationHandlers: {},
+      snowHandlers: {},
+      assets: {}
+    };
 
     /***on start functions***/
     i89.onStartFunctions.addSnow = function(scene){
