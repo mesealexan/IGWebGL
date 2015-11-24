@@ -1,5 +1,5 @@
-define(["three", "watch", "events", "tween", "underscore", "animate"],
-    function(three, watch, events, tween, underscore, animate){
+define(["three", "watch", "events", "tween", "underscore", "animate", "audio"],
+    function(three, watch, events, tween, underscore, animate, audio){
     var cardinal = {
       folderName: "cardinal",
       onStartFunctions: {},
@@ -7,7 +7,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
       onFinishLoadFunctions: {},
       animationHandlers: {},
       snowHandlers: {},
-      assets: {}
+      assets: {},
+      soundNames: ['ig-space-intro', 'ig-whoosh']
     };
 
     var fadeOutTime = 700;
@@ -134,6 +135,11 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
     cardinal.onFinishLoadFunctions.AddMouseDownEvent = function(){
         events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
+    };
+
+    cardinal.onFinishLoadFunctions.playSound = function(){
+      audio.sounds.igspaceintro.play();
+      audio.sounds.igspaceintro.fade(0.2, 0.6, 12000);
     };
     /***end on finish functions***/
 
@@ -352,6 +358,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
                     mats[manageEmissive.dessicant_ID].emissive = sliceSelectedC;
                     break;
             }
+            audio.sounds.igwhoosh.play();
         },
         resetAllSlice: function () {
             var mats = cardinal.assets.cardinal_slice.material.materials;

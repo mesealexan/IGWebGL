@@ -1,5 +1,5 @@
-define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'],
-function (events, animate, events, tween, animationHandler, watch) {
+define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials'],
+function (events, animate, events, tween, animationHandler, watch, materials) {
 	var sound = {
 		folderName: 'sound',
 		assetNames: ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
@@ -43,6 +43,12 @@ function (events, animate, events, tween, animationHandler, watch) {
               events.AddButton({text:"toggle cardinal", function: toggleCardinal, id:"cardinal"});
           },
           remove: function(){ events.RemoveElementByID("cardinal"); }
+      },
+      camera: {
+        add: function(){
+            events.AddButton({text:"toggle camera", function: toggleCamera, id:"camera"});
+        },
+        remove: function(){ events.RemoveElementByID("camera"); }
       }
     };
 
@@ -136,7 +142,7 @@ function (events, animate, events, tween, animationHandler, watch) {
         sound.assets.window_mesh = mesh;
     };
 
-    sound.onLoadFunctions.window_glass = function (mesh) {
+    sound.onLoadFunctions.window_glass = function (mesh, loader) {
         var map = new THREE.ImageUtils.loadTexture( sound.mediaFolderUrl+'/models/sound/window_glow.png' );
         mesh.material.materials[0].side = 1;
         mesh.material.materials[0].transparent = true;
@@ -253,6 +259,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                 sound.buttons.truck.add();
                 sound.buttons.plane.add();
                 sound.buttons.cardinal.add();
+                sound.buttons.camera.add();
                 break;
         }
     }
@@ -415,6 +422,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                 start: function () {
                     temp_graph.position.y = 92;
                     temp_graph.position.z = -330;
+                    temp_graph.position.x = 0;
 
                     temp_graph_plane.position.x = 4;
                     temp_graph_plane.position.y = 110;
@@ -427,6 +435,16 @@ function (events, animate, events, tween, animationHandler, watch) {
                     temp_text160db.position.x = -2;
                     temp_text160db.position.y = 110;
                     temp_text160db.position.z = -330;
+
+                    temp_graph.rotation.y = 0;
+                    temp_graph_plane.rotation.y = 0;
+                    temp_text100db.rotation.y = 0;
+                    temp_text160db.rotation.y = 0;
+
+                    temp_graph.scale.set(1, 1, 1);
+                    temp_graph_plane.scale.set(1, 1, 1);
+                    temp_text100db.scale.set(1, 1, 1);
+                    temp_text160db.scale.set(1, 1, 1);
 
                     graph_opacity_tween_01.start();
                     graph_opacity_tween_02.start();
@@ -447,6 +465,7 @@ function (events, animate, events, tween, animationHandler, watch) {
                         temp_rings[i].position.y = 110;
                         temp_rings[i].position.z = -330;
                         temp_rings[i].scale.copy(ring_scales[i]);
+                        temp_rings[i].rotation.y = 0;
 
                         ring_tweens[i] = new TWEEN.Tween(temp_rings[i].scale).to(ring_max_scale, 1000);
                         ring_tweens[i+3] = new TWEEN.Tween(temp_rings[i].scale).to(ring_scales[i], 1000);
@@ -591,7 +610,30 @@ function (events, animate, events, tween, animationHandler, watch) {
                 },
 
                 stop: function () {
+                    var ring_tweens_out = [];
+                    for (var i = 0; i < temp_rings.length; i ++) {
+                        ring_opacity_tweens[i].stop();
+                        ring_opacity_tweens[i+3].stop();
+                        ring_tweens_out[i] = new TWEEN.Tween(temp_rings[i].material.materials[0]).to({opacity: 0}, 500).start();
+                        //must include these somehow in ring_tweens_out[i].onComplete
+                        //scene.remove(temp_rings[i]);
+                        ring_tweens[i].stop();
+                        ring_tweens[i+3].stop();
+                    }
 
+                    temp_anim.stop();
+
+                    graph_opacity_tween_01_out.onComplete(function(){
+                        scene.remove(temp_graph);
+                        scene.remove(side_graph);
+                    }).start();
+
+                    graph_opacity_tween_02_out.onComplete(function(){
+                        scene.remove(temp_graph_plane);
+                        scene.remove(side_graph_plane);
+                    }).start();
+
+                    graph_opacity_tween_03_out.start();
                 }
 
             }
@@ -616,6 +658,18 @@ function (events, animate, events, tween, animationHandler, watch) {
         var tween_01_in = new TWEEN.Tween(sound.assets.window_mesh.material.materials[0]).to({opacity: 1}, 500);
         tween_01_out.chain(tween_01_in);
         tween_01_out.start();
+    }
+
+    function toggleCamera () {
+        if (sound.flags.perspective == 'inside') {
+            sound.flags.perspective = 'outside';
+            //reverse camera here
+            animate.loader.cameraHandler.play(490, 430, sound.assets.rings.outside.start, sound.assets.rings.inside.stop);
+        } else {
+            sound.flags.perspective = 'inside';
+            //play camera normally here
+            animate.loader.cameraHandler.play(430, 490, sound.assets.rings.inside.start, sound.assets.rings.outside.stop);
+        }
     }
 
 	return sound;

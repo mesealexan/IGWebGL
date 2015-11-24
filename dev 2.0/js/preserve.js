@@ -3,7 +3,7 @@ function (events) {
 
 	var preserve = {
 		folderName: 'preserve',
-		assetNames: ['House', 'Ground', 'Sky', 'PickupTruck', 'Wheelbarrow'],
+		assetNames: ['House', 'Ground', 'Sky', 'PickupTruck', 'Wheelbarrow', 'PaintCans', 'Groundmounds'],
 		onStartFunctions: {},
 		onLoadFunctions: {},
 		onFinishLoadFunctions: {},
@@ -36,7 +36,6 @@ function (events) {
 	//on unloading
 
 	//private
-
 
 	return preserve;
 });

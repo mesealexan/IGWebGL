@@ -9,7 +9,6 @@ define(["animate"], function(animate){
             this.from = from;
             this.frame = this.from - 1;
             this.to = --to;
-
             animate.updater.addHandler(this);
         };
 
