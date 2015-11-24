@@ -4,12 +4,12 @@ define(["animate"], function(animate){
         this.frame = -1;
         this.from = undefined;
         this.to = undefined;
+        this.speed = 1;
 
         this.basePlay = function(from, to){
             this.from = from;
             this.frame = this.from - 1;
             this.to = --to;
-
             animate.updater.addHandler(this);
         };
 
@@ -23,7 +23,10 @@ define(["animate"], function(animate){
 
         this.checkPlayback = function(from, to){
             if (from <= to){ //regular playback
-                if (this.frame++ < to) return true; //still has to play
+                if (this.frame < to){ //still has to play
+                  this.frame += this.speed;
+                  return true;
+                }
                 else {
                     this.onComplete();
                     this.onComplete = function(){ };
@@ -31,7 +34,10 @@ define(["animate"], function(animate){
                 } //reached the end
             }
             else if (from > to){ //reverse playback
-                if (this.frame-- > to) return true; //still has to play
+                if (this.frame > to){//still has to play
+                  this.frame += this.speed;
+                  return true;
+                }
                 else{
                     this.onComplete();
                     this.onComplete = function(){ };

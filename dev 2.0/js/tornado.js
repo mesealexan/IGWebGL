@@ -1,7 +1,9 @@
-define(["animate", "events", "animationHandler"], function (animate, events, animationHandler) {
+define(["animate", "events", "animationHandler", "composers", "watch", "tween", "materials", "underscore"],
+function (animate, events, animationHandler, composers, watch, tween, materials, underscore) {
   var tornado = {
     folderName: "tornado",
-    assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds"],
+    assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
+     "Floor_grass", "Hurricane_arm"],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},
@@ -20,24 +22,7 @@ define(["animate", "events", "animationHandler"], function (animate, events, ani
     scene.add(new THREE.AmbientLight(0xffffff));
   };
 
-  tornado.onStartFunctions.addGround = function(scene){
-    /*
-    x:-358.5
-    y:33.8
-    z:-71.6
-    len:2190
-    wid:1265
-    from X:-358
-    to X:-110
-    time: 8s
-    */
-  };
-
   /***on load functions***/
-  tornado.onLoadFunctions.Earth_shell = function (mesh) {
-
-  };
-
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
     mesh.material = mesh.material.materials[0];
     mesh.material.morphTargets = true;
@@ -56,18 +41,44 @@ define(["animate", "events", "animationHandler"], function (animate, events, ani
     animate.updater.addHandler(new scrollingUV());
     tornado.animationHandlers.cloudsAnim = new animationHandler();
     tornado.animationHandlers.cloudsAnim.setMesh(mesh);
+    tornado.animationHandlers.cloudsAnim.speed = 1;
     tornado.animationHandlers.cloudsAnim.play(0, 138);
+  };
+
+  tornado.onLoadFunctions.House = function (mesh) {
+    mesh.material.materials[0].side = 2;
+  };
+
+  tornado.onLoadFunctions.Hurricane_arm = function (mesh) {
+    tornado.assets.Hurricane_arms = [];
+    tornado.assets.Hurricane_arm = mesh;
+    materials.tornado.prototype = new THREE.ShaderMaterial();
+    tornado.assets.Hurricane_arm.material = new materials.tornado();
+
+    for (var i = 0; i < 8; i++) {
+      materials.tornado.prototype = new THREE.ShaderMaterial();
+      var newArm = new THREE.Mesh( mesh.geometry.clone(), new materials.tornado() );
+      newArm.rotation.y += (Math.PI / 4) * i;
+      tornado.assets.Hurricane_arms.push(newArm);
+      mesh.add(newArm);
+    }
   };
 
   /***on finish functions***/
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
-    var composer = new FadeToWhiteComposer();
-    animate.SetCustomRenderFunction(function(){composer.render()});
+    tornado.assets.composer = new composers.Bloom_AdditiveColor({str: 1});
+    animate.SetCustomRenderFunction( function(){ tornado.assets.composer.render(); } );
   };
 
   tornado.onFinishLoadFunctions.addControls = function () {
       events.AddControls();
       events.ToggleControls(false);
+  };
+
+  tornado.onFinishLoadFunctions.addWatch = function (scene, loader) {
+    watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
+        reactToFrame(oldValue);
+    });
   };
 
   /***on unload functions***/
@@ -79,47 +90,62 @@ define(["animate", "events", "animationHandler"], function (animate, events, ani
     animate.SetDefaultFramerate();
   };
 
-  var FadeToWhiteComposer = function() {
-    fadeToWhite = {
-      uniforms: {
-        "tDiffuse": { type: "t", value: null },
-        "amount":   { type: "f", value: 0 }
-      }
-      ,
-      vertexShader: [
-        "varying vec2 vUv;",
-        "void main() {",
-          "vUv = uv;",
-          "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-        "}"
-      ].join( "\n" )
-      ,
-      fragmentShader: [
-        "uniform sampler2D tDiffuse;",
-        "varying vec2 vUv;",
-        "uniform float amount;",
+  function reactToFrame(frame) {
+    switch (frame) {
+      case 10:
+        revealTornado();
+        break;
+      case 230:
+        fadeToWhite();
+        tweenBloomDown();
+        break;
+      case 240:
+        fadeBack();
+        break;
+    }
+  }
 
-        "void main() {",
-          "vec4 tex = texture2D(tDiffuse, vUv);",
-          "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
-        "}"
-      ].join( "\n" )
-    };
+  function fadeToWhite() {//fades to white
+    var amount = tornado.assets.composer.passes[1].uniforms.amount,
+       upTime = 400;
 
-    var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter,
-      format: THREE.RGBAFormat, stencilBuffer: true };
-    var renderTarget = new THREE.WebGLRenderTarget( animate.renderSize.width,
-      animate.renderSize.height, rtParameters );
+    var tweenUp = new TWEEN.Tween( amount );
+    tweenUp.to( { value: 1 }, upTime );
+    tweenUp.start();
+  }
 
-    var composer = new THREE.EffectComposer( animate.renderer, renderTarget );
-    composer.addPass( new THREE.RenderPass( animate.loader.scene, animate.camera ) );
+  function fadeBack(){
+    var amount = tornado.assets.composer.passes[1].uniforms.amount,
+      downTime = 800;
 
-    var effect = new THREE.ShaderPass( fadeToWhite );
-    effect.renderToScreen = true;
-    composer.addPass( effect );
+    var tweenDown = new TWEEN.Tween( amount );
+    tweenDown.to( { value: 0 }, downTime );
+    tweenDown.start();
+  }
 
-    return composer;
-  };
+  function tweenBloomDown() {
+    var amount = tornado.assets.composer.passes[2].copyUniforms.opacity;
+    var tween = new TWEEN.Tween( amount );
+    tween.to( { value: 0 }, 1000 );
+    tween.start();
+  }
+
+  function revealTornado() {
+    var revealTime = 8000, twistTime = 6000, randomOffsetMax = 2000;
+
+    var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
+    tistTween.to( { y: -Math.PI * 2}, twistTime );
+    tistTween.repeat( Infinity );
+    tistTween.start();
+
+    _.each(tornado.assets.Hurricane_arms, function (arm) {
+      var amount = arm.material.uniforms.opacVal;
+      var revealTween = new TWEEN.Tween( amount );
+      revealTween.to( { value: 1 }, revealTime );
+      revealTween.delay(Math.random() * randomOffsetMax)
+      revealTween.start();
+    });
+  }
 
   return tornado;
 });

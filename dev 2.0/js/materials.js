@@ -30,6 +30,11 @@ define(["three", "animate"], function(THREE, animate){
         var url = this.mediaFolderUrl+"/models/"+folderName+"/";
 
         switch(materialName){
+          case 'tornadochecker':
+          material = new THREE.MeshPhongMaterial({
+              map: THREE.ImageUtils.loadTexture(url+'checker.jpg')
+          });
+          break;
             case 'LoEpouring':
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(170,10,243)"),
@@ -797,7 +802,7 @@ define(["three", "animate"], function(THREE, animate){
     };
 
     materials.sheetingMat = function () {
-        var map = THREE.ImageUtils.loadTexture('media/models/neat/rain.jpg');
+        var map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/neat/rain.jpg');
         map.wrapS = THREE.RepeatWrapping;
         map.wrapT = THREE.RepeatWrapping;
 
@@ -830,7 +835,59 @@ define(["three", "animate"], function(THREE, animate){
             "if(vUv.y >= 0.9)gl_FragColor = vec4(mapColor.xyz, ((1.-vUv.y)/((1.+vUv.y)/2.)));"+
             "else gl_FragColor = vec4(mapColor.xyz, opacity);}"
       }
-    }
+    };
+
+    materials.tornado = function () {
+      var diffMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+
+        '/models/tornado/Hurricane_arm_diff.jpg');
+
+      var opacMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+
+        '/models/tornado/Hurricane_transition.jpg');
+
+      /*var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext("2d");
+      var size = 1024;
+      var grd = ctx.createLinearGradient(size,0,0,size);
+      grd.addColorStop(0.8,"black");
+      grd.addColorStop(0,"white");
+
+      ctx.fillStyle = grd;
+      ctx.fillRect(0,0,size,size);
+      var texture = new THREE.Texture(canvas);
+      texture.needsUpdate = true;*/
+
+        this.uniforms = {
+          dif: { type: 't', value: diffMap },
+          opac: { type: 't', value: opacMap },
+          opacVal: {type: 'f', value: 0}
+        };
+
+        this.vertexShader = vSh();
+        this.fragmentShader = fSh();
+        this.transparent = true;
+        this.side = 2;
+
+        function vSh() {
+          return ""+
+            "varying vec2 vUv;"+
+            "void main(){"+
+            "vUv = uv;"+
+            "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+        }
+
+        function fSh() {
+          return ""+
+            "varying vec2 vUv;"+
+            "uniform sampler2D dif;"+
+            "uniform sampler2D opac;"+
+            "uniform float opacVal;"+
+            "void main(){"+
+            "vec4 difCol = texture2D(dif, vUv);"+
+            "vec4 opacCol = texture2D(opac, vUv);"+
+            "if(opacCol.g > opacVal) discard;"+
+            "gl_FragColor = vec4(difCol.xyz, 1.0);}"
+        }
+    };
 
     return materials;
 });

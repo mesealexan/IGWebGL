@@ -3,6 +3,7 @@ require.config({
                 "jquery" : "../lib/jquery/dist/jquery.min",
          "orbitControls" : "../lib/three.js/OrbitControls",
                  "three" : "../lib/three.js/build/three71",
+                  "fxaa" : "../lib/EffectComposer/fxaa",
               "MaskPass" : "../lib/EffectComposer/MaskPass",
      "ConvolutionShader" : "../lib/EffectComposer/ConvolutionShader",
              "BloomPass" : "../lib/EffectComposer/BloomPass",

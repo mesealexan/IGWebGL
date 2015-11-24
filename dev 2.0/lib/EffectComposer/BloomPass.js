@@ -1,7 +1,8 @@
-/**
+define(["three"], function(THREE){
+	/**
  * @author alteredq / http://alteredqualia.com/
  */
-define(["three"], function(THREE){
+
 THREE.BloomPass = function ( strength, kernelSize, sigma, resolution ) {
 
 	strength = ( strength !== undefined ) ? strength : 1;

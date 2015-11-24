@@ -23,7 +23,6 @@
 "transparency"  : 1.0,
 "specularCoef"  : 35.0,
 "mapDiffuse"    : "Earth_diff.jpg",
-"mapBump"    : "Earth_bump.jpg",
 "vertexColors" : false
 }
 

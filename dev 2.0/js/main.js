@@ -9,10 +9,11 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
 
     /***private functions***/
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
             logarithmicDepthBuffer: false});
+        animate.renderer.autoClear = false;
         animate.renderer.setSize( width, height );
-        animate.renderer.setClearColor( 0x000000, 0 );
+        animate.renderer.setClearColor( 0x000000, 1 );
         animate.renderer.shadowMapType = THREE.PCFShadowMap;
         animate.container.appendChild( animate.renderer.domElement );
     }
@@ -39,7 +40,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         //entry point (first function called by require in app.js)
         loader.LoadingScreen.add();
         width = $('#'+containerID).width();
-        height = $('#'+containerID).height();        
+        height = $('#'+containerID).height();
         animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
         main.scene = new THREE.Scene();

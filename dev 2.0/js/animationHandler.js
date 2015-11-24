@@ -27,9 +27,9 @@ define(["genericHandler"], function(genericHandler){
         this.update = function () {
             if(this.checkPlayback(this.from, this.to)){
                 for(var i = 0; i < meshes.length; i++){
-                    meshes[i].morphTargetInfluences[ this.frame - 1 ] = 0;
+                    meshes[i].morphTargetInfluences[ this.frame - this.speed ] = 0;
                     meshes[i].morphTargetInfluences[ this.frame ] = influence;
-                    meshes[i].morphTargetInfluences[ this.frame + 1 ] = 0;
+                    meshes[i].morphTargetInfluences[ this.frame + this.speed ] = 0;
                 }
             }
             else {
