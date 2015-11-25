@@ -802,7 +802,7 @@ define(["three", "animate"], function(THREE, animate){
     };
 
     materials.sheetingMat = function () {
-        var map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/neat/rain.jpg');
+        var map = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/neat/rain.jpg');
         map.wrapS = THREE.RepeatWrapping;
         map.wrapT = THREE.RepeatWrapping;
 

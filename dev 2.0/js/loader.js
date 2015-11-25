@@ -1,14 +1,15 @@
-define(["underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
-"audio", "watch", "tornado"],
-function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
-  audio, watch, tornado){
+define(["jquery", "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
+"audio", "watch", "tornado", "devScene"],
+function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
+  audio, watch, tornado, devScene){
     var scenes = {//all possible scenes
         i89:i89,
         LoE:LoE,
         cardinal:cardinal,
         neat: neat,
         sound: sound,
-        tornado: tornado
+        tornado: tornado,
+        devScene: devScene
     };
 
     function disposeObject (obj) {
@@ -17,11 +18,11 @@ function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat
         if(obj.material){
             if(obj.material.materials){
               for (var j = obj.material.materials.length - 1; j >= 0; j--)
-                obj.material.materials[j].dispose();                      
+                obj.material.materials[j].dispose();
             }
             else obj.material.dispose();
         }
-        obj.parent.remove(obj);
+        if(obj.parent)obj.parent.remove(obj);
     }
 
     function traverseChildren (obj, fun) {
@@ -33,60 +34,70 @@ function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat
     }
 
     function checkCameraAnimationState(l, animationComponent){
-        if(!l.cameraHandler.started)l.cameraHandler.play(
-            undefined,undefined,undefined,//from, to and onComplete undefined
-            animationComponent.Animate);
-        loader.LoadingScreen.hide();
+      if(l.cameraHandler && !l.cameraHandler.started)
+        l.cameraHandler.play(
+          undefined,undefined,undefined,//from, to and onComplete undefined
+          animationComponent.Animate
+        );
+      else if(!l.cameraHandler) animationComponent.Animate();
+      loader.LoadingScreen.hide();
     }
 
-    var loader = function(scene, animationComponent, mediaFolderUrl){//public functionality
+    var loader = function(scene, animationComponent, mediaFolderUrl, camera){//public functionality
         var _this = this;
         this.loadingScene = true;
         this.scene = scene;
-        var selectedScene = scenes[scene.sceneID];
         this.animationComponent = animationComponent;
+        this.animationComponent.loader = this;
+        this.DisposeObject = disposeObject;
+
+        var selectedScene = scenes[scene.sceneID];
 
         this.mediaFolderUrl =
         selectedScene.mediaFolderUrl =
         materials.mediaFolderUrl =
         mediaFolderUrl;
 
-        /***public functions***/
+        scene.add(camera);
+
+
         (function OnStartScene (){
-            //retrieve all functions in onStartFunctions object, then call each one
-            var onStartFunctions = _.functions(selectedScene.onStartFunctions);
-            _.each(onStartFunctions, function(fun){
-                selectedScene.onStartFunctions[fun](scene, _this);
-            });
+          //retrieve all functions in onStartFunctions object, then call each one
+          var onStartFunctions = _.functions(selectedScene.onStartFunctions);
+          _.each(onStartFunctions, function(fun){
+              selectedScene.onStartFunctions[fun](scene, _this);
+          });
         }());
 
+        /***public functions***/
         this.OnFinishedLoadingAssets = function(){
-            var onFinishLoadFunctions = _.functions(selectedScene.onFinishLoadFunctions);
-            _.each(onFinishLoadFunctions, function(fun){
-                selectedScene.onFinishLoadFunctions[fun](scene, _this);
-            });
-            checkCameraAnimationState(_this, animationComponent);
-            _this.loadingScene = false;
+          var onFinishLoadFunctions = _.functions(selectedScene.onFinishLoadFunctions);
+          _.each(onFinishLoadFunctions, function(fun){
+              selectedScene.onFinishLoadFunctions[fun](scene, _this);
+          });
+          checkCameraAnimationState(_this, animationComponent);
+          _this.loadingScene = false;
         };
 
         this.ParseJSON = function(file){
-            var request = new XMLHttpRequest();
-            request.open("GET", file, false);
-            request.send(null);
-            return JSON.parse(request.responseText);
+          var request = new XMLHttpRequest();
+          request.open("GET", file, false);
+          request.send(null);
+          if(request.responseURL != "") return JSON.parse(request.responseText);
+          else return false;
         };
 
         this.UnloadScene = function(onComplete){
-            var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
+          var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
 
-            _.each(onUnloadFunctions, function(fun){
-                selectedScene.onUnloadFunctions[fun](scene, _this);
-            });
+          _.each(onUnloadFunctions, function(fun){
+              selectedScene.onUnloadFunctions[fun](scene, _this);
+          });
 
 
-            for (var i = this.scene.children.length - 1; i >= 0; i--)
-                traverseChildren(this.scene.children[i], disposeObject);
-            onComplete();
+          for (var i = this.scene.children.length - 1; i >= 0; i--)
+              traverseChildren(this.scene.children[i], disposeObject);
+          onComplete();
         };
 
         this.LoadAssets(selectedScene);
@@ -103,9 +114,12 @@ function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat
 
         //camera handler
         var cameraJSON = this.ParseJSON(_this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON");
-        this.cameraHandler = new cameraHandler(cameraJSON);
+        if(cameraJSON != false) this.cameraHandler = new cameraHandler(cameraJSON);
 
-        if((nextAsset = assetNames[assetIndex]) !== undefined)load(nextAsset); //load next asset if it exists
+        //check if no assets exist
+        if(assetNames == undefined || assetNames.length == 0){ loadSounds(); return; };
+        //load next asset if it exists
+        if((nextAsset = assetNames[assetIndex]) !== undefined) load(nextAsset);
 
         function load(name){
             var loader = new THREE.JSONLoader();
@@ -114,35 +128,34 @@ function(underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat
         }
 
         function loadCallback(geometry, mats){
-            var assignedMats = [];
-            _.each(mats, function(mat){
-                assignedMats.push(materials.setMaterials(folderName, mat));
-            });
+          var assignedMats = [];
+          _.each(mats, function(mat){
+              assignedMats.push(materials.setMaterials(folderName, mat));
+          });
 
-            geometry.computeFaceNormals();
-            geometry.computeVertexNormals();
+          geometry.computeFaceNormals();
+          geometry.computeVertexNormals();
 
-            var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
+          var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
 
-            if(geometry.morphTargets.length > 0)
-                mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
-            else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
+          if(geometry.morphTargets.length > 0)
+              mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
+          else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
         }
 
         function onLoadComplete(){
-            var curAssetName = assetNames[assetIndex];
-            var nextAssetName = assetNames[++assetIndex];
+          var curAssetName = assetNames[assetIndex];
+          var nextAssetName = assetNames[++assetIndex];
 
-            //function associated to current mesh, called for features such as positioning
-            var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
-            if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
+          //function associated to current mesh, called for features such as positioning
+          _this.scene.add(mesh);
+          var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
+          if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
 
-            _this.scene.add(mesh);
-
-            //still has assets to load, go again
-            if(nextAssetName !== undefined){ load(nextAssetName); return; }
-            //done loading assets, load sounds
-            loadSounds();
+          //still has assets to load, go again
+          if(nextAssetName !== undefined){ load(nextAssetName); return; }
+          //done loading assets, load sounds
+          loadSounds();
         }
 
         function loadSounds(){

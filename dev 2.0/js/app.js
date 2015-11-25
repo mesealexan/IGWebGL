@@ -3,11 +3,12 @@ require.config({
                 "jquery" : "../lib/jquery/dist/jquery.min",
          "orbitControls" : "../lib/three.js/OrbitControls",
                  "three" : "../lib/three.js/build/three71",
+                 "physi" : "../lib/physi/physi",
                   "fxaa" : "../lib/EffectComposer/fxaa",
               "MaskPass" : "../lib/EffectComposer/MaskPass",
      "ConvolutionShader" : "../lib/EffectComposer/ConvolutionShader",
              "BloomPass" : "../lib/EffectComposer/BloomPass",
-            "RenderPass" :  "../lib/EffectComposer/RenderPass",
+            "RenderPass" : "../lib/EffectComposer/RenderPass",
             "ShaderPass" : "../lib/EffectComposer/ShaderPass",
             "CopyShader" : "../lib/EffectComposer/CopyShader",
         "EffectComposer" : "../lib/EffectComposer/EffectComposer",
@@ -34,5 +35,6 @@ require(["main"], function(main){
     //main.Start("webGL", "neat");
     //main.Start("webGL", "sound");
     main.Start("webGL", "tornado");
+    //main.Start("webGL", "devScene");
     //console.log(require("tornado"));
 });

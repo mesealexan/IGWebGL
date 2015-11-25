@@ -3,14 +3,16 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
   var tornado = {
     folderName: "tornado",
     assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
-     "Floor_grass", "Hurricane_arm"],
+     "Floor_grass", "Hurricane_arm", "Debris"],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},
     onUnloadFunctions: {},
     onFinishLoadFunctions: {},
     animationHandlers: {},
-    assets: {}
+    intervals: {},
+    assets: {},
+    gravity: new THREE.Vector3(0, -15, -15 )
   };
 
   /***on start functions***/
@@ -18,11 +20,34 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
     animate.SetCustomFramerate(25);
   };
 
+  tornado.onStartFunctions.setPhysics = function(scene){
+    scene.setGravity(tornado.gravity);
+    scene.update = function() { scene.simulate( undefined, 1 ); };
+  };
+
   tornado.onStartFunctions.addLights = function(scene){
     scene.add(new THREE.AmbientLight(0xffffff));
   };
 
   /***on load functions***/
+  tornado.onLoadFunctions.Debris = function (mesh) {
+    mesh.material.materials[0].transparent = true;
+    mesh.material.materials[0].opacity = 0;
+    tornado.assets.Debris = mesh;
+  };
+
+  tornado.onLoadFunctions.Floor_gird = function (mesh, loader) {
+    var PHY_Floor_girdMat = Physijs.createMaterial(
+      mesh.material.clone(),
+      .6, // medium friction
+      .3 // low restitution
+    );
+
+    var PHY_Floor_gird = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_Floor_girdMat, 0 );
+    loader.DisposeObject(mesh);
+    loader.scene.add( PHY_Floor_gird );
+  };  
+
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
     mesh.material = mesh.material.materials[0];
     mesh.material.morphTargets = true;
@@ -45,8 +70,16 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
     tornado.animationHandlers.cloudsAnim.play(0, 138);
   };
 
-  tornado.onLoadFunctions.House = function (mesh) {
-    mesh.material.materials[0].side = 2;
+  tornado.onLoadFunctions.House = function (mesh, loader) {
+    var PHY_houseMat = Physijs.createMaterial(
+      mesh.material.clone(),
+      .6, // medium friction
+      .3 // low restitution
+    );
+
+    var PHY_houseMesh = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_houseMat, 0 );
+    loader.DisposeObject(mesh);
+    loader.scene.add( PHY_houseMesh );
   };
 
   tornado.onLoadFunctions.Hurricane_arm = function (mesh) {
@@ -66,7 +99,7 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
 
   /***on finish functions***/
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
-    tornado.assets.composer = new composers.Bloom_AdditiveColor({str: 1});
+    tornado.assets.composer = new composers.Bloom_AdditiveColor({str: 0.6});
     animate.SetCustomRenderFunction( function(){ tornado.assets.composer.render(); } );
   };
 
@@ -81,6 +114,54 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
     });
   };
 
+  tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
+    tweenBloomDown();
+    loader.cameraHandler.frame = 250;
+    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);
+  };
+
+  tornado.onFinishLoadFunctions.startPhysics = function (scene, loader) {
+    var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3);
+    var above = new THREE.Vector3(-20, -408, 10);
+    var size = 0.1;
+    var destroyTime = 3000;
+    var spawnTime = 250;
+    var appearTime = 1000;
+    var dissapearTime = 1000;
+
+    tornado.intervals = setInterval( function(){
+      var boxMat = Physijs.createMaterial(
+        new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff} ),
+        .6, // medium friction
+        .3 // low restitution
+      );
+
+      var mat = tornado.assets.Debris.material.clone();
+      var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
+      box.scale.set(
+        Math.random() * 0.3,
+        Math.random() * 0.3,
+        Math.random() * 0.3
+      );
+
+      var tweenOpacUp = new TWEEN.Tween( mat.materials[0] );
+      tweenOpacUp.to( { opacity: 1 }, appearTime );
+      tweenOpacUp.start();
+
+      box.position.copy(randomDebreePos(above));
+      box.rotation.set(Math.random(), Math.random(), Math.random())
+      loader.scene.add( box );
+      _.delay(hideDebree, destroyTime, {obj: box, material: mat}); //delay destroy for debree
+    }, spawnTime );
+
+    function hideDebree(data) {
+        var tweenOpacDown = new TWEEN.Tween( data.material.materials[0] );
+        tweenOpacDown.to( { opacity: 0 }, dissapearTime );
+        tweenOpacDown.onComplete(function () { loader.DisposeObject(data.obj); });
+        tweenOpacDown.start();
+    }
+  }
+
   /***on unload functions***/
   tornado.onUnloadFunctions.resetRenderFunction = function(){
     animate.SetDefaultRenderFunction();
@@ -88,6 +169,12 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
 
   tornado.onUnloadFunctions.resetFramerate = function(){
     animate.SetDefaultFramerate();
+  };
+
+  tornado.onUnloadFunctions.clearIntervals = function(){
+    for (var key in tornado.intervals)
+      if (tornado.intervals.hasOwnProperty(key))
+        clearInterval(tornado.intervals[key]);
   };
 
   function reactToFrame(frame) {
@@ -126,12 +213,12 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
   function tweenBloomDown() {
     var amount = tornado.assets.composer.passes[2].copyUniforms.opacity;
     var tween = new TWEEN.Tween( amount );
-    tween.to( { value: 0 }, 1000 );
+    tween.to( { value: 0.3 }, 1000 );
     tween.start();
   }
 
   function revealTornado() {
-    var revealTime = 8000, twistTime = 6000, randomOffsetMax = 2000;
+    var revealTime = 8000, twistTime = 5000, randomOffsetMax = 2000;
 
     var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
     tistTween.to( { y: -Math.PI * 2}, twistTime );
@@ -145,6 +232,15 @@ function (animate, events, animationHandler, composers, watch, tween, materials,
       revealTween.delay(Math.random() * randomOffsetMax)
       revealTween.start();
     });
+  }
+
+  function randomDebreePos(pos){
+    var distance = 20;
+    return new THREE.Vector3(
+      pos.x + Math.random() * distance,
+      pos.y + Math.random() * distance,
+      pos.z + Math.random() * distance
+    );
   }
 
   return tornado;

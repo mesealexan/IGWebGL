@@ -18,12 +18,12 @@ define(["underscore", "updater", "tween", "EffectComposer",
 
     /***private functions***/
     function resizeWindow(){
-      var newSize = {
+      animate.renderSize = {
         width: $(animate.container).width(),
         height: $(animate.container).height()
       };
-      animate.renderer.setSize( newSize.width, newSize.height );
-		  animate.camera.aspect	= newSize.width / newSize.height;
+      animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
+		  animate.camera.aspect	= animate.renderSize.width / animate.renderSize.height;
 		  animate.camera.updateProjectionMatrix();
     }
 
@@ -52,10 +52,10 @@ define(["underscore", "updater", "tween", "EffectComposer",
         delta = now - then;
         if(delta >= interval){
             then = now - (delta % interval);
+            animate.loader.scene.simulate(); // run physics
             TWEEN.update();
             animate.updater.UpdateHandlers();
             //animate.renderer.render(animate.loader.scene, animate.camera);
-            //animate.composer.render();
             animate.RenderFunction();
         }
     };

@@ -6,7 +6,6 @@
 	 ------------------------------------------------------------------------- */
 define(["three"], function(THREE){
 THREE.fxaa = {
-
 		uniforms: {
 
 			"tDiffuse": 	{ type: "t", value: 0, texture: null },

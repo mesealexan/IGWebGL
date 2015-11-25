@@ -1,6 +1,6 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials"],
-    function(THREE, jquery, loader, animate, tween, events, audio, materials){
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi"],
+    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV =  45; //camera field of view in degrees
@@ -21,13 +21,23 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     function addCamera () {
         animate.camera = new THREE.PerspectiveCamera( camFOV, width / height, camNear, camFar );
         animate.camera.position.set(0, 0, 0);
-        main.loader.scene.add( animate.camera );
+        return animate.camera;
     }
 
     function getMediaFolderURL() { return $('mediafolder').data("url"); }
 
     function setBackground(containerID, mediaFolderUrl) {
       $('#'+containerID).css('background', 'url('+mediaFolderUrl+'/images/bck.jpg) no-repeat center center fixed');
+    }
+
+    function addButtons() {
+      main.buttons.loadCardinal.add();
+      main.buttons.load_i89.add();
+      main.buttons.loadLoE.add();
+      main.buttons.loadNeat.add();
+      main.buttons.loadSound.add();
+      main.buttons.loadTornado.add();
+      main.buttons.loadDevScene.add();
     }
     /***end private functions***/
 
@@ -43,24 +53,17 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         height = $('#'+containerID).height();
         animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
-        main.scene = new THREE.Scene();
+        main.scene = new Physijs.Scene();
         main.scene.sceneID = sceneID;
         var mediaFolderUrl = getMediaFolderURL();
         setBackground(containerID, mediaFolderUrl);
         materials.makeTextureCube(mediaFolderUrl);
         materials.makeCloudTextureCube(mediaFolderUrl);
-        main.loader = new loader(main.scene, animate, mediaFolderUrl);
-        animate.loader = main.loader;
+        animate.loader = main.loader = new loader(main.scene, animate, mediaFolderUrl, addCamera());
         animate.StartWindowAutoResize();
         addRenderer();
-        addCamera();
         animate.SetDefaultRenderFunction();
-        main.buttons.loadCardinal.add();
-        main.buttons.load_i89.add();
-        main.buttons.loadLoE.add();
-        main.buttons.loadNeat.add();
-        main.buttons.loadSound.add();
-        main.buttons.loadTornado.add();
+        addButtons();
         //because they are unique, lights are added by each scene's individual file
     };
 
@@ -78,10 +81,9 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
 
         function newScene(){
             //main.scene = new THREE.Scene();
-            addCamera();
+            main.scene = new Physijs.Scene();
             main.scene.sceneID = sceneID;
-            //console.log(main.scene.uuid)
-            main.loader = new loader(main.scene, animate, getMediaFolderURL());
+            main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
             animate.loader = main.loader;
         }
     };
@@ -127,6 +129,13 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
             add: function(){
                 events.AddButton({text:"load tornado", function: function(){
                     main.LoadNewScene("tornado")}, id:"loadTornado", parent:"loadButtons"
+                });
+            }
+        },
+        loadDevScene:{
+            add: function(){
+                events.AddButton({text:"load dev", function: function(){
+                    main.LoadNewScene("devScene")}, id:"loadDevScene", parent:"loadButtons"
                 });
             }
         }
