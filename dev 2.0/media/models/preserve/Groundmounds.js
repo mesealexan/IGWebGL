@@ -24,7 +24,8 @@
 "specularCoef"  : 5.0,
 "mapDiffuse"    : "CLP_gravel2.jpg",
 "mapBump"    : "CLP_gravel2_bump.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 }
 
 ],

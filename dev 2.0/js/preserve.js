@@ -1,9 +1,9 @@
-define(['events', 'animate', 'tween'], 
-function (events, animate, tween) {
+define(['events', 'animate', 'tween', 'materials'], 
+function (events, animate, tween, materials) {
 
 	var preserve = {
 		folderName: 'preserve',
-		assetNames: ['House', 'Ground', 'Sky', 'PickupTruck', 'Wheelbarrow', 'PaintCans', 'Groundmounds'],
+		assetNames: ['House', 'Ground', 'Sky', 'PickupTruck', 'Wheelbarrow', 'PaintCans', 'Groundmounds', 'Windows'],
 		onStartFunctions: {},
 		onLoadFunctions: {},
 		onFinishLoadFunctions: {},
@@ -30,10 +30,10 @@ function (events, animate, tween) {
 
 	//on start loading
 	preserve.onStartFunctions.addLights = function (scene) {
-		preserve.assets.ambientLight = new THREE.AmbientLight(0x666666);
+		preserve.assets.ambientLight = new THREE.AmbientLight(0xbbbbbb);
         scene.add(preserve.assets.ambientLight);
 
-        preserve.assets.directionalLight = new THREE.DirectionalLight(0xbbbbbb, 1);
+        preserve.assets.directionalLight = new THREE.DirectionalLight(0x999999, 1);
 		preserve.assets.directionalLight.position.set( 0, 256, 256 );
 		scene.add( preserve.assets.directionalLight );
 
@@ -47,11 +47,42 @@ function (events, animate, tween) {
 	};
 
 	//on loading
+	preserve.onLoadFunctions.Windows = function (mesh, loader) {
+		mesh.material.materials[0].transparent = true;
+		mesh.material.materials[0].opacity = 1;
+
+		var dirtMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/preserve/preserve_window_diffuse.jpg');
+        var dirtOpac = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+'/models/preserve/preserve_window_opacity.jpg');
+
+		materials.NeatGlassDirt.prototype = new THREE.ShaderMaterial();
+		
+		var temp_mat = new materials.NeatGlassDirt({maxDirt: 0.6});
+		temp_mat.uniforms.map.value = dirtMap;
+		temp_mat.uniforms.opacMap.value = dirtOpac;
+		var temp_geo = mesh.geometry.clone();
+
+		preserve.assets.glass_dirt = new THREE.Mesh(temp_geo, temp_mat);
+		preserve.assets.glass_dirt.position.z = -2;
+		loader.scene.add(preserve.assets.glass_dirt);
+	};
+
 	preserve.onLoadFunctions.Ground = function (mesh) {
+		mesh.material.materials[0].bumpScale = 60;
+
 		var map = mesh.material.materials[0].map;
         map.wrapS = THREE.RepeatWrapping;
         map.wrapT = THREE.RepeatWrapping;
 		map.repeat.set(20, 20);
+
+		var tmap = mesh.material.materials[0].bumpMap;
+		tmap.wrapS = THREE.RepeatWrapping;
+        tmap.wrapT = THREE.RepeatWrapping;
+		tmap.repeat.set(20, 20);
+	};
+
+	preserve.onLoadFunctions.Groundmounds = function (mesh) {
+		mesh.material.materials[0].bumpScale = 0.3;
+		//
 	};
 
 	preserve.onLoadFunctions.House = function (mesh) {
@@ -119,10 +150,12 @@ function (events, animate, tween) {
 				if (preserve.flags.castDust == false) {
 					preserve.flags.castDust = true;
 					dust_interval = setInterval(shootDust, 500);
+					preserve.assets.glass_dirt.material.Start();
 				}
 				else {
 					preserve.flags.castDust = false;
 					clearInterval(dust_interval);
+					preserve.assets.glass_dirt.material.Clean();
 				}
 			}
 		};
