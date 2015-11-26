@@ -18,6 +18,7 @@ return function(s){
     this.loadedMaps = [];
     this.meshes = s.meshes;
     this.created = false;
+    this.fixedRotation = s.fixedRot;
     this.mediaFolderUrl = animate.loader.mediaFolderUrl;
     var geometry = undefined;
 
@@ -81,15 +82,19 @@ return function(s){
           var pos = randomPos();
           var particlePlane = new THREE.Mesh(geometry.clone(), mat);
           particlePlane.initialPos = pos;
-          particlePlane.minY = _this.position.y - (_this.height / 2);
-          particlePlane.maxY = _this.position.y + (_this.height / 2);
+          particlePlane.minY = -(_this.height / 2);
+          particlePlane.maxY =  (_this.height / 2);
           particlePlane.position.copy(pos);
 
           if(_this.randomInitialRot) particlePlane.rotation.set(
             _.random(Math.PI * 2),
             _.random(Math.PI * 2),
             _.random(Math.PI * 2));
-          else particlePlane.rotation.set(0, 0, _this.direction.x);
+          else if (_this.fixedRotation) particlePlane.rotation.set(
+            _this.fixedRotation.x,
+            _this.fixedRotation.y,
+            _this.fixedRotation.z
+          );
 
           _this.holder.add(particlePlane);
         }
@@ -140,7 +145,6 @@ return function(s){
                 );
             }
             /***start/stop***/
-
             child.position.add(_this.direction.clone().multiplyScalar(_this.speed));
             if(child.position.y < child.minY)
             {

@@ -35,7 +35,7 @@ define(["animate"], function(animate){
             }
             else if (from > to){ //reverse playback
                 if (this.frame > to){//still has to play
-                  this.frame += this.speed;
+                  this.frame -= this.speed;
                   return true;
                 }
                 else{

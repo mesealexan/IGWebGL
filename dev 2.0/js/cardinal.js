@@ -95,9 +95,12 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
 
     /***on finish functions***/
     cardinal.onFinishLoadFunctions.playCamera = function(scene, loader) {
-        loader.cameraHandler.play(cameraAnimations.animation_1.from, cameraAnimations.animation_1.to,
-            function(){cardinal.buttons.slice.add();},
-            animate.Animate);
+        loader.cameraHandler.play(
+          cameraAnimations.animation_1.from,
+          cameraAnimations.animation_1.to,
+          function(){ cardinal.buttons.slice.add(); },
+          animate.Animate
+        );
     };
 
     cardinal.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -416,14 +419,14 @@ define(["three", "watch", "events", "tween", "underscore", "animate"],
             animate.TweenOpacity(mat, 0, fadeOutTime, undefined,
                 function(){cardinal.assets.cardinal_slice.visible = false;});//on complete
         });
-
+        console.log(cardinal.assets.loaderComponent.cameraHandler)
         cardinal.assets.loaderComponent.cameraHandler.play(
             cameraAnimations.animation_2.to,
             cameraAnimations.animation_2.from,
-            function(){
+            function(){//on complete
                 cardinal.buttons.slice.add();
                 events.ToggleControls(true);
-            }//on complete
+            }
         );
     }
 

@@ -167,18 +167,12 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
       neat.assets.states = new states(scene);
       neat.assets.states.dirt.start();
-      //neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.01, keepOpac: true});
-      //states.curState = undefined;
       neat.timeouts.sun1 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun1);
       neat.timeouts.rain = setTimeout(function(){ neat.assets.states.rain.start(); }, stagesTime.rain);
       neat.timeouts.sun2 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun2);
       neat.timeouts.final = setTimeout(function(){
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
-        //testing
-        //tscene = scene;
-        //tcamera = animate.camera;
-        //-----
       }, stagesTime.final);
     };
 
@@ -364,12 +358,12 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     function addParticles(scene){
         var leavesSettings = {
             width: 500,
-            height: 500,
+            height: 250,
             depth: 50,
             num: 25,
             size: {w: 20, h: 20},
             mapNames: ["Leaf_1_diff", "Leaf_2_diff", "Leaf_3_diff"],
-            pos: new THREE.Vector3(100, 250, 500),
+            pos: new THREE.Vector3(100, 500, 500),
             dir: new THREE.Vector3(-1, -0.5, 0),
             speed: 6,
             rot: {x: Math.PI / 100, y: Math.PI / 100, z: Math.PI / 100},
@@ -378,14 +372,15 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
         var rainSettings = {
             width: 500,
-            height: 500,
+            height: 250,
             depth: 150,
-            num: 1000,
+            num: 500,
             size: {w: 0.5, h: 8},
             rndSizeVariation: 0.25,
             mapNames: ["water_drop"],
-            pos: new THREE.Vector3(-300, 250, 500),
+            pos: new THREE.Vector3(-300, 500, 500),
             dir: new THREE.Vector3(-0.6, -1, 0),
+            fixedRot: {x: 0, y: 0, z: -0.6},
             speed: 20
         };
 

@@ -138,7 +138,7 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
 
           var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
 
-          if(geometry.morphTargets.length > 0)
+          if(geometry.morphTargets.length > 0)  
               mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
           else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
         }

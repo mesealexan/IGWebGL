@@ -865,14 +865,20 @@ define(["three", "animate"], function(THREE, animate){
         this.vertexShader = vSh();
         this.fragmentShader = fSh();
         this.transparent = true;
-        this.side = 2;
+        this.side = 0;
 
         function vSh() {
           return ""+
+            "varying vec3 fNormal;"+
+            "varying vec3 fPosition;"+
             "varying vec2 vUv;"+
             "void main(){"+
             "vUv = uv;"+
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}"
+            "fNormal = normalize(normalMatrix * normal);"+
+            "vec4 pos = modelViewMatrix * vec4(position, 1.0);"+
+            "fPosition = pos.xyz;"+
+            //"gl_Position = projectionMatrix * modelViewMatrix * vec4(position, position.z);}"//WOAH
+            "gl_Position = projectionMatrix * pos;}"
         }
 
         function fSh() {
@@ -881,11 +887,31 @@ define(["three", "animate"], function(THREE, animate){
             "uniform sampler2D dif;"+
             "uniform sampler2D opac;"+
             "uniform float opacVal;"+
+            "varying vec3 fPosition;"+
+            "varying vec3 fNormal;"+
+
             "void main(){"+
+            "vec3 normal = normalize(fNormal);"+
+            "vec3 eye = normalize(-fPosition.xyz);"+
+            "float rim = smoothstep(0., 1., 1.0 - dot(normal, eye));"+
+
             "vec4 difCol = texture2D(dif, vUv);"+
             "vec4 opacCol = texture2D(opac, vUv);"+
             "if(opacCol.g > opacVal) discard;"+
-            "gl_FragColor = vec4(difCol.xyz, 1.0);}"
+            /*v.1*/
+            //"gl_FragColor = vec4(difCol.xyz, 1.0);}"
+
+            /*v.2*/
+            /*
+            "if(rim < 0.4) gl_FragColor = vec4(difCol.xyz, 1.0);"+
+            "else gl_FragColor = vec4(difCol.xyz, 0.3);}"
+            */
+
+            /*v.3*/
+            //"gl_FragColor = vec4(difCol.xyz, clamp(rim, 0.0, 1.0) );}"
+
+            /*v.4*/
+            "gl_FragColor = vec4(difCol.xyz, clamp(0.8-rim, 0.0, 1.0) );}"
         }
     };
 
