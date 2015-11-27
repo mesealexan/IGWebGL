@@ -526,7 +526,8 @@ define(["three", "animate"], function(THREE, animate){
             time: { type: 'f', value: 3 }
         };
 
-        this.vertexShader = vSh();
+        this.morphTargets = settings.morphed;
+        this.vertexShader = vSh(settings.morphed);
         this.fragmentShader = fSh();
         this.transparent = true;
         this.update = function(){
@@ -540,15 +541,25 @@ define(["three", "animate"], function(THREE, animate){
 
         };
 
-        function vSh(){
-            return[
+        function vSh(morph){
+            if(morph == true)
+                return ""+
+                "varying vec2 vUv;\n"+
+                THREE.ShaderChunk[ "morphtarget_pars_vertex" ]+
+                "\nvoid main(){\n"+
+                "vUv = uv;\n"+
+                THREE.ShaderChunk[ "morphtarget_vertex" ]+"\n"+
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(morphed, 1.0);}"
+                            
+            else return[
                 "varying float time;",
-                "varying vec2 vUv;"+
-                "void main(){"+
-                "vUv = uv;"+
+                "varying vec2 vUv;",
+                "void main(){",
+                "vUv = uv;",
                 "vec3 pos = position;",
                 "gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );}"
-            ].join('\n');
+            ].join('\n');           
+            
         }
 
         function fSh(){
