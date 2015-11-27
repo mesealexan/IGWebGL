@@ -5,6 +5,8 @@ define(["genericHandler"], function(genericHandler){
         var loop = false;
         var influence = 1;
 
+        function resetInfluences(){}
+
         this.setInfluence = function (newInfluence) {
           influence = newInfluence;
         };
@@ -35,13 +37,11 @@ define(["genericHandler"], function(genericHandler){
             else {
                 if(loop){
                     this.stop();
-                    for(var j = 0; j < meshes.length; j++){
-                        meshes[j].morphTargetInfluences[ this.from ] = 1;
-                        meshes[j].morphTargetInfluences[ this.to ] = 0;
-                    }
                     this.basePlay(this.from, this.to + 1);
                 }
-                else this.stop();
+                else{
+                  this.stop();
+                }
             } //reached the end
         }
     }

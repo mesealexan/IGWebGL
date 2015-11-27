@@ -872,6 +872,7 @@ define(["three", "animate"], function(THREE, animate){
             "varying vec3 fNormal;"+
             "varying vec3 fPosition;"+
             "varying vec2 vUv;"+
+            "uniform float opacVal;"+
             "void main(){"+
             "vUv = uv;"+
             "fNormal = normalize(normalMatrix * normal);"+
@@ -893,13 +894,13 @@ define(["three", "animate"], function(THREE, animate){
             "void main(){"+
             "vec3 normal = normalize(fNormal);"+
             "vec3 eye = normalize(-fPosition.xyz);"+
-            "float rim = smoothstep(0., 1., 1.0 - dot(normal, eye));"+
+            "float rim = smoothstep(0.2, 1., 1. - dot(normal, eye));"+
 
             "vec4 difCol = texture2D(dif, vUv);"+
             "vec4 opacCol = texture2D(opac, vUv);"+
-            "if(opacCol.g > opacVal) discard;"+
+            "if(opacCol.r > opacVal) discard;"+
             /*v.1*/
-            //"gl_FragColor = vec4(difCol.xyz, 1.0);}"
+            //"gl_FragColor = vec4(opacCol.xy, opacCol.b, 1.0);}"
 
             /*v.2*/
             /*
@@ -911,7 +912,13 @@ define(["three", "animate"], function(THREE, animate){
             //"gl_FragColor = vec4(difCol.xyz, clamp(rim, 0.0, 1.0) );}"
 
             /*v.4*/
-            "gl_FragColor = vec4(difCol.xyz, clamp(0.8-rim, 0.0, 1.0) );}"
+            //"gl_FragColor = vec4(difCol.xyz, 1. - rim);}"
+
+            /*v.5*/
+            //"gl_FragColor = vec4(difCol.xyz, clamp(0.8-rim, 0.0, 1.0) );}"
+
+            /*v.5*/
+            "gl_FragColor = vec4(difCol.xyz - (vUv.y - 0.2), clamp(0.6-rim, 0.0, 1.0) );}"
         }
     };
 
