@@ -111,7 +111,7 @@ function (events, animate, tween, materials, animationHandler) {
 		preserve.tweens.foil_in = new TWEEN.Tween(mesh.material.materials[0]).to({opacity: 0}, 3000);
 		preserve.tweens.foil_in.easing(TWEEN.Easing.Exponential.In);
 
-		preserve.tweens.foil_out = new TWEEN.Tween(mesh.material.materials[0]).to({opacity: 0.64}, 3000).delay(200);
+		preserve.tweens.foil_out = new TWEEN.Tween(mesh.material.materials[0]).to({opacity: 0.64}, 3000).delay(400);
 		preserve.tweens.foil_out.easing(TWEEN.Easing.Exponential.Out);
 
 		preserve.animationHandlers.foil = new animationHandler();
@@ -132,7 +132,7 @@ function (events, animate, tween, materials, animationHandler) {
 		preserve.tweens.foil_dirt_in = new TWEEN.Tween(preserve.assets.foil_dirt.material.uniforms.opacVal).to({value: 0}, 3000);
 		preserve.tweens.foil_dirt_in.easing(TWEEN.Easing.Exponential.In);
 
-		preserve.tweens.foil_dirt_out = new TWEEN.Tween(preserve.assets.foil_dirt.material.uniforms.opacVal).to({value: 0.5}, 3000).delay(200);
+		preserve.tweens.foil_dirt_out = new TWEEN.Tween(preserve.assets.foil_dirt.material.uniforms.opacVal).to({value: 0.5}, 3000).delay(400);
 		preserve.tweens.foil_dirt_out.easing(TWEEN.Easing.Exponential.Out);
 
 		preserve.animationHandlers.foil_dirt = new animationHandler();
