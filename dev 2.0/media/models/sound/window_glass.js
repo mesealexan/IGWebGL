@@ -16,9 +16,14 @@
 "materials": [
 {
 "DbgIndex" : 0,
-"DbgName"  : "dummy",
-"colorDiffuse"  : [1.0000, 0.0000, 0.0000],
-"vertexColors" : false
+"DbgName"  : "Glass",
+"colorDiffuse"  : [0.7608, 0.8392, 0.9098],
+"colorAmbient"  : [0.7608, 0.8392, 0.9098],
+"colorSpecular"  : [0.9000, 0.9000, 0.9000],
+"transparency"  : 0.3,
+"specularCoef"  : 70.0,
+"vertexColors" : false,
+"shading" : "Phong"
 }
 
 ],

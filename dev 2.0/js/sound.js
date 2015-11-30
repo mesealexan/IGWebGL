@@ -143,6 +143,13 @@ function (events, animate, events, tween, animationHandler, watch, materials) {
     };
 
     sound.onLoadFunctions.window_glass = function (mesh, loader) {
+        var temp_geo = mesh.geometry.clone();
+        var temp_mat = mesh.material.materials[0].clone();
+        temp_mat.side = 1;
+        temp_mat.transparent = true;
+        var static_mesh = new THREE.Mesh(temp_geo, temp_mat);
+        loader.scene.add(static_mesh);
+
         var map = new THREE.ImageUtils.loadTexture( sound.mediaFolderUrl+'/models/sound/window_glow.png' );
         mesh.material.materials[0].side = 1;
         mesh.material.materials[0].transparent = true;
