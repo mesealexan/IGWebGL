@@ -24,6 +24,7 @@ define(["animate", "fxaa"], function(animate, fxaa){
 
           "void main() {",
             "vec4 tex = texture2D(tDiffuse, vUv);",
+            //"gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
             "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
           "}"
         ].join( "\n" )

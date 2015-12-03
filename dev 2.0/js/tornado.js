@@ -18,18 +18,19 @@ function (animate, events, animationHandler, composers, watch, tween,
     assets: {},
     gravity: new THREE.Vector3(0, -15, -15 ),
     bloomSettings: {
-      outside: {min: 0, max: 1.2},
+      outside: {min: 0.8, max: 1.2},
       inside: {min: 0.4, max: 1}
     }
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    tweenBloomDown();
+    /*tweenBloomDown();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
     startLightning();
     //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);
     setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
+    throwBrick();*/
   };
 
   /***on start functions***/
@@ -39,6 +40,10 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   tornado.onStartFunctions.setFramerate = function(scene){
     animate.SetCustomFramerate(25);
+  };
+
+  tornado.onStartFunctions.storeScene = function(scene){
+    tornado.assets.scene = scene;
   };
 
   tornado.onStartFunctions.setPhysics = function(scene){
@@ -56,10 +61,11 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   tornado.onStartFunctions.addShatterWindow = function (scene) {
-    var geometry = new THREE.PlaneGeometry( 4, 4, 32, 32 );
+    var geometry = new THREE.PlaneBufferGeometry( 2.85, 2.5, 128, 128 );
     windowWobble.prototype = new THREE.ShaderMaterial();
     var material = new windowWobble();
-    animate.updater.addHandler(material);
+    tornado.assets.shatterWindowMaterial = material;
+    //animate.updater.addHandler(material);
     var plane = new THREE.Mesh( geometry, material );
     plane.position.set(-6.95, -420.64, -3.37);
     scene.add( plane );
@@ -89,6 +95,24 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   tornado.onLoadFunctions.House_windows = function (mesh) {
       mesh.material = materials.setMaterials("cardinal", {name:"Glass"});
+  }
+
+  tornado.onLoadFunctions.Background_clouds = function (mesh) {
+    mesh.material = mesh.material.materials[0];
+    mesh.material.map.wrapS = THREE.RepeatWrapping;
+    mesh.material.map.wrapT = THREE.RepeatWrapping;
+
+    var scrollingUV = function(){
+      this.frame = 0;
+      this.maxFrame = 200;
+      this.speed = 0.0002;
+      this.update = function () {
+        //if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
+        //  else
+        mesh.material.map.offset.x += this.speed;
+      };
+    };
+    animate.updater.addHandler(new scrollingUV());
   }
 
   tornado.onLoadFunctions.Earth_shell = function (mesh) {
@@ -326,7 +350,36 @@ function (animate, events, animationHandler, composers, watch, tween,
       case 240:
         fadeBack();
         break;
+      case 280:
+        throwBrick();
+        break;
     }
+  }
+
+  function throwBrick() {
+    var startPos =  new THREE.Vector3(-6.95, -400.64, 100);
+    var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
+    var time = 2000;
+
+    var geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.3 );
+    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    var cube = new THREE.Mesh( geometry, material );
+    cube.position.copy(startPos);
+    tornado.assets.scene.add( cube );
+
+    var posTween = new TWEEN.Tween( cube.position );
+    posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, time );
+    posTween.onComplete(function () {
+      cube.visible = false;
+      tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
+      animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
+    })
+    posTween.start();
+
+    var rotTween = new TWEEN.Tween( cube.rotation );
+    rotTween.to( { y: -Math.PI * 2 }, 500 );
+    rotTween.repeat( Infinity );
+    rotTween.start();
   }
 
   function fadeToWhite() {
@@ -360,7 +413,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   }
 
   function revealTornado() {
-    var revealTime = 8000, twistTime = 5000, randomOffsetMax = 2000;
+    var revealTime = 7000, twistTime = 5000, randomOffsetMax = 2000;
 
     var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
     tistTween.to( { y: -Math.PI * 2}, twistTime );
@@ -451,55 +504,157 @@ function (animate, events, animationHandler, composers, watch, tween,
       hand.play(0, 47);
     }*/
     //hand.loop(0, 47);
+    hand.onComplete = function () {
+      //hand.play(0, 47);
+    }
   }
 
   var windowWobble = function () {
-    this.uniforms = {
-      time: {type: 'f', value: 0},
-      amp: {type: 'f', value: 300}
-    };
+    this.uniforms = THREE.UniformsUtils.merge( [
+      THREE.UniformsLib[ "common" ],
+      THREE.UniformsLib[ "fog" ],
+      THREE.UniformsLib[ "lights" ],
+      THREE.UniformsLib[ "shadowmap" ],
+      {
+        "ambient"  : { type: "c", value: new THREE.Color( 0xffffff ) },
+        "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
+        "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) },
+        "time": {type: 'f', value: 0},
+        "freq": {type: 'f', value: 10},
+        "amp": {type: 'f', value: 0}
+      }
+    ]);
 
-    this.vertexShader = vSh();
-    var lamb = THREE.ShaderLib['lambert'];
-    console.log(lamb.fragmentShader)
-    this.fragmentShader = fSh();
-    this.transparent = true;
     this.side = 2;
     //this.wireframe = true;
+    //var lamb = THREE.ShaderLib['lambert'];
+    this.vertexShader = vSh();
+    this.fragmentShader = fSh();
+    this.envMap = materials.cloudCube;
+    this.transparent = true;
+    this.uniforms.opacity.value = 0.6;
+    this.lights = true;
+    this.speed = 50;
     this.frame = 0;
 
-    this.update = function () {
-      this.uniforms.time.value += 0.1;
-    };
+    this.update = function() { this.uniforms.time.value += this.speed; };
 
     function vSh() {
-      return ""+
-        "varying vec3 fNormal;"+
-        "varying vec3 fPosition;"+
-        "varying vec2 vUv;"+
-        "uniform float time;"+
-        "uniform float amp;"+
+      return [
+  			"#define LAMBERT",
+  			"varying vec3 vLightFront;",
+        "varying float zPos;",
+  			"#ifdef DOUBLE_SIDED",
+  			"varying vec3 vLightBack;",
+  			"#endif",
+        "uniform float time;",
+        "uniform float freq;",
+        "uniform float amp;",
+  			THREE.ShaderChunk[ "common" ],
+  			THREE.ShaderChunk[ "map_pars_vertex" ],
+  			THREE.ShaderChunk[ "lightmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "envmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "lights_lambert_pars_vertex" ],
+  			THREE.ShaderChunk[ "color_pars_vertex" ],
+  			THREE.ShaderChunk[ "morphtarget_pars_vertex" ],
+  			THREE.ShaderChunk[ "skinning_pars_vertex" ],
+  			THREE.ShaderChunk[ "shadowmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "logdepthbuf_pars_vertex" ],
 
-        "void main(){"+
-        "vUv = uv;"+
-        "fNormal = normalize(normalMatrix * normal);"+
-        "vec3 offsetPos = vec3(position.x, position.y, sin(time + (position.x*amp)));"+
-        "vec4 pos = modelViewMatrix * vec4(offsetPos, 1.0);"+
-        "fPosition = pos.xyz;"+
-        "gl_Position = projectionMatrix * pos;}"
+  			"void main() {",
+
+  				THREE.ShaderChunk[ "map_vertex" ],
+  				THREE.ShaderChunk[ "lightmap_vertex" ],
+  				THREE.ShaderChunk[ "color_vertex" ],
+
+  				THREE.ShaderChunk[ "morphnormal_vertex" ],
+  				THREE.ShaderChunk[ "skinbase_vertex" ],
+  				THREE.ShaderChunk[ "skinnormal_vertex" ],
+  				THREE.ShaderChunk[ "defaultnormal_vertex" ],
+
+  				THREE.ShaderChunk[ "morphtarget_vertex" ],
+  				THREE.ShaderChunk[ "skinning_vertex" ],
+  				THREE.ShaderChunk[ "default_vertex" ],
+  				THREE.ShaderChunk[ "logdepthbuf_vertex" ],
+
+  				THREE.ShaderChunk[ "worldpos_vertex" ],
+  				THREE.ShaderChunk[ "envmap_vertex" ],
+  				THREE.ShaderChunk[ "lights_lambert_vertex" ],
+  				THREE.ShaderChunk[ "shadowmap_vertex" ],
+          "float radius = length(position);",
+          "vec3 offsetPos = vec3(position.x, position.y, amp * sin(radius * freq + time));",
+          "vec4 pos = modelViewMatrix * vec4(offsetPos, 1.0);",
+          "zPos = offsetPos.z;",
+          "gl_Position = projectionMatrix * pos;",
+  			"}"
+  		].join("\n");
     }
 
     function fSh() {
-      return ""+
-        "varying vec2 vUv;"+
-        "varying vec3 fPosition;"+
-        "varying vec3 fNormal;"+
+      return [
+  			"uniform vec3 diffuse;",
+  			"uniform vec3 emissive;",
+  			"uniform float opacity;",
+        "varying float zPos;",
 
-        "void main(){"+
-        "vec3 normal = normalize(fNormal);"+
-        "vec3 eye = normalize(-fPosition.xyz);"+
-        "float rim = smoothstep(0., 1., 1. - dot(normal, eye));"+
-        "gl_FragColor = vec4(1., 1., 1., 0.3);}"
+  			"varying vec3 vLightFront;",
+
+  			"#ifdef DOUBLE_SIDED",
+
+  			"	varying vec3 vLightBack;",
+
+  			"#endif",
+
+  			THREE.ShaderChunk[ "common" ],
+  			THREE.ShaderChunk[ "color_pars_fragment" ],
+  			THREE.ShaderChunk[ "map_pars_fragment" ],
+  			THREE.ShaderChunk[ "alphamap_pars_fragment" ],
+  			THREE.ShaderChunk[ "lightmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "envmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "fog_pars_fragment" ],
+  			THREE.ShaderChunk[ "shadowmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "specularmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "logdepthbuf_pars_fragment" ],
+
+  			"void main() {",
+
+  			"	vec3 outgoingLight = vec3( 0.0 );",	// outgoing light does not have an alpha, the surface does
+  			"	vec4 diffuseColor = vec4( diffuse, opacity );",
+
+  				THREE.ShaderChunk[ "logdepthbuf_fragment" ],
+  				THREE.ShaderChunk[ "map_fragment" ],
+  				THREE.ShaderChunk[ "color_fragment" ],
+  				THREE.ShaderChunk[ "alphamap_fragment" ],
+  				THREE.ShaderChunk[ "alphatest_fragment" ],
+  				THREE.ShaderChunk[ "specularmap_fragment" ],
+
+  			"	#ifdef DOUBLE_SIDED",
+
+  					//"float isFront = float( gl_FrontFacing );",
+  					//"gl_FragColor.xyz *= isFront * vLightFront + ( 1.0 - isFront ) * vLightBack;",
+
+  			"		if ( gl_FrontFacing )",
+  			"			outgoingLight += diffuseColor.rgb * vLightFront + emissive;",
+  			"		else",
+  			"			outgoingLight += diffuseColor.rgb * vLightBack + emissive;",
+
+  			"	#else",
+
+  			"		outgoingLight += diffuseColor.rgb * vLightFront + emissive;",
+
+  			"	#endif",
+
+  				THREE.ShaderChunk[ "lightmap_fragment" ],
+  				THREE.ShaderChunk[ "envmap_fragment" ],
+  				THREE.ShaderChunk[ "shadowmap_fragment" ],
+
+  				THREE.ShaderChunk[ "linear_to_gamma_fragment" ],
+
+  				THREE.ShaderChunk[ "fog_fragment" ],
+
+  			"gl_FragColor = vec4(outgoingLight + zPos - 0.2, diffuseColor.a );",
+  		"}"
+  		].join("\n");
       }
     };
 

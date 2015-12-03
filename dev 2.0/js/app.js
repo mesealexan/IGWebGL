@@ -16,6 +16,7 @@ require.config({
                  "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
                  "watch" : "../lib/Watch.js/src/watch",
                 "howler" : "../lib/howler.js/howler.core",
+                "hammer" : "../lib/hammerjs/hammer",
                   "main" : "main"
     }
     ,
@@ -38,3 +39,5 @@ require(["main"], function(main){
     //main.Start("webGL", "devScene");
     //console.log(require("tornado"));
 });
+
+require(["sample"]);

@@ -3,6 +3,7 @@ define(["three", "animate"], function(THREE, animate){
     var cloudCube = undefined;
 
     var materials = {
+      cloudCube: undefined,
       makeTextureCube: function(mediaFolderUrl){
         var imagePrefix = mediaFolderUrl+"/skybox/Cube_";
         var directions  = ["r", "l", "u", "d", "f", "b"];
@@ -11,6 +12,7 @@ define(["three", "animate"], function(THREE, animate){
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+        materials.cloudCube = textureCube;
     }
     ,
     makeCloudTextureCube: function(mediaFolderUrl){
