@@ -10,9 +10,9 @@ define(["genericHandler"], function(genericHandler){
         };
 
         this.setMesh = function(m) {
-            if(m.constructor === Array)
-                for(var i = 0; i < m.length; i++) meshes.push(m[i]);
-            else meshes.push(m);
+          if(m.constructor === Array)
+            for(var i = 0; i < m.length; i++) meshes.push(m[i]);
+          else meshes.push(m);
         };
 
         this.play = function(from, to){
@@ -25,25 +25,29 @@ define(["genericHandler"], function(genericHandler){
         };
 
         this.update = function () {
-            if(this.checkPlayback(this.from, this.to)){
-                for(var i = 0; i < meshes.length; i++){
-                    meshes[i].morphTargetInfluences[ this.frame - this.speed ] = 0;
-                    meshes[i].morphTargetInfluences[ this.frame ] = influence;
-                    meshes[i].morphTargetInfluences[ this.frame + this.speed ] = 0;
-                }
+          if(this.checkPlayback(this.from, this.to)){
+            for(var i = 0; i < meshes.length; i++){
+              meshes[i].morphTargetInfluences[ this.frame - this.speed ] = 0;
+              meshes[i].morphTargetInfluences[ this.frame ] = influence;
+              meshes[i].morphTargetInfluences[ this.frame + this.speed ] = 0;
             }
-            else {
-                if(loop){
-                    this.stop();
-                    for(var j = 0; j < meshes.length; j++){
-                        meshes[j].morphTargetInfluences[ this.from ] = 1;
-                        meshes[j].morphTargetInfluences[ this.to ] = 0;
-                    }
-                    this.basePlay(this.from, this.to + 1);
-                }
-                else this.stop();
-            } //reached the end
-        }
+          }
+          else {
+            if(loop){
+                this.stop();
+                this.resetInfluences();
+                this.basePlay(this.from, this.to + 1);
+            }
+            else this.stop();
+          } //reached the end
+        };
+
+        this.resetInfluences = function(){
+          for(var j = 0; j < meshes.length; j++){
+            meshes[j].morphTargetInfluences[ this.from ] = 1;
+            meshes[j].morphTargetInfluences[ this.to ] = 0;
+          }
+        };
     }
     return animationHandler;
 });

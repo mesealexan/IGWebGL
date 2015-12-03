@@ -140,7 +140,7 @@ return function(s){
                 var restPos = randomPos();
                 child.position.set(
                     restPos.x,
-                    _.random(child.maxY, child.maxY * 2),
+                    _.random(child.maxY, child.maxY * 3),
                     restPos.z
                 );
             }

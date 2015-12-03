@@ -43,6 +43,7 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             }
             else {//reached the end
                 animate.camera.lookAt(animate.camera.target);
+                events.Controls.target.copy(animate.camera.target);
                 this.stop();
             }
         };
@@ -83,7 +84,10 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             var targetTween = new TWEEN.Tween( animate.camera.target );
             targetTween.easing(TWEEN.Easing.Cubic.InOut);
             targetTween.to( { x: target.x, y: target.y, z: target.z }, time );
-            targetTween.onUpdate( function () { animate.camera.lookAt(animate.camera.target) });
+            targetTween.onUpdate( function () {
+              animate.camera.lookAt(animate.camera.target);
+              events.Controls.target.copy(animate.camera.target);
+            });
             targetTween.start();
 
             /***fov***/

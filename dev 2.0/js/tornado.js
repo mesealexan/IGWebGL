@@ -6,7 +6,8 @@ function (animate, events, animationHandler, composers, watch, tween,
   var tornado = {
     folderName: "tornado",
     assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
-     "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway"],
+     "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
+     "House_windows"],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},
@@ -27,8 +28,9 @@ function (animate, events, animationHandler, composers, watch, tween,
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
     startLightning();
-    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);*/
-    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
+    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);
+    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
+    throwBrick();*/
   };
 
   /***on start functions***/
@@ -38,6 +40,10 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   tornado.onStartFunctions.setFramerate = function(scene){
     animate.SetCustomFramerate(25);
+  };
+
+  tornado.onStartFunctions.storeScene = function(scene){
+    tornado.assets.scene = scene;
   };
 
   tornado.onStartFunctions.setPhysics = function(scene){
@@ -54,7 +60,67 @@ function (animate, events, animationHandler, composers, watch, tween,
     scene.add(tornado.assets.directionalLight);
   };
 
+  tornado.onStartFunctions.addShatterWindow = function (scene) {
+    var geometry = new THREE.PlaneBufferGeometry( 2.85, 2.5, 128, 128 );
+    windowWobble.prototype = new THREE.ShaderMaterial();
+    var material = new windowWobble();
+    tornado.assets.shatterWindowMaterial = material;
+    //animate.updater.addHandler(material);
+    var plane = new THREE.Mesh( geometry, material );
+    plane.position.set(-6.95, -420.64, -3.37);
+    scene.add( plane );
+  };
+
   /***on load functions***/
+  tornado.onLoadFunctions.Wind_1 = function (mesh) {
+    tornado.animationHandlers.Wind_1 = prepareWind(mesh)
+  }
+  tornado.onLoadFunctions.Wind_2 = function (mesh) {
+    tornado.animationHandlers.Wind_2 = prepareWind(mesh)
+  }
+  tornado.onLoadFunctions.Wind_3 = function (mesh) {
+    tornado.animationHandlers.Wind_2 = prepareWind(mesh)
+  }
+  function prepareWind(mesh) {
+    mesh.material.materials[0].morphTargets = true;
+    mesh.material.materials[0].transparent = true;
+    mesh.material.materials[0].side = 2;
+    mesh.material.materials[0].blending = 1;
+    mesh.material.materials[0].opacity = 0.66;
+    var ah = new animationHandler();
+    ah.setMesh(mesh);
+    offsetWind(ah);
+    return ah;
+  };
+
+  tornado.onLoadFunctions.House_windows = function (mesh) {
+      mesh.material = materials.setMaterials("cardinal", {name:"Glass"});
+  }
+
+  tornado.onLoadFunctions.Background_clouds = function (mesh) {
+    mesh.material = mesh.material.materials[0];
+    mesh.material.map.wrapS = THREE.RepeatWrapping;
+    mesh.material.map.wrapT = THREE.RepeatWrapping;
+
+    var scrollingUV = function(){
+      this.frame = 0;
+      this.maxFrame = 200;
+      this.speed = 0.0002;
+      this.update = function () {
+        //if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
+        //  else
+        mesh.material.map.offset.x += this.speed;
+      };
+    };
+    animate.updater.addHandler(new scrollingUV());
+  }
+
+  tornado.onLoadFunctions.Earth_shell = function (mesh) {
+    var tween = new TWEEN.Tween( mesh.position );
+    tween.to( { x: 250 }, 11000 );
+    tween.start();
+  };
+
   tornado.onLoadFunctions.Debris = function (mesh) {
     mesh.material.materials[0].transparent = true;
     mesh.material.materials[0].opacity = 0;
@@ -79,16 +145,14 @@ function (animate, events, animationHandler, composers, watch, tween,
     mesh.material.transparent = true;
     mesh.material.map.wrapS = THREE.RepeatWrapping;
     mesh.material.map.wrapT = THREE.RepeatWrapping;
-    mesh.visible = false;
 
     var scrollingUV = function(){
       this.frame = 0;
       this.maxFrame = 200;
       this.speed = 0.0005;
       this.update = function () {
-        //if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
-        //else
-        mesh.material.map.offset.x += this.speed;
+        if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
+        else mesh.material.map.offset.x += this.speed;
       };
     };
 
@@ -103,12 +167,12 @@ function (animate, events, animationHandler, composers, watch, tween,
     var PHY_houseMat = Physijs.createMaterial(
       mesh.material.clone(),
       .6, // medium friction
-      .3 // low restitution
+      .3  // low restitution
     );
 
     var PHY_houseMesh = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_houseMat, 0 );
     loader.DisposeObject(mesh);
-    loader.scene.add( PHY_houseMesh );
+    loader.scene.add(PHY_houseMesh);
   };
 
   tornado.onLoadFunctions.Hurricane_arm = function (mesh) {
@@ -151,9 +215,18 @@ function (animate, events, animationHandler, composers, watch, tween,
     }
   };
 
+  tornado.onLoadFunctions.Bush_sway = function (mesh, loader) {
+    mesh.material.materials[0].morphTargets = true;
+    mesh.position.set(1.5, -430, 1.2)
+    tornado.animationHandlers.Bush_sway = new animationHandler();
+    tornado.animationHandlers.Bush_sway.setMesh(mesh);
+    tornado.animationHandlers.Bush_sway.setInfluence(0.3);
+    tornado.animationHandlers.Bush_sway.loop(0, 29);
+  };
+
   /***on finish functions***/
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
-    tornado.assets.composer = new composers.Bloom_AdditiveColor({str: tornado.bloomSettings.outside.min });
+    tornado.assets.composer = new composers.Bloom_AdditiveColor({str: tornado.bloomSettings.outside.min});
     animate.SetCustomRenderFunction( function(){ tornado.assets.composer.render(); } );
   };
 
@@ -176,6 +249,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     var spawnTime = 250;
     var appearTime = 1000;
     var dissapearTime = 1000;
+    var maxScale = 0.3;
 
     tornado.intervals = setInterval( function(){
       var boxMat = Physijs.createMaterial(
@@ -186,10 +260,9 @@ function (animate, events, animationHandler, composers, watch, tween,
 
       var mat = tornado.assets.Debris.material.clone();
       var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
-      box.scale.set(
-        Math.random() * 0.3,
-        Math.random() * 0.3,
-        Math.random() * 0.3
+      box.scale.set(Math.random() * maxScale,
+                    Math.random() * maxScale,
+                    Math.random() * maxScale
       );
 
       var tweenOpacUp = new TWEEN.Tween( mat.materials[0] );
@@ -208,15 +281,15 @@ function (animate, events, animationHandler, composers, watch, tween,
         tweenOpacDown.onComplete(function () { loader.DisposeObject(data.obj); });
         tweenOpacDown.start();
     }
-  }
+  };
 
   tornado.onFinishLoadFunctions.addRain = function (scene) {
     var rainSettings = {
         width: 50,
         height: 50,
         depth: 50,
-        num: 300,
-        size: {w: 0.1, h: 0.6},
+        num: 500,
+        size: {w: 0.1, h: 0.8},
         mapNames: ["water_drop"],
         pos: new THREE.Vector3(0, -408, 40),
         dir: new THREE.Vector3(0, -1, -1),
@@ -226,6 +299,26 @@ function (animate, events, animationHandler, composers, watch, tween,
 
     tornado.assets.rainPS = new particleSystem(rainSettings);
     tornado.assets.rainPS.Init(scene);
+  };
+
+  tornado.onFinishLoadFunctions.addLeaves = function (scene) {
+    var leavesSettings = {
+        width: 50,
+        height: 50,
+        depth: 50,
+        num: 30,
+        size: {w: 0.5, h: 0.5},
+        mapNames: ["Leaf_1_diff", "Leaf_2_diff", "Leaf_3_diff"],
+        pos: new THREE.Vector3(0, -458, 40),
+        dir: new THREE.Vector3(0, -1, -1),
+        speed: 0.5,
+        fixedRot: {x: 0.6, y: 0, z: 0},
+        rot: {x: Math.PI / 20, y: Math.PI / 20, z: Math.PI / 20},
+        rndRotInit: true
+    };
+
+    //tornado.assets.leavesPS = new particleSystem(leavesSettings);
+    //tornado.assets.leavesPS.Init(scene);
   };
 
   /***on unload functions***/
@@ -249,7 +342,7 @@ function (animate, events, animationHandler, composers, watch, tween,
       case 0:
         revealTornado();
         break;
-      case 230:
+      case 200:
         fadeToWhite();
         animate.SetCustomFramerate(30);
         tweenBloomDown();
@@ -257,12 +350,41 @@ function (animate, events, animationHandler, composers, watch, tween,
       case 240:
         fadeBack();
         break;
+      case 280:
+        throwBrick();
+        break;
     }
+  }
+
+  function throwBrick() {
+    var startPos =  new THREE.Vector3(-6.95, -400.64, 100);
+    var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
+    var time = 2000;
+
+    var geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.3 );
+    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    var cube = new THREE.Mesh( geometry, material );
+    cube.position.copy(startPos);
+    tornado.assets.scene.add( cube );
+
+    var posTween = new TWEEN.Tween( cube.position );
+    posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, time );
+    posTween.onComplete(function () {
+      cube.visible = false;
+      tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
+      animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
+    })
+    posTween.start();
+
+    var rotTween = new TWEEN.Tween( cube.rotation );
+    rotTween.to( { y: -Math.PI * 2 }, 500 );
+    rotTween.repeat( Infinity );
+    rotTween.start();
   }
 
   function fadeToWhite() {
     var amount = tornado.assets.composer.passes[1].uniforms.amount,
-       upTime = 400;
+        upTime = 1000;
 
     var tweenUp = new TWEEN.Tween( amount );
     tweenUp.to( { value: 1 }, upTime );
@@ -271,7 +393,7 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   function fadeBack(){
     var amount = tornado.assets.composer.passes[1].uniforms.amount,
-      downTime = 800;
+        downTime = 800;
 
     var tweenDown = new TWEEN.Tween( amount );
     tweenDown.to( { value: 0 }, downTime );
@@ -288,11 +410,10 @@ function (animate, events, animationHandler, composers, watch, tween,
     tornado.assets.lightningHandler.maxBloom = tornado.bloomSettings.inside.max;
     tornado.assets.lightningHandler.minFramesToStrike = 100;
     tornado.assets.lightningHandler.maxFramesToStrike = 300;
-    //console.log(tornado.assets.lightningHandler)
   }
 
   function revealTornado() {
-    var revealTime = 8000, twistTime = 5000, randomOffsetMax = 2000;
+    var revealTime = 7000, twistTime = 5000, randomOffsetMax = 2000;
 
     var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
     tistTween.to( { y: -Math.PI * 2}, twistTime );
@@ -376,6 +497,166 @@ function (animate, events, animationHandler, composers, watch, tween,
     tornado.assets.lightningHandler = new lightningHandler();
     animate.updater.addHandler(tornado.assets.lightningHandler);
   };
+
+  function offsetWind(hand) {
+    /*hand.play(0, 47);
+    hand.onComplete = function () {
+      hand.play(0, 47);
+    }*/
+    //hand.loop(0, 47);
+    hand.onComplete = function () {
+      //hand.play(0, 47);
+    }
+  }
+
+  var windowWobble = function () {
+    this.uniforms = THREE.UniformsUtils.merge( [
+      THREE.UniformsLib[ "common" ],
+      THREE.UniformsLib[ "fog" ],
+      THREE.UniformsLib[ "lights" ],
+      THREE.UniformsLib[ "shadowmap" ],
+      {
+        "ambient"  : { type: "c", value: new THREE.Color( 0xffffff ) },
+        "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
+        "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) },
+        "time": {type: 'f', value: 0},
+        "freq": {type: 'f', value: 10},
+        "amp": {type: 'f', value: 0}
+      }
+    ]);
+
+    this.side = 2;
+    //this.wireframe = true;
+    //var lamb = THREE.ShaderLib['lambert'];
+    this.vertexShader = vSh();
+    this.fragmentShader = fSh();
+    this.envMap = materials.cloudCube;
+    this.transparent = true;
+    this.uniforms.opacity.value = 0.6;
+    this.lights = true;
+    this.speed = 50;
+    this.frame = 0;
+
+    this.update = function() { this.uniforms.time.value += this.speed; };
+
+    function vSh() {
+      return [
+  			"#define LAMBERT",
+  			"varying vec3 vLightFront;",
+        "varying float zPos;",
+  			"#ifdef DOUBLE_SIDED",
+  			"varying vec3 vLightBack;",
+  			"#endif",
+        "uniform float time;",
+        "uniform float freq;",
+        "uniform float amp;",
+  			THREE.ShaderChunk[ "common" ],
+  			THREE.ShaderChunk[ "map_pars_vertex" ],
+  			THREE.ShaderChunk[ "lightmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "envmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "lights_lambert_pars_vertex" ],
+  			THREE.ShaderChunk[ "color_pars_vertex" ],
+  			THREE.ShaderChunk[ "morphtarget_pars_vertex" ],
+  			THREE.ShaderChunk[ "skinning_pars_vertex" ],
+  			THREE.ShaderChunk[ "shadowmap_pars_vertex" ],
+  			THREE.ShaderChunk[ "logdepthbuf_pars_vertex" ],
+
+  			"void main() {",
+
+  				THREE.ShaderChunk[ "map_vertex" ],
+  				THREE.ShaderChunk[ "lightmap_vertex" ],
+  				THREE.ShaderChunk[ "color_vertex" ],
+
+  				THREE.ShaderChunk[ "morphnormal_vertex" ],
+  				THREE.ShaderChunk[ "skinbase_vertex" ],
+  				THREE.ShaderChunk[ "skinnormal_vertex" ],
+  				THREE.ShaderChunk[ "defaultnormal_vertex" ],
+
+  				THREE.ShaderChunk[ "morphtarget_vertex" ],
+  				THREE.ShaderChunk[ "skinning_vertex" ],
+  				THREE.ShaderChunk[ "default_vertex" ],
+  				THREE.ShaderChunk[ "logdepthbuf_vertex" ],
+
+  				THREE.ShaderChunk[ "worldpos_vertex" ],
+  				THREE.ShaderChunk[ "envmap_vertex" ],
+  				THREE.ShaderChunk[ "lights_lambert_vertex" ],
+  				THREE.ShaderChunk[ "shadowmap_vertex" ],
+          "float radius = length(position);",
+          "vec3 offsetPos = vec3(position.x, position.y, amp * sin(radius * freq + time));",
+          "vec4 pos = modelViewMatrix * vec4(offsetPos, 1.0);",
+          "zPos = offsetPos.z;",
+          "gl_Position = projectionMatrix * pos;",
+  			"}"
+  		].join("\n");
+    }
+
+    function fSh() {
+      return [
+  			"uniform vec3 diffuse;",
+  			"uniform vec3 emissive;",
+  			"uniform float opacity;",
+        "varying float zPos;",
+
+  			"varying vec3 vLightFront;",
+
+  			"#ifdef DOUBLE_SIDED",
+
+  			"	varying vec3 vLightBack;",
+
+  			"#endif",
+
+  			THREE.ShaderChunk[ "common" ],
+  			THREE.ShaderChunk[ "color_pars_fragment" ],
+  			THREE.ShaderChunk[ "map_pars_fragment" ],
+  			THREE.ShaderChunk[ "alphamap_pars_fragment" ],
+  			THREE.ShaderChunk[ "lightmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "envmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "fog_pars_fragment" ],
+  			THREE.ShaderChunk[ "shadowmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "specularmap_pars_fragment" ],
+  			THREE.ShaderChunk[ "logdepthbuf_pars_fragment" ],
+
+  			"void main() {",
+
+  			"	vec3 outgoingLight = vec3( 0.0 );",	// outgoing light does not have an alpha, the surface does
+  			"	vec4 diffuseColor = vec4( diffuse, opacity );",
+
+  				THREE.ShaderChunk[ "logdepthbuf_fragment" ],
+  				THREE.ShaderChunk[ "map_fragment" ],
+  				THREE.ShaderChunk[ "color_fragment" ],
+  				THREE.ShaderChunk[ "alphamap_fragment" ],
+  				THREE.ShaderChunk[ "alphatest_fragment" ],
+  				THREE.ShaderChunk[ "specularmap_fragment" ],
+
+  			"	#ifdef DOUBLE_SIDED",
+
+  					//"float isFront = float( gl_FrontFacing );",
+  					//"gl_FragColor.xyz *= isFront * vLightFront + ( 1.0 - isFront ) * vLightBack;",
+
+  			"		if ( gl_FrontFacing )",
+  			"			outgoingLight += diffuseColor.rgb * vLightFront + emissive;",
+  			"		else",
+  			"			outgoingLight += diffuseColor.rgb * vLightBack + emissive;",
+
+  			"	#else",
+
+  			"		outgoingLight += diffuseColor.rgb * vLightFront + emissive;",
+
+  			"	#endif",
+
+  				THREE.ShaderChunk[ "lightmap_fragment" ],
+  				THREE.ShaderChunk[ "envmap_fragment" ],
+  				THREE.ShaderChunk[ "shadowmap_fragment" ],
+
+  				THREE.ShaderChunk[ "linear_to_gamma_fragment" ],
+
+  				THREE.ShaderChunk[ "fog_fragment" ],
+
+  			"gl_FragColor = vec4(outgoingLight + zPos - 0.2, diffuseColor.a );",
+  		"}"
+  		].join("\n");
+      }
+    };
 
   return tornado;
 });

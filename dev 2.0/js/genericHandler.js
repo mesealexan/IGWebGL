@@ -28,8 +28,8 @@ define(["animate"], function(animate){
                   return true;
                 }
                 else {
-                    this.onComplete();
-                    this.onComplete = function(){ };
+                    if(this.onComplete)this.onComplete();
+                    //this.onComplete = function(){ };
                     return false;
                 } //reached the end
             }
@@ -39,8 +39,8 @@ define(["animate"], function(animate){
                   return true;
                 }
                 else{
-                    this.onComplete();
-                    this.onComplete = function(){ };
+                    if(this.onComplete)this.onComplete();
+                    //this.onComplete = function(){ };
                     return false;
                 } //reached the end
             }
