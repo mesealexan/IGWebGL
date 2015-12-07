@@ -66,7 +66,7 @@ define(["animate"], function(animate){
             }
         };
 
-        function subZeroModifyFrame(){
+        function subZeroModifyFrame(){//TODO: only works for forward playback
           if(Math.round( this.subFrame.toFixed(2) * 10) / 10 >= this.nextFrame){
             this.frame++;
             this.nextFrame = this.frame + 1;

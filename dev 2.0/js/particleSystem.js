@@ -66,7 +66,7 @@ return function(s){
       if(!_this.rndSizeVariation)//just one geom
       geometry = new THREE.PlaneBufferGeometry(s.size.w, s.size.h);
       for(var l = 0; l < loops; l++){
-        var mat = new THREE.MeshLambertMaterial({
+        var mat = new THREE.MeshBasicMaterial({
           map: _this.loadedMaps[l],
           transparent: true,
           side: THREE.DoubleSide
