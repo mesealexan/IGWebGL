@@ -8,11 +8,11 @@ function(cardinal, i89, LoE, neat, animate){
   console.info('animate:', animate);
   /******callbacks****/
   cardinal.callbacks.introAnimDone.extraCallback = function () {
-    console.info("this callback was added dynamically");
+    console.info("this callback was added dynamically for cardinal scene");
   };
 
   i89.callbacks.heaterStart.extraCallback = function () {
-    console.info("this callback was added dynamically");
+    console.info("this callback was added dynamically for i89 scene");
   };
   /******animate******/
   //start window auto resize. default is 'on'

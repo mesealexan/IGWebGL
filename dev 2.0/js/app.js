@@ -8,13 +8,15 @@ require.config({
               "MaskPass" : "../lib/EffectComposer/MaskPass",
      "ConvolutionShader" : "../lib/EffectComposer/ConvolutionShader",
              "BloomPass" : "../lib/EffectComposer/BloomPass",
+           "BokehShader" : "../lib/EffectComposer/BokehShader",
+             "BokehPass" : "../lib/EffectComposer/BokehPass",
             "RenderPass" : "../lib/EffectComposer/RenderPass",
             "ShaderPass" : "../lib/EffectComposer/ShaderPass",
             "CopyShader" : "../lib/EffectComposer/CopyShader",
         "EffectComposer" : "../lib/EffectComposer/EffectComposer",
             "underscore" : "../lib/underscore/underscore",
                  "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
-                 "watch" : "../lib/Watch.js/src/watch",
+                 "watch" : "../lib/watch.js/src/watch",
                 "howler" : "../lib/howler.js/howler.core",
                 "hammer" : "../lib/hammerjs/hammer",
                   "main" : "main"
@@ -37,7 +39,6 @@ require(["main"], function(main){
     //main.Start("webGL", "sound");
     main.Start("webGL", "tornado");
     //main.Start("webGL", "devScene");
-    //console.log(require("tornado"));
 });
 
 require(["sample"]);

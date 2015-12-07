@@ -4,9 +4,11 @@ define(["genericHandler"], function(genericHandler){
         var meshes = [];
         var loop = false;
         var influence = 1;
+        var influencePerFrame = influence / (1 / this.speed);
 
         this.setInfluence = function (newInfluence) {
           influence = newInfluence;
+          influencePerFrame = influence / (1 / this.speed);
         };
 
         this.setMesh = function(m) {
@@ -27,9 +29,14 @@ define(["genericHandler"], function(genericHandler){
         this.update = function () {
           if(this.checkPlayback(this.from, this.to)){
             for(var i = 0; i < meshes.length; i++){
-              meshes[i].morphTargetInfluences[ this.frame - this.speed ] = 0;
-              meshes[i].morphTargetInfluences[ this.frame ] = influence;
-              meshes[i].morphTargetInfluences[ this.frame + this.speed ] = 0;
+              var influences = meshes[i].morphTargetInfluences;
+              /*if(this.speed < 1){
+                influences[ this.frame ] += 3;
+                console.log(influences[ this.frame ])
+              }*/
+              if (this.forward)influences[ this.frame - this.ceilSpeed ] -= influencePerFrame;
+              else influences[ this.frame + this.ceilSpeed ] -= influencePerFrame;
+              influences[ this.frame ] += influencePerFrame;
             }
           }
           else {
@@ -44,10 +51,14 @@ define(["genericHandler"], function(genericHandler){
 
         this.resetInfluences = function(){
           for(var j = 0; j < meshes.length; j++){
-            meshes[j].morphTargetInfluences[ this.from ] = 1;
+            meshes[j].morphTargetInfluences[ this.from ] = influence;
             meshes[j].morphTargetInfluences[ this.to ] = 0;
           }
         };
+
+        function subFrameInfluence(){
+
+        }
     }
     return animationHandler;
 });
