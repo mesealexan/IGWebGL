@@ -17,20 +17,30 @@ function (animate, events, animationHandler, composers, watch, tween,
     intervals: {},
     assets: {},
     gravity: new THREE.Vector3(0, -15, -15 ),
+    slowMoGravity: new THREE.Vector3(0, -1, -1 ),
+    debreeDestroyTime: 3000,
+    nomalModebreeDestroyTime: 3000,
+    slowModebreeDestroyTime: 10000,
+    lightningTime: 75,
+    slowMoLightningTime: 200,
     bloomSettings: {
-      outside: {min: 0.8, max: 1.2},
+      outside: {min: 0, max: 1.2},
       inside: {min: 0.4, max: 1}
     }
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    /*tweenBloomDown();
+    tweenBloomDown();
+    rareLightning();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
-    startLightning();
+    //startLightning();
     //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);
-    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
-    throwBrick();*/
+    setTimeout(function(){
+      animate.updater.removeHandler(loader.cameraHandler);
+      triggerSlowMo();
+    }, 1000);
+    //throwBrick();*/
   };
 
   /***on start functions***/
@@ -210,8 +220,10 @@ function (animate, events, animationHandler, composers, watch, tween,
       trees[t].scale.set(1, scaleY, 1);
       tornado.animationHandlers["ah"+t] = new animationHandler();
       tornado.animationHandlers["ah"+t].setMesh(trees[t]);
+      tornado.animationHandlers["ah"+t].setSpeed(0.1);
       tornado.animationHandlers["ah"+t].setInfluence(scaleY - 0.4);
       tornado.animationHandlers["ah"+t].loop(0, 29);
+      //tornado.animationHandlers["ah"+t].loop(29, 0);
     }
   };
 
@@ -220,8 +232,8 @@ function (animate, events, animationHandler, composers, watch, tween,
     mesh.position.set(1.5, -430, 1.2)
     tornado.animationHandlers.Bush_sway = new animationHandler();
     tornado.animationHandlers.Bush_sway.setMesh(mesh);
-    tornado.animationHandlers.Bush_sway.setInfluence(0.3);
-    tornado.animationHandlers.Bush_sway.loop(0, 29);
+    //tornado.animationHandlers.Bush_sway.setInfluence(0.3);
+    //tornado.animationHandlers.Bush_sway.loop(0, 29);
   };
 
   /***on finish functions***/
@@ -242,28 +254,21 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   tornado.onFinishLoadFunctions.startPhysics = function (scene, loader) {
+
     var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3);
     var above = new THREE.Vector3(-20, -408, 10);
     var size = 0.1;
-    var destroyTime = 3000;
     var spawnTime = 250;
     var appearTime = 1000;
     var dissapearTime = 1000;
     var maxScale = 0.3;
 
-    tornado.intervals = setInterval( function(){
-      var boxMat = Physijs.createMaterial(
-        new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff} ),
-        .6, // medium friction
-        .3 // low restitution
-      );
-
+    function spawnDebree(){
       var mat = tornado.assets.Debris.material.clone();
       var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
       box.scale.set(Math.random() * maxScale,
                     Math.random() * maxScale,
-                    Math.random() * maxScale
-      );
+                    Math.random() * maxScale);
 
       var tweenOpacUp = new TWEEN.Tween( mat.materials[0] );
       tweenOpacUp.to( { opacity: 1 }, appearTime );
@@ -272,8 +277,10 @@ function (animate, events, animationHandler, composers, watch, tween,
       box.position.copy(randomDebreePos(above));
       box.rotation.set(Math.random(), Math.random(), Math.random())
       loader.scene.add( box );
-      _.delay(hideDebree, destroyTime, {obj: box, material: mat}); //delay destroy for debree
-    }, spawnTime );
+      _.delay(hideDebree, tornado.debreeDestroyTime, {obj: box, material: mat}); //delay destroy for debree
+    }
+
+    tornado.intervals.debreeInterval = setInterval( spawnDebree, spawnTime );
 
     function hideDebree(data) {
         var tweenOpacDown = new TWEEN.Tween( data.material.materials[0] );
@@ -346,6 +353,7 @@ function (animate, events, animationHandler, composers, watch, tween,
         fadeToWhite();
         animate.SetCustomFramerate(30);
         tweenBloomDown();
+        rareLightning();
         break;
       case 240:
         fadeBack();
@@ -405,11 +413,14 @@ function (animate, events, animationHandler, composers, watch, tween,
     var tween = new TWEEN.Tween( amount );
     tween.to( { value: 0.3 }, 1000 );
     tween.start();
+  }
 
+  function rareLightning(){
     tornado.assets.lightningHandler.minBloom = tornado.bloomSettings.inside.min;
     tornado.assets.lightningHandler.maxBloom = tornado.bloomSettings.inside.max;
     tornado.assets.lightningHandler.minFramesToStrike = 100;
     tornado.assets.lightningHandler.maxFramesToStrike = 300;
+    console.log(tornado.assets.lightningHandler)
   }
 
   function revealTornado() {
@@ -442,8 +453,8 @@ function (animate, events, animationHandler, composers, watch, tween,
     var lightningHandler = function () {
       this.frame = 0;
       //time
-      this.upTime = 75;
-      this.downTime = 75;
+      this.upTime = tornado.lightningTime;
+      this.downTime = tornado.lightningTime;
       //directional intensity
       this.maxInt = 0.5;
       this.minInt = 0;
@@ -507,6 +518,14 @@ function (animate, events, animationHandler, composers, watch, tween,
     hand.onComplete = function () {
       //hand.play(0, 47);
     }
+  }
+
+  function triggerSlowMo(){
+    tornado.assets.rainPS.speed = 0.1;
+    tornado.assets.scene.setGravity(tornado.slowMoGravity);
+    tornado.debreeDestroyTime = tornado.slowModebreeDestroyTime;
+    tornado.assets.lightningHandler.upTime = tornado.slowMoLightningTime;
+    tornado.assets.lightningHandler.downTime = tornado.slowMoLightningTime;
   }
 
   var windowWobble = function () {

@@ -13,7 +13,7 @@ define(["animate", "fxaa"], function(animate, fxaa){
           "varying vec2 vUv;",
           "void main() {",
             "vUv = uv;",
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position , 1.0 );",
           "}"
         ].join( "\n" )
         ,
@@ -27,10 +27,11 @@ define(["animate", "fxaa"], function(animate, fxaa){
             //"gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
             "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
           "}"
-        ].join( "\n" )
+        ].join( "\n" );
       };
 
       var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
+      var depthMat = new THREE.MeshDepthMaterial();
       var renderTarget = new THREE.WebGLRenderTarget( animate.renderSize.width,
         animate.renderSize.height, rtParameters );
 
@@ -46,6 +47,16 @@ define(["animate", "fxaa"], function(animate, fxaa){
       var fxaaPass = new THREE.ShaderPass( fxaa );
       fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
       composer.addPass( fxaaPass );
+
+      var bokehPass = new THREE.BokehPass( animate.loader.scene, animate.camera, {
+					focus: 		1.0,
+					aperture:	0.025,
+					maxblur:	1.0,
+					width: animate.renderSize.width,
+					height: animate.renderSize.height
+				});
+
+      bokehPass.renderToScreen = true;
 
       var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
       effectCopy.renderToScreen = true;
