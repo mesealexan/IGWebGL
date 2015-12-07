@@ -27,7 +27,7 @@ define(["animate", "fxaa"], function(animate, fxaa){
             //"gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
             "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
           "}"
-        ].join( "\n" );
+        ].join( "\n" )
       };
 
       var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
