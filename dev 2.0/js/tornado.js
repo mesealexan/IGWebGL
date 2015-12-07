@@ -24,13 +24,13 @@ function (animate, events, animationHandler, composers, watch, tween,
     lightningTime: 75,
     slowMoLightningTime: 200,
     bloomSettings: {
-      outside: {min: 0, max: 1.2},
+      outside: {min: 0.8, max: 1.2},
       inside: {min: 0.4, max: 1}
     }
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    tweenBloomDown();
+    /*tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
@@ -39,7 +39,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     setTimeout(function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
-    }, 1000);
+    }, 2000);*/
     //throwBrick();*/
   };
 
@@ -102,6 +102,10 @@ function (animate, events, animationHandler, composers, watch, tween,
     offsetWind(ah);
     return ah;
   };
+
+  tornado.onLoadFunctions.House = function (mesh) {
+    tornado.assets.House = mesh;
+  }
 
   tornado.onLoadFunctions.House_windows = function (mesh) {
       mesh.material = materials.setMaterials("cardinal", {name:"Glass"});
@@ -221,7 +225,7 @@ function (animate, events, animationHandler, composers, watch, tween,
       tornado.animationHandlers["ah"+t] = new animationHandler();
       tornado.animationHandlers["ah"+t].setMesh(trees[t]);
       tornado.animationHandlers["ah"+t].setSpeed(0.1);
-      tornado.animationHandlers["ah"+t].setInfluence(scaleY - 0.4);
+      tornado.animationHandlers["ah"+t].setInfluence(scaleY);
       tornado.animationHandlers["ah"+t].loop(0, 29);
       //tornado.animationHandlers["ah"+t].loop(29, 0);
     }
@@ -232,8 +236,9 @@ function (animate, events, animationHandler, composers, watch, tween,
     mesh.position.set(1.5, -430, 1.2)
     tornado.animationHandlers.Bush_sway = new animationHandler();
     tornado.animationHandlers.Bush_sway.setMesh(mesh);
-    //tornado.animationHandlers.Bush_sway.setInfluence(0.3);
-    //tornado.animationHandlers.Bush_sway.loop(0, 29);
+    tornado.animationHandlers.Bush_sway.setSpeed(0.1);
+    tornado.animationHandlers.Bush_sway.setInfluence(1);
+    tornado.animationHandlers.Bush_sway.loop(0, 29);
   };
 
   /***on finish functions***/
@@ -357,6 +362,9 @@ function (animate, events, animationHandler, composers, watch, tween,
         break;
       case 240:
         fadeBack();
+        break;
+      case 270:
+        triggerSlowMo();
         break;
       case 280:
         throwBrick();

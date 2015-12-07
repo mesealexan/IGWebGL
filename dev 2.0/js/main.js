@@ -12,6 +12,8 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
+        //animate.renderer.gammaInput = true;
+        //animate.renderer.gammaOutput = true;
         animate.renderer.setSize( width, height );
         animate.renderer.setClearColor( 0x000000, 1 );
         animate.renderer.shadowMapType = THREE.PCFShadowMap;
@@ -37,7 +39,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
       main.buttons.loadNeat.add();
       main.buttons.loadSound.add();
       main.buttons.loadTornado.add();
-      main.buttons.loadDevScene.add();
+      //main.buttons.loadDevScene.add();
     }
     /***end private functions***/
 
@@ -53,6 +55,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         height = $('#'+containerID).height();
         animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
+        addRenderer();
         main.mediaFolderUrl = getMediaFolderURL();
         main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
         main.scene.sceneID = sceneID;
@@ -61,7 +64,6 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         materials.makeCloudTextureCube(main.mediaFolderUrl);
         animate.loader = main.loader = new loader(main.scene, animate, main.mediaFolderUrl, addCamera());
         animate.StartWindowAutoResize();
-        addRenderer();
         animate.SetDefaultRenderFunction();
         addButtons();
         //because they are unique, lights are added by each scene's individual file
