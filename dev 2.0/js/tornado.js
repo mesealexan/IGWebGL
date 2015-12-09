@@ -31,13 +31,13 @@ function (animate, events, animationHandler, composers, watch, tween,
     slowMoLightningTime: 200,
     //bloom
     bloomSettings: {
-      outside: {min: 0, max: 1.2},
+      outside: {min: 0.8, max: 1.2},
       inside: {min: 0.4, max: 1}
     }
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    tweenBloomDown();
+    /*tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
@@ -47,7 +47,7 @@ function (animate, events, animationHandler, composers, watch, tween,
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
     }, 2000);
-    throwBrick();
+    throwBrick();*/
   };
 
   /***on start functions***/
@@ -383,7 +383,7 @@ function (animate, events, animationHandler, composers, watch, tween,
         triggerSlowMo();
         break;
       case 280:
-        //throwBrick();
+        throwBrick();
         break;
     }
   }
