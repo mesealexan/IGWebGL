@@ -16,21 +16,28 @@ function (animate, events, animationHandler, composers, watch, tween,
     animationHandlers: {},
     intervals: {},
     assets: {},
+    //scroll clouds
+    cloudSpeed: 0.0002,
+    slowMoCloudSpeed: 0.0001,
+    //gravity
     gravity: new THREE.Vector3(0, -15, -15 ),
     slowMoGravity: new THREE.Vector3(0, -1, -1 ),
+    //debrees
     debreeDestroyTime: 3000,
     nomalModebreeDestroyTime: 3000,
     slowModebreeDestroyTime: 10000,
+    //lightning
     lightningTime: 75,
     slowMoLightningTime: 200,
+    //bloom
     bloomSettings: {
-      outside: {min: 0.8, max: 1.2},
+      outside: {min: 0, max: 1.2},
       inside: {min: 0.4, max: 1}
     }
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    /*tweenBloomDown();
+    tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
@@ -39,8 +46,8 @@ function (animate, events, animationHandler, composers, watch, tween,
     setTimeout(function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
-    }, 2000);*/
-    //throwBrick();*/
+    }, 2000);
+    throwBrick();
   };
 
   /***on start functions***/
@@ -83,23 +90,33 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   /***on load functions***/
   tornado.onLoadFunctions.Wind_1 = function (mesh) {
-    tornado.animationHandlers.Wind_1 = prepareWind(mesh)
+    tornado.animationHandlers.Wind_1 = prepareWind(mesh, 49)
   }
   tornado.onLoadFunctions.Wind_2 = function (mesh) {
-    tornado.animationHandlers.Wind_2 = prepareWind(mesh)
+    tornado.animationHandlers.Wind_2 = prepareWind(mesh, 58)
   }
   tornado.onLoadFunctions.Wind_3 = function (mesh) {
-    tornado.animationHandlers.Wind_2 = prepareWind(mesh)
+    tornado.animationHandlers.Wind_2 = prepareWind(mesh, 48)
   }
-  function prepareWind(mesh) {
+  function prepareWind(mesh, to) {
     mesh.material.materials[0].morphTargets = true;
     mesh.material.materials[0].transparent = true;
     mesh.material.materials[0].side = 2;
     mesh.material.materials[0].blending = 1;
     mesh.material.materials[0].opacity = 0.66;
+    mesh.material.materials[0].depthWrite = false;
+    mesh.material.materials[0].depthTest = false;
+    //mesh.material.materials[0].alphaTest = 0.7;
     var ah = new animationHandler();
     ah.setMesh(mesh);
-    offsetWind(ah);
+    //ah.setSpeed(0.1);
+    ah.setInfluence(1);
+    ah.play(0, to);
+    ah.onComplete = function () {
+      //ah.resetInfluences();
+      //prepareWind(mesh, to);
+      mesh.parent.remove(mesh);
+    }
     return ah;
   };
 
@@ -116,17 +133,15 @@ function (animate, events, animationHandler, composers, watch, tween,
     mesh.material.map.wrapS = THREE.RepeatWrapping;
     mesh.material.map.wrapT = THREE.RepeatWrapping;
 
-    var scrollingUV = function(){
+    var scrollingUV = function(m){
       this.frame = 0;
-      this.maxFrame = 200;
-      this.speed = 0.0002;
+      this.speed = tornado.cloudSpeed;
       this.update = function () {
-        //if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
-        //  else
-        mesh.material.map.offset.x += this.speed;
+        m.material.map.offset.x += this.speed;
       };
     };
-    animate.updater.addHandler(new scrollingUV());
+    tornado.assets.cloudScrollingUV = new scrollingUV(mesh);
+    animate.updater.addHandler(tornado.assets.cloudScrollingUV);
   }
 
   tornado.onLoadFunctions.Earth_shell = function (mesh) {
@@ -238,7 +253,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     tornado.animationHandlers.Bush_sway.setMesh(mesh);
     tornado.animationHandlers.Bush_sway.setSpeed(0.1);
     tornado.animationHandlers.Bush_sway.setInfluence(1);
-    tornado.animationHandlers.Bush_sway.loop(0, 29);
+    //tornado.animationHandlers.Bush_sway.loop(0, 29);
   };
 
   /***on finish functions***/
@@ -260,20 +275,21 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   tornado.onFinishLoadFunctions.startPhysics = function (scene, loader) {
 
-    var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3);
-    var above = new THREE.Vector3(-20, -408, 10);
-    var size = 0.1;
-    var spawnTime = 250;
-    var appearTime = 1000;
-    var dissapearTime = 1000;
-    var maxScale = 0.3;
+    var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3),
+    above = new THREE.Vector3(-20, -408, 10),
+    size = 0.1,
+    spawnTime = 500,
+    appearTime = 1000,
+    dissapearTime = 1000,
+    maxScale = 0.3,
+    minScale = 0.03;
 
     function spawnDebree(){
       var mat = tornado.assets.Debris.material.clone();
       var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
-      box.scale.set(Math.random() * maxScale,
-                    Math.random() * maxScale,
-                    Math.random() * maxScale);
+      box.scale.set(Math.random() * maxScale + minScale,
+                    Math.random() * maxScale + minScale,
+                    Math.random() * maxScale + minScale);
 
       var tweenOpacUp = new TWEEN.Tween( mat.materials[0] );
       tweenOpacUp.to( { opacity: 1 }, appearTime );
@@ -367,7 +383,7 @@ function (animate, events, animationHandler, composers, watch, tween,
         triggerSlowMo();
         break;
       case 280:
-        throwBrick();
+        //throwBrick();
         break;
     }
   }
@@ -375,7 +391,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   function throwBrick() {
     var startPos =  new THREE.Vector3(-6.95, -400.64, 100);
     var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
-    var time = 2000;
+    var time = 6000;
 
     var geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.3 );
     var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
@@ -393,7 +409,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     posTween.start();
 
     var rotTween = new TWEEN.Tween( cube.rotation );
-    rotTween.to( { y: -Math.PI * 2 }, 500 );
+    rotTween.to( { x: -Math.PI * 2 }, 500 );
     rotTween.repeat( Infinity );
     rotTween.start();
   }
@@ -426,9 +442,8 @@ function (animate, events, animationHandler, composers, watch, tween,
   function rareLightning(){
     tornado.assets.lightningHandler.minBloom = tornado.bloomSettings.inside.min;
     tornado.assets.lightningHandler.maxBloom = tornado.bloomSettings.inside.max;
-    tornado.assets.lightningHandler.minFramesToStrike = 100;
-    tornado.assets.lightningHandler.maxFramesToStrike = 300;
-    console.log(tornado.assets.lightningHandler)
+    tornado.assets.lightningHandler.minFramesToStrike = 200;
+    tornado.assets.lightningHandler.maxFramesToStrike = 400;
   }
 
   function revealTornado() {
@@ -517,26 +532,23 @@ function (animate, events, animationHandler, composers, watch, tween,
     animate.updater.addHandler(tornado.assets.lightningHandler);
   };
 
-  function offsetWind(hand) {
-    /*hand.play(0, 47);
-    hand.onComplete = function () {
-      hand.play(0, 47);
-    }*/
-    //hand.loop(0, 47);
-    hand.onComplete = function () {
-      //hand.play(0, 47);
-    }
-  }
-
   function triggerSlowMo(){
     tornado.assets.rainPS.speed = 0.1;
     tornado.assets.scene.setGravity(tornado.slowMoGravity);
     tornado.debreeDestroyTime = tornado.slowModebreeDestroyTime;
     tornado.assets.lightningHandler.upTime = tornado.slowMoLightningTime;
     tornado.assets.lightningHandler.downTime = tornado.slowMoLightningTime;
+    tornado.assets.cloudScrollingUV.speed = tornado.slowMoCloudSpeed;
   }
 
   var windowWobble = function () {
+    var crackTex = THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg');
+    /*crackTex.wrapS   = THREE.RepeatWrapping;
+    crackTex.wrapT   = THREE.RepeatWrapping;
+    crackTex.repeat.x = 128;
+    crackTex.repeat.y = 128;*/
+
+
     this.uniforms = THREE.UniformsUtils.merge( [
       THREE.UniformsLib[ "common" ],
       THREE.UniformsLib[ "fog" ],
@@ -546,20 +558,22 @@ function (animate, events, animationHandler, composers, watch, tween,
         "ambient"  : { type: "c", value: new THREE.Color( 0xffffff ) },
         "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
         "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) },
+        "crackTex"    : { type: "t", value: crackTex },
         "time": {type: 'f', value: 0},
         "freq": {type: 'f', value: 10},
         "amp": {type: 'f', value: 0}
       }
     ]);
 
-    this.side = 2;
-    //this.wireframe = true;
-    //var lamb = THREE.ShaderLib['lambert'];
+    //this.defines = {USE_MAP: true};
     this.vertexShader = vSh();
     this.fragmentShader = fSh();
+    this.side = 0;
+    this.fog = false;
     this.envMap = materials.cloudCube;
     this.transparent = true;
     this.uniforms.opacity.value = 0.6;
+    //this.uniforms.map.value = crackTex;
     this.lights = true;
     this.speed = 50;
     this.frame = 0;
@@ -608,17 +622,19 @@ function (animate, events, animationHandler, composers, watch, tween,
   				THREE.ShaderChunk[ "envmap_vertex" ],
   				THREE.ShaderChunk[ "lights_lambert_vertex" ],
   				THREE.ShaderChunk[ "shadowmap_vertex" ],
-          "float radius = length(position);",
+          /*"float radius = length(position);",
           "vec3 offsetPos = vec3(position.x, position.y, amp * sin(radius * freq + time));",
           "vec4 pos = modelViewMatrix * vec4(offsetPos, 1.0);",
           "zPos = offsetPos.z;",
-          "gl_Position = projectionMatrix * pos;",
+          "gl_Position = projectionMatrix * pos;",*/
+          "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
   			"}"
   		].join("\n");
     }
 
     function fSh() {
       return [
+        "uniform sampler2D crackTex;",
   			"uniform vec3 diffuse;",
   			"uniform vec3 emissive;",
   			"uniform float opacity;",
@@ -678,8 +694,11 @@ function (animate, events, animationHandler, composers, watch, tween,
   				THREE.ShaderChunk[ "linear_to_gamma_fragment" ],
 
   				THREE.ShaderChunk[ "fog_fragment" ],
-
-  			"gl_FragColor = vec4(outgoingLight + zPos - 0.2, diffuseColor.a );",
+          //"vec4 crackCol = texture2D( crackTex, vUv );",
+  			  //"gl_FragColor = vec4(outgoingLight, diffuseColor.a );",
+          //"gl_FragColor = texture2D( crackTex, vUv );",
+          //"vec4 texel = texture2D( crackTex, vUv );",
+          "gl_FragColor = vec4(outgoingLight, diffuseColor.a);",
   		"}"
   		].join("\n");
       }

@@ -4,7 +4,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     var neat = {
       folderName: "neat",
       assetNames: ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated'],
+      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows'],
       soundNames: ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves', 'neat-heavenly-transition',
       'neat-rain-exterior-loop', 'neat-magic-wand'],
       onStartFunctions: {},

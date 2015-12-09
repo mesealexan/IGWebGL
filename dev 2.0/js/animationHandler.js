@@ -1,4 +1,4 @@
-define(["genericHandler"], function(genericHandler){
+define(["genericHandler", "underscore"], function(genericHandler, underscore){
     animationHandler.prototype = new genericHandler();
     function animationHandler(){
         var meshes = [];
@@ -27,13 +27,9 @@ define(["genericHandler"], function(genericHandler){
         };
 
         this.update = function () {
-          if(this.checkPlayback(this.from, this.to)){
+          if(this.checkPlayback(this.from, this.to+1)){
             for(var i = 0; i < meshes.length; i++){
               var influences = meshes[i].morphTargetInfluences;
-              /*if(this.speed < 1){
-                influences[ this.frame ] += 3;
-                console.log(influences[ this.frame ])
-              }*/
               if (this.forward)influences[ this.frame - this.ceilSpeed ] -= influencePerFrame;
               else influences[ this.frame + this.ceilSpeed ] -= influencePerFrame;
               influences[ this.frame ] += influencePerFrame;
@@ -51,7 +47,11 @@ define(["genericHandler"], function(genericHandler){
 
         this.resetInfluences = function(){
           for(var j = 0; j < meshes.length; j++){
-            meshes[j].morphTargetInfluences[ this.from ] = influence;
+            /*for (var i = 0; i < meshes[j].morphTargetInfluences.length; i++)
+              meshes[j].morphTargetInfluences[i] = 0;*/
+            meshes[j].morphTargetInfluences[ this.from  ] = 0;
+            //meshes[j].morphTargetInfluences[ this.from + 1 ] = 0;
+            //meshes[j].morphTargetInfluences[ this.to  - 1] = 0;
             meshes[j].morphTargetInfluences[ this.to ] = 0;
           }
         };

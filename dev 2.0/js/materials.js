@@ -484,7 +484,7 @@ define(["three", "animate"], function(THREE, animate){
                     shininess: 30
                 });
                 break;
-
+            case 'neatGlass':
             case 'neatneatGlass':
             case 'neatstandardGlass':
             case 'neatGlass non animated':
