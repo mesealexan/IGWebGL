@@ -37,15 +37,13 @@ define(["animate"], function(animate){
 
         this.stop = function() { this.pause(); /*this.frame = -1;*/ };
 
-        this.onComplete = function(){ };
+        this.onComplete = function(){};
 
-        this.selectedModifyFrame = function () {
-        };
+        this.selectedModifyFrame = function () {};
 
         this.checkPlayback = function(from, to){
             if (from <= to){//regular playback
                 if (this.frame < to){//still has to play
-                  this.subFrame += this.speed;
                   this.selectedModifyFrame();
                   return true;
                 }
@@ -67,6 +65,7 @@ define(["animate"], function(animate){
         };
 
         function subZeroModifyFrame(){//TODO: only works for forward playback
+          this.subFrame += this.speed;
           if(Math.round( this.subFrame.toFixed(2) * 10) / 10 >= this.nextFrame){
             this.frame++;
             this.nextFrame = this.frame + 1;

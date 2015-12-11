@@ -1,7 +1,7 @@
 define(["underscore", "updater", "tween", "EffectComposer",
-"CopyShader", "ShaderPass", "RenderPass", "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader"],
+"CopyShader", "ShaderPass", "RenderPass", "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader", "SSAOShader"],
     function(underscore, updater, tween, EffectComposer,
-      CopyShader, ShaderPass, RenderPass, BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader){
+      CopyShader, ShaderPass, RenderPass, BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader, SSAOShader){
     var animate = {
       fps: 30
     };//public functionality

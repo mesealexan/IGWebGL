@@ -3,7 +3,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     var LoE = {
       soundNames: ['loe-factory-loop', 'loe-apply-coating'],
       folderName: "LoE",
-      assetNames: ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+      assetNames: [/*'text'*/'EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
           'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'],
       onStartFunctions: {},
       onLoadFunctions: {},
@@ -69,6 +69,10 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     /***end on start functions***/
 
     /***on load functions***/
+
+    LoE.onLoadFunctions.EngineeredComfort = function(mesh){
+      mesh.material = materials.setMaterials(LoE.folderName, {name: "text"});
+    };
 
     LoE.onLoadFunctions.fixed_glass = function(mesh){
       LoE.assets.fixed_glass = mesh;
@@ -159,10 +163,15 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     /***end on load functions***/
 
     /***on finish functions***/
+    LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
+       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+         animate.Animate);
+    };
+
     LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
-        watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
-            reactToFrame(oldValue);
-        });
+      watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
+          reactToFrame(oldValue);
+      });
     };
 
     LoE.onFinishLoadFunctions.addControls = function(){

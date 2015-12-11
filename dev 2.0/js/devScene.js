@@ -1,7 +1,7 @@
 define(["animate", "physi", "materials", "composers", "events"], function (animate, physi, materials, composers, events) {
   var devScene = {
     folderName: "devScene",
-    assetNames: ["House_collider"],
+    assetNames: ["hair"],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},
@@ -18,19 +18,28 @@ define(["animate", "physi", "materials", "composers", "events"], function (anima
 
     devScene.assets.ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(devScene.assets.ambientLight);
-        events.AddControls();
+    events.AddControls();
 	};
 
   devScene.onFinishLoadFunctions.applyComposer = function(scene){
-    devScene.assets.composer = new composers.Outline();
-    animate.SetCustomRenderFunction( function(){ devScene.assets.composer.render();} );
+    devScene.assets.composer = new composers.Bloom_AdditiveColor({});
+    animate.SetCustomRenderFunction( function(){ devScene.assets.composer.render(); } );
+  };
+
+  devScene.onLoadFunctions.hair = function (mesh, loader) {
+    mesh.material = mesh.material.materials[0];
+    mesh.material.transparent = true;
+    mesh.material.side = THREE.FrontSide;
+    mesh.material.alphaTest = 0.5;
+    mesh.position.y = -180;
+    console.log(mesh.material)
   };
 
   /***on load functions***/
 	devScene.onLoadFunctions.House_collider = function (mesh, loader) {
   //  mesh.scale.set(0.3, 0.3, 0.3);
   //  mesh.position.y += 0.5;
-    mesh.rotation.y -= Math.PI / 4;
+  /*  mesh.rotation.y -= Math.PI / 4;
     mesh.material = materials.setMaterials("tornado", {name: "checker"});
 
     var boxMat = Physijs.createMaterial(
@@ -45,7 +54,7 @@ define(["animate", "physi", "materials", "composers", "events"], function (anima
     houseMesh.scale.set(2, 2, 2);
     houseMesh.position.y += 1;
     houseMesh.material = materials.setMaterials("tornado", {name: "checker"});
-    loader.scene.add( houseMesh );
+    loader.scene.add( houseMesh );*/
 	};
 
   /***on finish load functions***/
@@ -60,11 +69,11 @@ define(["animate", "physi", "materials", "composers", "events"], function (anima
 		);
 
     var ground = new Physijs.BoxMesh(
-      new THREE.BoxGeometry( 15, 1, 15 ),
+      new THREE.BoxGeometry( 3, 3, 3 ),
       ground_material,
       0 // mass
     );
-  //  scene.add( ground )
+   scene.add( ground )
 
     ;/*scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
 		scene.update = function() { scene.simulate( undefined, 1 ); };

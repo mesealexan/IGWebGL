@@ -9,7 +9,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
 
     /***private functions***/
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
         //animate.renderer.gammaInput = true;

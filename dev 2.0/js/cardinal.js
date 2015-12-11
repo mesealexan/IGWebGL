@@ -1,8 +1,8 @@
-define(["three", "watch", "events", "tween", "underscore", "animate", "callback"],
-    function(three, watch, events, tween, underscore, animate, callback){
+define(["three", "watch", "events", "tween", "underscore", "animate", "callback", "composers"],
+    function(three, watch, events, tween, underscore, animate, callback, composers){
     var cardinal = {
       folderName: "cardinal",
-      assetNames: ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'],
+      assetNames: ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice', 'LeapForward'],
       onStartFunctions: {},
       onLoadFunctions: {},
       onFinishLoadFunctions: {},
@@ -76,8 +76,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
 
     /***on start functions***/
     cardinal.onStartFunctions.addLights = function(scene){
-        scene.add( new THREE.AmbientLight( 0x666666 ) );
-        scene.fog = new THREE.Fog(0x13161d, 3000, 6000);
+        scene.add( new THREE.AmbientLight( 0x333333 ) );
+        scene.fog = new THREE.Fog(0x13161d, 6000, 8000);
 
         var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
         light1.position.set( -2929, 2686, 938 );
@@ -95,8 +95,8 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
         var radius = 10000;
         var geometry = new THREE.CylinderGeometry( radius, radius, 1, 32 );
-        var material = new THREE.MeshLambertMaterial( {color: 0xffffff, ambient: 0xffffff,
-            specular: 0xffffff, emissive: 0x333333, side: THREE.FrontSide} );
+        var material = new THREE.MeshLambertMaterial( {color: 0x999999, ambient: 0x333333,
+            specular: 0x333333, emissive: 0x333333, side: THREE.FrontSide} );
         var cylinder = new THREE.Mesh( geometry, material );
         cylinder.position.set(0, -100, 0);
         scene.add( cylinder );
@@ -122,11 +122,23 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
         }
 
         lensFlare.position.set( -1127.008, 1232.292, -11  );
-        scene.add( lensFlare );
+      //  scene.add( lensFlare );
     };
     /***end on start functions***/
 
     /***on load functions***/
+    cardinal.onLoadFunctions.LeapForward = function(mesh){
+        cardinal.assets.introText = mesh;
+        mesh.material = new THREE.MeshBasicMaterial();//mesh.material.materials[0];
+        mesh.material.color.setHex( 0xffffff );
+        //mesh.material.emissive.setHex( 0x999999 );
+        mesh.material.transparent = true;
+        mesh.scale.set(0.02, 0.02, 0.02)
+        mesh.rotateX(Math.PI / 2);
+        mesh.position.z -= 50;
+        animate.camera.add(mesh);
+    };
+
     cardinal.onLoadFunctions.cardinal_vertical = function(mesh){
         mesh.visible = false;
         cardinal.assets.cardinal_vertical = mesh;
@@ -145,12 +157,42 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
 
     /***on finish functions***/
     cardinal.onFinishLoadFunctions.playCamera = function(scene, loader) {
+      var firstFrame = loader.cameraHandler.Animation.frames[1];
+      loader.cameraHandler.play(
+        cameraAnimations.animation_1.from,
+        cameraAnimations.animation_1.from + 1, onCompleteFirstPlay
+      );
+
+      function onCompleteFirstPlay(){
+          animate.camera.translateY( 2500 );
+          var newUp = loader.cameraHandler.modifyCameraUp(firstFrame.rollAngle);
+          animate.camera.up.set(newUp.x, newUp.y, newUp.z);
+          loader.cameraHandler.tween(0, 0.5, onCompleteTween, TWEEN.Easing.Cubic.In);
+          tweenBloomDown();
+      }
+
+      function onCompleteTween(){
         loader.cameraHandler.play(
           cameraAnimations.animation_1.from,
           cameraAnimations.animation_1.to,
-          function(){ cardinal.buttons.slice.add(); },
-          animate.Animate
+          cardinal.buttons.slice.add,
+          function(){
+            tweenTextOpac();
+          }
         );
+      }
+      animate.Animate();
+    };
+
+    cardinal.onFinishLoadFunctions.applyComposer = function(scene){
+      cardinal.assets.composer = new composers.Bloom_AdditiveColor({
+        str: 1.2,
+        bok: {
+          foc: 1.00,
+          ape: 0.02
+        }
+      });
+      animate.SetCustomRenderFunction( function(){ cardinal.assets.composer.render(); } );
     };
 
     cardinal.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -465,6 +507,20 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
                 callback.go(cardinal.callbacks.backToMainDone);
             }
         );
+    }
+
+    function tweenTextOpac() {
+      var tween = new TWEEN.Tween( cardinal.assets.introText.material );
+      tween.to( { opacity: 0 }, 500 );
+      tween.onComplete(function () { cardinal.assets.introText.visible = false; });
+      tween.start();
+    }
+
+    function tweenBloomDown() {
+      var amount = cardinal.assets.composer.passes[2].copyUniforms.opacity;
+      var tween = new TWEEN.Tween( amount );
+      tween.to( { value: 0 }, 4500 );
+      tween.start();
     }
 
     return cardinal;

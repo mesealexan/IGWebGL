@@ -22,9 +22,16 @@ define(["animate", "fxaa"], function(animate, fxaa){
           "varying vec2 vUv;",
           "uniform float amount;",
 
+          "float random(float p){",
+            "return fract(sin(p)*100000.);",
+          "}",
+
           "void main() {",
             "vec4 tex = texture2D(tDiffuse, vUv);",
-            //"gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
+            //"if(vUv.x > 0.5) gl_FragColor;",
+            //"if(random(tex.b) < .2) discard;",
+            //"gl_FragColor = vec4(random(tex.r), random(tex.g) , random(tex.b), tex.a);",
+            //"gl_FragColor = vec4((tex.r), smoothstep(0., 1., vUv.x) , tex.b, tex.a);",
             "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
           "}"
         ].join( "\n" )
@@ -48,62 +55,20 @@ define(["animate", "fxaa"], function(animate, fxaa){
       fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
       composer.addPass( fxaaPass );
 
+      var bokFoc, bokApe;
+      if(set.bok != undefined){ bokFoc = set.bok.foc; bokApe = set.bok.ape; }
+      else {bokFoc = 1; bokApe = 0;}
+
       var bokehPass = new THREE.BokehPass( animate.loader.scene, animate.camera, {
-					focus: 		1.0,
-					aperture:	0.025,
+					focus: 	  bokFoc,
+					aperture:	bokApe,
 					maxblur:	1.0,
 					width: animate.renderSize.width,
 					height: animate.renderSize.height
 				});
 
       bokehPass.renderToScreen = true;
-
-      var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
-      effectCopy.renderToScreen = true;
-      composer.addPass(effectCopy);
-
-      return composer;
-    };
-
-    composers.Outline = function(set) {
-      var outScene  = new THREE.Scene();
-      var outline = {
-        uniforms: {
-          "tDiffuse": { type: "t", value: null }
-        }
-        ,
-        vertexShader: [
-          "varying vec2 vUv;",
-          "void main() {",
-            "vUv = uv;",
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position , 1.0 );",
-          "}"
-        ].join( "\n" )
-        ,
-        fragmentShader: [
-          "uniform sampler2D tDiffuse;",
-          "varying vec2 vUv;",
-
-          "void main() {",
-            "vec4 tex = texture2D(tDiffuse, vUv);",
-            //"gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
-            "tex += texture2D(tDiffuse, vec2(vUv.x + 0.01, vUv.y + 0.01));",
-            "tex += texture2D(tDiffuse, vec2(vUv.x - 0.01, vUv.y - 0.01));",
-            "gl_FragColor = vec4(tex.r, tex.g, tex.b, 1.);",
-          "}"
-        ].join( "\n" )
-      };
-
-      var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat };
-      var renderTarget = new THREE.WebGLRenderTarget( animate.renderSize.width,
-        animate.renderSize.height, rtParameters );
-
-      var composer = new THREE.EffectComposer( animate.renderer );
-      composer.addPass( new THREE.RenderPass( animate.loader.scene, animate.camera ) );
-
-      var outlinePass = new THREE.ShaderPass( outline );
-      outlinePass.renderToScreen = true;
-      composer.addPass( outlinePass );
+      composer.addPass( bokehPass );
 
       return composer;
     };

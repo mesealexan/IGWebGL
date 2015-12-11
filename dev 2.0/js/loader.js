@@ -75,7 +75,9 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
           _.each(onFinishLoadFunctions, function(fun){
               selectedScene.onFinishLoadFunctions[fun](scene, _this);
           });
-          checkCameraAnimationState(_this, animationComponent);
+          //checkCameraAnimationState(_this, animationComponent);
+          //animationComponent.Animate();
+          loader.LoadingScreen.hide();
           _this.loadingScene = false;
         };
 
@@ -88,6 +90,7 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
         };
 
         this.UnloadScene = function(onComplete){
+          this.animationComponent.SetDefaultRenderFunction();
           var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
 
           _.each(onUnloadFunctions, function(fun){
@@ -138,7 +141,7 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
 
           var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
 
-          if(geometry.morphTargets.length > 0)  
+          if(geometry.morphTargets.length > 0)
               mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
           else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
         }
