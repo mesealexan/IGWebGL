@@ -8,6 +8,7 @@ require.config({
               "MaskPass" : "../lib/EffectComposer/MaskPass",
      "ConvolutionShader" : "../lib/EffectComposer/ConvolutionShader",
              "BloomPass" : "../lib/EffectComposer/BloomPass",
+            "SSAOShader" : "../lib/EffectComposer/SSAOShader",
            "BokehShader" : "../lib/EffectComposer/BokehShader",
              "BokehPass" : "../lib/EffectComposer/BokehPass",
             "RenderPass" : "../lib/EffectComposer/RenderPass",
@@ -19,6 +20,7 @@ require.config({
                  "watch" : "../lib/watch.js/src/watch",
                 "howler" : "../lib/howler.js/howler.core",
                 "hammer" : "../lib/hammerjs/hammer",
+                   "gui" : "../lib/gui/dat.gui.min",
                   "main" : "main"
     }
     ,

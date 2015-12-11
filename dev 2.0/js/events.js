@@ -1,5 +1,5 @@
-define(["animate", "orbitControls", "underscore", "hammer"],
-    function(animate, orbitControls, underscore, hammer){
+define(["animate", "orbitControls", "underscore", "hammer", "gui"],
+    function(animate, orbitControls, underscore, hammer, gui){
     var events = {};
 
     events.Controls = undefined;
@@ -55,6 +55,31 @@ define(["animate", "orbitControls", "underscore", "hammer"],
     };
 
     events.ToggleControls = function(bool){ this.Controls.enabled = bool; };
+
+
+
+    events.addDOF_GUI = function(scene) {
+      return;
+      var effectController  = {
+        focus: 		1.0,
+        aperture:	0.025,
+        maxblur:	1.0
+      };
+
+      var matChanger = function( ) {
+        scene.assets.composer.passes[4].uniforms[ "focus" ].value = effectController.focus;
+        scene.assets.composer.passes[4].uniforms[ "aperture" ].value = effectController.aperture;
+        scene.assets.composer.passes[4].uniforms[ "maxblur" ].value = effectController.maxblur;
+      };
+
+      var ui = new gui.GUI();
+				ui.add( effectController, "focus", 0.0, 3.0, 0.025 ).onChange( matChanger );
+				ui.add( effectController, "aperture", 0.001, 0.2, 0.001 ).onChange( matChanger );
+				ui.add( effectController, "maxblur", 0.0, 3.0, 0.025 ).onChange( matChanger );
+		  ui.close();
+
+      $(".dg").css('z-index', 6);
+    }
 
     return events;
 });

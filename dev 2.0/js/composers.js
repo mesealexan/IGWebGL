@@ -55,19 +55,20 @@ define(["animate", "fxaa"], function(animate, fxaa){
       fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
       composer.addPass( fxaaPass );
 
+      var bokFoc, bokApe;
+      if(set.bok != undefined){ bokFoc = set.bok.foc; bokApe = set.bok.ape; }
+      else {bokFoc = 1; bokApe = 0;}
+
       var bokehPass = new THREE.BokehPass( animate.loader.scene, animate.camera, {
-					focus: 		1.0,
-					aperture:	0.025,
+					focus: 	  bokFoc,
+					aperture:	bokApe,
 					maxblur:	1.0,
 					width: animate.renderSize.width,
 					height: animate.renderSize.height
 				});
 
       bokehPass.renderToScreen = true;
-
-      var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
-      effectCopy.renderToScreen = true;
-      composer.addPass(effectCopy);
+      composer.addPass( bokehPass );
 
       return composer;
     };

@@ -1,9 +1,9 @@
-define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback"],
-    function(animationHandler, snowHandler, watch, animate, events, audio, callback){
+define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers"],
+    function(animationHandler, snowHandler, watch, animate, events, audio, callback, composers){
     var i89 = {
       folderName: "i89",
       assetNames: ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-          'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
+          'inside_text', 'outside_text', 'moon', 'logo', 'frame', 'window_plane',
           'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'],
       soundNames: ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"],
       onStartFunctions: {},
@@ -12,6 +12,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
       animationHandlers: {},
       snowHandlers: {},
       assets: {},
+      onUnloadFunctions: {},
       callbacks:{
         heaterStart: {
           sampleCall1: function(){ console.log("started heater waves"); }
@@ -57,17 +58,18 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
 
     /***on start functions***/
     i89.onStartFunctions.addSnow = function(scene){
-        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 300});
-        var sh2 = new snowHandler({posX: 200, posY: 250, width: 100, depth: 500, num: 200});
-        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 300});
+        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 250});
+        var sh2 = new snowHandler({posX: 200, posY: 250, width: 100, depth: 500, num: 150});
+        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 250});
         sh1.start(scene);
         sh2.start(scene);
         sh3.start(scene);
-        animate.updater.stopAllSnow();//stop snow as soon as it spawns
+        //animate.updater.stopAllSnow();//stop snow as soon as it spawns
     };
 
     i89.onStartFunctions.addLights = function(scene){
-        scene.add(new THREE.AmbientLight(0xffffff));
+        //scene.add(new THREE.AmbientLight(0xb090c2));
+        scene.add(new THREE.AmbientLight(0xcccccc));
         var spotLight = new THREE.SpotLight(0xb99bfd);
         spotLight.position.set(980, 1049, -656);
         spotLight.target.position.set(34, 0, 85);
@@ -76,6 +78,10 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     /***end on start functions***/
 
     /***on load functions***/
+    i89.onLoadFunctions.outside_text= function(mesh, loader){
+      mesh.material = new THREE.MeshBasicMaterial({color: 0xffffff});
+    };
+
     i89.onLoadFunctions.i89 = function(mesh){
         i89.assets.i89 = mesh;
         i89.switchWindow.i89_off();
@@ -161,6 +167,23 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     /***on end load functions***/
 
     /***on finish functions***/
+    i89.onFinishLoadFunctions.applyComposer = function(scene){
+      i89.assets.composer = new composers.Bloom_AdditiveColor({
+        str: 0.6,
+        bok: {
+          foc: 1,
+          ape: 0.08
+        }
+      });
+      animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
+      events.addDOF_GUI(i89);
+    };
+
+    i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
+       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+         animate.Animate);
+    };
+
     i89.onFinishLoadFunctions.addWatch = function(scene, loader){
         watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
             reactToFrame(oldValue);

@@ -1,10 +1,12 @@
 define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio",
-  "callback"],
-    function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback){
+  "callback", "composers"],
+    function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback,
+      composers){
     var neat = {
       folderName: "neat",
       assetNames: ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-        'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows'],
+        'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', 'Neat_intro_text',
+        'Window_frame_main'],
       soundNames: ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
         'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'],
       onStartFunctions: {},
@@ -14,6 +16,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       animationHandlers: {},
       timeouts: {},
       assets: {},
+      cloudSpeed: 0.0004,
       callbacks:{
         introAnimDone: {
           sampleCall1: function(){ console.log("finished intro animation"); }
@@ -96,14 +99,35 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     /***on load functions***/
+    neat.onLoadFunctions.Neat_intro_text= function(mesh, loader){
+      mesh.position.y += 250;
+      mesh.position.x -= 90;
+      neat.assets.Neat_intro_text = mesh;
+    };
+
+    neat.onLoadFunctions.Sky_plane = function(mesh, loader){
+      mesh.material = mesh.material.materials[0];
+      mesh.material.map.wrapS = THREE.RepeatWrapping;
+      mesh.material.map.wrapT = THREE.RepeatWrapping;
+
+      var scrollingUV = function(m){
+        this.frame = 0;
+        this.speed = neat.cloudSpeed;
+        this.update = function () {
+          m.material.map.offset.x += this.speed;
+        };
+      };
+      neat.assets.cloudScrollingUV = new scrollingUV(mesh);
+      animate.updater.addHandler(neat.assets.cloudScrollingUV);
+    }
+
     neat.onLoadFunctions.Cardinal_bird_animated = function(mesh, loader){
-      mesh.material.materials[0].morphTargets = true;
-      var birdAnim = loader.ParseJSON(neat.mediaFolderUrl+'/models/neat/Cardinal_bird_positions.JSON');
-      animate.updater.addHandler(new animate.PositionRotationHandler(mesh, birdAnim));
+      neat.assets.bird = mesh;
+      neat.assets.bird.material.materials[0].morphTargets = true;
+      neat.assets.birdAnim = loader.ParseJSON(neat.mediaFolderUrl+'/models/neat/Cardinal_bird_positions.JSON');
 
       neat.animationHandlers.ah1 = new animationHandler();
-      neat.animationHandlers.ah1.setMesh(mesh);
-      neat.animationHandlers.ah1.loop(0, 15);
+      neat.animationHandlers.ah1.setMesh(neat.assets.bird);
     };
 
     neat.onLoadFunctions.House = function(mesh, loader){
@@ -148,9 +172,40 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
     };
 
     /***on finish functions***/
+    neat.onFinishLoadFunctions.applyComposer = function(scene){
+      neat.assets.composer = new composers.Bloom_AdditiveColor({
+        str: 0.3,
+        bok: {
+          foc: 1,
+          ape: 0.01
+        }
+      });
+      animate.SetCustomRenderFunction( function(){ neat.assets.composer.render(); } );
+      events.addDOF_GUI(neat);
+    };
+
     neat.onFinishLoadFunctions.playCamera = function(scene, loader) {
-        loader.cameraHandler.play(undefined, undefined,
-          function(){ onCameraComplete(scene) }, animate.Animate);
+      var firstFrame = loader.cameraHandler.Animation.frames[0];
+      loader.cameraHandler.play(0, 1, onCompleteFirstPlay);
+
+      function onCompleteFirstPlay(){
+        animate.camera.position.z += 300;
+        loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
+      }
+
+      function onCompleteTween(){
+      loader.cameraHandler.play(
+        undefined,
+        undefined,
+        function(){ onCameraComplete(scene) },
+        function(){
+          tweenFocus();
+          neat.animationHandlers.ah1.loop(0, 15);
+          animate.updater.addHandler(new animate.PositionRotationHandler(neat.assets.bird, neat.assets.birdAnim));
+        })
+      };
+
+      animate.Animate();
     };
 
     neat.onFinishLoadFunctions.addControls = function(){
@@ -415,8 +470,8 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
             width: 500,
             height: 250,
             depth: 150,
-            num: 500,
-            size: {w: 0.5, h: 8},
+            num: 300,
+            size: {w: 0.3, h: 8},
             rndSizeVariation: 0.25,
             mapNames: ["water_drop"],
             pos: new THREE.Vector3(-300, 500, 500),
@@ -611,6 +666,13 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         glintTween.start();
         glintOpacityIn.start();
     }
+
+    function tweenFocus(){
+      var tween = new TWEEN.Tween(neat.assets.composer.passes[4].uniforms[ "focus" ]);
+      tween.to({value: 1 }, 100);
+      //tween.start();
+    }
+
 
     //testing
     /*document.addEventListener('mousemove', onMouseMove, false);

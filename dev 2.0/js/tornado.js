@@ -7,7 +7,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     folderName: "tornado",
     assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
      "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
-     "House_windows"],
+     "House_windows", "GoodWeatherBadWeather"],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},
@@ -33,7 +33,9 @@ function (animate, events, animationHandler, composers, watch, tween,
     bloomSettings: {
       outside: {min: 0.8, max: 1.2},
       inside: {min: 0.4, max: 1}
-    }
+    },
+    //upper scene aseets stored here for disposal
+    upperSceneDisposables: []
   };
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
@@ -59,8 +61,9 @@ function (animate, events, animationHandler, composers, watch, tween,
     animate.SetCustomFramerate(25);
   };
 
-  tornado.onStartFunctions.storeScene = function(scene){
+  tornado.onStartFunctions.storeScene = function(scene, loader){
     tornado.assets.scene = scene;
+    tornado.assets.loader = loader;
   };
 
   tornado.onStartFunctions.setPhysics = function(scene){
@@ -89,6 +92,32 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   /***on load functions***/
+  tornado.onLoadFunctions.GoodWeatherBadWeather = function (mesh, loader) {
+    var material = new THREE.MeshBasicMaterial({color: 0xffffff});
+    materials.outlineShader.prototype = new THREE.ShaderMaterial();
+    var outlineMaterial = new materials.outlineShader({
+      thickness: 1,
+      color: {r: 1}
+    });
+    var mats = [material, outlineMaterial];
+    var multiMesh = THREE.SceneUtils.createMultiMaterialObject(mesh.geometry, mats);
+    loader.DisposeObject(mesh);
+    loader.scene.add(multiMesh);
+    tornado.upperSceneDisposables.push(multiMesh);
+
+    multiMesh.position.set(-37, 180, 45);
+    //multiMesh.scale.set(1, 0.1, 1);
+    animate.updater.addHandler({
+      frame: 0,
+      end: 138,
+      update: function(){
+        if(++this.frame == this.end)animate.updater.removeHandler(this);
+        multiMesh.position.x += 0.7;
+        multiMesh.position.z += 0.9;
+      }
+    });
+  }
+
   tornado.onLoadFunctions.Wind_1 = function (mesh) {
     tornado.animationHandlers.Wind_1 = prepareWind(mesh, 49)
   }
@@ -145,6 +174,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   }
 
   tornado.onLoadFunctions.Earth_shell = function (mesh) {
+    tornado.upperSceneDisposables.push(mesh);
     var tween = new TWEEN.Tween( mesh.position );
     tween.to( { x: 250 }, 11000 );
     tween.start();
@@ -169,6 +199,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
+    tornado.upperSceneDisposables.push(mesh);
     mesh.material = mesh.material.materials[0];
     mesh.material.morphTargets = true;
     mesh.material.transparent = true;
@@ -215,6 +246,7 @@ function (animate, events, animationHandler, composers, watch, tween,
       var newArm = new THREE.Mesh( mesh.geometry.clone(), new materials.tornado() );
       newArm.rotation.y += (Math.PI / 4) * i;
       tornado.assets.Hurricane_arms.push(newArm);
+      tornado.upperSceneDisposables.push(newArm);
       mesh.add(newArm);
     }
   };
@@ -241,7 +273,7 @@ function (animate, events, animationHandler, composers, watch, tween,
       tornado.animationHandlers["ah"+t].setMesh(trees[t]);
       tornado.animationHandlers["ah"+t].setSpeed(0.1);
       tornado.animationHandlers["ah"+t].setInfluence(scaleY);
-      tornado.animationHandlers["ah"+t].loop(0, 29);
+      //tornado.animationHandlers["ah"+t].loop(0, 29);
       //tornado.animationHandlers["ah"+t].loop(29, 0);
     }
   };
@@ -257,9 +289,14 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   /***on finish functions***/
+  tornado.onFinishLoadFunctions.playCamera = function(scene, loader) {
+     loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+       animate.Animate);
+  };
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
     tornado.assets.composer = new composers.Bloom_AdditiveColor({str: tornado.bloomSettings.outside.min});
     animate.SetCustomRenderFunction( function(){ tornado.assets.composer.render(); } );
+    events.addDOF_GUI(tornado);
   };
 
   tornado.onFinishLoadFunctions.addControls = function () {
@@ -350,9 +387,6 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   /***on unload functions***/
-  tornado.onUnloadFunctions.resetRenderFunction = function(){
-    animate.SetDefaultRenderFunction();
-  };
 
   tornado.onUnloadFunctions.resetFramerate = function(){
     animate.SetDefaultFramerate();
@@ -377,15 +411,22 @@ function (animate, events, animationHandler, composers, watch, tween,
         rareLightning();
         break;
       case 240:
+        cleanUpperScene();
         fadeBack();
         break;
       case 270:
-        triggerSlowMo();
+        //triggerSlowMo();
         break;
       case 280:
         throwBrick();
         break;
     }
+  }
+
+  function cleanUpperScene() {
+    _.each(tornado.upperSceneDisposables, function (d) {
+      tornado.assets.loader.DisposeObject(d);
+    })
   }
 
   function throwBrick() {

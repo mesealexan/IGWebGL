@@ -137,6 +137,12 @@ function (events, animate, events, tween, animationHandler, watch) {
     };
 
 	//on finish loading
+
+		sound.onFinishLoadFunctions.playCamera = function(scene, loader) {
+	       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+	         animate.Animate);
+		};
+
     sound.onFinishLoadFunctions.addControls = function () {
         events.AddControls();
         events.ToggleControls(false);
