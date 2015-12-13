@@ -3,6 +3,7 @@ define(["three", "animate"], function(THREE, animate){
     var cloudCube = undefined;
 
     var materials = {
+      cloudCube: undefined,
       makeTextureCube: function(mediaFolderUrl){
         var imagePrefix = mediaFolderUrl+"/skybox/Cube_";
         var directions  = ["r", "l", "u", "d", "f", "b"];
@@ -11,6 +12,7 @@ define(["three", "animate"], function(THREE, animate){
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+        materials.cloudCube = textureCube;
     }
     ,
     makeCloudTextureCube: function(mediaFolderUrl){
@@ -176,7 +178,6 @@ define(["three", "animate"], function(THREE, animate){
                     ambient: new THREE.Color("rgb(78,63,28)"),
                     specular: new THREE.Color("rgb(191,188,175)"),
                     emissive: new THREE.Color("rgb(78,66,37)")
-
                 });
                 break;
             case 'LoEdesicant':
@@ -482,7 +483,7 @@ define(["three", "animate"], function(THREE, animate){
                     shininess: 30
                 });
                 break;
-
+            case 'neatGlass':
             case 'neatneatGlass':
             case 'neatstandardGlass':
             case 'neatGlass non animated':
@@ -921,6 +922,33 @@ define(["three", "animate"], function(THREE, animate){
             "gl_FragColor = vec4(difCol.xyz - (vUv.y - 0.2), clamp(0.6-rim, 0.0, 1.0) );}"
         }
     };
+
+
+
+    materials.outlineShader = function (set) {
+      this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
+
+      this.uniforms = {
+        color: { type: "c", value: this.color }
+      };
+      this.side = 1;
+      this.vertexShader = [
+        "varying vec3 Vnormal;",
+        "void main(){",
+            "Vnormal = normal;",
+            "float offset = 1.;",
+            "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
+            "gl_Position = projectionMatrix * pos;",
+        "}"
+      ].join("\n");
+
+      this.fragmentShader = [
+        "varying vec3 Vnormal;",
+        "void main(){",
+          "gl_FragColor = vec4( 0., .0, .0, 1.0 );"+
+        "}"
+      ].join("\n");
+    }
 
     return materials;
 });

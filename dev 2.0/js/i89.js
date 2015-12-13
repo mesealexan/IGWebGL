@@ -1,9 +1,9 @@
-define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"],
-    function(animationHandler, snowHandler, watch, animate, events, audio){
+define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers"],
+    function(animationHandler, snowHandler, watch, animate, events, audio, callback, composers){
     var i89 = {
       folderName: "i89",
       assetNames: ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-          'text', 'winterNight', 'winterNight', 'moon', 'logo', 'frame', 'window_plane',
+          'inside_text', 'outside_text', 'moon', 'logo', 'frame', 'window_plane',
           'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'],
       soundNames: ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"],
       onStartFunctions: {},
@@ -11,22 +11,65 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
       onFinishLoadFunctions: {},
       animationHandlers: {},
       snowHandlers: {},
-      assets: {}
+      assets: {},
+      onUnloadFunctions: {},
+      callbacks:{
+        heaterStart: {
+          sampleCall1: function(){ console.log("started heater waves"); }
+        },
+        heaterDone: {
+          sampleCall2: function(){ console.log("heater waves played once, will now loop."); }
+        },
+        refractWaveStart: {
+          sampleCall3: function(){ console.log("started refract wave"); }
+        },
+        refractWaveDone: {
+          sampleCall4: function(){ console.log("refract wave played once, will now loop."); }
+        },
+        reflectWaveStart: {
+          sampleCall5: function(){ console.log("started reflect waves"); }
+        },
+        reflectWaveDone: {
+          sampleCall6: function(){ console.log("reflect waves played once, will now loop."); }
+        },
+        i89off: {
+          sampleCall7: function(){ console.log("i89 off"); }
+        },
+        i89on: {
+          sampleCall8: function(){ console.log("i89 on"); }
+        },
+        goOutsideStart:{
+          sampleCall9: function(){ console.log("started going outside"); }
+        },
+        goOutsideDone:{
+          sampleCall10: function(){ console.log("finished going outside"); }
+        },
+        goInsideStart:{
+          sampleCall10: function(){ console.log("started going inside"); }
+        },
+        goInsideDone:{
+          sampleCall11: function(){ console.log("finished going inside"); }
+        },
+        introAnimDone: {
+          sampleCall12: function(){ console.log("finished intro animation"); }
+        }
+      }
     };
 
     /***on start functions***/
     i89.onStartFunctions.addSnow = function(scene){
-        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 300});
-        var sh2 = new snowHandler({posX: 190, posY: 250, width: 100, depth: 500, num: 200});
-        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 300});
+        var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 250});
+        var sh2 = new snowHandler({posX: 200, posY: 250, width: 100, depth: 500, num: 150});
+        var sh3 = new snowHandler({posX: 0, posY: 600, width: 400, depth: 400, num: 250});
         sh1.start(scene);
         sh2.start(scene);
         sh3.start(scene);
-        animate.updater.stopAllSnow();//stop snow as soon as it spawns
+        //animate.updater.stopAllSnow();//stop snow as soon as it spawns
     };
 
     i89.onStartFunctions.addLights = function(scene){
-        scene.add(new THREE.AmbientLight(0xffffff));
+        //scene.add(new THREE.AmbientLight(0xb090c2));
+        scene.add(new THREE.AmbientLight(0xcccccc));
         var spotLight = new THREE.SpotLight(0xb99bfd);
         spotLight.position.set(980, 1049, -656);
         spotLight.target.position.set(34, 0, 85);
@@ -35,6 +78,10 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     /***end on start functions***/
 
     /***on load functions***/
+    i89.onLoadFunctions.outside_text= function(mesh, loader){
+      mesh.material = new THREE.MeshBasicMaterial({color: 0xffffff});
+    };
+
     i89.onLoadFunctions.i89 = function(mesh){
         i89.assets.i89 = mesh;
         i89.switchWindow.i89_off();
@@ -61,14 +108,18 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
             heat_wave2.frustumCulled =
                 heat_wave3.frustumCulled = false;
         mesh.position.x += 4;
-        heat_wave2.position.x += 26;
-        heat_wave3.position.x += 46;
+        heat_wave2.position.x += 24;
+        heat_wave3.position.x += 44;
         mesh.add(heat_wave2);
         mesh.add(heat_wave3);
         i89.animationHandlers.ah1 = new animationHandler();
         i89.animationHandlers.ah1.setMesh([mesh, heat_wave2, heat_wave3]);
         i89.assets.heat_wave = mesh;
 
+        i89.animationHandlers.ah1.onComplete = function(){
+          callback.go(i89.callbacks.heaterDone);
+          i89.animationHandlers.ah1.onComplete = undefined;
+        };
     };
 
     i89.onLoadFunctions.heat_wave_refract = function(mesh){
@@ -77,6 +128,11 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         i89.animationHandlers.ah2 = new animationHandler();
         i89.animationHandlers.ah2.setMesh(mesh);
         i89.assets.heat_wave_refract = mesh;
+
+        i89.animationHandlers.ah2.onComplete = function(){
+          callback.go(i89.callbacks.refractWaveDone);
+          i89.animationHandlers.ah2.onComplete = undefined;
+        };
     };
 
     i89.onLoadFunctions.heat_wave_reflect = function(mesh){
@@ -86,13 +142,18 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         mesh.position.x += 4;
         mesh.add(heat_wave_reflect2);
         mesh.add(heat_wave_reflect3);
-        heat_wave_reflect2.position.x += 26;
-        heat_wave_reflect3.position.x += 46;
+        heat_wave_reflect2.position.x += 24;
+        heat_wave_reflect3.position.x += 44;
         i89.animationHandlers.ah3 = new animationHandler();
         i89.animationHandlers.ah3.setMesh([mesh, heat_wave_reflect2, heat_wave_reflect3]);
         i89.assets.heat_wave_reflect = mesh;
         i89.assets.heat_wave_reflect2 = heat_wave_reflect2;
         i89.assets.heat_wave_reflect3 = heat_wave_reflect3;
+
+        i89.animationHandlers.ah3.onComplete = function(){
+          callback.go(i89.callbacks.reflectWaveDone);
+          i89.animationHandlers.ah3.onComplete = undefined;
+        };
 
     };
 
@@ -106,6 +167,23 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     /***on end load functions***/
 
     /***on finish functions***/
+    i89.onFinishLoadFunctions.applyComposer = function(scene){
+      i89.assets.composer = new composers.Bloom_AdditiveColor({
+        str: 0.6,
+        bok: {
+          foc: 1,
+          ape: 0.08
+        }
+      });
+      animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
+      events.addDOF_GUI(i89);
+    };
+
+    i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
+       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+         animate.Animate);
+    };
+
     i89.onFinishLoadFunctions.addWatch = function(scene, loader){
         watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
             reactToFrame(oldValue);
@@ -185,12 +263,14 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         switch(pos){
             case "outside":
                 if(animate.camera.outside || animate.camera.inClose) return;
+                callback.go(i89.callbacks.goOutsideStart);
                 animate.camera.outside = true;
                 events.ToggleControls(false);
                 tween.to( { x: [facingWallPos.x, outsidePos.x],
                     y: [facingWallPos.y, outsidePos.y],
                     z: [facingWallPos.z, outsidePos.z]}, tweenTime );
                 tween.onComplete(function(){
+                    callback.go(i89.callbacks.goOutsideDone);
                     animate.camera.outside = true;
                     animate.camera.inside = false;
                     animate.camera.inClose = false;
@@ -199,12 +279,14 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 break;
             case "inside":
                 if(animate.camera.inside) return;
+                callback.go(i89.callbacks.goInsideStart);
                 animate.camera.inside = true;
                 if(animate.camera.position.floor().equals(insidePos)) return;
                 tween.to( { x: [facingWallPos.x, insidePos.x],
                     y: [facingWallPos.y, insidePos.y],
                     z: [facingWallPos.z, insidePos.z]}, tweenTime );
                 tween.onComplete(function(){
+                    callback.go(i89.callbacks.goInsideDone);
                     animate.camera.outside = false;
                     animate.camera.inClose = false;
                     events.ToggleControls(true);
@@ -303,6 +385,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
                 i89.buttons.outside.add();
                 i89.buttons.inside.add();
                 audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
+                callback.go(i89.callbacks.introAnimDone);
                 break;
         }
     }
@@ -312,6 +395,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
         return{
             toggleON: function(){
                 if(fading || on) return;
+                callback.go(i89.callbacks.i89on);
                 i89.buttons.i89_off.add();
                 i89.buttons.i89_on.remove();
                 i89.switchWindow.i89_on();
@@ -319,6 +403,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
             },
             toggleOFF: function(){
                 if(fading || off) return;
+                callback.go(i89.callbacks.i89off);
                 i89.buttons.i89_on.add();
                 i89.buttons.i89_off.remove();
                 i89.switchWindow.i89_off();
@@ -361,6 +446,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     var heatWaves = function(){
         return{
             playWave1: function(){
+                callback.go(i89.callbacks.heaterStart);
                 i89.assets.window_plane.visible = true;
                 i89.assets.heat_wave.visible = true;
                 i89.animationHandlers.ah1.play(0, 115);
@@ -371,15 +457,17 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
             }
             ,
             playWave2: function(){
+                callback.go(i89.callbacks.refractWaveStart);
                 i89.assets.heat_wave_refract.visible = true;
                 i89.animationHandlers.ah2.play(0, 115);
             }
             ,
             loopWave2: function(){
-                i89.animationHandlers.ah2.loop(115, 195)
+                i89.animationHandlers.ah2.loop(115, 195);
             }
             ,
             playWave3: function(){
+                callback.go(i89.callbacks.reflectWaveStart);
                 i89.assets.heat_wave_reflect.visible = true;
                 i89.animationHandlers.ah3.play(0, 115);
             }

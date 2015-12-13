@@ -390,8 +390,8 @@ window.Physijs = (function() {
 
 		Eventable.call( this );
 		THREE.Scene.call( this );
-
-		this._worker = new Worker( Physijs.scripts.worker || 'physijs_worker.js' );
+		this.mediaFolderUrl = params.mediaFolderUrl;
+		this._worker = new Worker( this.mediaFolderUrl+'/../lib/physi/physijs_worker.js' );
 		this._worker.transferableMessage = this._worker.webkitPostMessage || this._worker.postMessage;
 		this._materials_ref_counts = {};
 		this._objects = {};
@@ -1399,8 +1399,7 @@ window.Physijs = (function() {
 		this.friction_slip = friction_slip !== undefined ? friction_slip : 10.5;
 		this.max_suspension_force = max_suspension_force !== undefined ? max_suspension_force : 6000;
 	};
-
-	Physijs.scripts.worker = 'lib/physi/physijs_worker.js';
+	//Physijs.scripts.worker = 'lib/physi/physijs_worker.js';
 	Physijs.scripts.ammo = 'ammo.js';
 
 	return Physijs;

@@ -1,14 +1,34 @@
-define(["animate", "watch", "materials", "tween", "events", "particleSystem", "audio"],
-    function(animate, watch, materials, tween, events, particleSystem, audio){
+define(["animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback"],
+    function(animate, watch, materials, tween, events, particleSystem, audio, callback){
     var LoE = {
       soundNames: ['loe-factory-loop', 'loe-apply-coating'],
       folderName: "LoE",
-      assetNames: ['text', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+      assetNames: [/*'text'*/'EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
           'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'],
       onStartFunctions: {},
       onLoadFunctions: {},
       onFinishLoadFunctions: {},
-      assets: {}
+      assets: {},
+      callbacks:{
+        introAnimDone: {
+          sampleCall1: function(){ console.log("finished intro animation"); }
+        },
+        hotBackground: {
+          sampleCall2: function(){ console.log("background changed to hot"); }
+        },
+        coldBackground: {
+          sampleCall3: function(){ console.log("background changed to cold"); }
+        },
+        mixedBackground: {
+          sampleCall4: function(){ console.log("background changed to mixed"); }
+        },
+        coatFirstVisibleWindow: {
+          sampleCall5: function(){ console.log("started coating first visible glass"); }
+        },
+        coatSecondVisibleWindow: {
+          sampleCall5: function(){ console.log("started coating second visible glass"); }
+        }
+      }
     };
 
     var coatingTime = 2700;
@@ -49,6 +69,10 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     /***end on start functions***/
 
     /***on load functions***/
+
+    LoE.onLoadFunctions.EngineeredComfort = function(mesh){
+      mesh.material = materials.setMaterials(LoE.folderName, {name: "text"});
+    };
 
     LoE.onLoadFunctions.fixed_glass = function(mesh){
       LoE.assets.fixed_glass = mesh;
@@ -139,10 +163,15 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     /***end on load functions***/
 
     /***on finish functions***/
+    LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
+       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+         animate.Animate);
+    };
+
     LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
-        watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
-            reactToFrame(oldValue);
-        });
+      watch.watch(loader.cameraHandler, "frame", function(prop, action, newValue, oldValue) {
+          reactToFrame(oldValue);
+      });
     };
 
     LoE.onFinishLoadFunctions.addControls = function(){
@@ -199,6 +228,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 240:
+                callback.go(LoE.callbacks.coatFirstVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
                 break;
@@ -210,6 +240,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 310:
+                callback.go(LoE.callbacks.coatSecondVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 break;
@@ -234,7 +265,8 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
                 LoE.buttons.hot.add();
                 LoE.buttons.mixed.add();
                 break;
-            case 499:
+            case 498:
+                callback.go(LoE.callbacks.introAnimDone);
                 events.ToggleControls(true);
                 break;
         }
@@ -362,6 +394,7 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
             console.error("Unspecified background!");
         }
 
+        callback.go(LoE.callbacks[to+"Background"]);
         LoE.assets.bck_1.material.tween(tweenTo, backgroundBlendTime);
     }
 

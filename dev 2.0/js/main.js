@@ -1,6 +1,6 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi"],
-    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi){
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween"],
+    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV =  45; //camera field of view in degrees
@@ -37,7 +37,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
       main.buttons.loadNeat.add();
       main.buttons.loadSound.add();
       main.buttons.loadTornado.add();
-      main.buttons.loadDevScene.add();
+      //main.buttons.loadDevScene.add();
     }
     /***end private functions***/
 
@@ -53,15 +53,15 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         height = $('#'+containerID).height();
         animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
-        main.scene = new Physijs.Scene();
-        main.scene.sceneID = sceneID;
-        var mediaFolderUrl = getMediaFolderURL();
-        setBackground(containerID, mediaFolderUrl);
-        materials.makeTextureCube(mediaFolderUrl);
-        materials.makeCloudTextureCube(mediaFolderUrl);
-        animate.loader = main.loader = new loader(main.scene, animate, mediaFolderUrl, addCamera());
-        animate.StartWindowAutoResize();
         addRenderer();
+        main.mediaFolderUrl = getMediaFolderURL();
+        main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
+        main.scene.sceneID = sceneID;
+        setBackground(containerID, main.mediaFolderUrl);
+        materials.makeTextureCube(main.mediaFolderUrl);
+        materials.makeCloudTextureCube(main.mediaFolderUrl);
+        animate.loader = main.loader = new loader(main.scene, animate, main.mediaFolderUrl, addCamera());
+        animate.StartWindowAutoResize();
         animate.SetDefaultRenderFunction();
         addButtons();
         //because they are unique, lights are added by each scene's individual file
@@ -80,8 +80,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.loader.UnloadScene(newScene);
 
         function newScene(){
-            //main.scene = new THREE.Scene();
-            main.scene = new Physijs.Scene();
+            main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
             main.scene.sceneID = sceneID;
             main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
             animate.loader = main.loader;

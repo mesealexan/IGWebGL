@@ -21,6 +21,6 @@ define(["underscore"], function(underscore){
                 var h = this.handlers[i];
                 if(h.handlerType == "snowHandler") h.stop();
             }
-        }
+        };
     }
 });

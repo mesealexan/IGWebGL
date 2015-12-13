@@ -3,6 +3,7 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
     CameraHandler.prototype = new genericHandler();
     function CameraHandler(anim) {
         var animation = anim;
+        this.Animation = anim;
 
         this.started = false;
 
@@ -43,14 +44,18 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             }
             else {//reached the end
                 animate.camera.lookAt(animate.camera.target);
+                events.Controls.target.copy(animate.camera.target);
                 this.stop();
             }
         };
 
-        this.tween = function (frame, speed, onComplete) {
+        this.tween = function (frame, speed, onComplete, easing) {
             /***position***/
             var startPos = animate.camera.position;
-            var targetFrame = animation.frames[frame];
+            var targetFrame, curEasing;
+            if(frame != undefined) targetFrame = animation.frames[frame];
+            if(easing != undefined) curEasing = easing;
+            else curEasing = TWEEN.Easing.Cubic.InOut;
             var destination = new THREE.Vector3(
                 targetFrame.position.x,
                 targetFrame.position.z,
@@ -59,7 +64,7 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             var time = distance / speed;
 
             var posTween = new TWEEN.Tween( animate.camera.position );
-            posTween.easing(TWEEN.Easing.Cubic.InOut);
+            posTween.easing(curEasing);
             posTween.to( { x: destination.x, y: destination.y, z: destination.z }, time );
             posTween.onComplete(function() {
                 if(onComplete != undefined && typeof onComplete == "function") onComplete();
@@ -72,7 +77,7 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             var angleTween = new TWEEN.Tween( animate.camera.up );
             angleTween.easing(TWEEN.Easing.Cubic.InOut);
             angleTween.to( { x: newUp.x, y: newUp.y, z: newUp.z }, time );
-            angleTween.start();
+            //angleTween.start();
 
             /***target***/
             var target = new THREE.Vector3(
@@ -83,7 +88,10 @@ define(["genericHandler", "animate", "tween", "underscore", "events"],
             var targetTween = new TWEEN.Tween( animate.camera.target );
             targetTween.easing(TWEEN.Easing.Cubic.InOut);
             targetTween.to( { x: target.x, y: target.y, z: target.z }, time );
-            targetTween.onUpdate( function () { animate.camera.lookAt(animate.camera.target) });
+            targetTween.onUpdate( function () {
+              animate.camera.lookAt(animate.camera.target);
+              events.Controls.target.copy(animate.camera.target);
+            });
             targetTween.start();
 
             /***fov***/
