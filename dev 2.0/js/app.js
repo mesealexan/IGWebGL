@@ -1,5 +1,6 @@
 require.config({
     paths: {
+               "aeTween" : "../lib/aeTween/aeTween",
                 "jquery" : "../lib/jquery/dist/jquery.min",
          "orbitControls" : "../lib/three.js/OrbitControls",
                  "three" : "../lib/three.js/build/three71",

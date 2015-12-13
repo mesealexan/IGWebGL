@@ -1,6 +1,6 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi"],
-    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi){
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween"],
+    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween){
     var main = {}; //public functionality
     /***private fields***/
     var camFOV =  45; //camera field of view in degrees
@@ -12,8 +12,6 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
-        //animate.renderer.gammaInput = true;
-        //animate.renderer.gammaOutput = true;
         animate.renderer.setSize( width, height );
         animate.renderer.setClearColor( 0x000000, 1 );
         animate.renderer.shadowMapType = THREE.PCFShadowMap;
