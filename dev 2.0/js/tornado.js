@@ -59,7 +59,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   tornado.onStartFunctions.setFramerate = function(scene){
-    animate.SetCustomFramerate(25);
+    animate.SetCustomFramerate(20);
   };
 
   tornado.onStartFunctions.storeScene = function(scene, loader){
@@ -107,16 +107,10 @@ function (animate, events, animationHandler, composers, watch, tween,
     tornado.upperSceneDisposables.push(multiMesh);
 
     multiMesh.position.set(-37, 180, 45);
-    //multiMesh.scale.set(1, 0.1, 1);
-    animate.updater.addHandler({
-      frame: 0,
-      end: 138,
-      update: function(){
-        if(++this.frame == this.end)animate.updater.removeHandler(this);
-        multiMesh.position.x += 0.7;
-        multiMesh.position.z += 0.9;
-      }
-    });
+
+    var textPosTween = new aeTween(multiMesh.position);
+    textPosTween.to({x: 60, z: 170}, 100);
+    textPosTween.start();
   }
 
   tornado.onLoadFunctions.Wind_1 = function (mesh) {
@@ -418,7 +412,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     _.each(tornado.lowerSceneObjects, function (o) {
       o.visible = true;
     });
-    
+
   }
 
   function throwBrick() {
@@ -480,7 +474,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   }
 
   function revealTornado() {
-    var revealTime = 185, twistTime = 150, randomOffsetMax = 50;
+    var revealTime = 150, twistTime = 150, randomOffsetMax = 50;
 
     /*var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
     tistTween.to({ y: -Math.PI * 2 }, twistTime );
