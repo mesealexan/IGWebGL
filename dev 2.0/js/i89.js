@@ -1,62 +1,60 @@
-define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers"],
-    function(animationHandler, snowHandler, watch, animate, events, audio, callback, composers){
-    var i89 = {
-      folderName: "i89",
-      assetNames: ['floor', 'walls', 'snow', 'bck', 'grid', 'heat_source',
-          'inside_text', 'outside_text', 'moon', 'logo', 'frame', 'window_plane',
-          'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89'],
-      soundNames: ["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"],
-      onStartFunctions: {},
-      onLoadFunctions: {},
-      onFinishLoadFunctions: {},
-      animationHandlers: {},
-      snowHandlers: {},
-      assets: {},
-      onUnloadFunctions: {},
-      callbacks:{
-        heaterStart: {
-          sampleCall1: function(){ console.log("started heater waves"); }
-        },
-        heaterDone: {
-          sampleCall2: function(){ console.log("heater waves played once, will now loop."); }
-        },
-        refractWaveStart: {
-          sampleCall3: function(){ console.log("started refract wave"); }
-        },
-        refractWaveDone: {
-          sampleCall4: function(){ console.log("refract wave played once, will now loop."); }
-        },
-        reflectWaveStart: {
-          sampleCall5: function(){ console.log("started reflect waves"); }
-        },
-        reflectWaveDone: {
-          sampleCall6: function(){ console.log("reflect waves played once, will now loop."); }
-        },
-        i89off: {
-          sampleCall7: function(){ console.log("i89 off"); }
-        },
-        i89on: {
-          sampleCall8: function(){ console.log("i89 on"); }
-        },
-        goOutsideStart:{
-          sampleCall9: function(){ console.log("started going outside"); }
-        },
-        goOutsideDone:{
-          sampleCall10: function(){ console.log("finished going outside"); }
-        },
-        goInsideStart:{
-          sampleCall10: function(){ console.log("started going inside"); }
-        },
-        goInsideDone:{
-          sampleCall11: function(){ console.log("finished going inside"); }
-        },
-        introAnimDone: {
-          sampleCall12: function(){ console.log("finished intro animation"); }
-        }
-      }
+define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers"],
+    function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers){
+
+return function(){
+    var i89 = new scene();
+    i89.folderName = "i89";
+    i89.addAssets(['house', 'snow', 'bck', 'grid', 'heat_source',
+        'inside_text', 'outside_text', 'moon', 'logo', 'frame', 'window_plane',
+        'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89']);
+    i89.addSounds(["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"]);
+
+    i89.callbacks.heaterStart = {
+      sampleCall1: function(){ console.log("started heater waves"); }
+    };
+    i89.callbacks.heaterDone = {
+      sampleCall2: function(){ console.log("heater waves played once, will now loop."); }
+    };
+    i89.callbacks.refractWaveStart = {
+      sampleCall3: function(){ console.log("started refract wave"); }
+    };
+    i89.callbacks.refractWaveDone = {
+      sampleCall4: function(){ console.log("refract wave played once, will now loop."); }
+    };
+    i89.callbacks.reflectWaveStart = {
+      sampleCall5: function(){ console.log("started reflect waves"); }
+    };
+    i89.callbacks.reflectWaveDone = {
+      sampleCall6: function(){ console.log("reflect waves played once, will now loop."); }
+    };
+    i89.callbacks.i89off = {
+      sampleCall7: function(){ console.log("i89 off"); }
+    };
+    i89.callbacks.i89on = {
+      sampleCall8: function(){ console.log("i89 on"); }
+    };
+    i89.callbacks.goOutsideStart ={
+      sampleCall9: function(){ console.log("started going outside"); }
+    };
+    i89.callbacks.goOutsideDone ={
+      sampleCall10: function(){ console.log("finished going outside"); }
+    };
+    i89.callbacks.goInsideStart ={
+      sampleCall10: function(){ console.log("started going inside"); }
+    };
+    i89.callbacks.goInsideDone ={
+      sampleCall11: function(){ console.log("finished going inside"); }
+    };
+    i89.callbacks.introAnimDone = {
+      sampleCall12: function(){ console.log("finished intro animation"); }
     };
 
     /***on start functions***/
+    i89.onStartFunctions.storeScene = function (scene, loader) {
+      i89.assets.scene = scene;
+      i89.assets.loader = loader;
+    };
+
     i89.onStartFunctions.addSnow = function(scene){
         var sh1 = new snowHandler({posX: 0, posY: -200, width: 400, depth: 400, num: 250});
         var sh2 = new snowHandler({posX: 200, posY: 250, width: 100, depth: 500, num: 150});
@@ -93,11 +91,22 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     };
 
     i89.onLoadFunctions.bck = function(mesh){
-        var bck2 = mesh.clone();
-        bck2.material.side = THREE.DoubleSide;
-        bck2.scale.z = -1;
+        mesh.material = mesh.material.materials[0];
+        mesh.material.side = THREE.DoubleSide;
+        var bck2 = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone());
+        //var clone = mesh.material.map.clone();
+        //clone.needsUpdate = true;
+        //console.log(mesh.material.map)
+        //console.log(clone)
+        //bck2.material.map = clone;
+        /*bck2.material.map.wrapS = THREE.RepeatWrapping;
+        bck2.material.map.repeat.x = -1;
+        bck2.material.map.needsUpdate = true;
         bck2.quaternion.set ( 0, 1, 0, 0);
-        mesh.add(bck2);
+        i89.assets.scene.add(bck2);*/
+        //bck2.material.map.repeat.x = -1;
+        bck2.quaternion.set ( 0, 1, 0, 0);
+        i89.assets.scene.add(bck2);
     };
 
     i89.onLoadFunctions.heat_wave = function(mesh){
@@ -180,7 +189,7 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
     };
 
     i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
-       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+       loader.cameraHandler.play(0,1,undefined,//from, to and onComplete undefined
          animate.Animate);
     };
 
@@ -192,17 +201,17 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
 
     i89.onFinishLoadFunctions.addControls = function(){
         var c = {
-            noZoom: true,
+            /*noZoom: true,
             noPan: true,
             maxPolarAngle: Math.PI / 2,
             minPolarAngle: 1,
             rotateSpeed: 0.5,
             minAzimuthAngle: -1.6,
-            maxAzimuthAngle: -0.9
+            maxAzimuthAngle: -0.9*/
         };
 
         events.AddControls(c);
-        events.ToggleControls(false);
+        //events.ToggleControls(false);
     };
 
     i89.onFinishLoadFunctions.playSound = function(){
@@ -520,6 +529,6 @@ define(["animationHandler", "snowHandler", "watch", "animate", "events", "audio"
             in: function(obj, time, onComp){ tweenOpacity(obj, 1, time, onComp); }
         }
     }();
-
     return i89;
+  }
 });

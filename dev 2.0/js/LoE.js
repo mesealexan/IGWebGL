@@ -1,34 +1,30 @@
-define(["animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback"],
-    function(animate, watch, materials, tween, events, particleSystem, audio, callback){
-    var LoE = {
-      soundNames: ['loe-factory-loop', 'loe-apply-coating'],
-      folderName: "LoE",
-      assetNames: [/*'text'*/'EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
-          'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator'],
-      onStartFunctions: {},
-      onLoadFunctions: {},
-      onFinishLoadFunctions: {},
-      assets: {},
-      callbacks:{
-        introAnimDone: {
-          sampleCall1: function(){ console.log("finished intro animation"); }
-        },
-        hotBackground: {
-          sampleCall2: function(){ console.log("background changed to hot"); }
-        },
-        coldBackground: {
-          sampleCall3: function(){ console.log("background changed to cold"); }
-        },
-        mixedBackground: {
-          sampleCall4: function(){ console.log("background changed to mixed"); }
-        },
-        coatFirstVisibleWindow: {
-          sampleCall5: function(){ console.log("started coating first visible glass"); }
-        },
-        coatSecondVisibleWindow: {
-          sampleCall5: function(){ console.log("started coating second visible glass"); }
-        }
-      }
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback"],
+    function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback){
+
+return function(){
+    var LoE = new scene();
+    LoE.folderName = "LoE";
+    LoE.addAssets(['EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator']);
+    LoE.addSounds(['loe-factory-loop', 'loe-apply-coating']);
+
+    LoE.callbacks.introAnimDone = {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    };
+    LoE.callbacks.hotBackground = {
+      sampleCall2: function(){ console.log("background changed to hot"); }
+    };
+    LoE.callbacks.coldBackground = {
+      sampleCall3: function(){ console.log("background changed to cold"); }
+    };
+    LoE.callbacks.mixedBackground = {
+      sampleCall4: function(){ console.log("background changed to mixed"); }
+    };
+    LoE.callbacks.coatFirstVisibleWindow = {
+      sampleCall5: function(){ console.log("started coating first visible glass"); }
+    };
+    LoE.callbacks.coatSecondVisibleWindow = {
+      sampleCall5: function(){ console.log("started coating second visible glass"); }
     };
 
     var coatingTime = 2700;
@@ -420,4 +416,5 @@ define(["animate", "watch", "materials", "tween", "events", "particleSystem", "a
     }
 
     return LoE;
+  }
 });

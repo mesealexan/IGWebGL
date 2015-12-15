@@ -1,66 +1,58 @@
-define(["three", "watch", "events", "tween", "underscore", "animate", "callback", "composers"],
-    function(three, watch, events, tween, underscore, animate, callback, composers){
-    var cardinal = {
-      folderName: "cardinal",
-      assetNames: ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice', 'LeapForward'],
-      onStartFunctions: {},
-      onLoadFunctions: {},
-      onFinishLoadFunctions: {},
-      onUnloadFunctions: {},
-      animationHandlers: {},
-      snowHandlers: {},
-      assets: {},
-      callbacks: {
-        introAnimHalfway: {
-          sampleCall1: function(){ console.log("reached middle of intro animation"); },
-          sampleCall1a: function(){ console.info("an event can have multiple callbacks"); }
-        },
-        introAnimDone: {
-          sampleCall2: function(){ console.log("finished intro animation"); },
-        },
-        goToSliceStart: {
-          sampleCall3: function(){ console.log("started going to slice"); }
-        },
-        goToSliceDone: {
-          sampleCall4: function(){ console.log("reached slice"); }
-        },
-        backToMainStart: {
-          sampleCall5: function(){ console.log("started going back to main"); }
-        },
-        backToMainDone: {
-          sampleCall6: function(){ console.log("done going back to main"); }
-        },
-        goToSealantA_Start: {
-          sampleCall7: function(){ console.log("started going to sealant A"); }
-        },
-        goToSealantA_Done: {
-          sampleCall8: function(){ console.log("done going to sealant A"); }
-        },
-        goToSealantB_Start: {
-          sampleCall9: function(){ console.log("started going to sealant B"); }
-        },
-        goToSealantB_Done: {
-          sampleCall10: function(){ console.log("done going to sealant B"); }
-        },
-        goToSpacerStart: {
-          sampleCall11: function(){ console.log("started going to spacer"); }
-        },
-        goToSpacerDone: {
-          sampleCall12: function(){ console.log("done going to spacer"); }
-        },
-        goToDessicantStart: {
-          sampleCall13: function(){ console.log("started going to dessicant"); }
-        },
-        goToDessicantDone: {
-          sampleCall14: function(){ console.log("done going to dessicant"); }
-        },
-        backToSliceStart: {
-          sampleCall15: function(){ console.log("started going to back slice"); }
-        },
-        backToSliceDone: {
-          sampleCall16: function(){ console.log("done going back to slice"); }
-        }
-      }
+define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers"],
+    function(scene, three, watch, events, tween, underscore, animate, callback, composers){
+
+return function(){
+    var cardinal = new scene();
+    cardinal.folderName = "cardinal";
+    cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice', 'LeapForward']);
+    cardinal.callbacks.introAnimHalfway = {
+      sampleCall1: function(){ console.log("reached middle of intro animation"); },
+      sampleCall1a: function(){ console.info("an event can have multiple callbacks"); }
+    };
+    cardinal.callbacks.introAnimDone = {
+      sampleCall2: function(){ console.log("finished intro animation"); }
+    };
+    cardinal.callbacks.goToSliceStart = {
+      sampleCall3: function(){ console.log("started going to slice"); }
+    };
+    cardinal.callbacks.goToSliceDone = {
+      sampleCall4: function(){ console.log("reached slice"); }
+    };
+    cardinal.callbacks.backToMainStart = {
+      sampleCall5: function(){ console.log("started going back to main"); }
+    };
+    cardinal.callbacks.backToMainDone = {
+      sampleCall6: function(){ console.log("done going back to main"); }
+    };
+    cardinal.callbacks.goToSealantA_Start = {
+      sampleCall7: function(){ console.log("started going to sealant A"); }
+    };
+    cardinal.callbacks.goToSealantA_Done = {
+      sampleCall8: function(){ console.log("done going to sealant A"); }
+    };
+    cardinal.callbacks.goToSealantB_Start = {
+      sampleCall9: function(){ console.log("started going to sealant B"); }
+    };
+    cardinal.callbacks.goToSealantB_Done = {
+      sampleCall10: function(){ console.log("done going to sealant B"); }
+    };
+    cardinal.callbacks.goToSpacerStart = {
+      sampleCall11: function(){ console.log("started going to spacer"); }
+    };
+    cardinal.callbacks.goToSpacerDone = {
+      sampleCall12: function(){ console.log("done going to spacer"); }
+    };
+    cardinal.callbacks.goToDessicantStart = {
+      sampleCall13: function(){ console.log("started going to dessicant"); }
+    };
+    cardinal.callbacks.goToDessicantDone = {
+      sampleCall14: function(){ console.log("done going to dessicant"); }
+    };
+    cardinal.callbacks.backToSliceStart = {
+      sampleCall15: function(){ console.log("started going to back slice"); }
+    };
+    cardinal.callbacks.backToSliceDone = {
+      sampleCall16: function(){ console.log("done going back to slice"); }
     };
 
     var fadeOutTime = 700;
@@ -129,7 +121,7 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
     /***on load functions***/
     cardinal.onLoadFunctions.LeapForward = function(mesh){
         cardinal.assets.introText = mesh;
-        mesh.material = new THREE.MeshBasicMaterial();//mesh.material.materials[0];
+        mesh.material = new THREE.MeshBasicMaterial();
         mesh.material.color.setHex( 0xffffff );
         //mesh.material.emissive.setHex( 0x999999 );
         mesh.material.transparent = true;
@@ -522,6 +514,6 @@ define(["three", "watch", "events", "tween", "underscore", "animate", "callback"
       tween.to( { value: 0 }, 4500 );
       tween.start();
     }
-
     return cardinal;
+  }
 });

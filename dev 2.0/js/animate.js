@@ -55,7 +55,6 @@ define(["underscore", "updater", "tween", "EffectComposer",
             animate.loader.scene.simulate(); // run physics
             TWEEN.update();
             animate.updater.UpdateHandlers();
-            //animate.renderer.render(animate.loader.scene, animate.camera);
             animate.RenderFunction();
         }
     };

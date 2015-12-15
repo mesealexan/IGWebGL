@@ -1,20 +1,16 @@
-define(['events', 'animate', 'events', 'tween', 'animationHandler', 'watch'],
-function (events, animate, events, tween, animationHandler, watch) {
-	var sound = {
-		folderName: 'sound',
-		assetNames: ['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
+define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween'],
+function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween) {
+
+return function(){
+	var sound = new scene();
+	sound.folderName = 'sound';
+	sound.addAssets(['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
 		'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
-	  'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB',
-		'graphic_text80dB'],
-		onStartFunctions: {},
-		onLoadFunctions: {},
-		onFinishLoadFunctions: {},
-		onUnloadFunctions: {},
-		animationHandlers: {},
-		assets: {},
-		flags: {},
-		dummyFrame: undefined
-	};
+		'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB',
+		'graphic_text80dB', 'text_mesh']);
+	sound.dummyFrame = undefined;
+	sound.flags = {};
+	sound.textFadeFrameTime = 25;
 
 	var dummyFrame = function(){
 		this.maxFrame = 750;
@@ -47,6 +43,11 @@ function (events, animate, events, tween, animationHandler, watch) {
     };
 
 	//on start loading
+	sound.onStartFunctions.storeScene = function (scene, loader) {
+		sound.assets.scene = scene;
+		sound.assets.loader = loader;
+	};
+
 	sound.onStartFunctions.addLights = function (scene) {
 		sound.assets.ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(sound.assets.ambientLight);
@@ -58,6 +59,24 @@ function (events, animate, events, tween, animationHandler, watch) {
 	};
 
 	//on loading
+
+	sound.onLoadFunctions.text_mesh = function (mesh, loader) {
+		var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true});
+		materials.outlineShader.prototype = new THREE.ShaderMaterial();
+		var outlineMaterial = new materials.outlineShader({
+			thickness: 2,
+			color: new THREE.Color("rgb(150,150,150)")
+		});
+
+		var mats = [material, outlineMaterial];
+		var multiMesh = THREE.SceneUtils.createMultiMaterialObject(mesh.geometry, mats);
+		loader.DisposeObject(mesh);
+		loader.scene.add(multiMesh);
+		sound.assets.text_mesh = multiMesh;
+		/*mesh.material = mesh.material.materials[0];
+		mesh.material.transparent = true;
+		sound.assets.text_mesh = mesh;*/
+	};
 	sound.onLoadFunctions.avion_mesh = function (mesh, loader) {
 		sound.assets.avion_mesh = mesh;
 		sound.assets.avion_mesh.visible = false;
@@ -138,21 +157,38 @@ function (events, animate, events, tween, animationHandler, watch) {
 
 	//on finish loading
 
-		sound.onFinishLoadFunctions.playCamera = function(scene, loader) {
-	       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
-	         animate.Animate);
+	sound.onFinishLoadFunctions.playCamera = function(scene, loader) {
+		loader.cameraHandler.play(0, 1, onCompleteFirstPlay);
+
+		function onCompleteFirstPlay(){
+			animate.camera.position.x -= 300;
+			loader.cameraHandler.tween(0, .03, onCompleteTween, TWEEN.Easing.Cubic.In);
+		}
+
+		function onCompleteTween(){
+			tweenText();
+			playStuff(sound.assets.scene, sound.assets.loader)
+			loader.cameraHandler.play(undefined, undefined, function(){});
 		};
+
+		animate.Animate();
+	};
+
+	/*sound.onFinishLoadFunctions.playCamera = function(scene, loader) {
+			 loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+				 animate.Animate);
+	};*/
 
     sound.onFinishLoadFunctions.addControls = function () {
         events.AddControls();
         events.ToggleControls(false);
     };
 
-    sound.onFinishLoadFunctions.playStuff = function (scene, loader) {
+    function playStuff (scene, loader) {
 			sound.dummyFrame = new dummyFrame();
     	sound.assets.states = new states(scene);
       sound.assets.rings = new soundRings(scene);
-      animate.updater.addHandler(sound.dummyFrame);
+			animate.updater.addHandler(sound.dummyFrame);
       watch.watch(sound.dummyFrame, "frame", function(prop, action, newValue, oldValue) {
           reactToFrame(oldValue);
       });
@@ -591,5 +627,16 @@ function (events, animate, events, tween, animationHandler, watch) {
         tween_01_out.start();
     }
 
+		function tweenText(){
+				var textTween = new aeTween(sound.assets.text_mesh.children[0].material );
+		    textTween.to( { opacity: 0 }, sound.textFadeFrameTime );
+		    textTween.start();
+
+				var textTween2 = new aeTween(sound.assets.text_mesh.children[1].material.uniforms.opacity );
+		    textTween2.to( { value: 0 }, sound.textFadeFrameTime );
+		    textTween2.start();
+		}
+
 	return sound;
+}
 });

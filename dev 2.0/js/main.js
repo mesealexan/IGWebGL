@@ -80,7 +80,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         main.loader.UnloadScene(newScene);
 
         function newScene(){
-            main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
+            //main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
             main.scene.sceneID = sceneID;
             main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
             animate.loader = main.loader;

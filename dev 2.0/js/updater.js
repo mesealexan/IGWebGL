@@ -1,5 +1,4 @@
-define(["underscore"], function(underscore){
-    //todo: implement underscore each loops
+define([], function(){
     return function () {
         this.handlers = [];
 
@@ -11,7 +10,8 @@ define(["underscore"], function(underscore){
         };
 
         this.UpdateHandlers = function () {
-            for (var key in this.handlers) this.handlers[key].update();
+            for (var i = 0; i < this.handlers.length; i++)
+              this.handlers[i].update();
         };
 
         this.clearAll = function(){ this.handlers = []; };
