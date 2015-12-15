@@ -189,7 +189,7 @@ return function(){
     };
 
     i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
-       loader.cameraHandler.play(0,1,undefined,//from, to and onComplete undefined
+       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
          animate.Animate);
     };
 
@@ -201,17 +201,17 @@ return function(){
 
     i89.onFinishLoadFunctions.addControls = function(){
         var c = {
-            /*noZoom: true,
+            noZoom: true,
             noPan: true,
             maxPolarAngle: Math.PI / 2,
             minPolarAngle: 1,
             rotateSpeed: 0.5,
             minAzimuthAngle: -1.6,
-            maxAzimuthAngle: -0.9*/
+            maxAzimuthAngle: -0.9
         };
 
         events.AddControls(c);
-        //events.ToggleControls(false);
+        events.ToggleControls(false);
     };
 
     i89.onFinishLoadFunctions.playSound = function(){
