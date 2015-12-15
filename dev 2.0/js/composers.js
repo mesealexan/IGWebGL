@@ -33,6 +33,7 @@ define(["animate", "fxaa"], function(animate, fxaa){
             //"gl_FragColor = vec4(random(tex.r), random(tex.g) , random(tex.b), tex.a);",
             //"gl_FragColor = vec4((tex.r), smoothstep(0., 1., vUv.x) , tex.b, tex.a);",
             "gl_FragColor = vec4(tex.r + amount, tex.g + amount, tex.b + amount, tex.a);",
+            //"gl_FragColor = tex;",
           "}"
         ].join( "\n" )
       };

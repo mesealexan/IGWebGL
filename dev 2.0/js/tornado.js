@@ -1,50 +1,46 @@
-define(["animate", "events", "animationHandler", "composers", "watch", "tween",
-"materials", "underscore", "particleSystem"],
-function (animate, events, animationHandler, composers, watch, tween,
-  materials, underscore, particleSystem) {
+define(["scene", "animate", "events", "animationHandler", "composers", "watch", "tween",
+"materials", "underscore", "particleSystem", "aeTween"],
+function (scene, animate, events, animationHandler, composers, watch, tween,
+  materials, underscore, particleSystem, aeTween) {
 
-  var tornado = {
-    folderName: "tornado",
-    assetNames: ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
-     "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
-     "House_windows", "GoodWeatherBadWeather"],
-    soundNames: [],
-    onStartFunctions: {},
-    onLoadFunctions: {},
-    onUnloadFunctions: {},
-    onFinishLoadFunctions: {},
-    animationHandlers: {},
-    intervals: {},
-    assets: {},
-    //scroll clouds
-    cloudSpeed: 0.0002,
-    slowMoCloudSpeed: 0.0001,
-    //gravity
-    gravity: new THREE.Vector3(0, -15, -15 ),
-    slowMoGravity: new THREE.Vector3(0, -1, -1 ),
-    //debrees
-    debreeDestroyTime: 3000,
-    nomalModebreeDestroyTime: 3000,
-    slowModebreeDestroyTime: 10000,
-    //lightning
-    lightningTime: 75,
-    slowMoLightningTime: 200,
-    //bloom
-    bloomSettings: {
-      outside: {min: 0.8, max: 1.2},
-      inside: {min: 0.4, max: 1}
-    },
-    //upper scene aseets stored here for disposal
-    upperSceneDisposables: []
-  };
+return function(){
+  var tornado = new scene();
+  tornado.folderName = "tornado";
+  tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
+   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
+   "House_windows", "GoodWeatherBadWeather"]);
+   //scroll clouds
+   tornado.cloudSpeed = 0.0002;
+   tornado.slowMoCloudSpeed = 0.0001;
+   //gravity
+   tornado.gravity = new THREE.Vector3(0, -15, -15 );
+   tornado.slowMoGravity = new THREE.Vector3(0, -1, -1 );
+   //debrees
+   tornado.debreeDestroyTime = 3000;
+   tornado.nomalModebreeDestroyTime = 3000;
+   tornado.slowModebreeDestroyTime = 10000;
+   //lightning
+   tornado.lightningTime = 75;
+   tornado.slowMoLightningTime = 200;
+   //bloom
+   tornado.bloomSettings = {
+     outside: {min: 0.8, max: 1.2},
+     inside: {min: 0.4, max: 1}
+   };
+   //upper scene aseets stored here for disposal
+   tornado.upperSceneDisposables = [];
+   tornado.lowerSceneObjects = [];
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
     /*tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 250;
     animate.SetCustomFramerate(30);
+    cleanUpperScene();
+    revealLowerScene();
+    startPhysics(tornado.assets.scene, tornado.assets.loader);
     //startLightning();
-    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 2500);
+    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
     setTimeout(function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
@@ -58,7 +54,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   };
 
   tornado.onStartFunctions.setFramerate = function(scene){
-    animate.SetCustomFramerate(25);
+    animate.SetCustomFramerate(20);
   };
 
   tornado.onStartFunctions.storeScene = function(scene, loader){
@@ -93,11 +89,11 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   /***on load functions***/
   tornado.onLoadFunctions.GoodWeatherBadWeather = function (mesh, loader) {
-    var material = new THREE.MeshBasicMaterial({color: 0xffffff});
+    var material = new THREE.MeshBasicMaterial({color: 0x000000});
     materials.outlineShader.prototype = new THREE.ShaderMaterial();
     var outlineMaterial = new materials.outlineShader({
       thickness: 1,
-      color: {r: 1}
+      color: new THREE.Color("rgb(255,255,255)")
     });
     var mats = [material, outlineMaterial];
     var multiMesh = THREE.SceneUtils.createMultiMaterialObject(mesh.geometry, mats);
@@ -106,16 +102,10 @@ function (animate, events, animationHandler, composers, watch, tween,
     tornado.upperSceneDisposables.push(multiMesh);
 
     multiMesh.position.set(-37, 180, 45);
-    //multiMesh.scale.set(1, 0.1, 1);
-    animate.updater.addHandler({
-      frame: 0,
-      end: 138,
-      update: function(){
-        if(++this.frame == this.end)animate.updater.removeHandler(this);
-        multiMesh.position.x += 0.7;
-        multiMesh.position.z += 0.9;
-      }
-    });
+
+    var textPosTween = new aeTween(multiMesh.position);
+    textPosTween.to({x: 60, z: 170}, 100);
+    textPosTween.start();
   }
 
   tornado.onLoadFunctions.Wind_1 = function (mesh) {
@@ -149,15 +139,17 @@ function (animate, events, animationHandler, composers, watch, tween,
     return ah;
   };
 
-  tornado.onLoadFunctions.House = function (mesh) {
-    tornado.assets.House = mesh;
-  }
+
 
   tornado.onLoadFunctions.House_windows = function (mesh) {
+    tornado.lowerSceneObjects.push(mesh);
+    mesh.visible = false;
       mesh.material = materials.setMaterials("cardinal", {name:"Glass"});
   }
 
   tornado.onLoadFunctions.Background_clouds = function (mesh) {
+    tornado.lowerSceneObjects.push(mesh);
+    mesh.visible = false;
     mesh.material = mesh.material.materials[0];
     mesh.material.map.wrapS = THREE.RepeatWrapping;
     mesh.material.map.wrapT = THREE.RepeatWrapping;
@@ -175,18 +167,26 @@ function (animate, events, animationHandler, composers, watch, tween,
 
   tornado.onLoadFunctions.Earth_shell = function (mesh) {
     tornado.upperSceneDisposables.push(mesh);
-    var tween = new TWEEN.Tween( mesh.position );
-    tween.to( { x: 250 }, 11000 );
-    tween.start();
+      var ae = new aeTween(mesh.position);
+      ae.to({x: 250}, 230);
+      ae.start();
   };
 
   tornado.onLoadFunctions.Debris = function (mesh) {
     mesh.material.materials[0].transparent = true;
     mesh.material.materials[0].opacity = 0;
+    tornado.assets.DebrisMaterial = mesh.material.materials[0];
     tornado.assets.Debris = mesh;
   };
 
+  tornado.onLoadFunctions.Floor_grass = function (mesh, loader) {
+    tornado.lowerSceneObjects.push(mesh);
+    mesh.visible = false;
+  };
+
   tornado.onLoadFunctions.Floor_gird = function (mesh, loader) {
+    tornado.lowerSceneObjects.push(mesh);
+    mesh.visible = false;
     var PHY_Floor_girdMat = Physijs.createMaterial(
       mesh.material.clone(),
       .6, // medium friction
@@ -196,6 +196,9 @@ function (animate, events, animationHandler, composers, watch, tween,
     var PHY_Floor_gird = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_Floor_girdMat, 0 );
     loader.DisposeObject(mesh);
     loader.scene.add( PHY_Floor_gird );
+
+    tornado.lowerSceneObjects.push(PHY_Floor_gird);
+    PHY_Floor_gird.visible = false;
   };
 
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
@@ -233,6 +236,8 @@ function (animate, events, animationHandler, composers, watch, tween,
     var PHY_houseMesh = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_houseMat, 0 );
     loader.DisposeObject(mesh);
     loader.scene.add(PHY_houseMesh);
+    tornado.lowerSceneObjects.push(PHY_houseMesh);
+    PHY_houseMesh.visible = false;
   };
 
   tornado.onLoadFunctions.Hurricane_arm = function (mesh) {
@@ -256,6 +261,8 @@ function (animate, events, animationHandler, composers, watch, tween,
     var pos1 = new THREE.Vector3(-18.3, -430, -16.8);
     mesh.material.materials[0].morphTargets = true;
     mesh.position.copy(pos1);
+    tornado.lowerSceneObjects.push(mesh);
+    mesh.visible = false;
 
     //create left side row of trees
     for (var i = 0; i < 2; i++) {
@@ -263,6 +270,8 @@ function (animate, events, animationHandler, composers, watch, tween,
       newMesh.position.copy(pos1);
       newMesh.position.z += 6 * (i + 1);
       loader.scene.add( newMesh );
+      tornado.lowerSceneObjects.push(newMesh);
+      newMesh.visible = false;
       trees.push(newMesh);
     }
 
@@ -293,6 +302,7 @@ function (animate, events, animationHandler, composers, watch, tween,
      loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
        animate.Animate);
   };
+
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
     tornado.assets.composer = new composers.Bloom_AdditiveColor({str: tornado.bloomSettings.outside.min});
     animate.SetCustomRenderFunction( function(){ tornado.assets.composer.render(); } );
@@ -310,50 +320,12 @@ function (animate, events, animationHandler, composers, watch, tween,
     });
   };
 
-  tornado.onFinishLoadFunctions.startPhysics = function (scene, loader) {
-
-    var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3),
-    above = new THREE.Vector3(-20, -408, 10),
-    size = 0.1,
-    spawnTime = 500,
-    appearTime = 1000,
-    dissapearTime = 1000,
-    maxScale = 0.3,
-    minScale = 0.03;
-
-    function spawnDebree(){
-      var mat = tornado.assets.Debris.material.clone();
-      var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
-      box.scale.set(Math.random() * maxScale + minScale,
-                    Math.random() * maxScale + minScale,
-                    Math.random() * maxScale + minScale);
-
-      var tweenOpacUp = new TWEEN.Tween( mat.materials[0] );
-      tweenOpacUp.to( { opacity: 1 }, appearTime );
-      tweenOpacUp.start();
-
-      box.position.copy(randomDebreePos(above));
-      box.rotation.set(Math.random(), Math.random(), Math.random())
-      loader.scene.add( box );
-      _.delay(hideDebree, tornado.debreeDestroyTime, {obj: box, material: mat}); //delay destroy for debree
-    }
-
-    tornado.intervals.debreeInterval = setInterval( spawnDebree, spawnTime );
-
-    function hideDebree(data) {
-        var tweenOpacDown = new TWEEN.Tween( data.material.materials[0] );
-        tweenOpacDown.to( { opacity: 0 }, dissapearTime );
-        tweenOpacDown.onComplete(function () { loader.DisposeObject(data.obj); });
-        tweenOpacDown.start();
-    }
-  };
-
   tornado.onFinishLoadFunctions.addRain = function (scene) {
     var rainSettings = {
         width: 50,
         height: 50,
         depth: 50,
-        num: 500,
+        num: 300,
         size: {w: 0.1, h: 0.8},
         mapNames: ["water_drop"],
         pos: new THREE.Vector3(0, -408, 40),
@@ -363,7 +335,7 @@ function (animate, events, animationHandler, composers, watch, tween,
     };
 
     tornado.assets.rainPS = new particleSystem(rainSettings);
-    tornado.assets.rainPS.Init(scene);
+    //tornado.assets.rainPS.Init(scene);
   };
 
   tornado.onFinishLoadFunctions.addLeaves = function (scene) {
@@ -406,12 +378,15 @@ function (animate, events, animationHandler, composers, watch, tween,
         break;
       case 200:
         fadeToWhite();
+        tornado.assets.rainPS.Init(tornado.assets.scene);
+        startPhysics(tornado.assets.scene, tornado.assets.loader);
         animate.SetCustomFramerate(30);
         tweenBloomDown();
         rareLightning();
         break;
       case 240:
         cleanUpperScene();
+        revealLowerScene();
         fadeBack();
         break;
       case 270:
@@ -426,7 +401,14 @@ function (animate, events, animationHandler, composers, watch, tween,
   function cleanUpperScene() {
     _.each(tornado.upperSceneDisposables, function (d) {
       tornado.assets.loader.DisposeObject(d);
-    })
+    });
+  }
+
+  function revealLowerScene () {
+    _.each(tornado.lowerSceneObjects, function (o) {
+      o.visible = true;
+    });
+
   }
 
   function throwBrick() {
@@ -488,18 +470,28 @@ function (animate, events, animationHandler, composers, watch, tween,
   }
 
   function revealTornado() {
-    var revealTime = 7000, twistTime = 5000, randomOffsetMax = 2000;
+    var revealTime = 150, twistTime = 150, randomOffsetMax = 50;
 
-    var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
-    tistTween.to( { y: -Math.PI * 2}, twistTime );
+    /*var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
+    tistTween.to({ y: -Math.PI * 2 }, twistTime );
     tistTween.repeat( Infinity );
-    tistTween.start();
+    tistTween.start();*/
+    var twist = new aeTween(tornado.assets.Hurricane_arm.rotation);
+    twist.to({ y: -Math.PI * 2 }, twistTime );
+    twist.repeat( 3 );
+    twist.start();
 
     _.each(tornado.assets.Hurricane_arms, function (arm) {
-      var amount = arm.material.uniforms.opacVal;
+      /*var amount = arm.material.uniforms.opacVal;
       var revealTween = new TWEEN.Tween( amount );
       revealTween.to( { value: 1 }, revealTime );
       revealTween.delay(Math.random() * randomOffsetMax)
+      revealTween.start();*/
+      var amount = arm.material.uniforms.opacVal
+      var revealTween = new aeTween(amount);
+      revealTween.to({value: 1}, revealTime);
+      var delay = Math.round(Math.random() * randomOffsetMax);
+      revealTween.delay(delay);
       revealTween.start();
     });
   }
@@ -571,6 +563,46 @@ function (animate, events, animationHandler, composers, watch, tween,
 
     tornado.assets.lightningHandler = new lightningHandler();
     animate.updater.addHandler(tornado.assets.lightningHandler);
+  };
+
+
+
+  function startPhysics(scene, loader) {
+
+    var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3),
+    above = new THREE.Vector3(-20, -408, 10),
+    size = 0.1,
+    spawnTime = 500,
+    appearTime = 1000,
+    dissapearTime = 1000,
+    maxScale = 0.3,
+    minScale = 0.03;
+
+    function spawnDebree(){
+      var mat = tornado.assets.DebrisMaterial.clone();
+      var box = new Physijs.ConvexMesh(tornado.assets.Debris.geometry.clone(), mat);
+      box.scale.set(Math.random() * maxScale + minScale,
+                    Math.random() * maxScale + minScale,
+                    Math.random() * maxScale + minScale);
+
+      var tweenOpacUp = new TWEEN.Tween( mat );
+      tweenOpacUp.to( { opacity: 1 }, appearTime );
+      tweenOpacUp.start();
+
+      box.position.copy(randomDebreePos(above));
+      box.rotation.set(Math.random(), Math.random(), Math.random())
+      loader.scene.add( box );
+      _.delay(hideDebree, tornado.debreeDestroyTime, {obj: box, material: mat}); //delay destroy for debree
+    }
+
+    tornado.intervals.debreeInterval = setInterval( spawnDebree, spawnTime );
+
+    function hideDebree(data) {
+        var tweenOpacDown = new TWEEN.Tween( data.material );
+        tweenOpacDown.to( { opacity: 0 }, dissapearTime );
+        tweenOpacDown.onComplete(function () { loader.DisposeObject(data.obj, {map: true}); });
+        tweenOpacDown.start();
+    }
   };
 
   function triggerSlowMo(){
@@ -744,6 +776,7 @@ function (animate, events, animationHandler, composers, watch, tween,
   		].join("\n");
       }
     };
-
-  return tornado;
+    return tornado;
+}
+//  return tornado;
 });

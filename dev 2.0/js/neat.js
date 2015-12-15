@@ -1,56 +1,53 @@
-define(["events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio",
+define(["scene", "events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio",
   "callback", "composers"],
-    function(events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback,
-      composers){
-    var neat = {
-      folderName: "neat",
-      assetNames: ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-        'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', 'Neat_intro_text',
-        'Window_frame_main'],
-      soundNames: ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
-        'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'],
-      onStartFunctions: {},
-      onLoadFunctions: {},
-      onFinishLoadFunctions: {},
-      onUnloadFunctions: {},
-      animationHandlers: {},
-      timeouts: {},
-      assets: {},
-      cloudSpeed: 0.0004,
-      callbacks:{
-        introAnimDone: {
-          sampleCall1: function(){ console.log("finished intro animation"); }
-        },
-        rainStart:{
-          sampleCall2: function(){ console.log("started rain"); }
-        },
-        rainFinish:{
-          sampleCall3: function(){ console.log("ended rain"); }
-        },
-        dirtStart:{
-          sampleCall4: function(){ console.log("started dirt"); }
-        },
-        dirtFinish:{
-          sampleCall5: function(){ console.log("ended dirt"); }
-        },
-        sunStart:{
-          sampleCall6: function(){ console.log("started sun"); }
-        },
-        sunFinish:{
-          sampleCall7: function(){ console.log("ended sun"); }
-        },
-        glintStart:{
-          sampleCall8: function(){ console.log("started glint"); }
-        },
-        glintFinish:{
-          sampleCall9: function(){ console.log("ended glint"); }
-        }
-      }
-    }
+function(scene, events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback,
+  composers){
+
+return function(){
+    var neat = new scene();
+    neat.folderName = "neat";
+    neat.addAssets( ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
+      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', 'Neat_intro_text',
+      'Window_frame_main']);
+    neat.addSounds(['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
+      'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand']);
+    neat.cloudSpeed = 0.0004;
+    neat.introAnimDone =  {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    };
+    neat.rainStart = {
+      sampleCall2: function(){ console.log("started rain"); }
+    };
+    neat.rainFinish = {
+      sampleCall3: function(){ console.log("ended rain"); }
+    };
+    neat.dirtStart = {
+      sampleCall4: function(){ console.log("started dirt"); }
+    };
+    neat.dirtFinish = {
+      sampleCall5: function(){ console.log("ended dirt"); }
+    };
+    neat.sunStart = {
+      sampleCall6: function(){ console.log("started sun"); }
+    };
+    neat.sunFinish = {
+      sampleCall7: function(){ console.log("ended sun"); }
+    };
+    neat.glintStart = {
+      sampleCall8: function(){ console.log("started glint"); }
+    };
+    neat.glintFinish = {
+      sampleCall9: function(){ console.log("ended glint"); }
+    };
 
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
 
     /***on start functions***/
+    neat.onStartFunctions.storeScene = function(scene, loader){
+      neat.assets.scene = scene;
+      neat.assets.loader = loader;
+    };
+
     neat.onStartFunctions.addLights = function(scene){
         neat.assets.ambientLight = new THREE.AmbientLight(0xffffff);
         scene.add(neat.assets.ambientLight);
@@ -250,7 +247,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
 
       animate.camera.near = 1;
       animate.camera.updateProjectionMatrix();
-      neat.assets.scene = scene;
 
       neat.assets.states = new states(scene);
       neat.assets.states.dirt.start();
@@ -527,9 +523,7 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
         var tweenOut = new TWEEN.Tween(sphere.material).to({opacity: 0}, 500).onUpdate(function(){
           sphere.position.y -= 0.25;
         }).onComplete(function(){
-          neat.assets.scene.remove(sphere);
-          sphere.geometry.dispose();
-          sphere.material.dispose();
+          neat.assets.loader.DisposeObject(sphere, {envMap: true});
         });
         tweenOut.easing(TWEEN.Easing.Sinusoidal.InOut);
 
@@ -673,24 +667,6 @@ define(["events", "animate", "particleSystem", "materials", "animationHandler", 
       //tween.start();
     }
 
-
-    //testing
-    /*document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener("click", onMouseClick, false);
-
-    function onMouseMove(event) {
-      mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-      mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-    }
-
-    function onMouseClick(event) {
-      // var caster = new THREE.Raycaster();
-      // caster.setFromCamera( mouse, tcamera);
-      // var intersects = caster.intersectObjects(tscene.children);
-      //console.log(intersects[0].point);
-      //loadTheSheet();
-    }*/
-    //-----
-
     return neat;
+  }
 });

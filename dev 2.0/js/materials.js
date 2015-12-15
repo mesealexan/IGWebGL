@@ -843,7 +843,7 @@ define(["three", "animate"], function(THREE, animate){
         '/models/tornado/Hurricane_arm_diff.jpg');
 
       var opacMap = THREE.ImageUtils.loadTexture(materials.mediaFolderUrl+
-        '/models/tornado/Hurricane_transition.jpg');
+        '/models/tornado/Hurricane_transition_scale.jpg');
 
       /*var canvas = document.createElement('canvas');
       var ctx = canvas.getContext("2d");
@@ -927,16 +927,20 @@ define(["three", "animate"], function(THREE, animate){
 
     materials.outlineShader = function (set) {
       this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
+      this.thickness = ( set.thickness !== undefined ) ? set.thickness : "1";
 
       this.uniforms = {
-        color: { type: "c", value: this.color }
+        color: { type: "c", value: this.color },
+        offset : {type: "f", value: this.thickness},
+        opacity : {type: "f", value: 1}
       };
       this.side = 1;
+      this.transparent = true;
       this.vertexShader = [
         "varying vec3 Vnormal;",
+        "uniform float offset;"+
         "void main(){",
             "Vnormal = normal;",
-            "float offset = 1.;",
             "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
             "gl_Position = projectionMatrix * pos;",
         "}"
@@ -944,8 +948,10 @@ define(["three", "animate"], function(THREE, animate){
 
       this.fragmentShader = [
         "varying vec3 Vnormal;",
+        "uniform vec3 color;"+
+        "uniform float opacity;"+
         "void main(){",
-          "gl_FragColor = vec4( 0., .0, .0, 1.0 );"+
+          "gl_FragColor = vec4( color, opacity );"+
         "}"
       ].join("\n");
     }

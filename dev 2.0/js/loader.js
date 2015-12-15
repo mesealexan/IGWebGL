@@ -1,36 +1,48 @@
-define(["jquery", "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
+define(["scene", "jquery", "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
 "audio", "watch", "tornado", "devScene"],
-function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
+function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
   audio, watch, tornado, devScene){
     var scenes = {//all possible scenes
-        i89:i89,
-        LoE:LoE,
-        cardinal:cardinal,
+        i89: i89,
+        LoE: LoE,
+        cardinal: cardinal,
         neat: neat,
         sound: sound,
         tornado: tornado,
         devScene: devScene
     };
+    var matProps = ['map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap'/*, 'envMap'*/];
 
-    function disposeObject (obj) {
+    function disposeObject (obj, skipMat) {
         //.dispose() removes the object (geometry, material and/or texture) from memory
-        if(obj.geometry) obj.geometry.dispose();
-        if(obj.material){
-            if(obj.material.materials){
+        if(obj.geometry) obj.geometry.dispose(); //has geometry
+        if(obj.material){ //has material
+            if(obj.material instanceof THREE.MeshFaceMaterial)
               for (var j = obj.material.materials.length - 1; j >= 0; j--)
-                obj.material.materials[j].dispose();
-            }
-            else obj.material.dispose();
+                disposeMaterial(obj.material.materials[j], skipMat);
+            else // has one material
+              disposeMaterial(obj.material, skipMat);
         }
-        if(obj.parent)obj.parent.remove(obj);
+        if(obj.parent) obj.parent.remove(obj);
+        obj = undefined;
+
+        function disposeMaterial(mtrl, skip) {
+          if(skip && skip.all) return;
+          _.each(matProps, function (p) {
+            if(skip && _.has(skip, p)) return;
+            if(mtrl[p]) mtrl[p].dispose();
+          });
+          mtrl.dispose();
+          mtrl = undefined;
+        }
     }
 
     function traverseChildren (obj, fun) {
-        //also calls a function provided as an argument for all children
-        if(obj.children.length > 0)
-            for (var i = obj.children.length - 1; i >= 0; i--)
-                traverseChildren(obj.children[i], fun);
-        fun(obj);
+      //also calls a function provided as an argument for all children
+      if(obj.children.length > 0)
+          for (var i = obj.children.length - 1; i >= 0; i--)
+              traverseChildren(obj.children[i], fun);
+      fun(obj);
     }
 
     function checkCameraAnimationState(l, animationComponent){
@@ -50,8 +62,9 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
         this.animationComponent = animationComponent;
         this.animationComponent.loader = this;
         this.DisposeObject = disposeObject;
+        this.sceneID = scene.sceneID;
 
-        var selectedScene = scenes[scene.sceneID];
+        var selectedScene = new scenes[this.sceneID]();
 
         this.mediaFolderUrl =
         selectedScene.mediaFolderUrl =
@@ -98,10 +111,23 @@ function(jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardin
           });
 
 
-          for (var i = this.scene.children.length - 1; i >= 0; i--)
-              traverseChildren(this.scene.children[i], disposeObject);
-          onComplete();
+          for (var i = this.scene.children.length - 1; i >= 0; i--){
+            traverseChildren(this.scene.children[i], disposeObject);
+            if(i == 0){
+              onComplete();
+              dereference(scenes[_this.sceneID]);
+            }
+          }
         };
+
+        function dereference(scene) {
+          var props = (Object.keys(scene));
+
+          _.each(props, function(p){
+            if (scene.hasOwnProperty(p))
+              scene[p] = null;
+          });
+        }
 
         this.LoadAssets(selectedScene);
     };
