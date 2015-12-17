@@ -35,12 +35,12 @@ require.config({
 });
 
 require(["main"], function(main){
-    main.Start("webGL", "LoE");
+    //main.Start("webGL", "LoE");
     //main.Start("webGL", "i89");
     //main.Start("webGL", "cardinal");
     //main.Start("webGL", "neat");
     //main.Start("webGL", "sound");
-    //main.Start("webGL", "tornado");
+    main.Start("webGL", "tornado");
     //main.Start("webGL", "devScene");
     var scenes = ["LoE", "i89", "cardinal", "neat", "sound", "tornado"];
     /*setInterval(  function(){main.LoadNewScene(scenes[

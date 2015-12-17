@@ -956,5 +956,49 @@ define(["three", "animate"], function(THREE, animate){
       ].join("\n");
     }
 
+
+  materials.noiseMat =  function(tex){
+    this.uniforms = {
+      map: {type: 't', value: tex},
+      time: {type: 'f', value: 0},
+      offset: {type: 'f', value: 0},
+    };
+
+    this.side = 2;
+    this.transparent = true;
+
+    this.vertexShader = [
+      "varying vec2 vUv;",
+      "void main(){",
+      "vUv = uv;",
+        "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+      "}"
+    ].join("\n");
+
+    this.fragmentShader = [
+      "uniform sampler2D map;",
+      "uniform float time;",
+      "uniform float offset;",
+      "varying vec2 vUv;",
+
+      "vec4 noisep(in vec2 p, in float scale) {",
+        "return texture2D(map, p / scale + vec2(0.0, time * 0.01)) / 4.0;",
+      "}",
+
+      "void main(){",
+        "float scale = 0.7;",
+        "vec4 col = vec4(0.);",
+        "for(int i = 0; i < 6; i++) {",
+          "col += noisep(vec2(vUv.x + offset, vUv.y + offset), scale);",
+          "scale += 5.0;",
+        "}" ,
+
+        "if(col.b > 0.7) discard;",
+
+        "gl_FragColor = vec4(col.b + .2, col.b + .2, .8, .5);",
+      "}"
+    ].join("\n");
+  }
+
     return materials;
 });
