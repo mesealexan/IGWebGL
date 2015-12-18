@@ -65,6 +65,19 @@ define(["underscore", "updater", "tween", "EffectComposer",
 
     }
 
+    animate.Fullscreen = function(){
+      var elem = document.documentElement;//document.getElementById(animate.containerID);
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    }
+
     animate.SetDefaultRenderFunction = function () {
       animate.RenderFunction = function(){animate.renderer.render(animate.loader.scene, animate.camera)};
     };

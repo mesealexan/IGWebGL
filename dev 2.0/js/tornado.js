@@ -46,6 +46,7 @@ return function(){
       triggerSlowMo();
     }, 2000);
     throwBrick();*/
+    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
   };
 
   /***on start functions***/
@@ -170,6 +171,10 @@ return function(){
       var ae = new aeTween(mesh.position);
       ae.to({x: 250}, 230);
       ae.start();
+
+      /*materials.vertHeightMat.prototype = new THREE.ShaderMaterial();
+      mesh.material = new materials.vertHeightMat();*/
+
   };
 
   tornado.onLoadFunctions.Debris = function (mesh) {
@@ -326,7 +331,7 @@ return function(){
 
   tornado.onFinishLoadFunctions.addControls = function () {
       events.AddControls();
-      //events.ToggleControls(false);
+      events.ToggleControls(false);
   };
 
   tornado.onFinishLoadFunctions.addWatch = function (scene, loader) {
@@ -409,6 +414,7 @@ return function(){
         break;
       case 280:
         throwBrick();
+        events.ToggleControls(true);
         break;
     }
   }

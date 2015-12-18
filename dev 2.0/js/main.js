@@ -31,6 +31,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     }
 
     function addButtons() {
+      main.buttons.fullscreen.add();
       main.buttons.loadCardinal.add();
       main.buttons.load_i89.add();
       main.buttons.loadLoE.add();
@@ -53,6 +54,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         height = $('#'+containerID).height();
         animate.renderSize = {width: width, height: height};
         animate.container = document.getElementById( containerID );
+        animate.containerID = containerID;
         addRenderer();
         main.mediaFolderUrl = getMediaFolderURL();
         main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
@@ -135,6 +137,13 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
             add: function(){
                 events.AddButton({text:"load dev", function: function(){
                     main.LoadNewScene("devScene")}, id:"loadDevScene", parent:"loadButtons"
+                });
+            }
+        },
+        fullscreen:{
+            add: function(){
+                events.AddButton({text:"fullscreen", function: function(){
+                    animate.Fullscreen()}, id:"fullscreen", parent:"loadButtons", id: "fullscreen"
                 });
             }
         }

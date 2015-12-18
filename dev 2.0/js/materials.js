@@ -919,6 +919,7 @@ define(["three", "animate"], function(THREE, animate){
             //"gl_FragColor = vec4(difCol.xyz, clamp(0.8-rim, 0.0, 1.0) );}"
 
             /*v.5*/
+            "float zbuffer = gl_FragCoord.w * 500.0;"+
             "gl_FragColor = vec4(difCol.xyz - (vUv.y - 0.2), clamp(0.6-rim, 0.0, 1.0) );}"
         }
     };
@@ -991,14 +992,50 @@ define(["three", "animate"], function(THREE, animate){
         "for(int i = 0; i < 6; i++) {",
           "col += noisep(vec2(vUv.x + offset, vUv.y + offset), scale);",
           "scale += 5.0;",
-        "}" ,
+        "}",
 
         "if(col.b > 0.7) discard;",
 
+        //"float zbuffer = gl_FragCoord.w * 500.0;",
+        //"if(zbuffer > .32)",
         "gl_FragColor = vec4(col.b + .2, col.b + .2, .8, .5);",
+        //"else gl_FragColor = vec4(0., 0., sin(gl_FragCoord.x * zbuffer * 4.), 1.0);",
+
+        //"gl_FragColor = vec4(col.b + .2, col.b + .2, .8, .5);",
       "}"
     ].join("\n");
   }
+
+  materials.vertHeightMat =  function(tex){
+    this.uniforms = {
+    };
+
+    this.side = 2;
+
+    this.vertexShader = [
+      "varying vec2 vUv;",
+      "varying float height;",
+      "void main(){",
+        "vUv = uv;",
+        //"height = position.y;",
+        "vec4 v = projectionMatrix * modelViewMatrix * vec4( vec3(position), 1.0 );",
+        //"x = v.x / v.z;",
+        "height = position.y + 68.;",
+        "gl_Position = v;",
+      "}"
+    ].join("\n");
+
+    this.fragmentShader = [
+      "varying vec2 vUv;",
+      "varying float height;",
+
+      "void main(){",
+        "gl_FragColor = vec4(0., height, height - 3., 1.);",
+      "}"
+    ].join("\n");
+  }
+
+
 
     return materials;
 });
