@@ -46,6 +46,7 @@ return function(){
       triggerSlowMo();
     }, 2000);
     throwBrick();*/
+    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
   };
 
   /***on start functions***/
@@ -170,6 +171,10 @@ return function(){
       var ae = new aeTween(mesh.position);
       ae.to({x: 250}, 230);
       ae.start();
+
+      /*materials.vertHeightMat.prototype = new THREE.ShaderMaterial();
+      mesh.material = new materials.vertHeightMat();*/
+
   };
 
   tornado.onLoadFunctions.Debris = function (mesh) {
@@ -202,12 +207,26 @@ return function(){
   };
 
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
-    tornado.upperSceneDisposables.push(mesh);
+    /*tornado.upperSceneDisposables.push(mesh);
     mesh.material = mesh.material.materials[0];
     mesh.material.morphTargets = true;
     mesh.material.transparent = true;
     mesh.material.map.wrapS = THREE.RepeatWrapping;
-    mesh.material.map.wrapT = THREE.RepeatWrapping;
+    mesh.material.map.wrapT = THREE.RepeatWrapping;*/
+
+    var noiseSize = 256;
+    var size = noiseSize * noiseSize;
+    var data = new Uint8Array( 4 * size );
+    for ( var i = 0; i < size * 4; i ++ ) {
+        data[ i ] = Math.random() * 255 | 0;
+    }
+    var dt = new THREE.DataTexture( data, noiseSize, noiseSize, THREE.RGBAFormat );
+    dt.wrapS = THREE.RepeatWrapping;
+    dt.wrapT = THREE.RepeatWrapping;
+    dt.needsUpdate = true;
+
+    materials.noiseMat.prototype = new THREE.ShaderMaterial();
+    mesh.material = new materials.noiseMat(dt);
 
     var scrollingUV = function(){
       this.frame = 0;
@@ -215,7 +234,7 @@ return function(){
       this.speed = 0.0005;
       this.update = function () {
         if(++this.frame == this.maxFrame) animate.updater.removeHandler(this);
-        else mesh.material.map.offset.x += this.speed;
+        else mesh.material.uniforms.offset.value += this.speed;
       };
     };
 
@@ -224,6 +243,7 @@ return function(){
     tornado.animationHandlers.cloudsAnim.setMesh(mesh);
     tornado.animationHandlers.cloudsAnim.speed = 1;
     tornado.animationHandlers.cloudsAnim.play(0, 138);
+
   };
 
   tornado.onLoadFunctions.House = function (mesh, loader) {
@@ -311,7 +331,7 @@ return function(){
 
   tornado.onFinishLoadFunctions.addControls = function () {
       events.AddControls();
-      //events.ToggleControls(false);
+      events.ToggleControls(false);
   };
 
   tornado.onFinishLoadFunctions.addWatch = function (scene, loader) {
@@ -394,6 +414,7 @@ return function(){
         break;
       case 280:
         throwBrick();
+        events.ToggleControls(true);
         break;
     }
   }
@@ -470,7 +491,7 @@ return function(){
   }
 
   function revealTornado() {
-    var revealTime = 150, twistTime = 150, randomOffsetMax = 50;
+    var revealTime = 150, twistTime = 150, randomOffsetMax = 75;
 
     /*var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
     tistTween.to({ y: -Math.PI * 2 }, twistTime );
