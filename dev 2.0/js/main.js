@@ -3,11 +3,16 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween){
     var main = {}; //public functionality
     /***private fields***/
+    var version = 1;
     var camFOV =  45; //camera field of view in degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
 
     /***private functions***/
+    function reportVersion(){
+      console.info("Cardinal BETA " + version);
+    }
+
     function addRenderer() {
         animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
             logarithmicDepthBuffer: false});
@@ -49,6 +54,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     /***public functions***/
     main.Start = function(containerID, sceneID){
         //entry point (first function called by require in app.js)
+        reportVersion();
         loader.LoadingScreen.add();
         width = $('#'+containerID).width();
         height = $('#'+containerID).height();

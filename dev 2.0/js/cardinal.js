@@ -1,5 +1,5 @@
-define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers"],
-    function(scene, three, watch, events, tween, underscore, animate, callback, composers){
+define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween"],
+    function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween){
 
 return function(){
     var cardinal = new scene();
@@ -64,7 +64,6 @@ return function(){
         animation_5:{ frame: 193, speed: 0.05},
         animation_6:{ frame: 194, speed: 0.05}
     };
-
 
     /***on start functions***/
     cardinal.onStartFunctions.addLights = function(scene){
@@ -426,6 +425,7 @@ return function(){
     };
 
     cardinal.goToSlice = function(){
+        events.ToggleControls(false);
         callback.go(cardinal.callbacks.goToSliceStart);
         cardinal.assets.cardinal_slice.visible = true;
         cardinal.buttons.slice.remove();
@@ -434,12 +434,23 @@ return function(){
 
         events.Controls.minAzimuthAngle = 0.1;
         events.Controls.maxAzimuthAngle = 0.9;
-        events.ToggleControls(false);
 
         _.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
             mat.transparent = true;
-            animate.TweenOpacity(mat, 0, fadeOutTime, undefined,
-                function(){cardinal.assets.cardinal_vertical.visible = false;});//on complete
+
+            /*animate.TweenOpacity(mat, 0, fadeOutTime, undefined,
+                function(){
+                  cardinal.assets.cardinal_vertical.visible = false;
+                });//on complete
+            */
+
+
+            var opacTween = new aeTween(mat);
+            opacTween.to({opacity: 0}, 20);
+            opacTween.onComplete = function(){
+              cardinal.assets.cardinal_vertical.visible = false;
+            }
+            opacTween.start();
         });
 
         _.each(cardinal.assets.cardinal_horizontal.material.materials,
@@ -449,7 +460,8 @@ return function(){
         });
 
         _.each(cardinal.assets.cardinal_slice.material.materials,
-            function(mat){ animate.TweenOpacity(mat, mat.maxOpacity, fadeOutTime); });
+            function(mat){ animate.TweenOpacity(mat, mat.maxOpacity, fadeOutTime); }
+          );
 
         cardinal.assets.loaderComponent.cameraHandler.play(
             cameraAnimations.animation_2.from,
