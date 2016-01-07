@@ -21,7 +21,6 @@ define(["underscore", "updater", "tween", "EffectComposer",
 
     /***private functions***/
     function resizeWindow(){
-      console.log("dsd")
       animate.renderSize = {
         width: $(animate.container).width(),
         height: $(animate.container).height()

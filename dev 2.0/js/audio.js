@@ -1,4 +1,4 @@
-define(["howler", "underscore"], function(howler, underscore){
+define(["howler", "underscore", "buzz"], function(howler, underscore, buzz){
     var audio = {};
     audio.sounds = {};
 
@@ -15,7 +15,25 @@ define(["howler", "underscore"], function(howler, underscore){
     }
 
     function loadSound(arr, onComp, mediaFolderUrl){
-        var url = undefined;
+
+      if(!arr || !(url = arr[audioArrIndex])){
+          audioArrIndex = 0;
+          onComp();
+          return;
+      }
+
+      if(audio.sounds[cleanName(url)]){
+          audioArrIndex++;
+          loadSound(arr, onComp);
+          return;
+      }
+
+      var sound = new buzz.sound(mediaFolderUrl+ "/audio/" + url, { formats: [ "mp3", "ogg", "m4a" ] });
+
+      audio.sounds[cleanName(url)] = sound;
+      audioArrIndex++;
+      loadSound(arr, onComp, mediaFolderUrl);
+        /*var url = undefined;
 
         if(!arr || !(url = arr[audioArrIndex])){
             audioArrIndex = 0;
@@ -43,7 +61,8 @@ define(["howler", "underscore"], function(howler, underscore){
         }
 
         function onStop(){
-        }
+        }*/
+
     }
 
     audio.LoadAll = function(arr, onComp, mediaFolderUrl){
@@ -52,10 +71,11 @@ define(["howler", "underscore"], function(howler, underscore){
     };
 
     audio.StopAll = function(){_.each(audio.sounds, function(s){
-        if(s.playing()){
+        /*if(s.playing()){
             var id = s._sounds[0]._id;
             s.stop(id);
-        }
+        }*/
+        buzz.all().stop();
     })};
 
     GlobalFunctions.audio = audio;

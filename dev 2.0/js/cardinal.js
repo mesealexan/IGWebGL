@@ -1,5 +1,5 @@
-define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween"],
-    function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween){
+define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text"],
+    function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text){
 
 return function(){
     var cardinal = new scene();
@@ -114,6 +114,29 @@ return function(){
 
         lensFlare.position.set( -1127.008, 1232.292, -11  );
       //  scene.add( lensFlare );
+    };
+
+    cardinal.onStartFunctions.makeText = function(scene){
+      var string = "Leap forward 20 years.";
+
+    	/*var textGeom = new THREE.TextGeometry( "Hello, World!",
+    	{
+    		size: 30, height: 4, curveSegments: 3,
+    		font: "helvetiker", weight: "bold", style: "normal",
+    		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
+    		material: 0, extrudeMaterial: 1
+    	});*/
+      var settings = {
+        size: 10,
+        curveSegments: 3,
+        height: 1,
+        bevelEnabled: false,
+        style: "normal",
+        weight: "normal",
+        font: "bank gothic"
+      };
+      //var geom = text.Make(string, settings);
+      //console.log(geom);
     };
     /***end on start functions***/
 

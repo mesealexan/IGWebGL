@@ -1,9 +1,3 @@
-/*!
-  * Bowser - a browser detector
-  * https://github.com/ded/bowser
-  * MIT License | (c) Dustin Diaz 2015
-  */
-
 !function (name, definition) {
   if (typeof module != 'undefined' && module.exports) module.exports = definition()
   else if (typeof define == 'function' && define.amd) define(definition)
@@ -30,7 +24,15 @@
     var iosdevice = getFirstMatch(/(ipod|iphone|ipad)/i).toLowerCase()
       , likeAndroid = /like android/i.test(ua)
       , android = !likeAndroid && /android/i.test(ua)
-      , chromeBook = /CrOS/.test(ua)
+      , chromeos = /CrOS/.test(ua)
+      , silk = /silk/i.test(ua)
+      , sailfish = /sailfish/i.test(ua)
+      , tizen = /tizen/i.test(ua)
+      , webos = /(web|hpw)os/i.test(ua)
+      , windowsphone = /windows phone/i.test(ua)
+      , windows = !windowsphone && /windows/i.test(ua)
+      , mac = !iosdevice && !silk && /macintosh/i.test(ua)
+      , linux = !android && !sailfish && !tizen && !webos && /linux/i.test(ua)
       , edgeVersion = getFirstMatch(/edge\/(\d+(\.\d+)?)/i)
       , versionIdentifier = getFirstMatch(/version\/(\d+(\.\d+)?)/i)
       , tablet = /tablet/i.test(ua)
@@ -51,7 +53,7 @@
       , version: versionIdentifier || getFirstMatch(/(?:yabrowser)[\s\/](\d+(\.\d+)?)/i)
       }
     }
-    else if (/windows phone/i.test(ua)) {
+    else if (windowsphone) {
       result = {
         name: 'Windows Phone'
       , windowsphone: t
@@ -71,9 +73,10 @@
       , msie: t
       , version: getFirstMatch(/(?:msie |rv:)(\d+(\.\d+)?)/i)
       }
-    } else if (chromeBook) {
+    } else if (chromeos) {
       result = {
         name: 'Chrome'
+      , chromeos: t
       , chromeBook: t
       , chrome: t
       , version: getFirstMatch(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
@@ -101,7 +104,7 @@
         result.version = versionIdentifier
       }
     }
-    else if (/sailfish/i.test(ua)) {
+    else if (sailfish) {
       result = {
         name: 'Sailfish'
       , sailfish: t
@@ -125,7 +128,7 @@
         result.firefoxos = t
       }
     }
-    else if (/silk/i.test(ua)) {
+    else if (silk) {
       result =  {
         name: 'Amazon Silk'
       , silk: t
@@ -152,7 +155,7 @@
       , version: versionIdentifier || getFirstMatch(/blackberry[\d]+\/(\d+(\.\d+)?)/i)
       }
     }
-    else if (/(web|hpw)os/i.test(ua)) {
+    else if (webos) {
       result = {
         name: 'WebOS'
       , webos: t
@@ -167,7 +170,7 @@
       , version: getFirstMatch(/dolfin\/(\d+(\.\d+)?)/i)
       };
     }
-    else if (/tizen/i.test(ua)) {
+    else if (tizen) {
       result = {
         name: 'Tizen'
       , tizen: t
@@ -207,6 +210,12 @@
     } else if (iosdevice) {
       result[iosdevice] = t
       result.ios = t
+    } else if (windows) {
+      result.windows = t
+    } else if (mac) {
+      result.mac = t
+    } else if (linux) {
+      result.linux = t
     }
 
     // OS version extraction

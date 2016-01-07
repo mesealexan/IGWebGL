@@ -227,7 +227,7 @@ return function(){
 
     neat.onFinishLoadFunctions.playSound = function(){
       audio.sounds.neatacousticguitar.play();
-      audio.sounds.neatacousticguitar.fade(0, 1, 1000);
+      audio.sounds.neatacousticguitar.fadeTo(100, 1000);
     };
 
     /***on unload functions***/
@@ -279,8 +279,9 @@ return function(){
       switch (frame) {
         case 128: {
           audio.sounds.neatcardinal2.play();
-          audio.sounds.neatcardinal2.fade(0, 1, 1000);
-          break;
+          audio.sounds.neatcardinal2.setVolume(0);
+          audio.sounds.neatcardinal2.fadeTo(100, 1000);
+        break;
         }
       }
     }
@@ -297,8 +298,9 @@ return function(){
             neat.assets.sun.tweenColor("sun");
             neat.assets.sun.tweenAmbiental("normalAmb");
 
+            audio.sounds.neatheavenlytransition.setVolume(100);
             audio.sounds.neatheavenlytransition.play();
-            audio.sounds.neatheavenlytransition.fade(0, 1, 1000);
+            //audio.sounds.neatheavenlytransition.fadeTo(100, 1000);
             if (neat.assets.intro) {
               if (prevState == 'dirt') {
                 defintelyNotTheSun(scene);
@@ -323,7 +325,7 @@ return function(){
              }, 3500);
           },
           stop: function(){
-            audio.sounds.neatheavenlytransition.fade(1, 0, 500);
+            audio.sounds.neatheavenlytransition.fadeTo(0, 500);
             //neat.assets.sun.lightDown();
           }
         }
@@ -373,8 +375,9 @@ return function(){
             neat.assets.sun.tweenColor("rain");
             neat.assets.sun.tweenAmbiental("rainAmb");
 
+            audio.sounds.neatrainexteriorloop.setVolume(100);
             audio.sounds.neatrainexteriorloop.play();
-            audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
+            //audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
             var r_rainTween = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
             var l_rainTween = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
             if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
@@ -396,7 +399,7 @@ return function(){
             if(neat.assets.Glass_standard_Rain.rainDrops)
             neat.assets.Glass_standard_Rain.rainDrops.stop();
 
-            audio.sounds.neatrainexteriorloop.fade(1, 0, 500);
+            audio.sounds.neatrainexteriorloop.fadeTo(0, 500);
 
             neat.animationHandlers.sh.play(0,91);
             var r_rainTweenOut = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity)
@@ -423,8 +426,9 @@ return function(){
             neat.assets.sun.lightDown();
             neat.assets.sun.tweenAmbiental("normalAmb");
 
+            audio.sounds.neatwindleaves.setVolume(100);
             audio.sounds.neatwindleaves.play();
-            audio.sounds.neatwindleaves.fade(0, 1, 1000);
+            //audio.sounds.neatwindleaves.fade(0, 1, 1000);
             if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
           },
           stop: function(){
@@ -433,7 +437,7 @@ return function(){
             neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.2, keepOpac: false});
             //neat.assets.Glass_neat_Dirt.material.Clean();
 
-            audio.sounds.neatwindleaves.fade(1, 0, 500);
+            audio.sounds.neatwindleaves.fadeTo(0, 500);
           }
         }
         ,
@@ -645,7 +649,7 @@ return function(){
         .onStart(function(){
           scene.add(glint);
           audio.sounds.neatmagicwand.play();
-          audio.sounds.neatmagicwand.fade(1, 0.1, glintSpeed);
+          audio.sounds.neatmagicwand.fadeTo(10, glintSpeed);
         })
         .onComplete(function(){
           callback.go(neat.callbacks.glintFinish);
