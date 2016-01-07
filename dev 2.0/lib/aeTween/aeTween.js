@@ -18,6 +18,8 @@ define(["animate"], function (animate) {
       _frames = frames;
     };
 
+    this.onComplete = function(){};
+
     this.delay = function (d) {
       _delay = d;
       _updateFunctions.unshift(delay);
@@ -78,7 +80,10 @@ define(["animate"], function (animate) {
     }
 
     function checkFinished () {
-     if(_curFrame++ == _frames + _delay) _this.stop();
+     if(_curFrame++ == _frames + _delay){
+       _this.stop();
+       _this.onComplete();
+     }
     }
 
     function checkRepeat(){

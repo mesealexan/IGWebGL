@@ -16,8 +16,12 @@ define(["underscore", "updater", "tween", "EffectComposer",
     var interval = 1000 / animate.fps;//ideal time in ms between frames
     /***end private fields***/
 
+    window.addEventListener('orientationchange', onOrientationChange);
+    function onOrientationChange(){ resizeWindow(); }
+
     /***private functions***/
     function resizeWindow(){
+      console.log("dsd")
       animate.renderSize = {
         width: $(animate.container).width(),
         height: $(animate.container).height()
@@ -76,12 +80,17 @@ define(["underscore", "updater", "tween", "EffectComposer",
       } else if (elem.webkitRequestFullscreen) {
         elem.webkitRequestFullscreen();
       }
+      resizeWindow();
     }
 
     animate.SetDefaultRenderFunction = function () {
+  		animate.ResizeWindow();
       animate.RenderFunction = function(){animate.renderer.render(animate.loader.scene, animate.camera)};
     };
-    animate.SetCustomRenderFunction = function (fun) { animate.RenderFunction = fun; };
+    animate.SetCustomRenderFunction = function (fun) {
+  		animate.ResizeWindow();
+      animate.RenderFunction = fun;
+    };
 
     animate.SetCustomFramerate = function (f) {
       animate.fps = f;
