@@ -20,6 +20,8 @@ require.config({
                  "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
                  "watch" : "../lib/watch.js/src/watch",
                 "howler" : "../lib/howler.js/howler.core",
+                "bowser" : "../lib/bowser/bowser",
+                  "buzz" : "../lib/buzz/buzz",
                 "hammer" : "../lib/hammerjs/hammer",
                    "gui" : "../lib/gui/dat.gui.min",
                   "main" : "main"
@@ -36,9 +38,9 @@ require.config({
 
 require(["main"], function(main){
     //main.Start("webGL", "LoE");
-    main.Start("webGL", "i89");
+    //main.Start("webGL", "i89");
     //main.Start("webGL", "cardinal");
-    //main.Start("webGL", "neat");
+    main.Start("webGL", "neat");
     //main.Start("webGL", "sound");
     //main.Start("webGL", "tornado");
     //main.Start("webGL", "devScene");

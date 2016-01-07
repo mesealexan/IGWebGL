@@ -1,16 +1,16 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween"],
-    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween){
+define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween", "degradation"],
+    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
-    var version = 1;
+    var version = 2;
     var camFOV =  45; //camera field of view in degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
 
     /***private functions***/
     function reportVersion(){
-      console.info("Cardinal BETA " + version);
+      console.info("Cardinal BETA v" + version);
     }
 
     function addRenderer() {
@@ -53,8 +53,10 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
 
     /***public functions***/
     main.Start = function(containerID, sceneID){
-        //entry point (first function called by require in app.js)
         reportVersion();
+        //check webGL compatibility
+        if(!degradation.webgl_detect({id: containerID})) return;
+        //entry point (first function called by require in app.js)
         loader.LoadingScreen.add();
         width = $('#'+containerID).width();
         height = $('#'+containerID).height();
@@ -95,6 +97,8 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         }
     };
     /***end public functions***/
+
+
 
     main.buttons = {
         loadCardinal:{

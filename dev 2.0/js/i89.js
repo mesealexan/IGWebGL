@@ -353,16 +353,23 @@ return function(){
 
     function reactToFrame(frame){
         switch (frame){
+            case 1:
+              audio.sounds.i89coldnightintro.setVolume(100);
+            break;
             case 220:
-                audio.sounds.i89coldnightintro.fade(1.0, 0.0, 3000);
+                //audio.sounds.i89coldnightintro.fade(1.0, 0.0, 3000);
+                audio.sounds.i89coldnightintro.fadeTo(0, 3000);
                 break;
             case 287:
+                audio.sounds.i89heaterloop.setVolume(0);
                 audio.sounds.i89heaterloop.play();
-                audio.sounds.i89heaterloop.fade(0.0, 1.0, 1000);
+                //audio.sounds.i89heaterloop.fade(0.0, 1.0, 1000);
+                audio.sounds.i89heaterloop.fadeTo(100, 1000);
                 heatWaves.playWave1();
                 break;
             case 320:
-                audio.sounds.i89heaterloop.fade(1.0, 0.6, 2000);
+                //audio.sounds.i89heaterloop.fade(1.0, 0.6, 2000);
+                audio.sounds.i89heaterloop.fadeTo(60, 2000);
                 break;
             case 404:
                 heatWaves.loopWave1();
@@ -372,7 +379,8 @@ return function(){
                 heatWaves.loopWave2();
                 break;
             case 638:
-                audio.sounds.i89heaterloop.fade(0.6, 1.0, 2000);
+                //audio.sounds.i89heaterloop.fade(0.6, 1.0, 2000);
+                audio.sounds.i89heaterloop.fadeTo(100, 2000);
                 i89.switchWindow.i89_on();
                 i89.assets.logo.visible = true;
                 heatWaves.playWave3();
@@ -393,7 +401,8 @@ return function(){
                 i89.buttons.i89_off.add();
                 i89.buttons.outside.add();
                 i89.buttons.inside.add();
-                audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
+                //audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
+                audio.sounds.i89heaterloop.fadeTo(0, 5000);
                 callback.go(i89.callbacks.introAnimDone);
                 break;
         }
@@ -408,6 +417,7 @@ return function(){
                 i89.buttons.i89_off.add();
                 i89.buttons.i89_on.remove();
                 i89.switchWindow.i89_on();
+                audio.sounds.i89toggleglasstype.stop();
                 audio.sounds.i89toggleglasstype.play();
             },
             toggleOFF: function(){
@@ -416,6 +426,7 @@ return function(){
                 i89.buttons.i89_on.add();
                 i89.buttons.i89_off.remove();
                 i89.switchWindow.i89_off();
+                audio.sounds.i89toggleglasstype.stop();
                 audio.sounds.i89toggleglasstype.play();
             },
             i89_on: function  () {

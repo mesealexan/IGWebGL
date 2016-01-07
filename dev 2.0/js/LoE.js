@@ -213,7 +213,8 @@ return function(){
         switch (frame){
             case 0: {
                 audio.sounds.loefactoryloop.play();
-                audio.sounds.loefactoryloop.fade(0, 0.6, 7000);
+                audio.sounds.loefactoryloop.setVolume(0);
+                audio.sounds.loefactoryloop.fadeTo(60, 7000);
                 break;
             }
             case 169:
@@ -242,7 +243,8 @@ return function(){
                 break;
             case 315: {
                 audio.sounds.loeapplycoating.play();
-                audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
+                //audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
+                audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
                 break;
             }
             case 358:
