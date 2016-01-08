@@ -4,7 +4,7 @@ define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "
 return function(){
     var cardinal = new scene();
     cardinal.folderName = "cardinal";
-    cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice', 'LeapForward']);
+    cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'/*, 'LeapForward'*/]);
     cardinal.callbacks.introAnimHalfway = {
       sampleCall1: function(){ console.log("reached middle of intro animation"); },
       sampleCall1a: function(){ console.info("an event can have multiple callbacks"); }
@@ -81,6 +81,10 @@ return function(){
         var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
         light3.position.set( 3615,2688,843 );
         scene.add( light3 );
+        
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
+        directionalLight.position.set( 0, 1, -1 );
+        scene.add( directionalLight );
     };
 
     cardinal.onStartFunctions.addWhitePlane = function (scene) {
@@ -94,7 +98,7 @@ return function(){
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+        /*var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
           "/models/cardinal/Flare_1.png");
         var textureFlare2 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
           "/models/cardinal/Flare_2.png");
@@ -112,31 +116,33 @@ return function(){
                 THREE.AdditiveBlending );
         }
 
-        lensFlare.position.set( -1127.008, 1232.292, -11  );
+        lensFlare.position.set( -1127.008, 1232.292, -11  );*/
       //  scene.add( lensFlare );
     };
 
     cardinal.onStartFunctions.makeText = function(scene){
       var string = "Leap forward 20 years.";
-
-    	/*var textGeom = new THREE.TextGeometry( "Hello, World!",
-    	{
-    		size: 30, height: 4, curveSegments: 3,
-    		font: "helvetiker", weight: "bold", style: "normal",
-    		bevelThickness: 1, bevelSize: 2, bevelEnabled: true,
-    		material: 0, extrudeMaterial: 1
-    	});*/
       var settings = {
-        size: 10,
-        curveSegments: 3,
-        height: 1,
+        size: 0.3,
+        curveSegments: 4,
+        height: 0.1,
         bevelEnabled: false,
         style: "normal",
         weight: "normal",
-        font: "bank gothic"
+        //font: "bank gothic"
+        font: "helvetiker"
       };
-      //var geom = text.Make(string, settings);
-      //console.log(geom);
+
+      var geom = text.Make(string, settings);
+      geom.computeBoundingBox();
+      geom.computeVertexNormals();
+
+      var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+      var mat = new THREE.MeshBasicMaterial({transparent: true});
+
+      cardinal.assets.introText = new THREE.Mesh(geom, mat);
+      cardinal.assets.introText.position.set(centerOffset, 0, -10);
+      animate.camera.add(cardinal.assets.introText);
     };
     /***end on start functions***/
 
@@ -189,8 +195,11 @@ return function(){
         loader.cameraHandler.play(
           cameraAnimations.animation_1.from,
           cameraAnimations.animation_1.to,
-          cardinal.buttons.slice.add,
-          function(){
+          function(){       //on finish
+            cardinal.buttons.slice.add();
+            addMouseDownEvent();
+          },
+          function(){       //on start
             tweenTextOpac();
           }
         );
@@ -232,10 +241,6 @@ return function(){
         events.AddControls(c);
         events.ToggleControls(false);
     };
-
-    cardinal.onFinishLoadFunctions.AddMouseDownEvent = function(){
-        events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
-    };
     /***end on finish functions***/
 
     cardinal.onUnloadFunctions.removeFog = function(scene) {
@@ -248,6 +253,10 @@ return function(){
         cardinal.assets.loaderComponent.cameraHandler.tween(
             anim.from, tweenBackSpeed, fun);
     }
+
+    function addMouseDownEvent (){
+        events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
+    };
 
     function tweenCamToSliceMain(fun){
         var tweenBackSpeed = 0.05;

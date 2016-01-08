@@ -7,7 +7,7 @@ return function(){
   var tornado = new scene();
   tornado.folderName = "tornado";
   tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
-   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
+   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
    "House_windows", "GoodWeatherBadWeather"]);
    //scroll clouds
    tornado.cloudSpeed = 0.0002;
@@ -243,7 +243,7 @@ return function(){
     tornado.animationHandlers.cloudsAnim.setMesh(mesh);
     tornado.animationHandlers.cloudsAnim.speed = 1;
     tornado.animationHandlers.cloudsAnim.play(0, 138);
-
+    tornado.upperSceneDisposables.push(mesh)
   };
 
   tornado.onLoadFunctions.House = function (mesh, loader) {

@@ -26711,7 +26711,6 @@ THREE.FontUtils = {
 
 	getFace: function () {
 
-			console.log(this)
 		try {
 			return this.faces[ this.face ][ this.weight ][ this.style ];
 

@@ -1,5 +1,5 @@
-define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween'],
-function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween) {
+define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween', 'text'],
+function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween, text) {
 
 return function(){
 	var sound = new scene();
@@ -7,7 +7,7 @@ return function(){
 	sound.addAssets(['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
 		'windowframe_mesh', 'window_mesh', 'ground_plane_mesh', 'ring_01_mesh', 'ring_02_mesh', 'ring_03_mesh',
 		'graphic_bars_mesh', 'graphic_plane', 'graphic_text100dB', 'graphic_text160dB', 'graphic_text50dB',
-		'graphic_text80dB', 'text_mesh']);
+		'graphic_text80dB'/*, 'text_mesh'*/]);
 	sound.dummyFrame = undefined;
 	sound.flags = {};
 	sound.textFadeFrameTime = 25;
@@ -58,26 +58,59 @@ return function(){
     sound.flags.perspective = 'outside';
 	};
 
-	//on loading
+	sound.onStartFunctions.makeText = function (scene) {
+		 var string = "Keeping calm in a";
+	 	 var string2 = "noisy world";
+		 var settings = {
+			 size: 20,
+			 curveSegments: 3,
+			 height: 0.1,
+			 bevelEnabled: true,
+			 bevelThickness: 0.1,
+			 bevelSize: 0.1,
+			 style: "normal",
+			 weight: "normal",
+			 //font: "bank gothic"
+			 font: "helvetiker"
+		 };
 
-	sound.onLoadFunctions.text_mesh = function (mesh, loader) {
-		var material = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true});
-		materials.outlineShader.prototype = new THREE.ShaderMaterial();
-		var outlineMaterial = new materials.outlineShader({
-			thickness: 2,
-			color: new THREE.Color("rgb(150,150,150)")
-		});
+		 var geom = text.Make(string, settings);
+		 var geom2 = text.Make(string2, settings);
 
-		var mats = [material, outlineMaterial];
-		var multiMesh = THREE.SceneUtils.createMultiMaterialObject(mesh.geometry, mats);
-		loader.DisposeObject(mesh);
-		loader.scene.add(multiMesh);
-		sound.assets.text_mesh = multiMesh;
-		/*mesh.material = mesh.material.materials[0];
-		mesh.material.transparent = true;
-		sound.assets.text_mesh = mesh;*/
+		 geom.computeVertexNormals();
+		 geom2.computeVertexNormals();
+
+		  geom.computeBoundingBox();
+			geom2.computeBoundingBox();
+		 var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+		 var centerOffset2 = -0.5 * ( geom2.boundingBox.max.x - geom2.boundingBox.min.x );
+
+		 var mat = new THREE.MeshBasicMaterial({transparent: true, color: 0xffffff});
+
+		 materials.outlineShader.prototype = new THREE.ShaderMaterial();
+	 		var outlineMaterial = new materials.outlineShader({
+	 			thickness: 1,
+	 			color: new THREE.Color("rgb(150,150,150)")
+	 		});
+
+			var mats = [mat, outlineMaterial];
+			var multiMesh = THREE.SceneUtils.createMultiMaterialObject(geom, mats);
+			var multiMesh2 = THREE.SceneUtils.createMultiMaterialObject(geom2, mats);
+
+			multiMesh2.position.y = -30;
+			multiMesh2.position.x = -centerOffset + centerOffset2;
+
+			multiMesh.add(multiMesh2);
+
+		 sound.assets.text_mesh = multiMesh;
+ 		 sound.assets.text_mesh.rotateY(-Math.PI / 2);
+ 		 sound.assets.text_mesh.position.set(-500, 140, -220);
+ 		 scene.add(sound.assets.text_mesh);
 	};
+
+	//on loading
 	sound.onLoadFunctions.avion_mesh = function (mesh, loader) {
+		mesh.scale.set(0.75,0.75,0.75);
 		sound.assets.avion_mesh = mesh;
 		sound.assets.avion_mesh.visible = false;
 		sound.assets.avion_01_key = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/sound/avion_01_key.JSON');

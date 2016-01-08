@@ -27,6 +27,7 @@ define(["three", "animate"], function(THREE, animate){
   };
 
     materials.setMaterials = function(folderName, material){
+        console.log(material.name)
         var material;
         var materialName = folderName + material.name;
         var url = this.mediaFolderUrl+"/models/"+folderName+"/";
@@ -368,6 +369,14 @@ define(["three", "animate"], function(THREE, animate){
                     ambient: new THREE.Color("rgb(125,125,125)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
                     map: map
+                });
+                break;
+            case 'cardinalOuter':
+                material = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color("rgb(161,161,161)"),
+                    ambient: new THREE.Color("rgb(255,255,255)"),
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                    map: THREE.ImageUtils.loadTexture(url+'Outer_Diffuse.jpg')
                 });
                 break;
             case 'cardinalsealant a':

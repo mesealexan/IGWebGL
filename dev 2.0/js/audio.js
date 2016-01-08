@@ -1,9 +1,9 @@
-define(["howler", "underscore", "buzz"], function(howler, underscore, buzz){
+define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, buzz){
     var audio = {};
     audio.sounds = {};
 
     var audioArrIndex = 0;
-    Howler.iOSAutoEnable = true;
+    //Howler.iOSAutoEnable = true;
 
     function cleanName(name){//removes dashes
         return name.replace(/-/g, "");
