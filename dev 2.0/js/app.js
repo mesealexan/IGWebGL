@@ -33,23 +33,13 @@ require.config({
             exports: "THREE",
             tween: "TWEEN",
             watch: "watch"
-        },
-        helvetiker: "helvetiker"
+        }
     }
 });
 
 require(["main"], function(main){
-    //main.Start("webGL", "LoE");
-    //main.Start("webGL", "i89");
-    main.Start("webGL", "cardinal");
-    //main.Start("webGL", "neat");
-    //main.Start("webGL", "sound");
-    //main.Start("webGL", "tornado");
-    //main.Start("webGL", "devScene");
-    //var scenes = ["LoE", "i89", "cardinal", "neat", "sound", "tornado"];
-    /*setInterval(  function(){main.LoadNewScene(scenes[
-      _.random(scenes.length - 1)
-    ])}, 5000);*/
+    var scenes = ["cardinal", "i89", "LoE", "neat", "sound", "tornado"];
+    main.Start("webGL", scenes[0]);
 });
 
 

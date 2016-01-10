@@ -27,7 +27,6 @@ define(["three", "animate"], function(THREE, animate){
   };
 
     materials.setMaterials = function(folderName, material){
-        console.log(material.name)
         var material;
         var materialName = folderName + material.name;
         var url = this.mediaFolderUrl+"/models/"+folderName+"/";
@@ -1044,7 +1043,40 @@ define(["three", "animate"], function(THREE, animate){
     ].join("\n");
   }
 
+  materials.floorGrid =  function(){
+    this.uniforms = {
+    };
 
+    this.side = 2;
+
+    this.vertexShader = [
+      "varying vec2 vUv;",
+      "void main(){",
+        "vUv = uv;",
+        "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+      "}"
+    ].join("\n");
+
+    this.fragmentShader = [
+      "#define GREY vec4(0.43, 0.43, 0.43, 1.)\n",
+      "#define ORANGE vec4(0.45, 0.45, 0.17, 1.)\n",
+      "varying vec2 vUv;",
+
+      "float rand(vec2 co){",
+        "return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);",
+      "}",
+
+      "void main(){",
+        "vec4 finalCol;",
+        "float gridSize = 200.;",
+        "float curX = sin(vUv.x * gridSize);",
+        "float curY = sin(vUv.y * gridSize);",
+        "if(curX > 0.95 || curY > 0.95) finalCol = ORANGE;",
+        "else finalCol = GREY /** rand(vUv)*/;",
+        "gl_FragColor = finalCol;",
+      "}"
+    ].join("\n");
+  }
 
     return materials;
 });

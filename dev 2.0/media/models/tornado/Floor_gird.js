@@ -22,7 +22,6 @@
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
-"mapDiffuse"    : "Floor_grid_diff.jpg",
 "vertexColors" : false
 }
 

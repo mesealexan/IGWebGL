@@ -14,7 +14,7 @@ define([], function(){
               this.handlers[i].update();
         };
 
-        this.clearAll = function(){ this.handlers = []; };
+        this.clearAll = function() { this.handlers = []; };
 
         this.stopAllSnow = function() {
             for (var i = 0; i < this.handlers.length; i++) {

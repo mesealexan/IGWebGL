@@ -1,6 +1,4 @@
 define(["three", "helvetiker"], function(){
-  //require(["../media/fonts/Bank Gothic_Regular.typeface"]);
-  //require(["../media/fonts/helvetiker_regular.typeface"]);
   var text = {};
 
   text.Make = function(string, settings){
