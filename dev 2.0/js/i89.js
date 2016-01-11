@@ -1,11 +1,11 @@
-define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers"],
-    function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers){
+define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers", "text"],
+    function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers, text){
 
 return function(){
     var i89 = new scene();
     i89.folderName = "i89";
     i89.addAssets(['house', 'snow', 'bck', 'grid', 'heat_source',
-        'inside_text', 'outside_text', 'moon', 'logo', 'frame', 'window_plane',
+        'inside_text', /*'outside_text',*/ 'moon', 'logo', 'frame', 'window_plane',
         'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89']);
     i89.addSounds(["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"]);
 
@@ -72,6 +72,32 @@ return function(){
         spotLight.position.set(980, 1049, -656);
         spotLight.target.position.set(34, 0, 85);
         scene.add( spotLight );
+    };
+
+   i89.onStartFunctions.makeText = function(scene){
+      var string = "Frigid outside";
+      var settings = {
+        size: 20,
+        curveSegments: 4,
+        height: 0.1,
+        bevelEnabled: false,
+        style: "normal",
+        weight: "normal",
+        //font: "bank gothic"
+        font: "helvetiker"
+      };
+
+      var geom = text.Make(string, settings);
+      geom.computeBoundingBox();
+      geom.computeVertexNormals();
+
+      var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+      var mat = new THREE.MeshBasicMaterial({transparent: true});
+
+      i89.assets.outsideText = new THREE.Mesh(geom, mat);
+      i89.assets.outsideText.rotateY(-Math.PI / 2);
+      i89.assets.outsideText.position.set(-679, 614, 160);
+      scene.add(i89.assets.outsideText);
     };
     /***end on start functions***/
 

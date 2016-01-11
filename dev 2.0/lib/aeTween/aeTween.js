@@ -35,7 +35,7 @@ define(["animate"], function (animate) {
         if(!_updateFunctions[a]()) {/*return;*/ break;}
       }
 
-      checkFinished();
+      checkComplete();
     };
 
     this.stop = function  () {
@@ -79,9 +79,10 @@ define(["animate"], function (animate) {
       return true;
     }
 
-    function checkFinished () {
+    function checkComplete () {
      if(_curFrame++ == _frames + _delay){
        _this.stop();
+       //todo: move onComplete after repeat check below
        _this.onComplete();
      }
     }

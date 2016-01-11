@@ -9,7 +9,6 @@
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
-"mapDiffuse"    : "Earth_clouds.png",
 "vertexColors" : false
 }
 

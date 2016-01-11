@@ -1,5 +1,5 @@
 define(["scene", "animate", "events", "animationHandler", "composers", "watch", "tween",
-"materials", "underscore", "particleSystem", "aeTween"],
+  "materials", "underscore", "particleSystem", "aeTween"],
 function (scene, animate, events, animationHandler, composers, watch, tween,
   materials, underscore, particleSystem, aeTween) {
 
@@ -7,7 +7,7 @@ return function(){
   var tornado = new scene();
   tornado.folderName = "tornado";
   tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
-   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway", "Wind_1", "Wind_2", "Wind_3",
+   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
    "House_windows", "GoodWeatherBadWeather"]);
    //scroll clouds
    tornado.cloudSpeed = 0.0002;
@@ -109,6 +109,7 @@ return function(){
     textPosTween.start();
   }
 
+  /*
   tornado.onLoadFunctions.Wind_1 = function (mesh) {
     tornado.animationHandlers.Wind_1 = prepareWind(mesh, 49)
   }
@@ -118,6 +119,8 @@ return function(){
   tornado.onLoadFunctions.Wind_3 = function (mesh) {
     tornado.animationHandlers.Wind_2 = prepareWind(mesh, 48)
   }
+  */
+
   function prepareWind(mesh, to) {
     mesh.material.materials[0].morphTargets = true;
     mesh.material.materials[0].transparent = true;
@@ -191,11 +194,15 @@ return function(){
 
   tornado.onLoadFunctions.Floor_gird = function (mesh, loader) {
     tornado.lowerSceneObjects.push(mesh);
+
+    materials.floorGrid.prototype = new THREE.ShaderMaterial();
+    mesh.material = new materials.floorGrid();
+
     mesh.visible = false;
     var PHY_Floor_girdMat = Physijs.createMaterial(
       mesh.material.clone(),
       .6, // medium friction
-      .3 // low restitution
+      .3  // low restitution
     );
 
     var PHY_Floor_gird = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_Floor_girdMat, 0 );
@@ -207,13 +214,6 @@ return function(){
   };
 
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
-    /*tornado.upperSceneDisposables.push(mesh);
-    mesh.material = mesh.material.materials[0];
-    mesh.material.morphTargets = true;
-    mesh.material.transparent = true;
-    mesh.material.map.wrapS = THREE.RepeatWrapping;
-    mesh.material.map.wrapT = THREE.RepeatWrapping;*/
-
     var noiseSize = 256;
     var size = noiseSize * noiseSize;
     var data = new Uint8Array( 4 * size );
@@ -243,7 +243,7 @@ return function(){
     tornado.animationHandlers.cloudsAnim.setMesh(mesh);
     tornado.animationHandlers.cloudsAnim.speed = 1;
     tornado.animationHandlers.cloudsAnim.play(0, 138);
-
+    tornado.upperSceneDisposables.push(mesh)
   };
 
   tornado.onLoadFunctions.House = function (mesh, loader) {
@@ -370,16 +370,12 @@ return function(){
         dir: new THREE.Vector3(0, -1, -1),
         speed: 0.5,
         fixedRot: {x: 0.6, y: 0, z: 0},
-        rot: {x: Math.PI / 20, y: Math.PI / 20, z: Math.PI / 20},
+        rot: { x: Math.PI / 20, y: Math.PI / 20, z: Math.PI / 20 },
         rndRotInit: true
     };
-
-    //tornado.assets.leavesPS = new particleSystem(leavesSettings);
-    //tornado.assets.leavesPS.Init(scene);
   };
 
   /***on unload functions***/
-
   tornado.onUnloadFunctions.resetFramerate = function(){
     animate.SetDefaultFramerate();
   };
@@ -426,9 +422,7 @@ return function(){
   }
 
   function revealLowerScene () {
-    _.each(tornado.lowerSceneObjects, function (o) {
-      o.visible = true;
-    });
+    _.each(tornado.lowerSceneObjects, function (o) { o.visible = true; });
 
   }
 
@@ -467,7 +461,7 @@ return function(){
     tweenUp.start();
   }
 
-  function fadeBack(){
+  function fadeBack() {
     var amount = tornado.assets.composer.passes[1].uniforms.amount,
         downTime = 800;
 
@@ -483,7 +477,7 @@ return function(){
     tween.start();
   }
 
-  function rareLightning(){
+  function rareLightning() {
     tornado.assets.lightningHandler.minBloom = tornado.bloomSettings.inside.min;
     tornado.assets.lightningHandler.maxBloom = tornado.bloomSettings.inside.max;
     tornado.assets.lightningHandler.minFramesToStrike = 200;
@@ -492,22 +486,12 @@ return function(){
 
   function revealTornado() {
     var revealTime = 150, twistTime = 150, randomOffsetMax = 75;
-
-    /*var tistTween = new TWEEN.Tween( tornado.assets.Hurricane_arm.rotation );
-    tistTween.to({ y: -Math.PI * 2 }, twistTime );
-    tistTween.repeat( Infinity );
-    tistTween.start();*/
     var twist = new aeTween(tornado.assets.Hurricane_arm.rotation);
     twist.to({ y: -Math.PI * 2 }, twistTime );
     twist.repeat( 3 );
     twist.start();
 
     _.each(tornado.assets.Hurricane_arms, function (arm) {
-      /*var amount = arm.material.uniforms.opacVal;
-      var revealTween = new TWEEN.Tween( amount );
-      revealTween.to( { value: 1 }, revealTime );
-      revealTween.delay(Math.random() * randomOffsetMax)
-      revealTween.start();*/
       var amount = arm.material.uniforms.opacVal
       var revealTween = new aeTween(amount);
       revealTween.to({value: 1}, revealTime);
@@ -586,10 +570,7 @@ return function(){
     animate.updater.addHandler(tornado.assets.lightningHandler);
   };
 
-
-
   function startPhysics(scene, loader) {
-
     var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3),
     above = new THREE.Vector3(-20, -408, 10),
     size = 0.1,
@@ -637,11 +618,6 @@ return function(){
 
   var windowWobble = function () {
     var crackTex = THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg');
-    /*crackTex.wrapS   = THREE.RepeatWrapping;
-    crackTex.wrapT   = THREE.RepeatWrapping;
-    crackTex.repeat.x = 128;
-    crackTex.repeat.y = 128;*/
-
 
     this.uniforms = THREE.UniformsUtils.merge( [
       THREE.UniformsLib[ "common" ],
@@ -652,10 +628,10 @@ return function(){
         "ambient"  : { type: "c", value: new THREE.Color( 0xffffff ) },
         "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
         "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) },
-        "crackTex"    : { type: "t", value: crackTex },
-        "time": {type: 'f', value: 0},
-        "freq": {type: 'f', value: 10},
-        "amp": {type: 'f', value: 0}
+        "crackTex" : { type: "t", value: crackTex },
+        "time"     : {type: 'f', value: 0},
+        "freq"     : {type: 'f', value: 10},
+        "amp"      : {type: 'f', value: 0}
       }
     ]);
 

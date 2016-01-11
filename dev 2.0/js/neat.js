@@ -1,13 +1,13 @@
 define(["scene", "events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio",
-  "callback", "composers"],
+  "callback", "composers", "text"],
 function(scene, events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback,
-  composers){
+  composers, text){
 
 return function(){
     var neat = new scene();
     neat.folderName = "neat";
     neat.addAssets( ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
-      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', 'Neat_intro_text',
+      'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', /*'Neat_intro_text',*/
       'Window_frame_main']);
     neat.addSounds(['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
       'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand']);
@@ -43,6 +43,31 @@ return function(){
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
 
     /***on start functions***/
+    neat.onStartFunctions.makeText = function(scene){
+       var string = "Neat and clean";
+       var settings = {
+         size: 20,
+         curveSegments: 4,
+         height: 0.1,
+         bevelEnabled: false,
+         style: "normal",
+         weight: "normal",
+         //font: "bank gothic"
+         font: "helvetiker"
+       };
+
+       var geom = text.Make(string, settings);
+       geom.computeBoundingBox();
+       geom.computeVertexNormals();
+
+       var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+       var mat = new THREE.MeshBasicMaterial({transparent: true, color: 0x4A7082});
+
+       neat.assets.outsideText = new THREE.Mesh(geom, mat);
+       neat.assets.outsideText.position.set(-399, 4330, 11000);
+       scene.add(neat.assets.outsideText);
+     };
+
     neat.onStartFunctions.storeScene = function(scene, loader){
       neat.assets.scene = scene;
       neat.assets.loader = loader;
