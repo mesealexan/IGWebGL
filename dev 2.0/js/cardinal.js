@@ -81,7 +81,7 @@ return function(){
         var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
         light3.position.set( 3615,2688,843 );
         scene.add( light3 );
-        
+
         var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
         directionalLight.position.set( 0, 1, -1 );
         scene.add( directionalLight );
@@ -129,8 +129,8 @@ return function(){
         bevelEnabled: false,
         style: "normal",
         weight: "normal",
-        //font: "bank gothic"
-        font: "helvetiker"
+        font: "bank gothic"
+        //font: "helvetiker"
       };
 
       var geom = text.Make(string, settings);
@@ -209,7 +209,7 @@ return function(){
 
     cardinal.onFinishLoadFunctions.applyComposer = function(scene){
       cardinal.assets.composer = new composers.Bloom_AdditiveColor({
-        str: 1.2,
+        str: 1.1,
         bok: {
           foc: 1.00,
           ape: 0.02

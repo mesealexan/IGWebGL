@@ -116,8 +116,7 @@ define(["three", "animate"], function(THREE, animate){
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
-                    specular: new THREE.Color("rgb(255,255,255)"),
-                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')
+                    specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'LoEGlass':
@@ -932,39 +931,36 @@ define(["three", "animate"], function(THREE, animate){
         }
     };
 
+  materials.outlineShader = function (set) {
+    this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
+    this.thickness = ( set.thickness !== undefined ) ? set.thickness : "1";
 
+    this.uniforms = {
+      color: { type: "c", value: this.color },
+      offset : {type: "f", value: this.thickness},
+      opacity : {type: "f", value: 1}
+    };
+    this.side = 1;
+    this.transparent = true;
+    this.vertexShader = [
+      "varying vec3 Vnormal;",
+      "uniform float offset;"+
+      "void main(){",
+          "Vnormal = normal;",
+          "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
+          "gl_Position = projectionMatrix * pos;",
+      "}"
+    ].join("\n");
 
-    materials.outlineShader = function (set) {
-      this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
-      this.thickness = ( set.thickness !== undefined ) ? set.thickness : "1";
-
-      this.uniforms = {
-        color: { type: "c", value: this.color },
-        offset : {type: "f", value: this.thickness},
-        opacity : {type: "f", value: 1}
-      };
-      this.side = 1;
-      this.transparent = true;
-      this.vertexShader = [
-        "varying vec3 Vnormal;",
-        "uniform float offset;"+
-        "void main(){",
-            "Vnormal = normal;",
-            "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
-            "gl_Position = projectionMatrix * pos;",
-        "}"
-      ].join("\n");
-
-      this.fragmentShader = [
-        "varying vec3 Vnormal;",
-        "uniform vec3 color;"+
-        "uniform float opacity;"+
-        "void main(){",
-          "gl_FragColor = vec4( color, opacity );"+
-        "}"
-      ].join("\n");
-    }
-
+    this.fragmentShader = [
+      "varying vec3 Vnormal;",
+      "uniform vec3 color;"+
+      "uniform float opacity;"+
+      "void main(){",
+        "gl_FragColor = vec4( color, opacity );"+
+      "}"
+    ].join("\n");
+  }
 
   materials.noiseMat =  function(tex){
     this.uniforms = {
@@ -1047,7 +1043,7 @@ define(["three", "animate"], function(THREE, animate){
     this.uniforms = {
     };
 
-    this.side = 2;
+    this.side = 0;
 
     this.vertexShader = [
       "varying vec2 vUv;",
@@ -1071,7 +1067,7 @@ define(["three", "animate"], function(THREE, animate){
         "float gridSize = 200.;",
         "float curX = sin(vUv.x * gridSize);",
         "float curY = sin(vUv.y * gridSize);",
-        "if(curX > 0.95 || curY > 0.95) finalCol = ORANGE;",
+        "if(curX > 0.99 || curY > 0.99) finalCol = ORANGE;",
         "else finalCol = GREY /** rand(vUv)*/;",
         "gl_FragColor = finalCol;",
       "}"

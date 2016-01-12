@@ -57,7 +57,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
             then = now - (delta % interval);
             animate.loader.scene.simulate(); // run physics
             TWEEN.update();
-            animate.updater.UpdateHandlers();
+            animate.updater.UpdateHandlers(systemDelta);
             animate.RenderFunction();
         }
     };

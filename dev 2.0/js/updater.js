@@ -9,9 +9,9 @@ define([], function(){
             if(index > -1) this.handlers.splice(index, 1);
         };
 
-        this.UpdateHandlers = function () {
+        this.UpdateHandlers = function (systemDelta) {
             for (var i = 0; i < this.handlers.length; i++)
-              this.handlers[i].update();
+              this.handlers[i].update(systemDelta);
         };
 
         this.clearAll = function() { this.handlers = []; };

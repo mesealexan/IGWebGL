@@ -1,12 +1,13 @@
-define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback"],
-    function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback){
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
+    function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
 
 return function(){
     var LoE = new scene();
     LoE.folderName = "LoE";
-    LoE.addAssets(['EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
-        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator']);
+    LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
     LoE.addSounds(['loe-factory-loop', 'loe-apply-coating']);
+    LoE.disposables = [];
 
     LoE.callbacks.introAnimDone = {
       sampleCall1: function(){ console.log("finished intro animation"); }
@@ -36,8 +37,9 @@ return function(){
         mixed_t = undefined; //background plane textures
 
     /***on start functions***/
-    LoE.onStartFunctions.storeScene = function(scene) {
+    LoE.onStartFunctions.storeScene = function(scene, loader) {
       LoE.assets.scene = scene;
+      LoE.assets.loader = loader;
     }
     LoE.onStartFunctions.addLights = function(scene){
         scene.add( new THREE.AmbientLight( 0x999999 ) );
@@ -62,6 +64,33 @@ return function(){
         cold_t = THREE.ImageUtils.loadTexture(folder + "cold.jpg");
         mixed_t = THREE.ImageUtils.loadTexture(folder + "mixed.jpg");
     };
+
+    LoE.onStartFunctions.makeText = function(scene){
+       var string = "LoE coating production line"; //Ē not supported with current font
+       var settings = {
+         size: 120,
+         curveSegments: 2,
+         height: 8,
+         bevelEnabled: false,
+         style: "normal",
+         weight: "normal",
+         font: "bank gothic"
+         //font: "helvetiker"
+       };
+
+       var geom = text.Make(string, settings);
+       geom.computeBoundingBox();
+       geom.computeVertexNormals();
+
+       var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+       var mat = new THREE.MeshBasicMaterial({transparent: true, color: 0x4A7082});
+
+       LoE.assets.text = new THREE.Mesh(geom, mat);
+       LoE.assets.text.rotation.x -= Math.PI / 2;
+       LoE.assets.text.position.set(-12226 + centerOffset, -337, 1039 );
+       LoE.disposables.push(LoE.assets.text);
+       scene.add(LoE.assets.text);
+     };
     /***end on start functions***/
 
     /***on load functions***/
@@ -85,6 +114,7 @@ return function(){
         mesh.rotateZ(-1, 2000, Infinity);
         LoE.assets.rotator = mesh;
         addParticles(LoE.assets.scene);
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.bck_1 = function(mesh){
@@ -129,6 +159,9 @@ return function(){
 
             mesh.add(newTambur_a);
             mesh.add(newTambur_b);
+
+            LoE.disposables.push(newTambur_a);
+            LoE.disposables.push(newTambur_b);
         }
         LoE.assets.tambur_b = mesh;
     };
@@ -139,6 +172,7 @@ return function(){
         var fixed_window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/fixed_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionHandler(mesh, fixed_window_animation));
         LoE.assets.fixed_glass = mesh;
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.mobile_glass = function(mesh, loader){
@@ -146,6 +180,7 @@ return function(){
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, mobile_window_animation));
         LoE.assets.mobile_glass = mesh;
         addSilverPlanes(loader);
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.window = function(mesh, loader){
@@ -266,6 +301,7 @@ return function(){
             case 498:
                 callback.go(LoE.callbacks.introAnimDone);
                 events.ToggleControls(true);
+                clearDisposables();
                 break;
         }
     }
@@ -274,6 +310,10 @@ return function(){
         var mat = LoE.assets.plane.material.materials[0];
         mat.transparent = true;
         mat.tweenOpacity(mat, 0, backgroundBlendTime);
+    }
+
+    function clearDisposables(){
+      _.each( LoE.disposables, function (d) { LoE.assets.loader.DisposeObject(d); });
     }
 
     function addSilverPlanes (loader) {

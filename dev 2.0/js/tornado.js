@@ -1,14 +1,14 @@
 define(["scene", "animate", "events", "animationHandler", "composers", "watch", "tween",
-  "materials", "underscore", "particleSystem", "aeTween"],
+  "materials", "underscore", "particleSystem", "aeTween", "text", "cloth"],
 function (scene, animate, events, animationHandler, composers, watch, tween,
-  materials, underscore, particleSystem, aeTween) {
+  materials, underscore, particleSystem, aeTween, text, cloth ) {
 
 return function(){
   var tornado = new scene();
   tornado.folderName = "tornado";
   tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
    "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
-   "House_windows", "GoodWeatherBadWeather"]);
+   "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow"/* ,"CardinalWindow"*/]);
    //scroll clouds
    tornado.cloudSpeed = 0.0002;
    tornado.slowMoCloudSpeed = 0.0001;
@@ -24,20 +24,23 @@ return function(){
    tornado.slowMoLightningTime = 200;
    //bloom
    tornado.bloomSettings = {
-     outside: {min: 0.8, max: 1.2},
+     outside: {min: 0., max: 1.2},
      inside: {min: 0.4, max: 1}
    };
    //upper scene aseets stored here for disposal
    tornado.upperSceneDisposables = [];
    tornado.lowerSceneObjects = [];
+   //crack window
+   crackCycleSpeed = 0.03;
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    /*tweenBloomDown();
+    tweenBloomDown();
     rareLightning();
-    loader.cameraHandler.frame = 250;
+    loader.cameraHandler.frame = 380;
     animate.SetCustomFramerate(30);
     cleanUpperScene();
     revealLowerScene();
+    events.ToggleControls(true);
     startPhysics(tornado.assets.scene, tornado.assets.loader);
     //startLightning();
     setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
@@ -45,11 +48,16 @@ return function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
     }, 2000);
-    throwBrick();*/
+    throwBrick();
     //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
   };
 
   /***on start functions***/
+  tornado.onStartFunctions.addButtons = function(){
+    tornado.buttons.cardinal.add();
+    tornado.buttons.ordinary.add();
+  };
+
   tornado.onStartFunctions.startLightning = function () {
     startLightning();
   };
@@ -82,44 +90,70 @@ return function(){
     windowWobble.prototype = new THREE.ShaderMaterial();
     var material = new windowWobble();
     tornado.assets.shatterWindowMaterial = material;
-    //animate.updater.addHandler(material);
-    var plane = new THREE.Mesh( geometry, material );
+    animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
+    animate.updater.addHandler({
+      update: function(){
+        geometry.normalsNeedUpdate = true;
+        geometry.verticesNeedUpdate = true;
+      }
+    });
+    var plane = new THREE.Mesh( geometry, tornado.assets.shatterWindowMaterial );
     plane.position.set(-6.95, -420.64, -3.37);
-    scene.add( plane );
+    //scene.add( plane );
   };
 
+  tornado.onStartFunctions.makeText = function(scene){
+     //var string1 = "Protection for when"; //Ē not supported with current font
+     //var string2 = "good weather goes bad";
+     var strings = ["Protection for when", "good weather goes bad"];
+
+     var settings = {
+       size: 15,
+       curveSegments: 2,
+       height: 1,
+       bevelEnabled: false,
+       style: "normal",
+       weight: "normal",
+			 bevelEnabled: true,
+			 bevelThickness: 0.1,
+			 bevelSize: 0.1,
+       font: "bank gothic"
+       //font: "helvetiker"
+     };
+
+     var material = new THREE.MeshBasicMaterial({color: 0x000000});
+     materials.outlineShader.prototype = new THREE.ShaderMaterial();
+     var outlineMaterial = new materials.outlineShader({
+       thickness: 1,
+       color: new THREE.Color("rgb(255,255,255)")
+     });
+     var mats = [material, outlineMaterial];
+     var meshes = [];
+
+     _.each(strings, function(s){
+       var geom = text.Make(s, settings);
+       geom.computeBoundingBox();
+       geom.computeVertexNormals();
+       var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+       var mesh = THREE.SceneUtils.createMultiMaterialObject(geom, mats);
+       mesh.centerOffset = centerOffset;
+       meshes.push(mesh);
+       tornado.upperSceneDisposables.push(mesh);
+     });
+
+     meshes[0].position.set(-37 + meshes[0].centerOffset, 180, 45 );
+     meshes[0].rotation.x -= Math.PI / 2;
+     meshes[0].add(meshes[1]);
+     meshes[1].position.y -= 20;
+     meshes[1].position.x += -meshes[0].centerOffset + meshes[1].centerOffset;
+     scene.add(meshes[0]);
+
+     var textPosTween = new aeTween(meshes[0].position);
+     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);
+     textPosTween.start();
+   };
+
   /***on load functions***/
-  tornado.onLoadFunctions.GoodWeatherBadWeather = function (mesh, loader) {
-    var material = new THREE.MeshBasicMaterial({color: 0x000000});
-    materials.outlineShader.prototype = new THREE.ShaderMaterial();
-    var outlineMaterial = new materials.outlineShader({
-      thickness: 1,
-      color: new THREE.Color("rgb(255,255,255)")
-    });
-    var mats = [material, outlineMaterial];
-    var multiMesh = THREE.SceneUtils.createMultiMaterialObject(mesh.geometry, mats);
-    loader.DisposeObject(mesh);
-    loader.scene.add(multiMesh);
-    tornado.upperSceneDisposables.push(multiMesh);
-
-    multiMesh.position.set(-37, 180, 45);
-
-    var textPosTween = new aeTween(multiMesh.position);
-    textPosTween.to({x: 60, z: 170}, 100);
-    textPosTween.start();
-  }
-
-  /*
-  tornado.onLoadFunctions.Wind_1 = function (mesh) {
-    tornado.animationHandlers.Wind_1 = prepareWind(mesh, 49)
-  }
-  tornado.onLoadFunctions.Wind_2 = function (mesh) {
-    tornado.animationHandlers.Wind_2 = prepareWind(mesh, 58)
-  }
-  tornado.onLoadFunctions.Wind_3 = function (mesh) {
-    tornado.animationHandlers.Wind_2 = prepareWind(mesh, 48)
-  }
-  */
 
   function prepareWind(mesh, to) {
     mesh.material.materials[0].morphTargets = true;
@@ -143,12 +177,64 @@ return function(){
     return ah;
   };
 
+  tornado.onLoadFunctions.OrdinaryWindow = function (mesh) {
+    var opac = 0.6;
 
+    /*mesh.geometry.computeVertexNormals();*/
+    mesh.geometry.computeFaceNormals();
+    mesh.geometry.computeMorphNormals();
+
+    tornado.assets.ordinaryWindow = mesh;
+    tornado.assets.ordinaryWindow.material = materials.setMaterials("cardinal", {name:"Glass"});
+    tornado.assets.ordinaryWindow.material.shading = THREE.FlatShading;
+    //tornado.assets.ordinaryWindow.material.wireframe = true;
+    tornado.assets.ordinaryWindow.material.maxOpacity = opac;
+    tornado.assets.ordinaryWindow.material.morphTargets = true;
+    tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = 1;
+
+    animate.updater.addHandler({
+      value: 0,
+      speed: 1,
+      speed: crackCycleSpeed,
+      update: function(){
+        this.value += this.speed;
+        tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = Math.abs(Math.sin(this.value));
+      }
+    });
+  }
+
+  tornado.onLoadFunctions.CardinalWindow = function (mesh) {
+    var opac = 0.6;
+    tornado.assets.cardinalWindow = mesh;
+    tornado.assets.cardinalWindow.material =
+    new THREE.MeshPhongMaterial({
+      color: new THREE.Color("rgb(255,255,255)"),
+      specular: new THREE.Color("rgb(255,255,255)"),
+      refractionRatio: 0.985,
+      reflectivity: 0.99,
+      shininess: 30,
+      transparent: true,
+      opacity: opac,
+      map: THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg')
+    });
+    tornado.assets.cardinalWindow.material.maxOpacity = opac;
+
+    tornado.assets.cardinalWindow.material.morphTargets = true;
+
+    animate.updater.addHandler({
+      value: 0,
+      speed: crackCycleSpeed,
+      update: function(){
+        this.value += this.speed;
+        tornado.assets.cardinalWindow.morphTargetInfluences[ 1 ] = Math.abs(Math.sin(this.value));
+      }
+    });
+  }
 
   tornado.onLoadFunctions.House_windows = function (mesh) {
     tornado.lowerSceneObjects.push(mesh);
     mesh.visible = false;
-      mesh.material = materials.setMaterials("cardinal", {name:"Glass"});
+    mesh.material.materials[0] = materials.setMaterials("cardinal", {name:"Glass"});
   }
 
   tornado.onLoadFunctions.Background_clouds = function (mesh) {
@@ -358,21 +444,45 @@ return function(){
     //tornado.assets.rainPS.Init(scene);
   };
 
-  tornado.onFinishLoadFunctions.addLeaves = function (scene) {
-    var leavesSettings = {
-        width: 50,
-        height: 50,
-        depth: 50,
-        num: 30,
-        size: {w: 0.5, h: 0.5},
-        mapNames: ["Leaf_1_diff", "Leaf_2_diff", "Leaf_3_diff"],
-        pos: new THREE.Vector3(0, -458, 40),
-        dir: new THREE.Vector3(0, -1, -1),
-        speed: 0.5,
-        fixedRot: {x: 0.6, y: 0, z: 0},
-        rot: { x: Math.PI / 20, y: Math.PI / 20, z: Math.PI / 20 },
-        rndRotInit: true
-    };
+  tornado.onFinishLoadFunctions.addDrape = function (scene) {
+      pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+			clothGeometry = new THREE.ParametricGeometry( clothFunction, 10, 10, true );
+			clothGeometry.dynamic = true;
+
+      var clothTexture = THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/drape.png');
+
+      var mesh = new THREE.Mesh(clothGeometry, new THREE.MeshPhongMaterial(
+        {
+          side: 1,
+          wireframe: false,
+          map: clothTexture,
+          transparent: false,
+          alphaTest: 0.7
+        }));
+
+      animate.updater.addHandler({
+        update: function(systemDelta){
+          //windStrength = Math.abs(Math.cos( systemDelta / 2000 ) * 120 + 40);
+          windStrength = 0;
+          windForce.set( 0, 0, -1 ).normalize().multiplyScalar( windStrength );
+          simulate(systemDelta);
+
+          var p = cloth.particles;
+
+          for ( var i = 0, il = p.length; i < il; i ++ )
+            clothGeometry.vertices[ i ].copy( p[ i ].position );
+
+          clothGeometry.computeFaceNormals();
+  				clothGeometry.computeVertexNormals();
+
+  				clothGeometry.normalsNeedUpdate = true;
+  				clothGeometry.verticesNeedUpdate = true;
+        }
+      });
+
+      mesh.position.set(-6.95, -420.64, -3.9);
+      mesh.scale.set(0.013, 0.01, 0.01)
+      scene.add(mesh);
   };
 
   /***on unload functions***/
@@ -387,7 +497,55 @@ return function(){
   };
 
   /***private functions***/
-  function reactToFrame(frame) {
+  tornado.buttons = {
+    cardinal: {
+        add: function(){
+            events.AddButton({text:"cardinal", function: tornado.states.setCardinal, id:"cardinalWindow"});
+        },
+        remove: function(){ events.RemoveElementByID("cardinalWindow"); }
+    },
+    ordinary: {
+        add: function(){
+            events.AddButton({text:"ordinary", function: tornado.states.setOrdinary, id:"ordinaryWindow"});
+        },
+        remove: function(){ events.RemoveElementByID("ordinaryWindow"); }
+    }
+  };
+
+  tornado.states = {
+    setCardinal: function(){
+      //on complete
+      var onComp = function(){
+        tornado.assets.ordinaryWindow.visible = false;
+        tornado.assets.cardinalWindow.visible = true;
+        tornado.states.tweenOpac(tornado.assets.cardinalWindow, tornado.assets.cardinalWindow.material.maxOpacity);
+      };
+      //opacity tween
+      tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, onComp);
+    }
+    ,
+    setOrdinary: function(){
+      //on complete
+      var onComp = function(){
+        tornado.assets.ordinaryWindow.visible = true;
+        tornado.assets.cardinalWindow.visible = false;
+        tornado.states.tweenOpac(tornado.assets.ordinaryWindow, tornado.assets.ordinaryWindow.material.maxOpacity);
+      };
+      //opacity tween
+      tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, onComp);
+    }
+    ,
+    tweenOpac: function(obj, val, onComp){
+      var tween = new aeTween(obj.material);
+      tween.to({opacity: val}, 20);
+      if(onComp)tween.onComplete = onComp;
+      tween.start();
+    }
+  };
+
+
+
+  function reactToFrame (frame) {
     switch (frame) {
       case 0:
         revealTornado();
@@ -415,7 +573,7 @@ return function(){
     }
   }
 
-  function cleanUpperScene() {
+  function cleanUpperScene () {
     _.each(tornado.upperSceneDisposables, function (d) {
       tornado.assets.loader.DisposeObject(d);
     });
@@ -426,7 +584,7 @@ return function(){
 
   }
 
-  function throwBrick() {
+  function throwBrick () {
     var startPos =  new THREE.Vector3(-6.95, -400.64, 100);
     var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
     var time = 6000;
@@ -439,11 +597,11 @@ return function(){
 
     var posTween = new TWEEN.Tween( cube.position );
     posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, time );
-    posTween.onComplete(function () {
+    posTween.onComplete (function () {
       cube.visible = false;
-      tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
-      animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
-    })
+      //tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
+      //animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
+    });
     posTween.start();
 
     var rotTween = new TWEEN.Tween( cube.rotation );
@@ -454,18 +612,21 @@ return function(){
 
   function fadeToWhite() {
     var amount = tornado.assets.composer.passes[1].uniforms.amount,
-        upTime = 1000;
+        upTime = 20;
 
-    var tweenUp = new TWEEN.Tween( amount );
+    /*var tweenUp = new TWEEN.Tween( amount );
     tweenUp.to( { value: 1 }, upTime );
+    tweenUp.start();*/
+    var tweenUp = new aeTween(amount);
+    tweenUp.to({value: 1}, upTime);
     tweenUp.start();
   }
 
   function fadeBack() {
     var amount = tornado.assets.composer.passes[1].uniforms.amount,
-        downTime = 800;
+        downTime = 20;
 
-    var tweenDown = new TWEEN.Tween( amount );
+    var tweenDown = new aeTween( amount );
     tweenDown.to( { value: 0 }, downTime );
     tweenDown.start();
   }
@@ -618,6 +779,8 @@ return function(){
 
   var windowWobble = function () {
     var crackTex = THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg');
+    var defines = {};
+    defines[ "USE_MAP" ] = "";
 
     this.uniforms = THREE.UniformsUtils.merge( [
       THREE.UniformsLib[ "common" ],
@@ -628,14 +791,17 @@ return function(){
         "ambient"  : { type: "c", value: new THREE.Color( 0xffffff ) },
         "emissive" : { type: "c", value: new THREE.Color( 0x000000 ) },
         "wrapRGB"  : { type: "v3", value: new THREE.Vector3( 1, 1, 1 ) },
+        "lightPosition"  : { type: "v3", value: new THREE.Vector3( 0.5, 0.2, 1.0 ) },
         "crackTex" : { type: "t", value: crackTex },
         "time"     : {type: 'f', value: 0},
-        "freq"     : {type: 'f', value: 10},
-        "amp"      : {type: 'f', value: 0}
+        "freq"     : {type: 'f', value: 3},
+        "amp"      : {type: 'f', value: 1.35},
+        "frame"    : {type: 'f', value: 0.075}//,
+        //"defines"  : defines
       }
     ]);
 
-    //this.defines = {USE_MAP: true};
+    //this.defines = defines;
     this.vertexShader = vSh();
     this.fragmentShader = fSh();
     this.side = 0;
@@ -643,23 +809,31 @@ return function(){
     this.envMap = materials.cloudCube;
     this.transparent = true;
     this.uniforms.opacity.value = 0.6;
+    //this.uniforms.combine = THREE.MixOperation;
+    //this.wireframe = true;
     //this.uniforms.map.value = crackTex;
     this.lights = true;
-    this.speed = 50;
+    this.speed = 0.1;
     this.frame = 0;
 
-    this.update = function() { this.uniforms.time.value += this.speed; };
+    this.update = function() {
+      //this.uniforms.time.value += this.speed;
+    };
 
     function vSh() {
       return [
   			"#define LAMBERT",
   			"varying vec3 vLightFront;",
         "varying float zPos;",
+        "varying vec3 vNormal;",
+  			"varying vec3 vPosition;",
+  			//"varying vec2 vUv;",
   			"#ifdef DOUBLE_SIDED",
   			"varying vec3 vLightBack;",
   			"#endif",
         "uniform float time;",
         "uniform float freq;",
+        "uniform float frame;",
         "uniform float amp;",
   			THREE.ShaderChunk[ "common" ],
   			THREE.ShaderChunk[ "map_pars_vertex" ],
@@ -673,7 +847,6 @@ return function(){
   			THREE.ShaderChunk[ "logdepthbuf_pars_vertex" ],
 
   			"void main() {",
-
   				THREE.ShaderChunk[ "map_vertex" ],
   				THREE.ShaderChunk[ "lightmap_vertex" ],
   				THREE.ShaderChunk[ "color_vertex" ],
@@ -692,12 +865,19 @@ return function(){
   				THREE.ShaderChunk[ "envmap_vertex" ],
   				THREE.ShaderChunk[ "lights_lambert_vertex" ],
   				THREE.ShaderChunk[ "shadowmap_vertex" ],
-          /*"float radius = length(position);",
-          "vec3 offsetPos = vec3(position.x, position.y, amp * sin(radius * freq + time));",
+
+          "float radius = distance(vec2(0.5, 0.5), uv);",
+          //"vec3 offsetPos = vec3(position.x, position.y, amp * sin( time + radius * freq) ) ;",
+          "vec3 offsetPos = vec3(position.x, position.y, smoothstep(-1., 0., amp*(sin(time) + ( radius + 0.3 ))) - 1.) ;",
+          "float f = frame;",
+          "if(uv.x > 1. - f || uv.x < f || uv.y > 1. - f || uv.y < f) offsetPos = position;",
           "vec4 pos = modelViewMatrix * vec4(offsetPos, 1.0);",
           "zPos = offsetPos.z;",
-          "gl_Position = projectionMatrix * pos;",*/
-          "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+          //"vUv = uv;",
+          "vNormal = normal;",
+          "vPosition = offsetPos;",
+          "gl_Position = projectionMatrix * pos;",
+           //"gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
   			"}"
   		].join("\n");
     }
@@ -707,8 +887,13 @@ return function(){
         "uniform sampler2D crackTex;",
   			"uniform vec3 diffuse;",
   			"uniform vec3 emissive;",
+        "uniform vec3 lightPosition;",
+        "uniform mat4 modelMatrix;",
   			"uniform float opacity;",
         "varying float zPos;",
+        //"varying vec2 vUv;",
+        "varying vec3 vNormal;",
+  			"varying vec3 vPosition;",
 
   			"varying vec3 vLightFront;",
 
@@ -768,12 +953,16 @@ return function(){
   			  //"gl_FragColor = vec4(outgoingLight, diffuseColor.a );",
           //"gl_FragColor = texture2D( crackTex, vUv );",
           //"vec4 texel = texture2D( crackTex, vUv );",
+          //"float dProd = dot(vNormal, vec3(vec4( lightPosition, 1.0) * modelMatrix));",
+
+          //"vec3 lightVectorW = normalize(vec3( vec4( lightPosition, 1.0 ) * modelMatrix ) - vPosition);",
+          //"float ndl = max(0.5, dot(vNormal, lightVectorW));",
           "gl_FragColor = vec4(outgoingLight, diffuseColor.a);",
   		"}"
   		].join("\n");
       }
     };
     return tornado;
+
 }
-//  return tornado;
 });

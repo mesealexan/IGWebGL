@@ -90,6 +90,7 @@ function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE
           });
           //checkCameraAnimationState(_this, animationComponent);
           //animationComponent.Animate();
+          animationComponent.ResizeWindow();
           loader.LoadingScreen.hide();
           _this.loadingScene = false;
         };

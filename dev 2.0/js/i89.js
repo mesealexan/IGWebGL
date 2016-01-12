@@ -83,8 +83,8 @@ return function(){
         bevelEnabled: false,
         style: "normal",
         weight: "normal",
-        //font: "bank gothic"
-        font: "helvetiker"
+        font: "bank gothic"
+        //font: "helvetiker"
       };
 
       var geom = text.Make(string, settings);
@@ -96,7 +96,7 @@ return function(){
 
       i89.assets.outsideText = new THREE.Mesh(geom, mat);
       i89.assets.outsideText.rotateY(-Math.PI / 2);
-      i89.assets.outsideText.position.set(-679, 614, 160);
+      i89.assets.outsideText.position.set(-679, 614, 135);
       scene.add(i89.assets.outsideText);
     };
     /***end on start functions***/

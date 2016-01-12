@@ -52,8 +52,8 @@ return function(){
          bevelEnabled: false,
          style: "normal",
          weight: "normal",
-         //font: "bank gothic"
-         font: "helvetiker"
+         font: "bank gothic"
+         //font: "helvetiker"
        };
 
        var geom = text.Make(string, settings);
