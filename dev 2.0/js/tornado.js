@@ -453,7 +453,7 @@ return function(){
 
       var mesh = new THREE.Mesh(clothGeometry, new THREE.MeshPhongMaterial(
         {
-          side: 1,
+          side: 2,
           wireframe: false,
           map: clothTexture,
           transparent: false,
@@ -462,8 +462,8 @@ return function(){
 
       animate.updater.addHandler({
         update: function(systemDelta){
-          //windStrength = Math.abs(Math.cos( systemDelta / 2000 ) * 120 + 40);
-          windStrength = 0;
+          windStrength = Math.abs(Math.cos( systemDelta / 2000 ) * 120 + 40);
+          //windStrength = 0;
           windForce.set( 0, 0, -1 ).normalize().multiplyScalar( windStrength );
           simulate(systemDelta);
 
