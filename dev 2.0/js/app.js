@@ -35,15 +35,15 @@ require.config({
             exports: "THREE",
             tween: "TWEEN",
             watch: "watch"
-        },
+        }/*,
         cloth: {
             exports: "cloth",
             deps: ["three"]
-        }
+        }*/
     }
 });
 
 require(["main"], function(main){
     var scenes = ["cardinal", "i89", "LoE", "neat", "sound", "tornado"];
-    main.Start("webGL", scenes[5]);
+    main.Start("webGL", scenes[0]);
 });

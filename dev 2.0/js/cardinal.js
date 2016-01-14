@@ -70,20 +70,20 @@ return function(){
         scene.add( new THREE.AmbientLight( 0x333333 ) );
         scene.fog = new THREE.Fog(0x13161d, 6000, 8000);
 
-        var light1 = new THREE.PointLight( 0xffffff, 1, 10000 );
+        var light1 = new THREE.PointLight( 0xffffff, 1, 5000 );
         light1.position.set( -2929, 2686, 938 );
         scene.add( light1 );
 
         var light2 = new THREE.PointLight( 0xffffff, 1, 10000 );
         light2.position.set( 345,3562,-4050 );
-        scene.add( light2 );
+        //scene.add( light2 );
 
         var light3 = new THREE.PointLight( 0xffffff, 1, 10000 );
         light3.position.set( 3615,2688,843 );
-        scene.add( light3 );
+        //scene.add( light3 );
 
-        var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-        directionalLight.position.set( 0, 1, -1 );
+        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1. );
+        directionalLight.position.set( 1000, 1000, 1000 );
         scene.add( directionalLight );
     };
 
@@ -123,7 +123,7 @@ return function(){
     cardinal.onStartFunctions.makeText = function(scene){
       var string = "Leap forward 20 years.";
       var settings = {
-        size: 0.3,
+        size: 10,
         curveSegments: 4,
         height: 0.1,
         bevelEnabled: false,
@@ -141,7 +141,7 @@ return function(){
       var mat = new THREE.MeshBasicMaterial({transparent: true});
 
       cardinal.assets.introText = new THREE.Mesh(geom, mat);
-      cardinal.assets.introText.position.set(centerOffset, 0, -10);
+      cardinal.assets.introText.position.set(centerOffset, 0, -500);
       animate.camera.add(cardinal.assets.introText);
     };
     /***end on start functions***/
@@ -176,7 +176,14 @@ return function(){
     /***end on load functions***/
 
     /***on finish functions***/
+    cardinal.onFinishLoadFunctions.increaseCamNear = function(){
+        animate.camera.far = 6000;
+        animate.camera.near = 100;
+        animate.camera.updateProjectionMatrix();
+    };
+
     cardinal.onFinishLoadFunctions.playCamera = function(scene, loader) {
+
       var firstFrame = loader.cameraHandler.Animation.frames[1];
       loader.cameraHandler.play(
         cameraAnimations.animation_1.from,
@@ -184,10 +191,10 @@ return function(){
       );
 
       function onCompleteFirstPlay(){
-          animate.camera.translateY( 2500 );
+          animate.camera.translateY( 100 );
           var newUp = loader.cameraHandler.modifyCameraUp(firstFrame.rollAngle);
           animate.camera.up.set(newUp.x, newUp.y, newUp.z);
-          loader.cameraHandler.tween(0, 0.5, onCompleteTween, TWEEN.Easing.Cubic.In);
+          loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
           tweenBloomDown();
       }
 
@@ -209,10 +216,10 @@ return function(){
 
     cardinal.onFinishLoadFunctions.applyComposer = function(scene){
       cardinal.assets.composer = new composers.Bloom_AdditiveColor({
-        str: 1.1,
+        str: .1,
         bok: {
           foc: 1.00,
-          ape: 0.02
+          ape: 0.01
         }
       });
       animate.SetCustomRenderFunction( function(){ cardinal.assets.composer.render(); } );
@@ -242,6 +249,9 @@ return function(){
         events.ToggleControls(false);
     };
     /***end on finish functions***/
+    cardinal.onUnloadFunctions.resetCam = function(){
+      animate.SetCameraDelaultValues();
+    };
 
     cardinal.onUnloadFunctions.removeFog = function(scene) {
       scene.fog = undefined;
@@ -555,8 +565,8 @@ return function(){
     function tweenBloomDown() {
       var amount = cardinal.assets.composer.passes[2].copyUniforms.opacity;
       var tween = new TWEEN.Tween( amount );
-      tween.to( { value: 0 }, 4500 );
-      tween.start();
+      tween.to( { value: 0 }, 100 );
+      //tween.start();
     }
     return cardinal;
   }

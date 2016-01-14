@@ -196,10 +196,10 @@ return function(){
     /***on finish functions***/
     neat.onFinishLoadFunctions.applyComposer = function(scene){
       neat.assets.composer = new composers.Bloom_AdditiveColor({
-        str: 0.3,
+        str: 0.1,
         bok: {
           foc: 1,
-          ape: 0.01
+          ape: 0.005
         }
       });
       animate.SetCustomRenderFunction( function(){ neat.assets.composer.render(); } );
@@ -256,9 +256,8 @@ return function(){
     };
 
     /***on unload functions***/
-    neat.onUnloadFunctions.resetCamNear = function(){
-        animate.camera.near = 1;
-        animate.camera.updateProjectionMatrix();
+    neat.onUnloadFunctions.resetCam = function(){
+        animate.SetCameraDelaultValues();
     };
 
     neat.onUnloadFunctions.stopTimeouts = function(){

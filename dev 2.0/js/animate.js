@@ -91,6 +91,12 @@ define(["underscore", "updater", "tween", "EffectComposer",
       animate.RenderFunction = fun;
     };
 
+    animate.SetCameraDelaultValues = function(){
+      animate.camera.near = animate.camera.defaultNear;
+      animate.camera.far = animate.camera.defaultFar;
+      animate.camera.updateProjectionMatrix();
+    };
+
     animate.SetCustomFramerate = function (f) {
       animate.fps = f;
       interval = 1000 / animate.fps

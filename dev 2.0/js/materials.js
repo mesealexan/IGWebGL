@@ -12,7 +12,7 @@ define(["three", "animate"], function(THREE, animate){
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
-        materials.cloudCube = textureCube;
+        //materials.cloudCube = textureCube;
     }
     ,
     makeCloudTextureCube: function(mediaFolderUrl){
@@ -22,7 +22,7 @@ define(["three", "animate"], function(THREE, animate){
         var urls = [];
         for (var a = 0; a < 6; a++)
         urls.push(imagePrefix + imageSuffix);
-        cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+        materials.cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }
   };
 
@@ -473,9 +473,9 @@ define(["three", "animate"], function(THREE, animate){
             case 'cardinaldesicant':
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(198,204,151)"),
-                    ambient: new THREE.Color("rgb(198,204,151)"),
-                    transparent: true,
-                    opacity: 0.75
+                    ambient: new THREE.Color("rgb(198,204,151)")//,
+                    //transparent: true,
+                    //opacity: 0.75
 
                 });
                 break;
@@ -499,7 +499,7 @@ define(["three", "animate"], function(THREE, animate){
                     ambient: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
                     //vertexColors: THREE.VertexColors,
-                    envMap: cloudCube,
+                    envMap: materials.cloudCube,
                     refractionRatio: 0.985,
                     reflectivity: 0.99,
                     shininess: 30,
@@ -511,7 +511,6 @@ define(["three", "animate"], function(THREE, animate){
                 material = extractMaterialFromJSON(folderName, material);
                 break;
         }
-
         material.name = materialName;
         material.defaultEmissive = material.emissive;
         material.maxOpacity = material.opacity;

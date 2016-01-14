@@ -9,6 +9,12 @@ define([], function(){
             if(index > -1) this.handlers.splice(index, 1);
         };
 
+        this.returnHandlerIndex = function(h){
+            var index = this.handlers.indexOf(h);
+            if(index > -1) return index;
+            else return false;
+        };
+
         this.UpdateHandlers = function (systemDelta) {
             for (var i = 0; i < this.handlers.length; i++)
               this.handlers[i].update(systemDelta);

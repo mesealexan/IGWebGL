@@ -8,10 +8,10 @@ return function(){
   tornado.folderName = "tornado";
   tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
    "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
-   "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow"/* ,"CardinalWindow"*/]);
+   "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow" ,"CardinalWindow"]);
    //scroll clouds
-   tornado.cloudSpeed = 0.0002;
-   tornado.slowMoCloudSpeed = 0.0001;
+   tornado.cloudSpeed = 0.0001;
+   tornado.slowMoCloudSpeed = 0.00005;
    //gravity
    tornado.gravity = new THREE.Vector3(0, -15, -15 );
    tornado.slowMoGravity = new THREE.Vector3(0, -1, -1 );
@@ -31,7 +31,7 @@ return function(){
    tornado.upperSceneDisposables = [];
    tornado.lowerSceneObjects = [];
    //crack window
-   crackCycleSpeed = 0.03;
+   crackCycleSpeed = 0.1;
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
     tweenBloomDown();
@@ -48,7 +48,7 @@ return function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
     }, 2000);
-    throwBrick();
+    //throwBrick();
     //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
   };
 
@@ -56,6 +56,8 @@ return function(){
   tornado.onStartFunctions.addButtons = function(){
     tornado.buttons.cardinal.add();
     tornado.buttons.ordinary.add();
+    tornado.buttons.wind.add();
+    tornado.buttons.reset.add();
   };
 
   tornado.onStartFunctions.startLightning = function () {
@@ -178,63 +180,95 @@ return function(){
   };
 
   tornado.onLoadFunctions.OrdinaryWindow = function (mesh) {
+    mesh.visible = false;
     var opac = 0.6;
 
-    /*mesh.geometry.computeVertexNormals();*/
     mesh.geometry.computeFaceNormals();
     mesh.geometry.computeMorphNormals();
 
     tornado.assets.ordinaryWindow = mesh;
+
+    tornado.assets.envMap = materials.cloudCube;
     tornado.assets.ordinaryWindow.material = materials.setMaterials("cardinal", {name:"Glass"});
     tornado.assets.ordinaryWindow.material.shading = THREE.FlatShading;
-    //tornado.assets.ordinaryWindow.material.wireframe = true;
     tornado.assets.ordinaryWindow.material.maxOpacity = opac;
+    tornado.assets.ordinaryWindow.material.opacity = 0;
+    tornado.assets.ordinaryWindow.material.envMap = materials.cloudCube;
     tornado.assets.ordinaryWindow.material.morphTargets = true;
-    tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = 1;
 
-    animate.updater.addHandler({
-      value: 0,
-      speed: 1,
-      speed: crackCycleSpeed,
-      update: function(){
-        this.value += this.speed;
-        tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = Math.abs(Math.sin(this.value));
-      }
-    });
+    tornado.assets.ordinaryWindow.break = function(){
+      animate.updater.addHandler({
+        speed: crackCycleSpeed,
+        update: function(){
+          if (tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] < 0) animate.updater.removeHandler(this);
+            tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] -= this.speed;
+        }
+      });
+    };
+
+    tornado.assets.ordinaryWindow.reset = function(){
+      tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = 1;
+    };
   }
 
   tornado.onLoadFunctions.CardinalWindow = function (mesh) {
     var opac = 0.6;
     tornado.assets.cardinalWindow = mesh;
+    tornado.assets.cardinalWindow.crackMap =
+      THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg');
+      tornado.assets.cardinalWindow.specularMap =
+        THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/cracked_glass_specular.jpg');
     tornado.assets.cardinalWindow.material =
-    new THREE.MeshPhongMaterial({
-      color: new THREE.Color("rgb(255,255,255)"),
-      specular: new THREE.Color("rgb(255,255,255)"),
-      refractionRatio: 0.985,
-      reflectivity: 0.99,
-      shininess: 30,
-      transparent: true,
-      opacity: opac,
-      map: THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/crack.jpg')
-    });
+      new THREE.MeshPhongMaterial({
+        color: new THREE.Color("rgb(255,255,255)"),
+        specular: new THREE.Color("rgb(255,255,255)"),
+        refractionRatio: 0.985,
+        reflectivity: 0.99,
+        bumpScale: 1,
+        transparent: true,
+        opacity: opac,
+        envMap: materials.cloudCube
+      });
     tornado.assets.cardinalWindow.material.maxOpacity = opac;
-
     tornado.assets.cardinalWindow.material.morphTargets = true;
-
-    animate.updater.addHandler({
+    tornado.assets.cardinalWindHandler = {
       value: 0,
       speed: crackCycleSpeed,
       update: function(){
         this.value += this.speed;
         tornado.assets.cardinalWindow.morphTargetInfluences[ 1 ] = Math.abs(Math.sin(this.value));
+        //tornado.assets.cardinalWindow.geometry.computeFaceNormals();
       }
-    });
+    };
+
+    tornado.assets.cardinalWindow.wind = function(){
+      if(animate.updater.returnHandlerIndex(tornado.assets.cardinalWindHandler) == false)
+        animate.updater.addHandler(tornado.assets.cardinalWindHandler);
+    };
+
+    tornado.assets.cardinalWindow.crack = function(){
+      tornado.assets.cardinalWindow.material.bumpMap = tornado.assets.cardinalWindow.crackMap;
+      tornado.assets.cardinalWindow.material.specularMap = tornado.assets.cardinalWindow.specularMap;
+      tornado.assets.cardinalWindow.material.needsUpdate = true;
+    };
+
+    tornado.assets.cardinalWindow.reset = function(){
+      tornado.assets.cardinalWindow.material.bumpMap = undefined;
+      tornado.assets.cardinalWindow.material.specularMap = undefined;
+      tornado.assets.cardinalWindow.material.needsUpdate = true;
+      animate.updater.removeHandler(tornado.assets.cardinalWindHandler);
+      tornado.assets.cardinalWindow.morphTargetInfluences[ 1 ] = 0;
+      tornado.assets.cardinalWindHandler.value = 0;
+    };
   }
 
   tornado.onLoadFunctions.House_windows = function (mesh) {
     tornado.lowerSceneObjects.push(mesh);
     mesh.visible = false;
     mesh.material.materials[0] = materials.setMaterials("cardinal", {name:"Glass"});
+    mesh.material.materials[0].opacity = 0.6;
+    mesh.material.materials[0].envMap = materials.cloudCube;
+    mesh.material.materials[0].needsUpdate = true;
   }
 
   tornado.onLoadFunctions.Background_clouds = function (mesh) {
@@ -300,7 +334,7 @@ return function(){
   };
 
   tornado.onLoadFunctions.Earth_clouds = function (mesh) {
-    var noiseSize = 256;
+    var noiseSize = 1024;
     var size = noiseSize * noiseSize;
     var data = new Uint8Array( 4 * size );
     for ( var i = 0; i < size * 4; i ++ ) {
@@ -431,7 +465,7 @@ return function(){
         width: 50,
         height: 50,
         depth: 50,
-        num: 300,
+        num: 100,
         size: {w: 0.1, h: 0.8},
         mapNames: ["water_drop"],
         pos: new THREE.Vector3(0, -408, 40),
@@ -445,8 +479,9 @@ return function(){
   };
 
   tornado.onFinishLoadFunctions.addDrape = function (scene) {
-      pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
-			clothGeometry = new THREE.ParametricGeometry( clothFunction, 10, 10, true );
+      tornado.assets.clothSim = new cloth();
+      tornado.assets.clothSim.pins = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+			clothGeometry = new THREE.ParametricGeometry( tornado.assets.clothSim.clothFunction, 10, 10, true );
 			clothGeometry.dynamic = true;
 
       var clothTexture = THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/drape.png');
@@ -460,29 +495,48 @@ return function(){
           alphaTest: 0.7
         }));
 
-      animate.updater.addHandler({
-        update: function(systemDelta){
-          windStrength = Math.abs(Math.cos( systemDelta / 2000 ) * 120 + 40);
-          //windStrength = 0;
-          windForce.set( 0, 0, -1 ).normalize().multiplyScalar( windStrength );
-          simulate(systemDelta);
+        tornado.assets.windHandler = {
+          maxFrame: undefined,
+          curFrame: 0,
+          update: function(systemDelta){
+            if(tornado.assets.clothSim.windOn == true ||
+              (this.maxFrame !== undefined && this.curFrame++ < this.maxFrame)){
+              tornado.assets.clothSim.SetWindStrength(Math.abs(Math.cos( systemDelta / 2000 )
+                * tornado.assets.clothSim.windAmplify + 40));
+              tornado.assets.clothSim.windForce.set( 0, 0, -1 ).normalize().
+              multiplyScalar( tornado.assets.clothSim.windStrength );
+            }
+            else {
+              tornado.assets.clothSim.SetWindStrength(0);
+              tornado.assets.clothSim.windForce.set( 0, 0, 0 ).normalize().
+              multiplyScalar( tornado.assets.clothSim.windStrength );
+            }
 
-          var p = cloth.particles;
+            /*if(this.maxFrame !== undefined && this.curFrame++ < this.maxFrame)
+              tornado.assets.clothSim.windOn = true;
+            else tornado.assets.clothSim.windOn = false;*/
 
-          for ( var i = 0, il = p.length; i < il; i ++ )
-            clothGeometry.vertices[ i ].copy( p[ i ].position );
+            tornado.assets.clothSim.simulate(systemDelta);
 
-          clothGeometry.computeFaceNormals();
-  				clothGeometry.computeVertexNormals();
+            var p = tornado.assets.clothSim.cloth.particles;
 
-  				clothGeometry.normalsNeedUpdate = true;
-  				clothGeometry.verticesNeedUpdate = true;
-        }
-      });
+            for ( var i = 0, il = p.length; i < il; i ++ )
+              clothGeometry.vertices[ i ].copy( p[ i ].position );
+
+            clothGeometry.computeFaceNormals();
+    				clothGeometry.computeVertexNormals();
+
+    				clothGeometry.normalsNeedUpdate = true;
+    				clothGeometry.verticesNeedUpdate = true;
+          }
+        };
+
+      animate.updater.addHandler(tornado.assets.windHandler);
 
       mesh.position.set(-6.95, -420.64, -3.9);
       mesh.scale.set(0.013, 0.01, 0.01)
       scene.add(mesh);
+      tornado.lowerSceneObjects.push(mesh);
   };
 
   /***on unload functions***/
@@ -509,30 +563,120 @@ return function(){
             events.AddButton({text:"ordinary", function: tornado.states.setOrdinary, id:"ordinaryWindow"});
         },
         remove: function(){ events.RemoveElementByID("ordinaryWindow"); }
+    },
+    wind: {
+        add: function(){
+            events.AddButton({text:"wind", function: tornado.states.windCycling, id:"wind"});
+        },
+        remove: function(){ events.RemoveElementByID("wind"); }
+    },
+    reset: {
+        add: function(){
+            events.AddButton({text:"reset", function: tornado.states.reset, id:"reset"});
+        },
+        remove: function(){ events.RemoveElementByID("reset"); }
     }
+
   };
 
   tornado.states = {
+    curWindow: undefined,
+    /*********************cardinal*********************/
     setCardinal: function(){
-      //on complete
-      var onComp = function(){
+      if(tornado.states.curWindow == "cardinal") return;
+      tornado.states.curWindow = "cardinal";
+
+      var cardinalIn = function(){
+        var onBrickComp = function(){
+          tornado.assets.cardinalWindow.crack();
+          //tornado.assets.cardinalWindow.wind();
+        }
+        tornado.assets.clothSim.windOn = false;
+        throwBrick(onBrickComp);
+      }
+
+      var ordinaryOut = function(){
         tornado.assets.ordinaryWindow.visible = false;
         tornado.assets.cardinalWindow.visible = true;
-        tornado.states.tweenOpac(tornado.assets.cardinalWindow, tornado.assets.cardinalWindow.material.maxOpacity);
+        tornado.states.tweenOpac(
+          tornado.assets.cardinalWindow,
+          tornado.assets.cardinalWindow.material.maxOpacity,
+          cardinalIn);
       };
       //opacity tween
-      tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, onComp);
+      tornado.assets.clothSim.windOn = false;
+      tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, ordinaryOut);
     }
     ,
+    /*********************ordinary*********************/
     setOrdinary: function(){
+      if(tornado.states.curWindow == "ordinary") return;
+      tornado.states.curWindow = "ordinary";
+
+      var ordinaryIn = function(){
+        var onBrickComp = function(){
+          tornado.assets.ordinaryWindow.break();
+          tornado.assets.clothSim.windAmplify = 300;
+          animate.updater.addHandler({
+            update: function(){
+              if(tornado.assets.clothSim.windAmplify < 0) {
+                tornado.assets.clothSim.windOn = false;
+                animate.updater.removeHandler(this);
+              }
+              tornado.assets.clothSim.windAmplify -= 2;
+            }
+          });
+          //tornado.assets.windHandler.maxFrame = 100;
+          tornado.assets.clothSim.windOn = true;
+        }
+
+        tornado.assets.cardinalWindow.reset();
+        tornado.assets.windHandler.curFrame = 0;
+        tornado.assets.windHandler.maxFrame = undefined;
+        throwBrick(onBrickComp);
+      }
       //on complete
-      var onComp = function(){
+      var cardinalOut = function(){
+        tornado.assets.ordinaryWindow.reset();
         tornado.assets.ordinaryWindow.visible = true;
         tornado.assets.cardinalWindow.visible = false;
-        tornado.states.tweenOpac(tornado.assets.ordinaryWindow, tornado.assets.ordinaryWindow.material.maxOpacity);
+        tornado.states.tweenOpac(
+          tornado.assets.ordinaryWindow,
+          tornado.assets.ordinaryWindow.material.maxOpacity,
+          ordinaryIn
+        );
       };
       //opacity tween
-      tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, onComp);
+      tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, cardinalOut);
+    }
+    ,
+    windCycling: function(){
+      if(tornado.states.curWindow == "cardinal")
+        tornado.assets.cardinalWindow.wind();
+      else if(tornado.states.curWindow == "ordinary"){
+        tornado.assets.clothSim.windAmplify = 120;
+        tornado.assets.clothSim.windOn = true;
+      }
+    }
+    ,
+    reset: function(){
+      if(tornado.states.curWindow == "cardinal"){
+        var tweenBack = function(){
+          tornado.assets.cardinalWindow.reset();
+          tornado.states.tweenOpac(tornado.assets.cardinalWindow, tornado.assets.cardinalWindow.material.maxOpacity);
+        };
+        tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, tweenBack);
+      }
+      else if(tornado.states.curWindow == "ordinary"){
+        var tweenBack = function(){
+          tornado.assets.ordinaryWindow.reset();
+          tornado.states.tweenOpac(tornado.assets.ordinaryWindow, tornado.assets.ordinaryWindow.material.maxOpacity);
+        };
+        tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, tweenBack);
+      }
+      tornado.states.curWindow = undefined;
+      tornado.assets.clothSim.windAmplify = 0;
+      tornado.assets.clothSim.windOn = false;
     }
     ,
     tweenOpac: function(obj, val, onComp){
@@ -542,8 +686,6 @@ return function(){
       tween.start();
     }
   };
-
-
 
   function reactToFrame (frame) {
     switch (frame) {
@@ -567,7 +709,7 @@ return function(){
         //triggerSlowMo();
         break;
       case 280:
-        throwBrick();
+        //throwBrick();
         events.ToggleControls(true);
         break;
     }
@@ -584,10 +726,10 @@ return function(){
 
   }
 
-  function throwBrick () {
-    var startPos =  new THREE.Vector3(-6.95, -400.64, 100);
+  function throwBrick (onComp) {
+    var startPos =  new THREE.Vector3(-6.95, -420.64, 10);
     var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
-    var time = 6000;
+    var time = 1000;
 
     var geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.3 );
     var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
@@ -599,6 +741,7 @@ return function(){
     posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, time );
     posTween.onComplete (function () {
       cube.visible = false;
+      if(onComp)onComp();
       //tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
       //animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
     });

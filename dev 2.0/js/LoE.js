@@ -1,5 +1,7 @@
-define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
-    function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text",
+  "underscore"],
+function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text,
+  underscore){
 
 return function(){
     var LoE = new scene();
@@ -41,6 +43,7 @@ return function(){
       LoE.assets.scene = scene;
       LoE.assets.loader = loader;
     }
+
     LoE.onStartFunctions.addLights = function(scene){
         scene.add( new THREE.AmbientLight( 0x999999 ) );
 
@@ -393,17 +396,19 @@ return function(){
                 "uniform float discard_f;" +
                 "uniform float hasSecondary;" +
                 "void main(){" +
-                "float color = 0.0;" +
-                "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
-                "color = ((vUv.x * size) + maxColor) + start;" +
-                "if (hasSecondary == 1.0) {" +
-                "if (color >= discard_f + maxColor) discard;" +
-                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv)) + " +
-                "texture2D(secondary_t, vUvInv);" +
-                "else gl_FragColor = texture2D(secondary_t, vUvInv);}" +
-                "else {" +
-                "if (color >= discard_f + maxColor) discard;" +
-                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}}"
+                  "float color = 0.0;" +
+                  "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
+                  "color = ((vUv.x * size) + maxColor) + start;" +
+                  "if (hasSecondary == 1.0) {" +
+                    "if (color >= discard_f + maxColor) discard;" +
+                    "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv))+"+
+                    "texture2D(secondary_t, vUvInv);" +
+                    "else gl_FragColor = texture2D(secondary_t, vUvInv);"+
+                  "}"+
+                  "else {" +
+                  "if (color >= discard_f + maxColor) discard;" +
+                  "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}"+
+                "}"
         }
 
         function tween(time, delay, repeat){
@@ -437,7 +442,7 @@ return function(){
     }
 
     function addParticles(scene){
-      var geometry = new THREE.SphereGeometry( 10, 6, 6 );
+      var geometry = new THREE.SphereGeometry( 5, 6, 6 );
       var material = materials.setMaterials("LoE", {name:"metal"});
       var sphere = new THREE.Mesh( geometry, material );
 
@@ -445,7 +450,7 @@ return function(){
           width: 50,
           height: 100,
           depth: 700,
-          num: 150,
+          num: 200,
           meshes: [sphere],
           pos: new THREE.Vector3(-8310, -150, 0),
           dir: new THREE.Vector3(0, -1, 0),
