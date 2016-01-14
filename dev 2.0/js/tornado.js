@@ -24,7 +24,7 @@ return function(){
    tornado.slowMoLightningTime = 200;
    //bloom
    tornado.bloomSettings = {
-     outside: {min: 0., max: 1.2},
+     outside: {min: 0.8, max: 1.2},
      inside: {min: 0.4, max: 1}
    };
    //upper scene aseets stored here for disposal
@@ -34,7 +34,7 @@ return function(){
    crackCycleSpeed = 0.1;
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    tweenBloomDown();
+    /*tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 380;
     animate.SetCustomFramerate(30);
@@ -47,7 +47,7 @@ return function(){
     setTimeout(function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
-    }, 2000);
+    }, 2000);*/
     //throwBrick();
     //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
   };

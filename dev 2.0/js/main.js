@@ -28,6 +28,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         animate.camera.position.set(0, 0, 0);
         animate.camera.defaultNear = camNear;
         animate.camera.defaultFar = camFar;
+        GlobalFunctions.camera = animate.camera;
         return animate.camera;
     }
 

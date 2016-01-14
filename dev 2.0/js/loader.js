@@ -2,7 +2,7 @@ define(["scene", "jquery", "underscore", "cameraHandler", "materials", "animate"
 "audio", "watch", "tornado", "devScene"],
 function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
   audio, watch, tornado, devScene){
-    var scenes = {//all possible scenes
+    var scenes = { //all possible scenes
         i89: i89,
         LoE: LoE,
         cardinal: cardinal,
@@ -11,6 +11,7 @@ function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE
         tornado: tornado,
         devScene: devScene
     };
+    
     var matProps = ['map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap'/*, 'envMap'*/];
 
     function disposeObject (obj, skipMat) {
