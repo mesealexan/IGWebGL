@@ -1,9 +1,39 @@
-define(["scene", "events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio",
-  "callback", "composers", "text"],
-function(scene, events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback,
-  composers, text){
-
-return function(){
+define(["scene", "events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio", "callback", "composers", "text"],
+function(scene, events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback, composers, text){
+var neatScene = {
+  scene: {}
+  ,
+  callbacks: {
+    introAnimDone:  {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    },
+    rainStart: {
+      sampleCall2: function(){ console.log("started rain"); }
+    },
+    rainFinish: {
+      sampleCall3: function(){ console.log("ended rain"); }
+    },
+    dirtStart: {
+      sampleCall4: function(){ console.log("started dirt"); }
+    },
+    dirtFinish: {
+      sampleCall5: function(){ console.log("ended dirt"); }
+    },
+    sunStart: {
+      sampleCall6: function(){ console.log("started sun"); }
+    },
+    sunFinish: {
+      sampleCall7: function(){ console.log("ended sun"); }
+    },
+    glintStart: {
+      sampleCall8: function(){ console.log("started glint"); }
+    },
+    glintFinish: {
+      sampleCall9: function(){ console.log("ended glint"); }
+    }
+  }
+  ,
+  constructor: function(){
     var neat = new scene();
     neat.folderName = "neat";
     neat.addAssets( ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
@@ -12,33 +42,6 @@ return function(){
     neat.addSounds(['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
       'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand']);
     neat.cloudSpeed = 0.0004;
-    neat.introAnimDone =  {
-      sampleCall1: function(){ console.log("finished intro animation"); }
-    };
-    neat.rainStart = {
-      sampleCall2: function(){ console.log("started rain"); }
-    };
-    neat.rainFinish = {
-      sampleCall3: function(){ console.log("ended rain"); }
-    };
-    neat.dirtStart = {
-      sampleCall4: function(){ console.log("started dirt"); }
-    };
-    neat.dirtFinish = {
-      sampleCall5: function(){ console.log("ended dirt"); }
-    };
-    neat.sunStart = {
-      sampleCall6: function(){ console.log("started sun"); }
-    };
-    neat.sunFinish = {
-      sampleCall7: function(){ console.log("ended sun"); }
-    };
-    neat.glintStart = {
-      sampleCall8: function(){ console.log("started glint"); }
-    };
-    neat.glintFinish = {
-      sampleCall9: function(){ console.log("ended glint"); }
-    };
 
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
 
@@ -64,7 +67,7 @@ return function(){
        var mat = new THREE.MeshBasicMaterial({transparent: true, color: 0x4A7082});
 
        neat.assets.outsideText = new THREE.Mesh(geom, mat);
-       neat.assets.outsideText.position.set(-399, 4330, 11000);
+       neat.assets.outsideText.position.set(-410, 4330, 11000);
        scene.add(neat.assets.outsideText);
      };
 
@@ -267,7 +270,7 @@ return function(){
     };
 
     function onCameraComplete(scene){
-      callback.go(neat.callbacks.introAnimDone);
+      callback.go(neatScene.callbacks.introAnimDone);
 
       animate.camera.near = 1;
       animate.camera.updateProjectionMatrix();
@@ -344,7 +347,7 @@ return function(){
               }
             }
             neat.timeouts.sun = setTimeout(function(){
-              callback.go(neat.callbacks.sunFinish);
+              callback.go(neatScene.callbacks.sunFinish);
                idle = true;
              }, 3500);
           },
@@ -358,7 +361,7 @@ return function(){
           start: function(){
             if(curState == "rain") return;
             if(idle == false) return;
-            callback.go(neat.callbacks.rainStart);
+            callback.go(neatScene.callbacks.rainStart);
             idle = false;
             ret.stop("rain");
             //possible raindrop locations between these values
@@ -409,7 +412,7 @@ return function(){
           stop: function(){
             //stop rain particle system
             neat.assets.rainPS.Stop();
-            callback.go(neat.callbacks.rainFinish);
+            callback.go(neatScene.callbacks.rainFinish);
             //clean materials and raindrops if present
             //neat.assets.Glass_standard_Rain.material.Clean();
             //neat.assets.Glass_neat_Rain.material.Clean();
@@ -441,7 +444,7 @@ return function(){
           start: function(){
             if(curState == "dirt") return;
             if(idle == false) return;
-            callback.go(neat.callbacks.dirtStart);
+            callback.go(neatScene.callbacks.dirtStart);
             idle = false;
             ret.stop("dirt");
             neat.assets.leavesPS.Init(neat.assets.scene);
@@ -456,7 +459,7 @@ return function(){
             if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
           },
           stop: function(){
-            callback.go(neat.callbacks.dirtFinish);
+            callback.go(neatScene.callbacks.dirtFinish);
             neat.assets.leavesPS.Stop();
             neat.assets.Glass_neat_Dirt.material.Clean({minDirt: 0.2, keepOpac: false});
             //neat.assets.Glass_neat_Dirt.material.Clean();
@@ -658,7 +661,7 @@ return function(){
     }
 
     function glint(scene, delay){
-        callback.go(neat.callbacks.glintStart);
+        callback.go(neatScene.callbacks.glintStart);
         var glintMap = new THREE.ImageUtils.loadTexture( neat.mediaFolderUrl+'/models/neat/swipe.png' );
         var glintGeo = new THREE.PlaneBufferGeometry(68,68);
         var glintMat = new THREE.MeshPhongMaterial({map: glintMap, transparent: true, opacity: 0});
@@ -676,7 +679,7 @@ return function(){
           audio.sounds.neatmagicwand.fadeTo(10, glintSpeed);
         })
         .onComplete(function(){
-          callback.go(neat.callbacks.glintFinish);
+          callback.go(neatScene.callbacks.glintFinish);
           scene.remove(glint);
         });
         var glintOpacityIn = new TWEEN.Tween(glint.material).to({opacity: 1}, glintSpeed/10).delay(delay);
@@ -697,4 +700,6 @@ return function(){
 
     return neat;
   }
+}
+return neatScene;
 });

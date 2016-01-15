@@ -45,7 +45,7 @@ require.config({
 
 require(["main"], function(main){
     var scenes = ["cardinal", "i89", "LoE", "neat", "sound", "tornado"];
-    main.Start("webGL", scenes[0]);
+    main.Start("webGL", scenes[1]);
 });
 
 require(["sample"]);

@@ -1,66 +1,72 @@
-define( [ "callback" ] ,
-function( callback ) {
+define( [ "animate", "cardinal", "i89", "LoE" ] ,
+function( animate, cardinal, i89, LoE ) {
 
-  /*
-  console.info('cardinal:', cardinal);
-  console.info('i89:', i89);
-  console.info('LoE:', LoE);
-  console.info('neat:', neat);
-  console.info('animate:', animate);
-  var cardinal = new cardinalClass();
-  */
+console.info("animate", animate);
 
-  /******callbacks****/
+/***animate***/
+//start window auto resize. default is 'on'
+//animate.StartWindowAutoResize();
+//stop window auto resize
+//animate.StopWindowAutoResize();
+//call window resize
+//animate.ResizeWindow();
 
+/***adding callbacks***/
+cardinal.callbacks.introAnimHalfway.extraCallback = function () {
+  console.info("introAnimHalfway callback was added dynamically");
+};
 
-  callback.cardinal.introAnimDone.extraCallback = function () {
-    console.info("this callback was added dynamically");
-  };
-  console.log(callback.cardinal.introAnimDone);
+cardinal.callbacks.introAnimDone.extraCallback = function () {
+    console.info("introAnimDone callback was added dynamically");
+};
 
+cardinal.callbacks.goToSliceStart.extraCallback = function () {
+  console.info("goToSliceStart callback was added dynamically");
+};
 
-  /*
-  i89.callbacks.heaterStart.extraCallback = function () {
-    console.info("this callback was added dynamically");
-  };
-  */
+/***scene control***/
+GlobalFunctions.cardinal = {
+  goToSlice: function() {
+    cardinal.scene.goToSlice();
+  },
+  backToMain: function() {
+    cardinal.scene.backToMain();
+  },
+  sealantA: function() {
+    cardinal.scene.zoomOnSlice.sealantA();
+  },
+  sealantB: function() {
+    cardinal.scene.zoomOnSlice.sealantB();
+  },
+  spacer: function() {
+    cardinal.scene.zoomOnSlice.spacer();
+  },
+  dessicant: function() {
+    cardinal.scene.zoomOnSlice.dessicant();
+  },
+  backToSlice: function() {
+    cardinal.scene.zoomOnSlice.backToSlice();
+  }
+};
 
-  /******animate******/
-  //start window auto resize. default is 'on'
-  //animate.StartWindowAutoResize();
-  //stop window auto resize
-  //animate.StopWindowAutoResize();
-  //call window resize
-  //animate.ResizeWindow();
+GlobalFunctions.i89 = {
+  i89off: function() {
+    i89.scene.switchWindow.toggleOFF();
+  },
+  i89on: function() {
+    i89.scene.switchWindow.toggleON();
+  },
+  goOutside: function(){
+    i89.scene.tweenCamera("outside");
+  },
+  goInside: function(){
+    i89.scene.tweenCamera("inside");
+  }
+};
 
-  /******cardinal******/
-  //zoom from main view to slice
-  //cardinal.goToSlice();
-
-  //further zoom on the slice
-  //cardinal.zoomOnSlice.sealantA();
-  //cardinal.zoomOnSlice.sealantB();
-  //cardinal.zoomOnSlice.spacer();
-  //cardinal.zoomOnSlice.dessicant();
-
-  //back to slice from zoom in
-  //cardinal.zoomOnSlice.backToSlice();
-
-  //zoom out to main view
-  //cardinal.backToMain();
-
-  /******i89******/
-  //toggle i89 window on/off
-  //i89.switchWindow.toggleON();
-  //i89.switchWindow.toggleOFF();
-  //i89.onFinishLoadFunctions.testFunc = function(){...};
-
-  //tween camera position
-  //i89.tweenCamera("inside");
-  //i89.tweenCamera("outside");
-
-  /******LoE******/
-  //LoE.manageBackgroundOpacity("hot");
-  //LoE.manageBackgroundOpacity("cold");
-  //LoE.manageBackgroundOpacity("mixed");
+GlobalFunctions.LoE = {
+  changeBackground: function(val){// "hot", "cold", "mixed"
+    LoE.scene.manageBackgroundOpacity(val)
+  }
+};
 });

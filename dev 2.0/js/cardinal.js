@@ -1,68 +1,74 @@
 define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text"],
-    function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text){
-
-return function(){
+function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text){
+var cardinalScene = {
+  scene: {}
+  ,
+  callbacks:{
+    introAnimHalfway: {
+      sampleCall1: function(){ console.log("reached middle of intro animation"); },
+      sampleCall1a: function(){ console.info("an event can have multiple callbacks"); }
+    },
+    introAnimDone: {
+      sampleCall2: function(){ console.log("finished intro animation"); }
+    },
+    goToSliceStart: {
+      sampleCall3: function(){ console.log("started going to slice"); }
+    },
+    goToSliceDone: {
+      sampleCall4: function(){ console.log("reached slice"); }
+    },
+    backToMainStart: {
+      sampleCall5: function(){ console.log("started going back to main"); }
+    },
+    backToMainDone: {
+      sampleCall6: function(){ console.log("done going back to main"); }
+    },
+    goToSealantA_Start: {
+      sampleCall7: function(){ console.log("started going to sealant A"); }
+    },
+    goToSealantA_Done: {
+      sampleCall8: function(){ console.log("done going to sealant A"); }
+    },
+    goToSealantB_Start: {
+      sampleCall9: function(){ console.log("started going to sealant B"); }
+    },
+    goToSealantB_Done: {
+      sampleCall10: function(){ console.log("done going to sealant B"); }
+    },
+    goToSpacerStart: {
+      sampleCall11: function(){ console.log("started going to spacer"); }
+    },
+    goToSpacerDone: {
+      sampleCall12: function(){ console.log("done going to spacer"); }
+    },
+    goToDessicantStart: {
+      sampleCall13: function(){ console.log("started going to dessicant"); }
+    },
+    goToDessicantDone: {
+      sampleCall14: function(){ console.log("done going to dessicant"); }
+    },
+    backToSliceStart: {
+      sampleCall15: function(){ console.log("started going to back slice"); }
+    },
+    backToSliceDone: {
+      sampleCall16: function(){ console.log("done going back to slice"); }
+    }
+  }
+  ,
+  constructor: function(){
     var cardinal = new scene();
     cardinal.folderName = "cardinal";
     cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice'/*, 'LeapForward'*/]);
-    callback.cardinal.introAnimHalfway = {
-      sampleCall1: function(){ console.log("reached middle of intro animation"); },
-      sampleCall1a: function(){ console.info("an event can have multiple callbacks"); }
-    };
-    callback.cardinal.introAnimDone = {
-      sampleCall2: function(){ console.log("finished intro animation"); }
-    };
-    callback.cardinal.goToSliceStart = {
-      sampleCall3: function(){ console.log("started going to slice"); }
-    };
-    callback.cardinal.goToSliceDone = {
-      sampleCall4: function(){ console.log("reached slice"); }
-    };
-    callback.cardinal.backToMainStart = {
-      sampleCall5: function(){ console.log("started going back to main"); }
-    };
-    callback.cardinal.backToMainDone = {
-      sampleCall6: function(){ console.log("done going back to main"); }
-    };
-    callback.cardinal.goToSealantA_Start = {
-      sampleCall7: function(){ console.log("started going to sealant A"); }
-    };
-    callback.cardinal.goToSealantA_Done = {
-      sampleCall8: function(){ console.log("done going to sealant A"); }
-    };
-    callback.cardinal.goToSealantB_Start = {
-      sampleCall9: function(){ console.log("started going to sealant B"); }
-    };
-    callback.cardinal.goToSealantB_Done = {
-      sampleCall10: function(){ console.log("done going to sealant B"); }
-    };
-    callback.cardinal.goToSpacerStart = {
-      sampleCall11: function(){ console.log("started going to spacer"); }
-    };
-    callback.cardinal.goToSpacerDone = {
-      sampleCall12: function(){ console.log("done going to spacer"); }
-    };
-    callback.cardinal.goToDessicantStart = {
-      sampleCall13: function(){ console.log("started going to dessicant"); }
-    };
-    callback.cardinal.goToDessicantDone = {
-      sampleCall14: function(){ console.log("done going to dessicant"); }
-    };
-    callback.cardinal.backToSliceStart = {
-      sampleCall15: function(){ console.log("started going to back slice"); }
-    };
-    callback.cardinal.backToSliceDone = {
-      sampleCall16: function(){ console.log("done going back to slice"); }
-    };
 
     var fadeOutTime = 700;
+
     var cameraAnimations = {
-        animation_1:{ from: 0, to: 158},
-        animation_2:{ from: 158, to: 190},
-        animation_3:{ frame: 191, speed: 0.05},
-        animation_4:{ frame: 192, speed: 0.05},
-        animation_5:{ frame: 193, speed: 0.05},
-        animation_6:{ frame: 194, speed: 0.05}
+        animation_1: { from:    0, to:     158},
+        animation_2: { from:  158, to:     190},
+        animation_3: { frame: 191, speed: 0.05},
+        animation_4: { frame: 192, speed: 0.05},
+        animation_5: { frame: 193, speed: 0.05},
+        animation_6: { frame: 194, speed: 0.05}
     };
 
     /***on start functions***/
@@ -208,6 +214,8 @@ return function(){
           },
           function(){       //on start
             tweenTextOpac();
+            animate.camera.near = 1;
+            animate.camera.updateProjectionMatrix();
           }
         );
       }
@@ -216,7 +224,7 @@ return function(){
 
     cardinal.onFinishLoadFunctions.applyComposer = function(scene){
       cardinal.assets.composer = new composers.Bloom_AdditiveColor({
-        str: .1,
+        str: 0.1,
         bok: {
           foc: 1.00,
           ape: 0.01
@@ -248,6 +256,7 @@ return function(){
         events.AddControls(c);
         events.ToggleControls(false);
     };
+
     /***end on finish functions***/
     cardinal.onUnloadFunctions.resetCam = function(){
       animate.SetCameraDelaultValues();
@@ -279,14 +288,14 @@ return function(){
         switch (frame){
             case 100://anim 1 mid way, vertical window out of frustum
                 cardinal.assets.cardinal_vertical.visible = true;
-                callback.go(callback.cardinal.introAnimHalfway);
+                callback.go(cardinalScene.callbacks.introAnimHalfway);
                 break;
             case 155:
                 events.AddMouseUpEvent( tweenCamToMain );
                 break;
             case 156://finished anim 1
                 events.ToggleControls(true);
-                callback.go(callback.cardinal.introAnimDone);
+                callback.go(cardinalScene.callbacks.introAnimDone);
                 break;
         }
     }
@@ -346,14 +355,14 @@ return function(){
 
     cardinal.zoomOnSlice = {
          sealantA: function(){
-            callback.go(callback.cardinal.goToSealantA_Start);
+            callback.go(cardinalScene.callbacks.goToSealantA_Start);
             var anim = cameraAnimations.animation_3;
              events.ToggleControls(false);
              events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
-                    callback.go(callback.cardinal.goToSealantA_Done);
+                    callback.go(cardinalScene.callbacks.goToSealantA_Done);
                     manageEmissive.modify(anim.frame);
                     cardinal.buttons.sealantB.add();
                     cardinal.buttons.spacer.add();
@@ -364,14 +373,14 @@ return function(){
              events.EmptyElementByID("cameraButtons");
         },
         sealantB: function(){
-           callback.go(callback.cardinal.goToSealantB_Start);
+           callback.go(cardinalScene.callbacks.goToSealantB_Start);
             var anim = cameraAnimations.animation_4;
             events.ToggleControls(false);
             events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
-                   callback.go(callback.cardinal.goToSealantB_Done);
+                   callback.go(cardinalScene.callbacks.goToSealantB_Done);
                     manageEmissive.modify(anim.frame);
                     cardinal.buttons.sealantA.add();
                     cardinal.buttons.spacer.add();
@@ -382,14 +391,14 @@ return function(){
             events.EmptyElementByID("cameraButtons");
         },
         spacer: function(){
-           callback.go(callback.cardinal.goToSpacerStart);
+           callback.go(cardinalScene.callbacks.goToSpacerStart);
             var anim = cameraAnimations.animation_5;
             events.ToggleControls(false);
             events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
-                   callback.go(callback.cardinal.goToSpacerDone);
+                   callback.go(cardinalScene.callbacks.goToSpacerDone);
                     manageEmissive.modify(anim.frame);
                     cardinal.buttons.sealantA.add();
                     cardinal.buttons.sealantB.add();
@@ -400,14 +409,14 @@ return function(){
             events.EmptyElementByID("cameraButtons");
         },
         dessicant: function(){
-           callback.go(callback.cardinal.goToDessicantStart);
+           callback.go(cardinalScene.callbacks.goToDessicantStart);
             var anim = cameraAnimations.animation_6;
             events.ToggleControls(false);
             events.RemoveMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 anim.frame, anim.speed,
                 function(){//on complete
-                   callback.go(callback.cardinal.goToDessicantDone);
+                   callback.go(cardinalScene.callbacks.goToDessicantDone);
                     manageEmissive.modify(anim.frame);
                     cardinal.buttons.sealantA.add();
                     cardinal.buttons.sealantB.add();
@@ -418,14 +427,14 @@ return function(){
             events.EmptyElementByID("cameraButtons");
         },
         backToSlice: function(){
-            callback.go(callback.cardinal.backToSliceStart);
+            callback.go(cardinalScene.callbacks.backToSliceStart);
             var speed = 0.1;
             events.ToggleControls(true);
             events.AddMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 cameraAnimations.animation_2.to, speed,
                 function(){//on complete
-                    callback.go(callback.cardinal.backToSliceDone);
+                    callback.go(cardinalScene.callbacks.backToSliceDone);
                     cardinal.buttons.sealantA.add();
                     cardinal.buttons.sealantB.add();
                     cardinal.buttons.spacer.add();
@@ -468,7 +477,7 @@ return function(){
 
     cardinal.goToSlice = function(){
         events.ToggleControls(false);
-        callback.go(callback.cardinal.goToSliceStart);
+        callback.go(cardinalScene.callbacks.goToSliceStart);
         cardinal.assets.cardinal_slice.visible = true;
         cardinal.buttons.slice.remove();
         events.RemoveMouseUpEvent(tweenCamToMain);
@@ -515,13 +524,13 @@ return function(){
                 cardinal.buttons.dessicant.add();
                 cardinal.buttons.backToMain.add();
                 events.ToggleControls(true);
-                callback.go(callback.cardinal.goToSliceDone);
+                callback.go(cardinalScene.callbacks.goToSliceDone);
             }
         );
     }
 
     cardinal.backToMain = function(){
-        callback.go(callback.cardinal.backToMainStart);
+        callback.go(cardinalScene.callbacks.backToMainStart);
         cardinal.assets.cardinal_vertical.visible = true;
         events.EmptyElementByID("cameraButtons");
         events.RemoveMouseUpEvent(tweenCamToSliceMain);
@@ -550,7 +559,7 @@ return function(){
             function(){//on complete
                 cardinal.buttons.slice.add();
                 events.ToggleControls(true);
-                callback.go(callback.cardinal.backToMainDone);
+                callback.go(cardinalScene.callbacks.backToMainDone);
             }
         );
     }
@@ -568,6 +577,9 @@ return function(){
       tween.to( { value: 0 }, 100 );
       //tween.start();
     }
+
     return cardinal;
   }
+};
+return cardinalScene;
 });

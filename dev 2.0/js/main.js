@@ -3,7 +3,7 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
     function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
-    var version = 5;
+    var version = 5.1;
     var camFOV =  45; //camera field of view in degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
@@ -28,7 +28,6 @@ define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "mat
         animate.camera.position.set(0, 0, 0);
         animate.camera.defaultNear = camNear;
         animate.camera.defaultFar = camFar;
-        GlobalFunctions.camera = animate.camera;
         return animate.camera;
     }
 

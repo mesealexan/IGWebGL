@@ -2,6 +2,7 @@ define(["scene", "jquery", "underscore", "cameraHandler", "materials", "animate"
 "audio", "watch", "tornado", "devScene"],
 function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
   audio, watch, tornado, devScene){
+
     var scenes = { //all possible scenes
         i89: i89,
         LoE: LoE,
@@ -11,7 +12,7 @@ function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE
         tornado: tornado,
         devScene: devScene
     };
-    
+
     var matProps = ['map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap'/*, 'envMap'*/];
 
     function disposeObject (obj, skipMat) {
@@ -65,7 +66,9 @@ function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE
         this.DisposeObject = disposeObject;
         this.sceneID = scene.sceneID;
 
-        var selectedScene = new scenes[this.sceneID]();
+
+        var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
+
 
         this.mediaFolderUrl =
         selectedScene.mediaFolderUrl =
@@ -117,7 +120,8 @@ function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE
             traverseChildren(this.scene.children[i], disposeObject);
             if(i == 0){
               onComplete();
-              dereference(scenes[_this.sceneID]);
+              //dereference(scenes[_this.sceneID]);
+              scenes[this.sceneID].scene = null;
             }
           }
         };

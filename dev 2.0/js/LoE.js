@@ -1,34 +1,36 @@
-define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text",
-  "underscore"],
-function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text,
-  underscore){
-
-return function(){
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
+function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
+var LoEScene = {
+  scene: {}
+  ,
+  callbacks: {
+    introAnimDone: {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    },
+    hotBackground: {
+      sampleCall2: function(){ console.log("background changed to hot"); }
+    },
+    coldBackground: {
+      sampleCall3: function(){ console.log("background changed to cold"); }
+    },
+    mixedBackground: {
+      sampleCall4: function(){ console.log("background changed to mixed"); }
+    },
+    coatFirstVisibleWindow: {
+      sampleCall5: function(){ console.log("started coating first visible glass"); }
+    },
+    coatSecondVisibleWindow: {
+      sampleCall5: function(){ console.log("started coating second visible glass"); }
+    }
+  }
+  ,
+  constructor: function(){
     var LoE = new scene();
     LoE.folderName = "LoE";
     LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
     LoE.addSounds(['loe-factory-loop', 'loe-apply-coating']);
     LoE.disposables = [];
-
-    LoE.callbacks.introAnimDone = {
-      sampleCall1: function(){ console.log("finished intro animation"); }
-    };
-    LoE.callbacks.hotBackground = {
-      sampleCall2: function(){ console.log("background changed to hot"); }
-    };
-    LoE.callbacks.coldBackground = {
-      sampleCall3: function(){ console.log("background changed to cold"); }
-    };
-    LoE.callbacks.mixedBackground = {
-      sampleCall4: function(){ console.log("background changed to mixed"); }
-    };
-    LoE.callbacks.coatFirstVisibleWindow = {
-      sampleCall5: function(){ console.log("started coating first visible glass"); }
-    };
-    LoE.callbacks.coatSecondVisibleWindow = {
-      sampleCall5: function(){ console.log("started coating second visible glass"); }
-    };
 
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
@@ -263,7 +265,7 @@ return function(){
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 240:
-                callback.go(LoE.callbacks.coatFirstVisibleWindow);
+                callback.go( LoEScene.callbacks.coatFirstVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
                 break;
@@ -275,7 +277,7 @@ return function(){
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 310:
-                callback.go(LoE.callbacks.coatSecondVisibleWindow);
+                callback.go( LoEScene.callbacks.coatSecondVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 break;
@@ -302,7 +304,7 @@ return function(){
                 LoE.buttons.mixed.add();
                 break;
             case 498:
-                callback.go(LoE.callbacks.introAnimDone);
+                callback.go( LoEScene.callbacks.introAnimDone);
                 events.ToggleControls(true);
                 clearDisposables();
                 break;
@@ -437,7 +439,7 @@ return function(){
             console.error("Unspecified background!");
         }
 
-        callback.go(LoE.callbacks[to+"Background"]);
+        callback.go( LoEScene.callbacks[to+"Background"]);
         LoE.assets.bck_1.material.tween(tweenTo, backgroundBlendTime);
     }
 
@@ -464,4 +466,6 @@ return function(){
 
     return LoE;
   }
+};
+return LoEScene;
 });

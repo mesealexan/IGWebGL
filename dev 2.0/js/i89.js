@@ -1,53 +1,57 @@
 define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers", "text"],
-    function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers, text){
-
-return function(){
+function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers, text){
+var i89Scene = {
+  obj: {}
+  ,
+  callbacks: {
+    heaterStart: {
+      sampleCall1: function(){ console.log("started heater waves"); }
+    },
+    heaterDone: {
+      sampleCall2: function(){ console.log("heater waves played once, will now loop."); }
+    },
+    refractWaveStart: {
+      sampleCall3: function(){ console.log("started refract wave"); }
+    },
+    refractWaveDone: {
+      sampleCall4: function(){ console.log("refract wave played once, will now loop."); }
+    },
+    reflectWaveStart: {
+      sampleCall5: function(){ console.log("started reflect waves"); }
+    },
+    reflectWaveDone: {
+      sampleCall6: function(){ console.log("reflect waves played once, will now loop."); }
+    },
+    i89off: {
+      sampleCall7: function(){ console.log("i89 off"); }
+    },
+    i89on: {
+      sampleCall8: function(){ console.log("i89 on"); }
+    },
+    goOutsideStart: {
+      sampleCall9: function(){ console.log("started going outside"); }
+    },
+    goOutsideDone: {
+      sampleCall10: function(){ console.log("finished going outside"); }
+    },
+    goInsideStart: {
+      sampleCall10: function(){ console.log("started going inside"); }
+    },
+    goInsideDone: {
+      sampleCall11: function(){ console.log("finished going inside"); }
+    },
+    introAnimDone: {
+      sampleCall12: function(){ console.log("finished intro animation"); }
+    }
+  }
+  ,
+  constructor: function(){
     var i89 = new scene();
     i89.folderName = "i89";
     i89.addAssets(['house', 'snow', 'bck', 'grid', 'heat_source',
         'inside_text', /*'outside_text',*/ 'moon', 'logo', 'frame', 'window_plane',
         'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89']);
     i89.addSounds(["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"]);
-
-    i89.callbacks.heaterStart = {
-      sampleCall1: function(){ console.log("started heater waves"); }
-    };
-    i89.callbacks.heaterDone = {
-      sampleCall2: function(){ console.log("heater waves played once, will now loop."); }
-    };
-    i89.callbacks.refractWaveStart = {
-      sampleCall3: function(){ console.log("started refract wave"); }
-    };
-    i89.callbacks.refractWaveDone = {
-      sampleCall4: function(){ console.log("refract wave played once, will now loop."); }
-    };
-    i89.callbacks.reflectWaveStart = {
-      sampleCall5: function(){ console.log("started reflect waves"); }
-    };
-    i89.callbacks.reflectWaveDone = {
-      sampleCall6: function(){ console.log("reflect waves played once, will now loop."); }
-    };
-    i89.callbacks.i89off = {
-      sampleCall7: function(){ console.log("i89 off"); }
-    };
-    i89.callbacks.i89on = {
-      sampleCall8: function(){ console.log("i89 on"); }
-    };
-    i89.callbacks.goOutsideStart ={
-      sampleCall9: function(){ console.log("started going outside"); }
-    };
-    i89.callbacks.goOutsideDone ={
-      sampleCall10: function(){ console.log("finished going outside"); }
-    };
-    i89.callbacks.goInsideStart ={
-      sampleCall10: function(){ console.log("started going inside"); }
-    };
-    i89.callbacks.goInsideDone ={
-      sampleCall11: function(){ console.log("finished going inside"); }
-    };
-    i89.callbacks.introAnimDone = {
-      sampleCall12: function(){ console.log("finished intro animation"); }
-    };
 
     /***on start functions***/
     i89.onStartFunctions.storeScene = function (scene, loader) {
@@ -152,7 +156,7 @@ return function(){
         i89.assets.heat_wave = mesh;
 
         i89.animationHandlers.ah1.onComplete = function(){
-          callback.go(i89.callbacks.heaterDone);
+          callback.go(i89Scene.callbacks.heaterDone);
           i89.animationHandlers.ah1.onComplete = undefined;
         };
     };
@@ -165,7 +169,7 @@ return function(){
         i89.assets.heat_wave_refract = mesh;
 
         i89.animationHandlers.ah2.onComplete = function(){
-          callback.go(i89.callbacks.refractWaveDone);
+          callback.go(i89Scene.callbacks.refractWaveDone);
           i89.animationHandlers.ah2.onComplete = undefined;
         };
     };
@@ -186,7 +190,7 @@ return function(){
         i89.assets.heat_wave_reflect3 = heat_wave_reflect3;
 
         i89.animationHandlers.ah3.onComplete = function(){
-          callback.go(i89.callbacks.reflectWaveDone);
+          callback.go(i89Scene.callbacks.reflectWaveDone);
           i89.animationHandlers.ah3.onComplete = undefined;
         };
 
@@ -298,14 +302,14 @@ return function(){
         switch(pos){
             case "outside":
                 if(animate.camera.outside || animate.camera.inClose) return;
-                callback.go(i89.callbacks.goOutsideStart);
+                callback.go(i89Scene.callbacks.goOutsideStart);
                 animate.camera.outside = true;
                 events.ToggleControls(false);
                 tween.to( { x: [facingWallPos.x, outsidePos.x],
                     y: [facingWallPos.y, outsidePos.y],
                     z: [facingWallPos.z, outsidePos.z]}, tweenTime );
                 tween.onComplete(function(){
-                    callback.go(i89.callbacks.goOutsideDone);
+                    callback.go(i89Scene.callbacks.goOutsideDone);
                     animate.camera.outside = true;
                     animate.camera.inside = false;
                     animate.camera.inClose = false;
@@ -314,14 +318,14 @@ return function(){
                 break;
             case "inside":
                 if(animate.camera.inside) return;
-                callback.go(i89.callbacks.goInsideStart);
+                callback.go(i89Scene.callbacks.goInsideStart);
                 animate.camera.inside = true;
                 if(animate.camera.position.floor().equals(insidePos)) return;
                 tween.to( { x: [facingWallPos.x, insidePos.x],
                     y: [facingWallPos.y, insidePos.y],
                     z: [facingWallPos.z, insidePos.z]}, tweenTime );
                 tween.onComplete(function(){
-                    callback.go(i89.callbacks.goInsideDone);
+                    callback.go(i89Scene.callbacks.goInsideDone);
                     animate.camera.outside = false;
                     animate.camera.inClose = false;
                     events.ToggleControls(true);
@@ -429,7 +433,7 @@ return function(){
                 i89.buttons.inside.add();
                 //audio.sounds.i89heaterloop.fade(1.0, 0.0, 5000);
                 audio.sounds.i89heaterloop.fadeTo(0, 5000);
-                callback.go(i89.callbacks.introAnimDone);
+                callback.go(i89Scene.callbacks.introAnimDone);
                 break;
         }
     }
@@ -439,7 +443,7 @@ return function(){
         return{
             toggleON: function(){
                 if(fading || on) return;
-                callback.go(i89.callbacks.i89on);
+                callback.go(i89Scene.callbacks.i89on);
                 i89.buttons.i89_off.add();
                 i89.buttons.i89_on.remove();
                 i89.switchWindow.i89_on();
@@ -448,7 +452,7 @@ return function(){
             },
             toggleOFF: function(){
                 if(fading || off) return;
-                callback.go(i89.callbacks.i89off);
+                callback.go(i89Scene.callbacks.i89off);
                 i89.buttons.i89_on.add();
                 i89.buttons.i89_off.remove();
                 i89.switchWindow.i89_off();
@@ -492,7 +496,7 @@ return function(){
     var heatWaves = function(){
         return{
             playWave1: function(){
-                callback.go(i89.callbacks.heaterStart);
+                callback.go(i89Scene.callbacks.heaterStart);
                 i89.assets.window_plane.visible = true;
                 i89.assets.heat_wave.visible = true;
                 i89.animationHandlers.ah1.play(0, 115);
@@ -503,7 +507,7 @@ return function(){
             }
             ,
             playWave2: function(){
-                callback.go(i89.callbacks.refractWaveStart);
+                callback.go(i89Scene.callbacks.refractWaveStart);
                 i89.assets.heat_wave_refract.visible = true;
                 i89.animationHandlers.ah2.play(0, 115);
             }
@@ -513,7 +517,7 @@ return function(){
             }
             ,
             playWave3: function(){
-                callback.go(i89.callbacks.reflectWaveStart);
+                callback.go(i89Scene.callbacks.reflectWaveStart);
                 i89.assets.heat_wave_reflect.visible = true;
                 i89.animationHandlers.ah3.play(0, 115);
             }
@@ -568,4 +572,6 @@ return function(){
     }();
     return i89;
   }
+};
+return i89Scene;
 });
