@@ -1,7 +1,11 @@
 define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween', 'text', 'composers'],
 function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween, text, composers) {
-
-return function(){
+var soundScene = {
+	scene: {}
+	,
+	callbacks: {}
+	,
+	constructor: function(){
 	var sound = new scene();
 	sound.folderName = 'sound';
 	sound.addAssets(['avion_mesh', 'truck_mesh', 'road_mesh', 'house_mesh', 'enviroment_cylinder',
@@ -678,4 +682,6 @@ return function(){
 
 	return sound;
 }
+}
+return soundScene;
 });

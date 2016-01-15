@@ -1,7 +1,7 @@
 define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers", "text"],
 function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers, text){
 var i89Scene = {
-  obj: {}
+  scene: {}
   ,
   callbacks: {
     heaterStart: {

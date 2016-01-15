@@ -59,7 +59,7 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
 
 
     events.addDOF_GUI = function(scene) {
-      return;
+      //return;
       var effectController  = {
         focus: 		1.0,
         aperture:	0.025,
