@@ -1,6 +1,6 @@
-define(["scene", "jquery", "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
+define(["scene", /*"jquery",*/ "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
 "audio", "watch", "tornado", "devScene"],
-function(_scene, jquery, underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
+function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
   audio, watch, tornado, devScene){
 
     var scenes = { //all possible scenes

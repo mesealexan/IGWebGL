@@ -1,6 +1,6 @@
 var GlobalFunctions = {};
-define(["three", "jquery", "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween", "degradation"],
-    function(THREE, jquery, loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
+define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", "materials", "physi", "aeTween", "degradation"],
+    function(THREE, /*jquery,*/ loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
     var version = 5.1;

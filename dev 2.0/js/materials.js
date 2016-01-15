@@ -371,10 +371,12 @@ define(["three", "animate"], function(THREE, animate){
                 break;
             case 'cardinalOuter':
                 material = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color("rgb(161,161,161)"),
-                    ambient: new THREE.Color("rgb(255,255,255)"),
+                    color: new THREE.Color("rgb(199,199,199)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
-                    map: THREE.ImageUtils.loadTexture(url+'Outer_Diffuse.jpg')
+                    map: THREE.ImageUtils.loadTexture(url+'Outer_Diffuse.jpg'),
+                    bumpMap: THREE.ImageUtils.loadTexture(url+'Outer_Diffuse.jpg'),
+                    bumpScale: 2,
+                    shininess: 30
                 });
                 break;
             case 'cardinalsealant a':
@@ -394,14 +396,14 @@ define(["three", "animate"], function(THREE, animate){
                 break;
             case 'cardinalSpacer':
                 material = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color("rgb(213,213,213)"),
+                    color: new THREE.Color("rgb(160,160,160)"),
                     ambient: new THREE.Color("rgb(222,222,222)"),
                     specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'cardinalSpacer Cap':
                 material = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color("rgb(213,213,213)"),
+                    color: new THREE.Color("rgb(150,150,150)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
                     normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')
@@ -412,12 +414,13 @@ define(["three", "animate"], function(THREE, animate){
                     color: new THREE.Color("rgb(255,255,255)"),
                     //ambient: new THREE.Color("rgb(255,1,0)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
-                    vertexColors: THREE.VertexColors,
+                    //vertexColors: THREE.VertexColors,
                     envMap: textureCube,
                     refractionRatio: 0.985,
                     reflectivity: 0.99,
                     shininess: 30,
                     transparent: true,
+                    //side: 2,
                     opacity: 0.66
                 });
                 break;
@@ -471,11 +474,11 @@ define(["three", "animate"], function(THREE, animate){
                 });
                 break;
             case 'cardinaldesicant':
-                material = new THREE.MeshLambertMaterial({
+                material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(198,204,151)"),
-                    ambient: new THREE.Color("rgb(198,204,151)")//,
-                    //transparent: true,
-                    //opacity: 0.75
+                    ambient: new THREE.Color("rgb(198,204,151)"),
+                    specular: new THREE.Color("rgb(116,116,255)"),
+                    shininess: 6
 
                 });
                 break;

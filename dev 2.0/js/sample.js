@@ -17,6 +17,7 @@ cardinal.callbacks.introAnimHalfway.extraCallback = function () {
 };
 
 cardinal.callbacks.introAnimDone.extraCallback = function () {
+    console.info("scene also accesible from callbacks: " , cardinal.scene);
     console.info("introAnimDone callback was added dynamically");
 };
 

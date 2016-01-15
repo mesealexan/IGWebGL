@@ -2,8 +2,12 @@ define(["scene", "animate", "events", "animationHandler", "composers", "watch", 
   "materials", "underscore", "particleSystem", "aeTween", "text", "cloth"],
 function (scene, animate, events, animationHandler, composers, watch, tween,
   materials, underscore, particleSystem, aeTween, text, cloth ) {
-
-return function(){
+var tornadoScene = {
+  scene: {}
+  ,
+  callbacks:{}
+  ,
+  constructor: function(){
   var tornado = new scene();
   tornado.folderName = "tornado";
   tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
@@ -369,8 +373,8 @@ return function(){
   tornado.onLoadFunctions.House = function (mesh, loader) {
     var PHY_houseMat = Physijs.createMaterial(
       mesh.material.clone(),
-      .6, // medium friction
-      .3  // low restitution
+      0.6, // medium friction
+      0.3  // low restitution
     );
 
     var PHY_houseMesh = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_houseMat, 0 );
@@ -1108,4 +1112,6 @@ return function(){
     return tornado;
 
 }
+}
+return tornadoScene;
 });
