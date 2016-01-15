@@ -1,9 +1,11 @@
 require.config({
     paths: {
             "helvetiker" : "../lib/helvetiker_regular.typeface",
+           "bankGothinc" : "../lib/Bank Gothic_Regular.typeface",
                "aeTween" : "../lib/aeTween/aeTween",
                 "jquery" : "../lib/jquery/dist/jquery.min",
          "orbitControls" : "../lib/three.js/OrbitControls",
+                 "cloth" : "../lib/three.js/Cloth",
                  "three" : "../lib/three.js/build/three71",
                  "physi" : "../lib/physi/physi",
                   "fxaa" : "../lib/EffectComposer/fxaa",
@@ -33,14 +35,17 @@ require.config({
             exports: "THREE",
             tween: "TWEEN",
             watch: "watch"
-        }
+        }/*,
+        cloth: {
+            exports: "cloth",
+            deps: ["three"]
+        }*/
     }
 });
 
 require(["main"], function(main){
     var scenes = ["cardinal", "i89", "LoE", "neat", "sound", "tornado"];
-    main.Start("webGL", scenes[0]);
+    main.Start("webGL", scenes[1]);
 });
-
 
 require(["sample"]);

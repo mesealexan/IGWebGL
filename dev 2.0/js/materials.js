@@ -12,7 +12,7 @@ define(["three", "animate"], function(THREE, animate){
         for (var i = 0; i < 6; i++)
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
-        materials.cloudCube = textureCube;
+        //materials.cloudCube = textureCube;
     }
     ,
     makeCloudTextureCube: function(mediaFolderUrl){
@@ -22,7 +22,7 @@ define(["three", "animate"], function(THREE, animate){
         var urls = [];
         for (var a = 0; a < 6; a++)
         urls.push(imagePrefix + imageSuffix);
-        cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+        materials.cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }
   };
 
@@ -116,8 +116,7 @@ define(["three", "animate"], function(THREE, animate){
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
-                    specular: new THREE.Color("rgb(255,255,255)"),
-                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')
+                    specular: new THREE.Color("rgb(255,255,255)")
                 });
                 break;
             case 'LoEGlass':
@@ -474,9 +473,9 @@ define(["three", "animate"], function(THREE, animate){
             case 'cardinaldesicant':
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(198,204,151)"),
-                    ambient: new THREE.Color("rgb(198,204,151)"),
-                    transparent: true,
-                    opacity: 0.75
+                    ambient: new THREE.Color("rgb(198,204,151)")//,
+                    //transparent: true,
+                    //opacity: 0.75
 
                 });
                 break;
@@ -500,7 +499,7 @@ define(["three", "animate"], function(THREE, animate){
                     ambient: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
                     //vertexColors: THREE.VertexColors,
-                    envMap: cloudCube,
+                    envMap: materials.cloudCube,
                     refractionRatio: 0.985,
                     reflectivity: 0.99,
                     shininess: 30,
@@ -512,7 +511,6 @@ define(["three", "animate"], function(THREE, animate){
                 material = extractMaterialFromJSON(folderName, material);
                 break;
         }
-
         material.name = materialName;
         material.defaultEmissive = material.emissive;
         material.maxOpacity = material.opacity;
@@ -932,39 +930,36 @@ define(["three", "animate"], function(THREE, animate){
         }
     };
 
+  materials.outlineShader = function (set) {
+    this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
+    this.thickness = ( set.thickness !== undefined ) ? set.thickness : "1";
 
+    this.uniforms = {
+      color: { type: "c", value: this.color },
+      offset : {type: "f", value: this.thickness},
+      opacity : {type: "f", value: 1}
+    };
+    this.side = 1;
+    this.transparent = true;
+    this.vertexShader = [
+      "varying vec3 Vnormal;",
+      "uniform float offset;"+
+      "void main(){",
+          "Vnormal = normal;",
+          "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
+          "gl_Position = projectionMatrix * pos;",
+      "}"
+    ].join("\n");
 
-    materials.outlineShader = function (set) {
-      this.color = ( set.color !== undefined ) ? set.color : new THREE.Color( 0x000000 );
-      this.thickness = ( set.thickness !== undefined ) ? set.thickness : "1";
-
-      this.uniforms = {
-        color: { type: "c", value: this.color },
-        offset : {type: "f", value: this.thickness},
-        opacity : {type: "f", value: 1}
-      };
-      this.side = 1;
-      this.transparent = true;
-      this.vertexShader = [
-        "varying vec3 Vnormal;",
-        "uniform float offset;"+
-        "void main(){",
-            "Vnormal = normal;",
-            "vec4 pos = modelViewMatrix * vec4( position + normal * offset, 1.0 );",
-            "gl_Position = projectionMatrix * pos;",
-        "}"
-      ].join("\n");
-
-      this.fragmentShader = [
-        "varying vec3 Vnormal;",
-        "uniform vec3 color;"+
-        "uniform float opacity;"+
-        "void main(){",
-          "gl_FragColor = vec4( color, opacity );"+
-        "}"
-      ].join("\n");
-    }
-
+    this.fragmentShader = [
+      "varying vec3 Vnormal;",
+      "uniform vec3 color;"+
+      "uniform float opacity;"+
+      "void main(){",
+        "gl_FragColor = vec4( color, opacity );"+
+      "}"
+    ].join("\n");
+  }
 
   materials.noiseMat =  function(tex){
     this.uniforms = {
@@ -1047,7 +1042,7 @@ define(["three", "animate"], function(THREE, animate){
     this.uniforms = {
     };
 
-    this.side = 2;
+    this.side = 0;
 
     this.vertexShader = [
       "varying vec2 vUv;",
@@ -1071,7 +1066,7 @@ define(["three", "animate"], function(THREE, animate){
         "float gridSize = 200.;",
         "float curX = sin(vUv.x * gridSize);",
         "float curY = sin(vUv.y * gridSize);",
-        "if(curX > 0.95 || curY > 0.95) finalCol = ORANGE;",
+        "if(curX > 0.99 || curY > 0.99) finalCol = ORANGE;",
         "else finalCol = GREY /** rand(vUv)*/;",
         "gl_FragColor = finalCol;",
       "}"

@@ -1,31 +1,36 @@
-define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback"],
-    function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback){
-
-return function(){
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
+function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
+var LoEScene = {
+  scene: {}
+  ,
+  callbacks: {
+    introAnimDone: {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    },
+    hotBackground: {
+      sampleCall2: function(){ console.log("background changed to hot"); }
+    },
+    coldBackground: {
+      sampleCall3: function(){ console.log("background changed to cold"); }
+    },
+    mixedBackground: {
+      sampleCall4: function(){ console.log("background changed to mixed"); }
+    },
+    coatFirstVisibleWindow: {
+      sampleCall5: function(){ console.log("started coating first visible glass"); }
+    },
+    coatSecondVisibleWindow: {
+      sampleCall5: function(){ console.log("started coating second visible glass"); }
+    }
+  }
+  ,
+  constructor: function(){
     var LoE = new scene();
     LoE.folderName = "LoE";
-    LoE.addAssets(['EngineeredComfort', 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
-        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', 'pouring', 'rotator']);
+    LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+        'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
     LoE.addSounds(['loe-factory-loop', 'loe-apply-coating']);
-
-    LoE.callbacks.introAnimDone = {
-      sampleCall1: function(){ console.log("finished intro animation"); }
-    };
-    LoE.callbacks.hotBackground = {
-      sampleCall2: function(){ console.log("background changed to hot"); }
-    };
-    LoE.callbacks.coldBackground = {
-      sampleCall3: function(){ console.log("background changed to cold"); }
-    };
-    LoE.callbacks.mixedBackground = {
-      sampleCall4: function(){ console.log("background changed to mixed"); }
-    };
-    LoE.callbacks.coatFirstVisibleWindow = {
-      sampleCall5: function(){ console.log("started coating first visible glass"); }
-    };
-    LoE.callbacks.coatSecondVisibleWindow = {
-      sampleCall5: function(){ console.log("started coating second visible glass"); }
-    };
+    LoE.disposables = [];
 
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
@@ -36,9 +41,11 @@ return function(){
         mixed_t = undefined; //background plane textures
 
     /***on start functions***/
-    LoE.onStartFunctions.storeScene = function(scene) {
+    LoE.onStartFunctions.storeScene = function(scene, loader) {
       LoE.assets.scene = scene;
+      LoE.assets.loader = loader;
     }
+
     LoE.onStartFunctions.addLights = function(scene){
         scene.add( new THREE.AmbientLight( 0x999999 ) );
 
@@ -62,6 +69,33 @@ return function(){
         cold_t = THREE.ImageUtils.loadTexture(folder + "cold.jpg");
         mixed_t = THREE.ImageUtils.loadTexture(folder + "mixed.jpg");
     };
+
+    LoE.onStartFunctions.makeText = function(scene){
+       var string = "LoE coating production line"; //Ē not supported with current font
+       var settings = {
+         size: 120,
+         curveSegments: 2,
+         height: 8,
+         bevelEnabled: false,
+         style: "normal",
+         weight: "normal",
+         font: "bank gothic"
+         //font: "helvetiker"
+       };
+
+       var geom = text.Make(string, settings);
+       geom.computeBoundingBox();
+       geom.computeVertexNormals();
+
+       var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+       var mat = new THREE.MeshBasicMaterial({transparent: true, color: 0x4A7082});
+
+       LoE.assets.text = new THREE.Mesh(geom, mat);
+       LoE.assets.text.rotation.x -= Math.PI / 2;
+       LoE.assets.text.position.set(-12226 + centerOffset, -337, 1039 );
+       LoE.disposables.push(LoE.assets.text);
+       scene.add(LoE.assets.text);
+     };
     /***end on start functions***/
 
     /***on load functions***/
@@ -85,6 +119,7 @@ return function(){
         mesh.rotateZ(-1, 2000, Infinity);
         LoE.assets.rotator = mesh;
         addParticles(LoE.assets.scene);
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.bck_1 = function(mesh){
@@ -129,6 +164,9 @@ return function(){
 
             mesh.add(newTambur_a);
             mesh.add(newTambur_b);
+
+            LoE.disposables.push(newTambur_a);
+            LoE.disposables.push(newTambur_b);
         }
         LoE.assets.tambur_b = mesh;
     };
@@ -139,6 +177,7 @@ return function(){
         var fixed_window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/fixed_glass_anim.JSON');
         animate.updater.addHandler(new animate.PositionHandler(mesh, fixed_window_animation));
         LoE.assets.fixed_glass = mesh;
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.mobile_glass = function(mesh, loader){
@@ -146,6 +185,7 @@ return function(){
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, mobile_window_animation));
         LoE.assets.mobile_glass = mesh;
         addSilverPlanes(loader);
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.window = function(mesh, loader){
@@ -225,7 +265,7 @@ return function(){
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 240:
-                callback.go(LoE.callbacks.coatFirstVisibleWindow);
+                callback.go( LoEScene.callbacks.coatFirstVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.fixed_glass.plane5.material.tween(coatingTime);
                 break;
@@ -237,7 +277,7 @@ return function(){
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 310:
-                callback.go(LoE.callbacks.coatSecondVisibleWindow);
+                callback.go( LoEScene.callbacks.coatSecondVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 break;
@@ -264,8 +304,9 @@ return function(){
                 LoE.buttons.mixed.add();
                 break;
             case 498:
-                callback.go(LoE.callbacks.introAnimDone);
+                callback.go( LoEScene.callbacks.introAnimDone);
                 events.ToggleControls(true);
+                clearDisposables();
                 break;
         }
     }
@@ -274,6 +315,10 @@ return function(){
         var mat = LoE.assets.plane.material.materials[0];
         mat.transparent = true;
         mat.tweenOpacity(mat, 0, backgroundBlendTime);
+    }
+
+    function clearDisposables(){
+      _.each( LoE.disposables, function (d) { LoE.assets.loader.DisposeObject(d); });
     }
 
     function addSilverPlanes (loader) {
@@ -353,17 +398,19 @@ return function(){
                 "uniform float discard_f;" +
                 "uniform float hasSecondary;" +
                 "void main(){" +
-                "float color = 0.0;" +
-                "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
-                "color = ((vUv.x * size) + maxColor) + start;" +
-                "if (hasSecondary == 1.0) {" +
-                "if (color >= discard_f + maxColor) discard;" +
-                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv)) + " +
-                "texture2D(secondary_t, vUvInv);" +
-                "else gl_FragColor = texture2D(secondary_t, vUvInv);}" +
-                "else {" +
-                "if (color >= discard_f + maxColor) discard;" +
-                "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}}"
+                  "float color = 0.0;" +
+                  "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
+                  "color = ((vUv.x * size) + maxColor) + start;" +
+                  "if (hasSecondary == 1.0) {" +
+                    "if (color >= discard_f + maxColor) discard;" +
+                    "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv))+"+
+                    "texture2D(secondary_t, vUvInv);" +
+                    "else gl_FragColor = texture2D(secondary_t, vUvInv);"+
+                  "}"+
+                  "else {" +
+                  "if (color >= discard_f + maxColor) discard;" +
+                  "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}"+
+                "}"
         }
 
         function tween(time, delay, repeat){
@@ -392,12 +439,12 @@ return function(){
             console.error("Unspecified background!");
         }
 
-        callback.go(LoE.callbacks[to+"Background"]);
+        callback.go( LoEScene.callbacks[to+"Background"]);
         LoE.assets.bck_1.material.tween(tweenTo, backgroundBlendTime);
     }
 
     function addParticles(scene){
-      var geometry = new THREE.SphereGeometry( 10, 6, 6 );
+      var geometry = new THREE.SphereGeometry( 5, 6, 6 );
       var material = materials.setMaterials("LoE", {name:"metal"});
       var sphere = new THREE.Mesh( geometry, material );
 
@@ -405,7 +452,7 @@ return function(){
           width: 50,
           height: 100,
           depth: 700,
-          num: 150,
+          num: 200,
           meshes: [sphere],
           pos: new THREE.Vector3(-8310, -150, 0),
           dir: new THREE.Vector3(0, -1, 0),
@@ -419,4 +466,6 @@ return function(){
 
     return LoE;
   }
+};
+return LoEScene;
 });

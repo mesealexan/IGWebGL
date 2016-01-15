@@ -57,7 +57,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
             then = now - (delta % interval);
             animate.loader.scene.simulate(); // run physics
             TWEEN.update();
-            animate.updater.UpdateHandlers();
+            animate.updater.UpdateHandlers(systemDelta);
             animate.RenderFunction();
         }
     };
@@ -89,6 +89,12 @@ define(["underscore", "updater", "tween", "EffectComposer",
     animate.SetCustomRenderFunction = function (fun) {
   		animate.ResizeWindow();
       animate.RenderFunction = fun;
+    };
+
+    animate.SetCameraDelaultValues = function(){
+      animate.camera.near = animate.camera.defaultNear;
+      animate.camera.far = animate.camera.defaultFar;
+      animate.camera.updateProjectionMatrix();
     };
 
     animate.SetCustomFramerate = function (f) {

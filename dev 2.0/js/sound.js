@@ -1,5 +1,5 @@
-define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween', 'text'],
-function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween, text) {
+define(['scene', 'events', 'animate', 'events', 'tween', 'animationHandler', 'watch', 'materials', 'aeTween', 'text', 'composers'],
+function (scene, events, animate, events, tween, animationHandler, watch, materials, aeTween, text, composers) {
 
 return function(){
 	var sound = new scene();
@@ -70,8 +70,8 @@ return function(){
 			 bevelSize: 0.1,
 			 style: "normal",
 			 weight: "normal",
-			 //font: "bank gothic"
-			 font: "helvetiker"
+			 font: "bank gothic"
+			 //font: "helvetiker"
 		 };
 
 		 var geom = text.Make(string, settings);
@@ -207,10 +207,16 @@ return function(){
 		animate.Animate();
 	};
 
-	/*sound.onFinishLoadFunctions.playCamera = function(scene, loader) {
-			 loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
-				 animate.Animate);
-	};*/
+	sound.onFinishLoadFunctions.applyComposer = function(scene){
+		/*sound.assets.composer = new composers.Bloom_AdditiveColor({
+			str: 0.1,
+			bok: {
+				foc: 1,
+				ape: 0.005
+			}
+		});
+		animate.SetCustomRenderFunction( function(){ sound.assets.composer.render(); } );*/
+	};
 
     sound.onFinishLoadFunctions.addControls = function () {
         events.AddControls();
