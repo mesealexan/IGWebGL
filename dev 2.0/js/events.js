@@ -4,6 +4,7 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
 
     events.Controls = undefined;
     events.hammer = undefined;
+    events.containerID = undefined;
 
     $( "canvas" ).mousedown(function(event){ event.preventDefault(); });
 
@@ -18,21 +19,21 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
     };
 
     events.AddMouseDownEvent = function(fun){
-        $("body").on("mousedown", "#webGL", fun);
+        $("body").on("mousedown", "#"+events.containerID, fun);
     };
 
     events.RemoveMouseDownEvent = function(fun){
-        $("body").off("mousedown", "#webGL", fun);
+        $("body").off("mousedown", "#"+events.containerID, fun);
     };
 
     events.AddMouseUpEvent = function(fun){
-        $("body").on("mouseup", "#webGL", fun);
+        $("body").on("mouseup", "#"+events.containerID, fun);
         //events.hammer.on('panend', function() { fun(); });
 
     };
 
     events.RemoveMouseUpEvent = function(fun){
-        $("body").off("mouseup", "#webGL", fun);
+        $("body").off("mouseup", "#"+events.containerID, fun);
         //events.hammer.off('panend', function() { fun(); });
     };
 
@@ -49,12 +50,14 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
     events.AddControls = function(c){
         var _this = this;
         this.Controls = new orbitControls( animate.camera, animate.renderer.domElement );
-        this.hammer = new hammer(animate.container);
-        this.hammer.get('pan').set({ direction: hammer.DIRECTION_ALL });
+        //this.hammer = new hammer(animate.container);
+        //this.hammer.get('pan').set({ direction: hammer.DIRECTION_ALL });
         _.each(_.keys(c), function(prop){ _this.Controls[prop] = c[prop]; });
     };
 
-    events.ToggleControls = function(bool){ this.Controls.enabled = bool; };
+    events.ToggleControls = function(bool){
+      events.Controls.enabled = bool;
+    };
 
 
 
