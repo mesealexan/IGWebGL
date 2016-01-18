@@ -80,7 +80,7 @@ define(["animate"], function (animate) {
     }
 
     function checkComplete () {
-     if(_curFrame++ == _frames + _delay){
+     if(_curFrame++ == _frames + _delay) {
        _this.stop();
        //todo: move onComplete after repeat check below
        _this.onComplete();
@@ -97,9 +97,6 @@ define(["animate"], function (animate) {
      }
     }
   };
-  aeTweenG = aeTween;
+
   return aeTween;
 });
-
-
-var aeTweenG;

@@ -168,17 +168,20 @@ var cardinalScene = {
       geom = text.Make(string, settings);
       geom.computeBoundingBox();
       centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
-      var mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial());
+      var mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({transparent: true}));
       mesh.position.set(170 + centerOffset, -79, 797);
       scene.add(mesh);
+      cardinal.assets.dualSealText = mesh;
 
       string = "in a warm edge spacer";
       geom = text.Make(string, settings);
       geom.computeBoundingBox();
       centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
-      var mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial());
-      mesh.position.set(170 + centerOffset, -79, 797);
-      //scene.add(mesh);
+      mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({transparent: true}));
+      mesh.rotation.y += Math.PI / 2;
+      mesh.position.set(388, -50, 780);
+      scene.add(mesh);
+      cardinal.assets.warmEdgeText = mesh;
     };
     /***end on start functions***/
 
@@ -317,8 +320,12 @@ var cardinalScene = {
     }
 
     function addMouseDownEvent (){
-        events.AddMouseDownEvent( function() { TWEEN.removeAll(); });
+        events.AddMouseDownEvent(stopAllTweens);
     };
+
+    function stopAllTweens(){
+      TWEEN.removeAll();
+    }
 
     function tweenCamToSliceMain(fun){
         var tweenBackSpeed = 0.05;
@@ -400,6 +407,7 @@ var cardinalScene = {
 
     cardinal.zoomOnSlice = {
          sealantA: function(){
+           events.RemoveMouseDownEvent(stopAllTweens);
             callback.go(cardinalScene.callbacks.goToSealantA_Start);
             var anim = cameraAnimations.animation_3;
              events.ToggleControls(false);
@@ -418,6 +426,7 @@ var cardinalScene = {
              events.EmptyElementByID("cameraButtons");
         },
         sealantB: function(){
+           events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSealantB_Start);
             var anim = cameraAnimations.animation_4;
             events.ToggleControls(false);
@@ -436,6 +445,7 @@ var cardinalScene = {
             events.EmptyElementByID("cameraButtons");
         },
         spacer: function(){
+           events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSpacerStart);
             var anim = cameraAnimations.animation_5;
             events.ToggleControls(false);
@@ -454,6 +464,7 @@ var cardinalScene = {
             events.EmptyElementByID("cameraButtons");
         },
         dessicant: function(){
+           events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToDessicantStart);
             var anim = cameraAnimations.animation_6;
             events.ToggleControls(false);
@@ -474,11 +485,12 @@ var cardinalScene = {
         backToSlice: function(){
             callback.go(cardinalScene.callbacks.backToSliceStart);
             var speed = 0.1;
-            events.ToggleControls(true);
-            events.AddMouseUpEvent( tweenCamToSliceMain );
             cardinal.assets.loaderComponent.cameraHandler.tween(
                 cameraAnimations.animation_2.to - 1, speed,
                 function(){//on complete
+                    events.ToggleControls(true);
+                    events.AddMouseDownEvent(stopAllTweens);
+                    events.AddMouseUpEvent( tweenCamToSliceMain );
                     callback.go(cardinalScene.callbacks.backToSliceDone);
                     cardinal.buttons.sealantA.add();
                     cardinal.buttons.sealantB.add();
@@ -492,12 +504,12 @@ var cardinalScene = {
     };
 
     var manageEmissive = {
-        sealantA_ID: 4,
-        sealantB_ID: 6,
-        spacerSlice_ID: 2,
-        dessicant_ID: 3,
+        sealantA_ID: 5,
+        sealantB_ID: 4,
+        spacerSlice_ID: 6,
+        dessicant_ID: 0,
         modify: function (frame){
-            var sliceSelectedC = new THREE.Color(0x3498db);
+            var sliceSelectedC = new THREE.Color(0x555555);
             var mats = cardinal.assets.cardinal_slice.material.materials;
             switch (frame){
                 case 191:
@@ -524,28 +536,21 @@ var cardinalScene = {
         events.ToggleControls(false);
         callback.go(cardinalScene.callbacks.goToSliceStart);
         cardinal.buttons.slice.remove();
+        events.RemoveMouseDownEvent(stopAllTweens);
         events.RemoveMouseUpEvent(tweenCamToMain);
-        events.AddMouseUpEvent(tweenCamToSliceMain);
 
         events.Controls.minAzimuthAngle = 0.1;
         events.Controls.maxAzimuthAngle = 0.9;
 
         tweenShadowOpacity(0);
+        tweenTextOpacity(0);
 
         var newX = 1182 - 795;
         newZ = 1105 - 437;
 
         var posTween = new aeTween(cardinal.assets.cardinal_vertical.position);
-        posTween.to({x: newX, z: newZ}, 50);
+        posTween.to({x: newX, z: newZ}, 30);
         posTween.start();
-
-        /*_.each(cardinal.assets.cardinal_vertical.material.materials, function(mat){
-            mat.transparent = true;
-            var opacTween = new aeTween(mat);
-            opacTween.to({opacity: 0}, 25);
-            opacTween.onComplete = function(){ mat.visible = false; }
-            opacTween.start();
-        });*/
 
         _.each(cardinal.assets.cardinal_horizontal.material.materials,
             function(mat){//on complete
@@ -557,12 +562,14 @@ var cardinalScene = {
             cameraAnimations.animation_2.from,
             cameraAnimations.animation_2.to,
             function(){//on complete
+                cardinal.buttons.backToMain.add();
                 cardinal.buttons.sealantA.add();
                 cardinal.buttons.sealantB.add();
                 cardinal.buttons.spacer.add();
                 cardinal.buttons.dessicant.add();
-                cardinal.buttons.backToMain.add();
                 events.ToggleControls(true);
+                events.AddMouseUpEvent(tweenCamToSliceMain);
+                events.AddMouseDownEvent(stopAllTweens);
                 callback.go(cardinalScene.callbacks.goToSliceDone);
             }
         );
@@ -574,16 +581,17 @@ var cardinalScene = {
 
         events.EmptyElementByID("cameraButtons");
         events.RemoveMouseUpEvent(tweenCamToSliceMain);
-        events.AddMouseUpEvent(tweenCamToMain);
+        events.RemoveMouseDownEvent(stopAllTweens);
 
         events.Controls.minAzimuthAngle = - 0.3;
         events.Controls.maxAzimuthAngle = 0.3;
         events.ToggleControls(false);
 
         tweenShadowOpacity(1);
+        tweenTextOpacity(1);
 
         var posTween = new aeTween(cardinal.assets.cardinal_vertical.position);
-        posTween.to({x: 0, z: 0}, 1);
+        posTween.to({x: 0, z: 0}, 20);
         posTween.start();
 
         _.each(cardinal.assets.cardinal_horizontal.material.materials, function(mat){
@@ -594,8 +602,10 @@ var cardinalScene = {
             cameraAnimations.animation_2.to,
             cameraAnimations.animation_2.from,
             function(){//on complete
+                events.AddMouseUpEvent(tweenCamToMain);
                 cardinal.buttons.slice.add();
                 events.ToggleControls(true);
+                events.AddMouseDownEvent(stopAllTweens);
                 callback.go(cardinalScene.callbacks.backToMainDone);
             }
         );
@@ -634,6 +644,29 @@ var cardinalScene = {
       opacTween.onComplete = function(){
         if(val == 0)
           cardinal.assets.cardinal_vertical_shadow.visible = false;
+      }
+      opacTween.start();
+    }
+
+    function tweenTextOpacity(val){
+      if (val == 1) {
+        cardinal.assets.warmEdgeText.visible = true;
+        cardinal.assets.dualSealText.visible = true;
+      }
+
+      var opacTween = new aeTween(cardinal.assets.dualSealText.material);
+      opacTween.to({opacity: val}, 20);
+      opacTween.onComplete = function(){
+        if(val == 0)
+          cardinal.assets.dualSealText.visible = false;
+      }
+      opacTween.start();
+
+      opacTween = new aeTween(cardinal.assets.warmEdgeText.material);
+      opacTween.to({opacity: val}, 20);
+      opacTween.onComplete = function(){
+        if(val == 0)
+          cardinal.assets.warmEdgeText.visible = false;
       }
       opacTween.start();
     }

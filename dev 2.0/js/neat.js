@@ -284,6 +284,8 @@ var neatScene = {
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
       }, stagesTime.final);
+        //neat.buttons.rain.add();
+        //neat.buttons.dirt.add();
     };
 
     neat.buttons = {

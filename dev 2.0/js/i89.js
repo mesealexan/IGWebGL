@@ -404,6 +404,7 @@ var i89Scene = {
             case 404:
                 heatWaves.loopWave1();
                 heatWaves.playWave2();
+                //i89.assets.loader.cameraHandler.setSpeed(2);
                 break;
             case 521:
                 heatWaves.loopWave2();
