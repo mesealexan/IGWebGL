@@ -1,4 +1,4 @@
-define(["three", "helvetiker", "bankGothinc"], function(){
+define(["three", /*"helvetiker",*/ "bankGothinc"], function(){
   var text = {};
 
   text.Make = function(string, settings){

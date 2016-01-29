@@ -1,26 +1,24 @@
-define(["scene", /*"jquery",*/ "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal", "neat", "sound", "events",
-"audio", "watch", "tornado", "devScene"],
-function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat, sound, events,
-  audio, watch, tornado, devScene){
+define([ "scene", /*"jquery",*/ "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal",
+  "neat", "sound", "events", "audio", "watch", "tornado", "devScene" ],
+function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat,
+  sound, events, audio, watch, tornado, devScene ) {
 
-    var scenes = { //all possible scenes
+    var scenes = {
         i89: i89,
         LoE: LoE,
-        cardinal: cardinal,
+        IG: cardinal,
         neat: neat,
-        sound: sound,
-        tornado: tornado,
+        //sound: sound, // scene disabled
+        seaStorm: tornado,
         devScene: devScene
     };
 
-    var matProps = ['map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap'/*, 'envMap'*/];
-
     function disposeObject (obj, skipMat) {
         //.dispose() removes the object (geometry, material and/or texture) from memory
-        if(obj.geometry) obj.geometry.dispose(); //has geometry
-        if(obj.material){ //has material
-            if(obj.material instanceof THREE.MeshFaceMaterial)
-              for (var j = obj.material.materials.length - 1; j >= 0; j--)
+        if( obj.geometry ) obj.geometry.dispose(); //has geometry
+        if( obj.material ) { //has material
+            if( obj.material instanceof THREE.MeshFaceMaterial )
+              for ( var j = obj.material.materials.length - 1; j >= 0; j-- )
                 disposeMaterial(obj.material.materials[j], skipMat);
             else // has one material
               disposeMaterial(obj.material, skipMat);
@@ -29,6 +27,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         obj = undefined;
 
         function disposeMaterial(mtrl, skip) {
+          var matProps = [ "map", "lightMap", "bumpMap", "normalMap", "specularMap" ];
           if(skip && skip.all) return;
           _.each(matProps, function (p) {
             if(skip && _.has(skip, p)) return;
@@ -39,7 +38,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         }
     }
 
-    function traverseChildren (obj, fun) {
+    function traverseChildren ( obj, fun ) {
       //also calls a function provided as an argument for all children
       if(obj.children.length > 0)
           for (var i = obj.children.length - 1; i >= 0; i--)
@@ -47,170 +46,180 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       fun(obj);
     }
 
-    function checkCameraAnimationState(l, animationComponent){
-      if(l.cameraHandler && !l.cameraHandler.started)
-        l.cameraHandler.play(
-          undefined,undefined,undefined,//from, to and onComplete undefined
-          animationComponent.Animate
-        );
-      else if(!l.cameraHandler) animationComponent.Animate();
-      loader.LoadingScreen.hide();
+    function getLoadingPercentage ( l ) {
+      var curAssetNo = l.assetIndex;
+      var totalAssets = l.totalAssets;
+      return ( Math.round( ((curAssetNo + audio.audioArrIndex) / totalAssets) * 100 ));
     }
 
-    var loader = function(scene, animationComponent, mediaFolderUrl, camera){//public functionality
-        var _this = this;
-        this.loadingScene = true;
-        this.scene = scene;
-        this.animationComponent = animationComponent;
-        this.animationComponent.loader = this;
-        this.DisposeObject = disposeObject;
-        this.sceneID = scene.sceneID;
+    function changeURL ( id ) {
+      var curURL = String(window.location.href);
+      history.pushState( {}, "", "#" + id);
+    }
+
+    var loader = function( scene, animationComponent, mediaFolderUrl, camera ) {//public functionality
+      var _this = this;
+      this.loadingScene = true;
+      this.scene = scene;
+      this.animationComponent = animationComponent;
+      this.animationComponent.loader = this;
+      this.DisposeObject = disposeObject;
+      this.sceneID = scene.sceneID;
+      this.onLoadProgressFunctions = _.functions( this.animationComponent.onLoadProgress );
+
+      var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
+
+      this.mediaFolderUrl =
+      materials.mediaFolderUrl =
+      selectedScene.mediaFolderUrl =
+      mediaFolderUrl;
+
+      scene.add(camera);
+      changeURL(this.sceneID);
+
+      (function OnStartScene (){
+        //retrieve all functions in onStartFunctions object, then call each one
+        var onStartFunctions = _.functions(selectedScene.onStartFunctions);
+        _.each(onStartFunctions, function(fun){
+            selectedScene.onStartFunctions[fun](scene, _this);
+        });
+      }());
+
+      /***public functions***/
+      this.OnFinishedLoadingAssets = function(){
+        var onFinishLoadFunctions = _.functions( selectedScene.onFinishLoadFunctions );
+        _.each(onFinishLoadFunctions, function( fun ) {
+            selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
+        });
+        animationComponent.ResizeWindow();
+        loader.LoadingScreen.hide();
+        _this.loadingScene = false;
+      };
+
+      this.ParseJSON = function ( file ) {
+        var request = new XMLHttpRequest();
+        request.open("GET", file, false);
+        request.send(null);
+        if(request.responseURL != "") return JSON.parse(request.responseText);
+        else return false;
+      };
+
+      this.UnloadScene = function ( onComplete ) {
+        this.animationComponent.SetDefaultRenderFunction();
+        var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
+
+        _.each(onUnloadFunctions, function(fun){
+            selectedScene.onUnloadFunctions[fun](scene, _this);
+        });
 
 
-        var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
-
-
-        this.mediaFolderUrl =
-        selectedScene.mediaFolderUrl =
-        materials.mediaFolderUrl =
-        mediaFolderUrl;
-
-        scene.add(camera);
-
-
-        (function OnStartScene (){
-          //retrieve all functions in onStartFunctions object, then call each one
-          var onStartFunctions = _.functions(selectedScene.onStartFunctions);
-          _.each(onStartFunctions, function(fun){
-              selectedScene.onStartFunctions[fun](scene, _this);
-          });
-        }());
-
-        /***public functions***/
-        this.OnFinishedLoadingAssets = function(){
-          var onFinishLoadFunctions = _.functions(selectedScene.onFinishLoadFunctions);
-          _.each(onFinishLoadFunctions, function(fun){
-              selectedScene.onFinishLoadFunctions[fun](scene, _this);
-          });
-          //checkCameraAnimationState(_this, animationComponent);
-          //animationComponent.Animate();
-          animationComponent.ResizeWindow();
-          loader.LoadingScreen.hide();
-          _this.loadingScene = false;
-        };
-
-        this.ParseJSON = function(file){
-          var request = new XMLHttpRequest();
-          request.open("GET", file, false);
-          request.send(null);
-          if(request.responseURL != "") return JSON.parse(request.responseText);
-          else return false;
-        };
-
-        this.UnloadScene = function(onComplete){
-          this.animationComponent.SetDefaultRenderFunction();
-          var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
-
-          _.each(onUnloadFunctions, function(fun){
-              selectedScene.onUnloadFunctions[fun](scene, _this);
-          });
-
-
-          for (var i = this.scene.children.length - 1; i >= 0; i--){
-            traverseChildren(this.scene.children[i], disposeObject);
-            if(i == 0){
-              onComplete();
-              //dereference(scenes[_this.sceneID]);
-              scenes[this.sceneID].scene = null;
-            }
+        for (var i = this.scene.children.length - 1; i >= 0; i--){
+          traverseChildren(this.scene.children[i], disposeObject);
+          if(i == 0){
+            onComplete();
+            //dereference(scenes[_this.sceneID]);
+            scenes[this.sceneID].scene = null;
           }
-        };
-
-        function dereference(scene) {
-          var props = (Object.keys(scene));
-
-          _.each(props, function(p){
-            if (scene.hasOwnProperty(p))
-              scene[p] = null;
-          });
         }
+      };
 
-        this.LoadAssets(selectedScene);
+      this.OnLoadProgress = function () {
+        _.each(_this.onLoadProgressFunctions, function(fun){
+          var percent = getLoadingPercentage(_this);
+          _this.animationComponent.onLoadProgress [fun] (percent, _this) ;
+        });
+      }
+
+      function dereference ( scene ) {
+        var props = (Object.keys(scene));
+
+        _.each(props, function(p){
+          if (scene.hasOwnProperty(p))
+            scene[p] = null;
+        });
+      }
+
+      this.LoadAssets( selectedScene );
     };
 
-    loader.prototype.LoadAssets = function(selectedScene){
-        var _this = this,
-            mesh = undefined,
-            assetIndex = 0,
-            folderName = selectedScene.folderName,
-            assetNames = selectedScene.assetNames,
-            soundNames = selectedScene.soundNames,
-            nextAsset = undefined;
+    loader.prototype.LoadAssets = function ( selectedScene ) {
+      var _this = this,
+          mesh = undefined,
+          folderName = selectedScene.folderName,
+          assetNames = selectedScene.assetNames,
+          soundNames = selectedScene.soundNames,
+          nextAsset = undefined;
 
-        //camera handler
-        var cameraJSON = this.ParseJSON(_this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON");
-        if(cameraJSON != false) this.cameraHandler = new cameraHandler(cameraJSON);
+      this.assetIndex = 0;
+      this.totalAssets = assetNames.length + soundNames.length;
 
-        //check if no assets exist
-        if(assetNames == undefined || assetNames.length == 0){ loadSounds(); return; };
-        //load next asset if it exists
-        if((nextAsset = assetNames[assetIndex]) !== undefined) load(nextAsset);
+      //camera handler
+      var cameraJSON = this.ParseJSON( _this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON" );
+      if( cameraJSON != false ) this.cameraHandler = new cameraHandler( cameraJSON );
 
-        function load(name){
-            var loader = new THREE.JSONLoader();
-            loader.load(_this.mediaFolderUrl+"/models/"+folderName+"/"+name+".js", loadCallback);
-            loader.onLoadComplete = onLoadComplete;
+      //check if no assets exist
+      if( assetNames == undefined || assetNames.length == 0){ loadSounds(); return; };
+      //load next asset if it exists
+      if( ( nextAsset = assetNames[_this.assetIndex] ) !== undefined ) load ( nextAsset );
+
+      function load(name){
+          var loader = new THREE.JSONLoader();
+          loader.load( _this.mediaFolderUrl + "/models/" + folderName + "/" + name + ".js", loadCallback);
+          loader.onLoadComplete = onLoadComplete;
+      }
+
+      function loadCallback( geometry, mats ) {
+        var assignedMats = [];
+        _.each( mats, function ( mat ) {
+            assignedMats.push( materials.setMaterials( folderName, mat ) );
+        });
+
+        geometry.computeFaceNormals();
+        geometry.computeVertexNormals();
+
+        var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
+
+        if( geometry.morphTargets.length > 0 )
+            mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
+        else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
+      }
+
+      function onLoadComplete(){
+        var curAssetName = assetNames[_this.assetIndex];
+        var nextAssetName = assetNames[++_this.assetIndex];
+
+        //function associated to current mesh, called for features such as positioning
+        _this.scene.add(mesh);
+        var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
+        if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
+        _this.OnLoadProgress();
+        //still has assets to load, go again
+        if( nextAssetName !== undefined ) {
+          load( nextAssetName );
+          return;
         }
+        //done loading assets, load sounds
+        loadSounds();
+      }
 
-        function loadCallback(geometry, mats){
-          var assignedMats = [];
-          _.each(mats, function(mat){
-              assignedMats.push(materials.setMaterials(folderName, mat));
-          });
-
-          geometry.computeFaceNormals();
-          geometry.computeVertexNormals();
-
-          var faceMaterial = new THREE.MeshFaceMaterial( assignedMats );
-
-          if(geometry.morphTargets.length > 0)
-              mesh = new THREE.SkinnedMesh( geometry, faceMaterial );//animated mesh
-          else mesh = new THREE.Mesh( geometry, faceMaterial );//non-animated mesh
-        }
-
-        function onLoadComplete(){
-          var curAssetName = assetNames[assetIndex];
-          var nextAssetName = assetNames[++assetIndex];
-
-          //function associated to current mesh, called for features such as positioning
-          _this.scene.add(mesh);
-          var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
-          if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
-
-          //still has assets to load, go again
-          if(nextAssetName !== undefined){ load(nextAssetName); return; }
-          //done loading assets, load sounds
-          loadSounds();
-        }
-
-        function loadSounds(){
-            //call on load complete on all sounds loaded
-            audio.LoadAll(soundNames, _this.OnFinishedLoadingAssets, _this.mediaFolderUrl);
-        }
+      function loadSounds(){
+          //call on load complete on all sounds loaded
+          audio.LoadAll(soundNames, _this);
+      }
     };
 
     loader.LoadingScreen = {
-        add: function(){
-            $('body').append('<div class="loader"></div>');
-            $('.loader').append('<h1 id="loadingText">loading</h1>');
-        },
-        show: function(){
-            animate.renderer.clear()
-            $('.loader').show();
-        },
-        hide: function(){
-            $('.loader').hide();
-        }
+      add: function(){
+          $('body').append('<div class="loader"></div>');
+          $('.loader').append('<h1 id="loadingText">loading</h1>');
+      },
+      show: function(){
+          animate.renderer.clear()
+          $('.loader').show();
+      },
+      hide: function(){
+          $('.loader').hide();
+      }
     };
     /***end public functions***/
 

@@ -78,7 +78,7 @@ var i89Scene = {
         scene.add( spotLight );
     };
 
-   i89.onStartFunctions.makeText = function(scene){
+    i89.onStartFunctions.makeText = function(scene){
       var string = "Frigid outside";
       var settings = {
         size: 20,

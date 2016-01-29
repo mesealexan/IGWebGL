@@ -4,25 +4,33 @@ define(["three", "animate"], function(THREE, animate){
 
     var materials = {
       cloudCube: undefined,
-      makeTextureCube: function(mediaFolderUrl){
+      makeTextureCube: function ( mediaFolderUrl ) {
         var imagePrefix = mediaFolderUrl+"/skybox/Cube_";
         var directions  = ["r", "l", "u", "d", "f", "b"];
         var imageSuffix = ".jpg";
         var urls = [];
-        for (var i = 0; i < 6; i++)
+        for ( var i = 0; i < 6; i++ )
             urls.push(imagePrefix + directions[i] + imageSuffix);
         textureCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
         //materials.cloudCube = textureCube;
     }
     ,
-    makeCloudTextureCube: function(mediaFolderUrl){
+    makeCloudTextureCube: function ( mediaFolderUrl ) {
         var imagePrefix = mediaFolderUrl+"/skybox/clouds_scrolling2";
-        var directions  = ["r", "l", "u", "d", "f", "b"];
         var imageSuffix = ".jpg";
         var urls = [];
-        for (var a = 0; a < 6; a++)
-        urls.push(imagePrefix + imageSuffix);
+        for ( var a = 0; a < 6; a++ )
+          urls.push(imagePrefix + imageSuffix);
         materials.cloudCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
+    }
+    ,
+    makeGloomyTextureCube: function ( mediaFolderUrl ) {
+        var imagePrefix = mediaFolderUrl+"/skybox/gloomyClouds";
+        var imageSuffix = ".jpg";
+        var urls = [];
+        for ( var a = 0; a < 6; a++ )
+          urls.push(imagePrefix + imageSuffix);
+        materials.gloomyCloudsCube = THREE.ImageUtils.loadTextureCube( urls, THREE.CubeRefractionMapping );
     }
   };
 
@@ -406,7 +414,8 @@ define(["three", "animate"], function(THREE, animate){
                     color: new THREE.Color("rgb(150,150,150)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
-                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')
+                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')//,
+                    //envMap: textureCube
                 });
                 break;
             case 'cardinalGlass':

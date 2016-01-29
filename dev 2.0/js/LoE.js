@@ -29,7 +29,7 @@ var LoEScene = {
     LoE.folderName = "LoE";
     LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
-    LoE.addSounds(['loe-factory-loop', 'loe-apply-coating']);
+    LoE.addSounds([ 'loe-factory-loop', 'loe-apply-coating' ]);
     LoE.disposables = [];
 
     var coatingTime = 2700;
@@ -95,6 +95,12 @@ var LoEScene = {
        LoE.assets.text.position.set(-12226 + centerOffset, -337, 1039 );
        LoE.disposables.push(LoE.assets.text);
        scene.add(LoE.assets.text);
+
+       // line above E
+       var cube = new THREE.Mesh( new THREE.BoxGeometry( 75, 1, 15 ),
+        new THREE.MeshBasicMaterial( {color: 0x4A7082} ) );
+       cube.position.set(-13256, -337, 919);
+       scene.add( cube );
      };
     /***end on start functions***/
 
@@ -124,7 +130,13 @@ var LoEScene = {
 
     LoE.onLoadFunctions.bck_1 = function(mesh){
         mesh.material = materials.textureFadeMaterial();
+        //mesh.position.set(1500, 0, 2500)
+        console.log(mesh)
         LoE.assets.bck_1 = mesh;
+        var geometry = new THREE.PlaneGeometry( 5, 20, 32 );
+        var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh( geometry, material );
+        //scene.add( plane );
     };
 
     LoE.onLoadFunctions.plane = function(mesh){
@@ -200,6 +212,8 @@ var LoEScene = {
 
     /***on finish functions***/
     LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
+
+      //x: -4489.42, y: 4651.72, z: 3962.66
        loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
          animate.Animate);
     };
@@ -212,7 +226,7 @@ var LoEScene = {
 
     LoE.onFinishLoadFunctions.addControls = function(){
         var c = {
-            noZoom: true,
+            noZoom: false,
             noPan: true,
             maxPolarAngle: 1.6,
             minPolarAngle: 1.55,
@@ -254,7 +268,7 @@ var LoEScene = {
             case 0: {
                 audio.sounds.loefactoryloop.play();
                 audio.sounds.loefactoryloop.setVolume(0);
-                audio.sounds.loefactoryloop.fadeTo(60, 7000);
+                audio.sounds.loefactoryloop.fadeTo(40, 7000);
                 break;
             }
             case 169:

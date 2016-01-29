@@ -1,8 +1,10 @@
 define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, buzz){
-    var audio = {};
+    var audio = {
+      loader: undefined,
+      audioArrIndex: 0
+    };
+    
     audio.sounds = {};
-
-    var audioArrIndex = 0;
     //Howler.iOSAutoEnable = true;
 
     function cleanName(name){//removes dashes
@@ -16,67 +18,44 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
 
     function loadSound(arr, onComp, mediaFolderUrl){
 
-      if(!arr || !(url = arr[audioArrIndex])){
-          audioArrIndex = 0;
-          onComp();
-          return;
+      if(!arr || !(url = arr[audio.audioArrIndex])){
+        audio.loader.OnLoadProgress();
+        audio.audioArrIndex = 0;
+        onComp();
+        return;
       }
 
       if(audio.sounds[cleanName(url)]){
-          audioArrIndex++;
+          audio.audioArrIndex++;
           loadSound(arr, onComp);
           return;
       }
 
       var sound = new buzz.sound(mediaFolderUrl+ "/audio/" + url, { formats: [ "mp3", "ogg", "m4a" ] });
 
-      audio.sounds[cleanName(url)] = sound;
-      audioArrIndex++;
-      loadSound(arr, onComp, mediaFolderUrl);
-        /*var url = undefined;
-
-        if(!arr || !(url = arr[audioArrIndex])){
-            audioArrIndex = 0;
-            onComp();
-            return;
-        }
-
-        if(audio.sounds[cleanName(url)]){
-            audioArrIndex++;
-            loadSound(arr, onComp);
-            return;
-        }
-
-        var src = returnFormatsArray(url, mediaFolderUrl);
-        var sound = new Howl({
-            src: src,
-            onload: onLoad,
-            onstop: onStop
-        });
-
-        function onLoad(){
-            audio.sounds[cleanName(url)] = sound;
-            audioArrIndex++;
-            loadSound(arr, onComp, mediaFolderUrl);
-        }
-
-        function onStop(){
-        }*/
-
+      sound.bind("loadeddata", function() {
+        audio.sounds[ cleanName(url) ] = sound;
+        audio.audioArrIndex++;
+        audio.loader.OnLoadProgress();
+        loadSound(arr, onComp, mediaFolderUrl);
+      });
     }
 
-    audio.LoadAll = function(arr, onComp, mediaFolderUrl){
-        audioArrIndex = 0;
-        loadSound(arr, onComp, mediaFolderUrl);
+    audio.LoadAll = function( arr, loader ) {
+        audio.loader = loader;
+        audio.audioArrIndex = 0;
+        loadSound(arr, loader.OnFinishedLoadingAssets, loader.mediaFolderUrl);
     };
 
-    audio.StopAll = function(){_.each(audio.sounds, function(s){
-        /*if(s.playing()){
-            var id = s._sounds[0]._id;
-            s.stop(id);
-        }*/
-        buzz.all().stop();
-    })};
+    audio.StopAll = function () {
+      _.each( audio.sounds, function ( s ) {
+          buzz.all().stop();
+      });
+    };
+
+    audio.ToggleMute = function () {
+      buzz.all().toggleMute();
+    };
 
     GlobalFunctions.audio = audio;
 

@@ -47,6 +47,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
     animate.loader = undefined;
     animate.updater = new updater();
 		animate.composer = undefined;
+    animate.onLoadProgress = { };
     /***end public fields***/
 
     animate.Animate = function(systemDelta){
@@ -64,9 +65,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
 
     animate.StopAnimating = function () { cancelAnimationFrame(frameID); };
 
-    animate.RenderFunction = function () {
-
-    }
+    animate.RenderFunction = function () { };
 
     animate.Fullscreen = function(){
       var elem = document.documentElement;//document.getElementById(animate.containerID);
@@ -86,6 +85,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
   		animate.ResizeWindow();
       animate.RenderFunction = function(){animate.renderer.render(animate.loader.scene, animate.camera)};
     };
+
     animate.SetCustomRenderFunction = function (fun) {
   		animate.ResizeWindow();
       animate.RenderFunction = fun;
@@ -101,6 +101,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
       animate.fps = f;
       interval = 1000 / animate.fps
     };
+
     animate.SetDefaultFramerate = function () {
       animate.fps = 30;
       interval = 1000 / animate.fps;

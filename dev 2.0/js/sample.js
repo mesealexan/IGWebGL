@@ -1,7 +1,7 @@
-define( [ "animate", "cardinal", "i89", "LoE" ] ,
-function( animate, cardinal, i89, LoE ) {
+define( [ "animate", "cardinal", "i89", "LoE", "audio" ] ,
+function( animate, cardinal, i89, LoE, audio ) {
 
-console.info("animate", animate);
+console.info( "audio", audio );
 
 /***animate***/
 //start window auto resize. default is 'on'
@@ -10,6 +10,10 @@ console.info("animate", animate);
 //animate.StopWindowAutoResize();
 //call window resize
 //animate.ResizeWindow();
+
+animate.onLoadProgress.test = function (percent, loader) {
+  console.info( "scene is " + percent + "% loaded." );
+};
 
 /***adding callbacks***/
 cardinal.callbacks.introAnimHalfway.extraCallback = function () {
