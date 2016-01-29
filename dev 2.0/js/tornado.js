@@ -10,31 +10,31 @@ var tornadoScene = {
   constructor: function(){
   var tornado = new scene();
   tornado.folderName = "tornado";
-  tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House",
+  tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House", "SeaStorm",
    "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
    "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow" ,"CardinalWindow"]);
-   //scroll clouds
+   // scroll clouds
    tornado.cloudSpeed = 0.0001;
    tornado.slowMoCloudSpeed = 0.00005;
-   //gravity
+   // gravity
    tornado.gravity = new THREE.Vector3(0, -15, -15 );
    tornado.slowMoGravity = new THREE.Vector3(0, -1, -1 );
-   //debrees
+   // debrees
    tornado.debreeDestroyTime = 3000;
    tornado.nomalModebreeDestroyTime = 3000;
    tornado.slowModebreeDestroyTime = 10000;
-   //lightning
+   // lightning
    tornado.lightningTime = 75;
    tornado.slowMoLightningTime = 200;
-   //bloom
+   // bloom
    tornado.bloomSettings = {
      outside: {min: 0.8, max: 1.2},
      inside: {min: 0.4, max: 1}
    };
-   //upper scene aseets stored here for disposal
+   // upper scene aseets stored here for disposal
    tornado.upperSceneDisposables = [];
    tornado.lowerSceneObjects = [];
-   //crack window
+   // crack window
    crackCycleSpeed = 0.1;
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
@@ -111,18 +111,18 @@ var tornadoScene = {
   tornado.onStartFunctions.makeText = function(scene){
      //var string1 = "Protection for when"; //Ē not supported with current font
      //var string2 = "good weather goes bad";
-     var strings = ["Protection for when", "good weather goes bad"];
+     var strings = [ "Protection for when", "good weather goes bad" ];
 
      var settings = {
        size: 15,
-       curveSegments: 2,
+       curveSegments: 4,
        height: 1,
        bevelEnabled: false,
        style: "normal",
        weight: "normal",
 			 bevelEnabled: true,
-			 bevelThickness: 0.1,
-			 bevelSize: 0.1,
+			 bevelThickness: 0.01,
+			 bevelSize: 0.01,
        font: "bank gothic"
        //font: "helvetiker"
      };
@@ -133,6 +133,7 @@ var tornadoScene = {
        thickness: 1,
        color: new THREE.Color("rgb(255,255,255)")
      });
+
      var mats = [material, outlineMaterial];
      var meshes = [];
 
@@ -154,9 +155,19 @@ var tornadoScene = {
      meshes[1].position.x += -meshes[0].centerOffset + meshes[1].centerOffset;
      scene.add(meshes[0]);
 
+    /*animate.camera.add(meshes[0]);
+    meshes[0].position.z -= 200;
+    meshes[0].position.y += 2.5;
+    meshes[0].position.x += meshes[0].centerOffset;
+
+    animate.camera.add(meshes[1]);
+    meshes[1].position.z -= 200;
+    meshes[1].position.y -= 2.5;
+    meshes[1].position.x += meshes[1].centerOffset;
+
      var textPosTween = new aeTween(meshes[0].position);
-     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);
-     textPosTween.start();
+     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);*/
+     //textPosTween.start();
    };
 
   /***on load functions***/
@@ -186,32 +197,46 @@ var tornadoScene = {
   tornado.onLoadFunctions.OrdinaryWindow = function (mesh) {
     mesh.visible = false;
     var opac = 0.6;
+    tornado.assets.ordinaryWindow = mesh;
+
+    tornado.assets.ordinaryWindow.crackMap =
+      THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/ordinaryCrack.jpg');
+    tornado.assets.ordinaryWindow.specularMap =
+      THREE.ImageUtils.loadTexture(tornado.mediaFolderUrl+'/models/tornado/ordinary_glass_specular.jpg');
 
     mesh.geometry.computeFaceNormals();
     mesh.geometry.computeMorphNormals();
 
-    tornado.assets.ordinaryWindow = mesh;
-
-    tornado.assets.envMap = materials.cloudCube;
+    tornado.assets.envMap = materials.gloomyCloudsCube;
     tornado.assets.ordinaryWindow.material = materials.setMaterials("cardinal", {name:"Glass"});
     tornado.assets.ordinaryWindow.material.shading = THREE.FlatShading;
     tornado.assets.ordinaryWindow.material.maxOpacity = opac;
     tornado.assets.ordinaryWindow.material.opacity = 0;
-    tornado.assets.ordinaryWindow.material.envMap = materials.cloudCube;
+    tornado.assets.ordinaryWindow.material.envMap = materials.gloomyCloudsCube;
     tornado.assets.ordinaryWindow.material.morphTargets = true;
 
     tornado.assets.ordinaryWindow.break = function(){
+      tornado.assets.ordinaryWindow.crack();
       animate.updater.addHandler({
         speed: crackCycleSpeed,
         update: function(){
-          if (tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] < 0) animate.updater.removeHandler(this);
+          if ( tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] < 0 ) animate.updater.removeHandler(this);
             tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] -= this.speed;
         }
       });
     };
 
-    tornado.assets.ordinaryWindow.reset = function(){
+    tornado.assets.ordinaryWindow.reset = function () {
       tornado.assets.ordinaryWindow.morphTargetInfluences[ 0 ] = 1;
+      tornado.assets.ordinaryWindow.material.bumpMap = undefined;
+      tornado.assets.ordinaryWindow.material.specularMap = undefined;
+      tornado.assets.ordinaryWindow.material.needsUpdate = true;
+    };
+
+    tornado.assets.ordinaryWindow.crack = function () {
+      tornado.assets.ordinaryWindow.material.bumpMap = tornado.assets.ordinaryWindow.crackMap;
+      tornado.assets.ordinaryWindow.material.specularMap = tornado.assets.ordinaryWindow.specularMap;
+      tornado.assets.ordinaryWindow.material.needsUpdate = true;
     };
   }
 
@@ -231,17 +256,17 @@ var tornadoScene = {
         bumpScale: 1,
         transparent: true,
         opacity: opac,
-        envMap: materials.cloudCube
+        envMap: materials.gloomyCloudsCube
       });
     tornado.assets.cardinalWindow.material.maxOpacity = opac;
     tornado.assets.cardinalWindow.material.morphTargets = true;
     tornado.assets.cardinalWindHandler = {
       value: 0,
+      windIncrease: 0.5,
       speed: crackCycleSpeed,
       update: function(){
         this.value += this.speed;
-        tornado.assets.cardinalWindow.morphTargetInfluences[ 1 ] = Math.abs(Math.sin(this.value));
-        //tornado.assets.cardinalWindow.geometry.computeFaceNormals();
+        tornado.assets.cardinalWindow.morphTargetInfluences[ 1 ] = Math.abs(Math.sin(this.value)) + this.windIncrease;
       }
     };
 
@@ -266,16 +291,16 @@ var tornadoScene = {
     };
   }
 
-  tornado.onLoadFunctions.House_windows = function (mesh) {
+  tornado.onLoadFunctions.House_windows = function ( mesh ) {
     tornado.lowerSceneObjects.push(mesh);
     mesh.visible = false;
     mesh.material.materials[0] = materials.setMaterials("cardinal", {name:"Glass"});
     mesh.material.materials[0].opacity = 0.6;
-    mesh.material.materials[0].envMap = materials.cloudCube;
+    mesh.material.materials[0].envMap = materials.gloomyCloudsCube;
     mesh.material.materials[0].needsUpdate = true;
   }
 
-  tornado.onLoadFunctions.Background_clouds = function (mesh) {
+  tornado.onLoadFunctions.Background_clouds = function ( mesh ) {
     tornado.lowerSceneObjects.push(mesh);
     mesh.visible = false;
     mesh.material = mesh.material.materials[0];
@@ -293,7 +318,7 @@ var tornadoScene = {
     animate.updater.addHandler(tornado.assets.cloudScrollingUV);
   }
 
-  tornado.onLoadFunctions.Earth_shell = function (mesh) {
+  tornado.onLoadFunctions.Earth_shell = function ( mesh ) {
     tornado.upperSceneDisposables.push(mesh);
       var ae = new aeTween(mesh.position);
       ae.to({x: 250}, 230);
@@ -304,19 +329,19 @@ var tornadoScene = {
 
   };
 
-  tornado.onLoadFunctions.Debris = function (mesh) {
+  tornado.onLoadFunctions.Debris = function ( mesh ) {
     mesh.material.materials[0].transparent = true;
     mesh.material.materials[0].opacity = 0;
     tornado.assets.DebrisMaterial = mesh.material.materials[0];
     tornado.assets.Debris = mesh;
   };
 
-  tornado.onLoadFunctions.Floor_grass = function (mesh, loader) {
+  tornado.onLoadFunctions.Floor_grass = function ( mesh, loader ) {
     tornado.lowerSceneObjects.push(mesh);
     mesh.visible = false;
   };
 
-  tornado.onLoadFunctions.Floor_gird = function (mesh, loader) {
+  tornado.onLoadFunctions.Floor_gird = function ( mesh, loader ) {
     tornado.lowerSceneObjects.push(mesh);
 
     materials.floorGrid.prototype = new THREE.ShaderMaterial();
@@ -337,7 +362,7 @@ var tornadoScene = {
     PHY_Floor_gird.visible = false;
   };
 
-  tornado.onLoadFunctions.Earth_clouds = function (mesh) {
+  tornado.onLoadFunctions.Earth_clouds = function ( mesh ) {
     var noiseSize = 1024;
     var size = noiseSize * noiseSize;
     var data = new Uint8Array( 4 * size );
@@ -370,7 +395,7 @@ var tornadoScene = {
     tornado.upperSceneDisposables.push(mesh)
   };
 
-  tornado.onLoadFunctions.House = function (mesh, loader) {
+  tornado.onLoadFunctions.House = function ( mesh, loader ) {
     var PHY_houseMat = Physijs.createMaterial(
       mesh.material.clone(),
       0.6, // medium friction
@@ -384,7 +409,7 @@ var tornadoScene = {
     PHY_houseMesh.visible = false;
   };
 
-  tornado.onLoadFunctions.Hurricane_arm = function (mesh) {
+  tornado.onLoadFunctions.Hurricane_arm = function ( mesh ) {
     tornado.assets.Hurricane_arms = [];
     tornado.assets.Hurricane_arm = mesh;
     materials.tornado.prototype = new THREE.ShaderMaterial();
@@ -400,7 +425,7 @@ var tornadoScene = {
     }
   };
 
-  tornado.onLoadFunctions.Tree_sway = function (mesh, loader) {
+  tornado.onLoadFunctions.Tree_sway = function ( mesh, loader ) {
     var trees = [mesh];
     var pos1 = new THREE.Vector3(-18.3, -430, -16.8);
     mesh.material.materials[0].morphTargets = true;
@@ -431,7 +456,7 @@ var tornadoScene = {
     }
   };
 
-  tornado.onLoadFunctions.Bush_sway = function (mesh, loader) {
+  tornado.onLoadFunctions.Bush_sway = function ( mesh, loader ) {
     mesh.material.materials[0].morphTargets = true;
     mesh.position.set(1.5, -430, 1.2)
     tornado.animationHandlers.Bush_sway = new animationHandler();
@@ -953,7 +978,7 @@ var tornadoScene = {
     this.fragmentShader = fSh();
     this.side = 0;
     this.fog = false;
-    this.envMap = materials.cloudCube;
+    this.envMap = materials.gloomyCloudsCube;
     this.transparent = true;
     this.uniforms.opacity.value = 0.6;
     //this.uniforms.combine = THREE.MixOperation;

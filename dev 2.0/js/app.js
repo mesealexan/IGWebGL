@@ -1,6 +1,6 @@
 require.config({
     paths: {
-            "helvetiker" : "../lib/helvetiker_regular.typeface",
+            //"helvetiker" : "../lib/helvetiker_regular.typeface",
            "bankGothinc" : "../lib/Bank Gothic_Regular.typeface",
                "aeTween" : "../lib/aeTween/aeTween",
                 "jquery" : "../lib/jquery/dist/jquery.min",
@@ -22,12 +22,10 @@ require.config({
             "underscore" : "../lib/underscore/underscore",
                  "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
                  "watch" : "../lib/watch.js/src/watch",
-                //"howler" : "../lib/howler.js/howler.core",
                 "bowser" : "../lib/bowser/bowser",
                   "buzz" : "../lib/buzz/buzz",
                 "hammer" : "../lib/hammerjs/hammer",
-                   "gui" : "../lib/gui/dat.gui.min",
-                  "main" : "main"
+                   "gui" : "../lib/gui/dat.gui.min"
     }
     ,
     shim: {
@@ -35,17 +33,23 @@ require.config({
             exports: "THREE",
             tween: "TWEEN",
             watch: "watch"
-        }/*,
-        cloth: {
-            exports: "cloth",
-            deps: ["three"]
-        }*/
+        }
     }
 });
 
-require(["main", "jquery"], function(main){
-    var scenes = ["cardinal", "i89", "LoE", "neat", "sound", "tornado"];
-    main.Start("webGL", scenes[0]);
+/*function checkURLstart () {
+  var url = window.location.href;
+  var index = url.lastIndexOf( "#" );
+  var sceneUrl = url.slice( index + 1, url.length );
+  return sceneUrl;
+}*/
+
+require(["main", "jquery"], function ( main ) {
+  var url = window.location.href;
+  var index = url.lastIndexOf( "#" );
+  var sceneUrl = url.slice( index + 1, url.length );
+  var scenes = ["IG", "i89", "LoE", "neat", /*"sound",*/ "seaStorm"];
+  main.Start( "webGL", sceneUrl );
 });
 
-require(["sample"]);
+require( ["sample"] );

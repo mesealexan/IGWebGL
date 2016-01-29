@@ -1,6 +1,7 @@
-define(["animate", "orbitControls", "underscore", "hammer", "gui"],
-    function(animate, orbitControls, underscore, hammer, gui){
+define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
+    function( animate, orbitControls, underscore, hammer, gui ) {
     var events = {};
+    var activeClassName = "activated";
 
     events.Controls = undefined;
     events.hammer = undefined;
@@ -8,14 +9,40 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
 
     $( "canvas" ).mousedown(function(event){ event.preventDefault(); });
 
-    events.AddButton = function(btn){
-        var b = $('<input type="button" class="'+btn.class+'" id="'+btn.id+'" value="'+btn.text+'"/>');
+    (function(){
+      //setTimeout(function(){ alert("Hello"); }, 3000);
+    }())
 
-        if(btn.parent) $("#"+btn.parent).append(b);
-        else $("#cameraButtons").append(b);
+    function activateButton ( button ) {
+      $(button).addClass( activeClassName )
+      .siblings()
+      .removeClass( activeClassName );
+    }
 
-        if(btn.once)$("#"+btn.id).one("click",btn.function);
-        else $("#"+btn.id).on("click",btn.function);
+    events.AddButton = function ( btn ) {
+        btn.class = btn.class || " ";
+        btn.id = btn.id || " ";
+        btn.text = btn.text || " ";
+
+        var b = $('<input type="button" class="' + btn.class +
+                                     '" id="' + btn.id +
+                                     '" value="' + btn.text + '"/>');
+
+        if( btn.parent )
+          $( "#" + btn.parent ).append( b );
+        else {
+          $( "#cameraButtons" ).append( b );
+
+          $( b ).on( "click", function (){
+            activateButton( this ); // add 'active' class to camera control buttons
+          });
+        }
+
+
+        if( btn.once)
+          $( "#"+btn.id ).one( "click", btn.function );
+        else
+          $( "#"+btn.id ).on( "click", btn.function );
     };
 
     events.AddMouseDownEvent = function(fun){
@@ -58,8 +85,6 @@ define(["animate", "orbitControls", "underscore", "hammer", "gui"],
     events.ToggleControls = function(bool){
       events.Controls.enabled = bool;
     };
-
-
 
     events.addDOF_GUI = function(scene) {
       //return;

@@ -17,11 +17,11 @@ define(["underscore"],function (underscore) {
     this.init = function () {};
 
     this.addAssets = function(arr){
-      _.each(arr, function (a) { _this.assetNames.push(a); });
+      _.each(arr, function (a) { _this.assetNames.push ( a ); });
     };
 
     this.addSounds = function(arr){
-      _.each(arr, function (s) { _this.soundNames.push(s); });
+      _.each(arr, function (s) { _this.soundNames.push ( s ); });
     };
   };
 });

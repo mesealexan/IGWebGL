@@ -39,8 +39,8 @@ var neatScene = {
     neat.addAssets( ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
       'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', /*'Neat_intro_text',*/
       'Window_frame_main']);
-    neat.addSounds(['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
-      'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand']);
+    neat.addSounds( ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
+      'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'] );
     neat.cloudSpeed = 0.0004;
 
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
@@ -120,7 +120,7 @@ var neatScene = {
     neat.onStartFunctions.addFlags = function(){
       neat.assets.didYouSeeTheSun = false;
       neat.assets.timeToGlint = false;
-      neat.assets.intro = false;
+      neat.assets.intro = true;
     };
 
     /***on load functions***/
@@ -276,16 +276,16 @@ var neatScene = {
       animate.camera.updateProjectionMatrix();
 
       neat.assets.states = new states(scene);
-      neat.assets.states.dirt.start();
+      /*neat.assets.states.dirt.start();
       neat.timeouts.sun1 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun1);
       neat.timeouts.rain = setTimeout(function(){ neat.assets.states.rain.start(); }, stagesTime.rain);
       neat.timeouts.sun2 = setTimeout(function(){ neat.assets.states.sun.start(); }, stagesTime.sun2);
       neat.timeouts.final = setTimeout(function(){
         neat.buttons.rain.add();
         neat.buttons.dirt.add();
-      }, stagesTime.final);
-        //neat.buttons.rain.add();
-        //neat.buttons.dirt.add();
+      }, stagesTime.final);*/
+      neat.buttons.rain.add();
+      neat.buttons.dirt.add();
     };
 
     neat.buttons = {
@@ -409,7 +409,7 @@ var neatScene = {
             //audio.sounds.neatrainexteriorloop.fade(0, 1, 1000);
             var r_rainTween = new TWEEN.Tween(neat.assets.rightSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
             var l_rainTween = new TWEEN.Tween(neat.assets.leftSheet.material.uniforms.opacity).to({value: 0.7}, 2500).start();
-            if (neat.assets.intro) setTimeout(neat.assets.states.sun.start,5000);
+            if (neat.assets.intro) neat.timeouts.startSun = setTimeout(neat.assets.states.sun.start, 5000);
           },
           stop: function(){
             //stop rain particle system

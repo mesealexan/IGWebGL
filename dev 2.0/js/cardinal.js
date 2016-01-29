@@ -62,6 +62,7 @@ var cardinalScene = {
       'cardinal_vertical_shadow', 'cardinal_horizontal_shadow']);
 
     var fadeOutTime = 700;
+    var fpsForText = 20; //slow down fps to read text on window.
 
     var cameraAnimations = {
         animation_1: { from:    0, to:     158},
@@ -241,7 +242,7 @@ var cardinalScene = {
           animate.camera.translateY( 100 );
           var newUp = loader.cameraHandler.modifyCameraUp(firstFrame.rollAngle);
           animate.camera.up.set(newUp.x, newUp.y, newUp.z);
-          loader.cameraHandler.tween(0, 3/*0.03*/, onCompleteTween, TWEEN.Easing.Cubic.In);
+          loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
           tweenBloomDown();
       }
 
@@ -336,6 +337,9 @@ var cardinalScene = {
 
     function reactToFrame(frame){
         switch (frame){
+            case 80:
+                animate.SetCustomFramerate(fpsForText);
+            break;
             case 100://anim 1 mid way, vertical window out of frustum
                 cardinal.assets.cardinal_slice.visible = true;
                 cardinal.assets.cardinal_vertical.visible = true;
@@ -343,6 +347,7 @@ var cardinalScene = {
                 callback.go(cardinalScene.callbacks.introAnimHalfway);
                 break;
             case 155:
+                animate.SetDefaultFramerate();
                 events.AddMouseUpEvent( tweenCamToMain );
                 break;
             case 156://finished anim 1

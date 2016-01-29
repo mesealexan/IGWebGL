@@ -3,8 +3,8 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     function(THREE, /*jquery,*/ loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
-    var version = 6;
-    var camFOV =  45; //camera field of view in degrees
+    var version = 7;
+    var camFOV =  45; //degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
 
@@ -14,7 +14,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     }
 
     function addRenderer() {
-        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false,
+        animate.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
         animate.renderer.setSize( width, height );
@@ -38,12 +38,13 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     }
 
     function addButtons() {
+      main.buttons.muteAll.add();
       main.buttons.fullscreen.add();
       main.buttons.loadCardinal.add();
       main.buttons.load_i89.add();
       main.buttons.loadLoE.add();
       main.buttons.loadNeat.add();
-      main.buttons.loadSound.add();
+      //main.buttons.loadSound.add(); // scene disabled
       main.buttons.loadTornado.add();
       //main.buttons.loadDevScene.add();
     }
@@ -59,28 +60,29 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         //check webGL compatibility
         if(!degradation.webgl_detect({id: containerID})) return;
         //entry point (first function called by require in app.js)
-        loader.LoadingScreen.add();
-        width = $('#'+containerID).width();
-        height = $('#'+containerID).height();
+        //loader.LoadingScreen.add();
+        width = $( '#' + containerID ).width ();
+        height = $( '#' + containerID ).height ();
         events.containerID = containerID;
-        animate.renderSize = {width: width, height: height};
+        animate.renderSize = { width: width, height: height };
         animate.container = document.getElementById( containerID );
         animate.containerID = containerID;
         addRenderer();
         main.mediaFolderUrl = getMediaFolderURL();
-        main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
+        main.scene = new Physijs.Scene( { mediaFolderUrl: main.mediaFolderUrl } );
         main.scene.sceneID = sceneID;
-        setBackground(containerID, main.mediaFolderUrl);
-        materials.makeTextureCube(main.mediaFolderUrl);
-        materials.makeCloudTextureCube(main.mediaFolderUrl);
-        animate.loader = main.loader = new loader(main.scene, animate, main.mediaFolderUrl, addCamera());
+        setBackground( containerID, main.mediaFolderUrl );
+        materials.makeTextureCube( main.mediaFolderUrl );
+        materials.makeCloudTextureCube( main.mediaFolderUrl );
+        materials.makeGloomyTextureCube( main.mediaFolderUrl );
+        animate.loader = main.loader = new loader( main.scene, animate, main.mediaFolderUrl, addCamera() );
         animate.StartWindowAutoResize();
         animate.SetDefaultRenderFunction();
         addButtons();
         //because they are unique, lights are added by each scene's individual file
     };
 
-    main.LoadNewScene = function(sceneID){
+    main.LoadNewScene = function ( sceneID ) {
         //only call after Start()
         if(main.loader.loadingScene) return;
         loader.LoadingScreen.show();
@@ -93,7 +95,6 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         main.loader.UnloadScene(newScene);
 
         function newScene(){
-            //main.scene = new Physijs.Scene({mediaFolderUrl: main.mediaFolderUrl});
             main.scene.sceneID = sceneID;
             main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
             animate.loader = main.loader;
@@ -106,43 +107,43 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.buttons = {
         loadCardinal:{
             add: function(){
-                events.AddButton({text:"load cardinal", function: function(){
-                    main.LoadNewScene("cardinal")}, id:"load_cardinal", parent:"loadButtons"
+                events.AddButton({text:"IG", function: function(){
+                    main.LoadNewScene("IG")}, id:"load_IG", parent:"loadButtons"
                 });
             }
         },
         load_i89:{
             add: function(){
-                events.AddButton({text:"load i89", function: function(){
+                events.AddButton({text:"i89", function: function(){
                     main.LoadNewScene("i89")}, id:"load_i89", parent:"loadButtons"
                 });
             }
         },
         loadLoE:{
             add: function(){
-                events.AddButton({text:"load LoE", function: function(){
+                events.AddButton({text:"LoE", function: function(){
                     main.LoadNewScene("LoE")}, id:"load_LoE", parent:"loadButtons"
                 });
             }
         },
         loadNeat:{
             add: function(){
-                events.AddButton({text:"load neat", function: function(){
+                events.AddButton({text:"neat", function: function(){
                     main.LoadNewScene("neat")}, id:"loadNeat", parent:"loadButtons"
                 });
             }
         },
         loadSound:{
             add: function(){
-                events.AddButton({text:"load sound", function: function(){
+                events.AddButton({text:"sound", function: function(){
                     main.LoadNewScene("sound")}, id:"loadSound", parent:"loadButtons"
                 });
             }
         },
         loadTornado:{
             add: function(){
-                events.AddButton({text:"load tornado", function: function(){
-                    main.LoadNewScene("tornado")}, id:"loadTornado", parent:"loadButtons"
+                events.AddButton({text:"sea storm", function: function(){
+                    main.LoadNewScene("seaStorm")}, id:"loadTornado", parent:"loadButtons"
                 });
             }
         },
@@ -159,6 +160,13 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
                     animate.Fullscreen()}, id:"fullscreen", parent:"loadButtons", id: "fullscreen"
                 });
             }
+        },
+        muteAll:{
+          add: function(){
+              events.AddButton({text:"mute", function: function(){
+                  audio.ToggleMute()}, id:"muteAll", parent:"loadButtons", id: "muteAll"
+              });
+          }
         }
     };
 
