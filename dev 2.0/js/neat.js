@@ -219,16 +219,22 @@ var neatScene = {
       }
 
       function onCompleteTween(){
-      loader.cameraHandler.play(
-        undefined,
-        undefined,
-        function(){ onCameraComplete(scene) },
-        function(){
-          tweenFocus();
-          neat.animationHandlers.ah1.loop(0, 15);
-          animate.updater.addHandler(new animate.PositionRotationHandler(neat.assets.bird, neat.assets.birdAnim));
-        })
+        loader.cameraHandler.play(
+          undefined,
+          undefined,
+          function () {
+            onCameraComplete(scene);
+            animate.StartTimeout();
+          },
+          onCameraStart
+        )
       };
+
+      function onCameraStart () {
+        tweenFocus();
+        neat.animationHandlers.ah1.loop(0, 15);
+        animate.updater.addHandler(new animate.PositionRotationHandler(neat.assets.bird, neat.assets.birdAnim));
+      }
 
       animate.Animate();
     };
@@ -291,13 +297,13 @@ var neatScene = {
     neat.buttons = {
       rain: {
           add: function(){
-              events.AddButton({text:"rain", function: neat.assets.states.rain.start, id:"rain"});
+              events.AddButton({text:"rain", function: neat.assets.states.rain.start, id:"rain", class:"anim-event"});
           },
           remove: function(){ events.RemoveElementByID("rain"); }
       },
       dirt: {
           add: function(){
-              events.AddButton({text:"dirt", function: neat.assets.states.dirt.start, id:"dirt"});
+              events.AddButton({text:"dirt", function: neat.assets.states.dirt.start, id:"dirt", class:"anim-event"});
           },
           remove: function(){ events.RemoveElementByID("dirt"); }
       }

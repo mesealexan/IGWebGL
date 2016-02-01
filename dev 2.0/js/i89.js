@@ -219,8 +219,13 @@ var i89Scene = {
     };
 
     i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
-       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+       loader.cameraHandler.play(undefined,undefined, // from, to undefined
+         onCameraComplete,
          animate.Animate);
+
+         function onCameraComplete () {
+           animate.StartTimeout();
+         }
     };
 
     i89.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -252,13 +257,15 @@ var i89Scene = {
     i89.buttons = {
         i89_off: {
             add: function(){
-                events.AddButton({text:"i89 off", function: i89.switchWindow.toggleOFF, id:"i89_off"});
+                events.AddButton({text:"i89 off", function: i89.switchWindow.toggleOFF, id:"i89_off",
+                class:"glass-type"});
             },
             remove: function(){ events.RemoveElementByID("i89_off"); }
         },
         i89_on: {
             add: function(){
-                events.AddButton({text:"i89 on", function: i89.switchWindow.toggleON, id:"i89_on"});
+                events.AddButton({text:"i89 on", function: i89.switchWindow.toggleON, id:"i89_on",
+                class:"glass-type"});
             },
             remove: function(){ events.RemoveElementByID("i89_on"); }
         },
@@ -266,7 +273,7 @@ var i89Scene = {
             add: function(){
                 events.AddButton({text:"outside",
                     function: function(){i89.tweenCamera("outside")},
-                    id:"outside"});
+                    id:"outside", class:"cam-position"});
             },
             remove: function(){ events.RemoveElementByID("outside"); }
         },
@@ -274,7 +281,7 @@ var i89Scene = {
             add: function(){
                 events.AddButton({text:"inside",
                     function: function(){i89.tweenCamera("inside")},
-                    id:"inside"});
+                    id:"inside", class:"cam-position"});
             },
             remove: function(){ events.RemoveElementByID("inside"); }
         },
@@ -384,7 +391,7 @@ var i89Scene = {
     function reactToFrame(frame){
         switch (frame){
             case 1:
-              audio.sounds.i89coldnightintro.setVolume(100);
+                audio.sounds.i89coldnightintro.setVolume(100);
             break;
             case 220:
                 //audio.sounds.i89coldnightintro.fade(1.0, 0.0, 3000);
@@ -404,10 +411,10 @@ var i89Scene = {
             case 404:
                 heatWaves.loopWave1();
                 heatWaves.playWave2();
-                //i89.assets.loader.cameraHandler.setSpeed(2);
                 break;
             case 521:
                 heatWaves.loopWave2();
+                i89.assets.loader.cameraHandler.frame = 630;
                 break;
             case 638:
                 //audio.sounds.i89heaterloop.fade(0.6, 1.0, 2000);

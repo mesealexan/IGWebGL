@@ -212,10 +212,14 @@ var LoEScene = {
 
     /***on finish functions***/
     LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
-
       //x: -4489.42, y: 4651.72, z: 3962.66
-       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+       loader.cameraHandler.play(undefined,undefined,
+         onCameraComplete,//from, to
          animate.Animate);
+
+        function onCameraComplete () {
+          animate.StartTimeout();
+        }
     };
 
     LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -243,22 +247,22 @@ var LoEScene = {
         cold: {
             add: function(){
                 events.AddButton({text:"cold",
-                    function: function(){LoE.manageBackgroundOpacity('cold')},
-                    id:"cold"});
+                    function: function(){LoE.manageBackgroundOpacity('Northern')},
+                    id:"cold", class:"coating-type"});
             }
         },
         hot: {
             add: function(){
                 events.AddButton({text:"hot",
-                    function: function(){LoE.manageBackgroundOpacity('hot')},
-                    id:"hot"});
+                    function: function(){LoE.manageBackgroundOpacity('Southern')},
+                    id:"hot", class:"coating-type"});
             }
         },
         mixed: {
             add: function(){
                 events.AddButton({text:"mixed",
-                    function: function(){LoE.manageBackgroundOpacity('mixed')},
-                    id:"mixed"});
+                    function: function(){LoE.manageBackgroundOpacity('All-Climate')},
+                    id:"mixed", class:"coating-type"});
             }
         }
     };

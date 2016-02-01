@@ -525,6 +525,7 @@ define(["three", "animate"], function(THREE, animate){
         }
         material.name = materialName;
         material.defaultEmissive = material.emissive;
+        material.defaultColor = material.color;
         material.maxOpacity = material.opacity;
         return material;
     };

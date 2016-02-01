@@ -66,7 +66,6 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       this.DisposeObject = disposeObject;
       this.sceneID = scene.sceneID;
       this.onLoadProgressFunctions = _.functions( this.animationComponent.onLoadProgress );
-
       var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
 
       this.mediaFolderUrl =
@@ -92,9 +91,40 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
             selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
         });
         animationComponent.ResizeWindow();
-        loader.LoadingScreen.hide();
+        _this.LoadingScreen.hide();
         _this.loadingScene = false;
       };
+
+      this.LoadingScreen = {
+        add: function () {
+            $( "#" + animate.containerID ).append( '<div class="loader"></div>' );
+            $( "#" + animate.containerID ).append( '<h1 id="loadingText">loading</h1>' );
+        },
+        show: function () {
+            animate.renderer.clear();
+            $( '#loadingText' ).text( "0%" );
+            $( '.loader, #loadingText' ).show();
+        },
+        hide: function () {
+            $( '.loader, #loadingText' ).hide();
+        },
+        update: function ( percent ) {
+            $( '#loadingText' ).text( percent + "%" );
+        }
+      };
+
+      this.LowPowerScreen = {
+        add: function () {
+            $( "#" + animate.containerID ).append( '<div id="lowPower"></div>' );
+            $( "#lowPower" ).append( '<p id="lowPowerText">User inactive. Click to resume.</p>' );
+        },
+        show: function () {
+            $( '#lowPower, #lowPowerText' ).show();
+        },
+        hide: function () {
+            $( '#lowPower, #lowPowerText' ).hide();
+        },
+      }
 
       this.ParseJSON = function ( file ) {
         var request = new XMLHttpRequest();
@@ -126,6 +156,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       this.OnLoadProgress = function () {
         _.each(_this.onLoadProgressFunctions, function(fun){
           var percent = getLoadingPercentage(_this);
+          _this.LoadingScreen.update( percent );
           _this.animationComponent.onLoadProgress [fun] (percent, _this) ;
         });
       }
@@ -153,13 +184,13 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       this.assetIndex = 0;
       this.totalAssets = assetNames.length + soundNames.length;
 
-      //camera handler
+      // camera handler
       var cameraJSON = this.ParseJSON( _this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON" );
       if( cameraJSON != false ) this.cameraHandler = new cameraHandler( cameraJSON );
 
-      //check if no assets exist
+      // check if no assets exist
       if( assetNames == undefined || assetNames.length == 0){ loadSounds(); return; };
-      //load next asset if it exists
+      // load next asset if it exists
       if( ( nextAsset = assetNames[_this.assetIndex] ) !== undefined ) load ( nextAsset );
 
       function load(name){
@@ -208,19 +239,6 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       }
     };
 
-    loader.LoadingScreen = {
-      add: function(){
-          $('body').append('<div class="loader"></div>');
-          $('.loader').append('<h1 id="loadingText">loading</h1>');
-      },
-      show: function(){
-          animate.renderer.clear()
-          $('.loader').show();
-      },
-      hide: function(){
-          $('.loader').hide();
-      }
-    };
     /***end public functions***/
 
     return loader;

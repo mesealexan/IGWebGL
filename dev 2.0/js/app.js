@@ -37,19 +37,9 @@ require.config({
     }
 });
 
-/*function checkURLstart () {
-  var url = window.location.href;
-  var index = url.lastIndexOf( "#" );
-  var sceneUrl = url.slice( index + 1, url.length );
-  return sceneUrl;
-}*/
-
 require(["main", "jquery"], function ( main ) {
-  var url = window.location.href;
-  var index = url.lastIndexOf( "#" );
-  var sceneUrl = url.slice( index + 1, url.length );
   var scenes = ["IG", "i89", "LoE", "neat", /*"sound",*/ "seaStorm"];
-  main.Start( "webGL", sceneUrl );
+  main.Start( "webGL", scenes[4] );
 });
 
 require( ["sample"] );

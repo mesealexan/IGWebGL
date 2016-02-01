@@ -63,7 +63,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         //loader.LoadingScreen.add();
         width = $( '#' + containerID ).width ();
         height = $( '#' + containerID ).height ();
-        events.containerID = containerID;
+        events.Init(containerID);
         animate.renderSize = { width: width, height: height };
         animate.container = document.getElementById( containerID );
         animate.containerID = containerID;
@@ -75,7 +75,12 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         materials.makeTextureCube( main.mediaFolderUrl );
         materials.makeCloudTextureCube( main.mediaFolderUrl );
         materials.makeGloomyTextureCube( main.mediaFolderUrl );
-        animate.loader = main.loader = new loader( main.scene, animate, main.mediaFolderUrl, addCamera() );
+        animate.loader =
+        main.loader =
+        new loader( main.scene, animate, main.mediaFolderUrl, addCamera() );
+        main.loader.LoadingScreen.add();
+        main.loader.LowPowerScreen.add();
+        main.loader.LowPowerScreen.hide();
         animate.StartWindowAutoResize();
         animate.SetDefaultRenderFunction();
         addButtons();
@@ -85,19 +90,23 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.LoadNewScene = function ( sceneID ) {
         //only call after Start()
         if(main.loader.loadingScene) return;
-        loader.LoadingScreen.show();
         audio.StopAll();
+        animate.timeoutID = undefined;
+        animate.ClearLowPowerTimeout();
         animate.StopAnimating();
         events.UnbindAll();
         events.EmptyElementByID("cameraButtons");
         animate.updater.clearAll();
         TWEEN.removeAll();
         main.loader.UnloadScene(newScene);
+        main.loader.LoadingScreen.show();
 
         function newScene(){
             main.scene.sceneID = sceneID;
-            main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
-            animate.loader = main.loader;
+            animate.loader =
+            main.loader =
+            new loader( main.scene, animate, getMediaFolderURL(), addCamera() );
+            main.loader.LowPowerScreen.hide();
         }
     };
     /***end public functions***/

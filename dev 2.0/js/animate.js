@@ -1,19 +1,30 @@
-define(["underscore", "updater", "tween", "EffectComposer",
-"CopyShader", "ShaderPass", "RenderPass", "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader", "SSAOShader"],
-    function(underscore, updater, tween, EffectComposer,
-      CopyShader, ShaderPass, RenderPass, BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader, SSAOShader){
+define(["underscore", "updater", "tween", "EffectComposer", "CopyShader", "ShaderPass", "RenderPass",
+  "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader", "SSAOShader"],
+function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, RenderPass,
+  BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader, SSAOShader){
     var animate = {
-      fps: 30
+      fps: 30,
+      asleep: false,
+      container: undefined, //html element for webGL renderer
+      renderer: undefined,
+      camera: undefined,
+      loader: undefined,
+      updater: new updater(),
+      composer: undefined,
+      onLoadProgress: { },
+      timeoutID: undefined// id used for sleep mode
     };//public functionality
 
     /***private fields***/
-    var frameID = 0;//keeps track of frame number, can be used to cancelAnimationFrame
-    //delta time (capped framerate) variables
+    var frameID = 0;// keeps track of frame number, can be used to cancelAnimationFrame
+    // delta time (capped framerate) variables
     var then = _.now();
     var start = then;
     var now = undefined;
-    var delta = undefined;//actual time between current and last frame
-    var interval = 1000 / animate.fps;//ideal time in ms between frames
+    var delta = undefined; // actual time between current and last frame
+    var interval = 1000 / animate.fps; // ideal time in ms between frames
+    // timeout ( power saving mode ) variables
+    var timeoutTime = 60000; // ms
     /***end private fields***/
 
     window.addEventListener('orientationchange', onOrientationChange);
@@ -41,13 +52,7 @@ define(["underscore", "updater", "tween", "EffectComposer",
     /***end private functions***/
 
     /***public fields***/
-    animate.container = undefined;//html element for webGL renderer
-    animate.renderer = undefined;
-    animate.camera = undefined;
-    animate.loader = undefined;
-    animate.updater = new updater();
-		animate.composer = undefined;
-    animate.onLoadProgress = { };
+
     /***end public fields***/
 
     animate.Animate = function(systemDelta){
@@ -105,7 +110,34 @@ define(["underscore", "updater", "tween", "EffectComposer",
     animate.SetDefaultFramerate = function () {
       animate.fps = 30;
       interval = 1000 / animate.fps;
-  };
+    };
+
+    animate.StartTimeout = function () {
+      animate.timeoutID = _.delay( animate.Sleep, timeoutTime );
+    };
+
+    animate.ClearLowPowerTimeout = function () {
+      if ( animate.timeoutID != undefined ) clearTimeout ( animate.timeoutID );
+    };
+
+    animate.ResetTimeout = function () {
+      if( animate.timeoutID == undefined ) return; // timeout not requested by scene yet
+      animate.ClearLowPowerTimeout();
+      animate.StartTimeout();
+      if ( animate.asleep == true ) animate.Awake();
+    };
+
+    animate.Sleep = function () {
+      animate.asleep = true;
+      animate.loader.LowPowerScreen.show();
+      animate.StopAnimating();
+    };
+
+    animate.Awake = function () {
+      animate.asleep = false;
+      animate.loader.LowPowerScreen.hide();
+      animate.Animate();
+    };
 
     //handlers instantiated by scene meshes for updating transform data
     animate.PositionHandler = function(mesh, animation){

@@ -57,13 +57,6 @@ var tornadoScene = {
   };
 
   /***on start functions***/
-  tornado.onStartFunctions.addButtons = function(){
-    tornado.buttons.cardinal.add();
-    tornado.buttons.ordinary.add();
-    tornado.buttons.wind.add();
-    tornado.buttons.reset.add();
-  };
-
   tornado.onStartFunctions.startLightning = function () {
     startLightning();
   };
@@ -114,9 +107,9 @@ var tornadoScene = {
      var strings = [ "Protection for when", "good weather goes bad" ];
 
      var settings = {
-       size: 15,
+       size: 1,
        curveSegments: 4,
-       height: 1,
+       height: 0.1,
        bevelEnabled: false,
        style: "normal",
        weight: "normal",
@@ -130,7 +123,7 @@ var tornadoScene = {
      var material = new THREE.MeshBasicMaterial({color: 0x000000});
      materials.outlineShader.prototype = new THREE.ShaderMaterial();
      var outlineMaterial = new materials.outlineShader({
-       thickness: 1,
+       thickness: 0.08,
        color: new THREE.Color("rgb(255,255,255)")
      });
 
@@ -146,27 +139,27 @@ var tornadoScene = {
        mesh.centerOffset = centerOffset;
        meshes.push(mesh);
        tornado.upperSceneDisposables.push(mesh);
-     });
+     });     
 
-     meshes[0].position.set(-37 + meshes[0].centerOffset, 180, 45 );
-     meshes[0].rotation.x -= Math.PI / 2;
+     meshes[0].position.set(0, 0, 100 );
+     //meshes[0].rotation.x -= Math.PI / 2;
      meshes[0].add(meshes[1]);
-     meshes[1].position.y -= 20;
+     meshes[1].position.y -= 0;
      meshes[1].position.x += -meshes[0].centerOffset + meshes[1].centerOffset;
      scene.add(meshes[0]);
 
-    /*animate.camera.add(meshes[0]);
+    animate.camera.add(meshes[0]);
     meshes[0].position.z -= 200;
     meshes[0].position.y += 2.5;
     meshes[0].position.x += meshes[0].centerOffset;
 
-    animate.camera.add(meshes[1]);
-    meshes[1].position.z -= 200;
+    //animate.camera.add(meshes[1]);
+    //meshes[1].position.z -= 200;
     meshes[1].position.y -= 2.5;
-    meshes[1].position.x += meshes[1].centerOffset;
+    //meshes[1].position.x += meshes[1].centerOffset;
 
      var textPosTween = new aeTween(meshes[0].position);
-     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);*/
+     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);
      //textPosTween.start();
    };
 
@@ -468,8 +461,14 @@ var tornadoScene = {
 
   /***on finish functions***/
   tornado.onFinishLoadFunctions.playCamera = function(scene, loader) {
-     loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+     loader.cameraHandler.play(undefined,undefined, //from, to undefined
+       onCameraComplete,
        animate.Animate);
+
+       function onCameraComplete () {
+         addButtons();
+         animate.StartTimeout();
+       }
   };
 
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
@@ -720,6 +719,7 @@ var tornadoScene = {
     switch (frame) {
       case 0:
         revealTornado();
+        tweenText();
         break;
       case 200:
         fadeToWhite();
@@ -742,6 +742,17 @@ var tornadoScene = {
         events.ToggleControls(true);
         break;
     }
+  }
+
+  function tweenText(){
+    console.log(tornado.assets.text_meshes)
+      /*var textTween = new aeTween(tornado.assets.text_meshes[0].material );
+      textTween.to( { opacity: 0 }, tornado.textFadeFrameTime );
+      textTween.start();
+
+      var textTween2 = new aeTween(tornado.assets.text_meshes[1].material.uniforms.opacity );
+      textTween2.to( { value: 0 }, tornado.textFadeFrameTime );
+      textTween2.start();*/
   }
 
   function cleanUpperScene () {
@@ -1136,7 +1147,14 @@ var tornadoScene = {
     };
     return tornado;
 
-}
+  function addButtons () {
+    tornado.buttons.cardinal.add();
+    tornado.buttons.ordinary.add();
+    tornado.buttons.wind.add();
+    tornado.buttons.reset.add();
+  };
+
+  }
 }
 return tornadoScene;
 });

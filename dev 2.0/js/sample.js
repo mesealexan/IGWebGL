@@ -12,7 +12,7 @@ console.info( "audio", audio );
 //animate.ResizeWindow();
 
 animate.onLoadProgress.test = function (percent, loader) {
-  console.info( "scene is " + percent + "% loaded." );
+  
 };
 
 /***adding callbacks***/
