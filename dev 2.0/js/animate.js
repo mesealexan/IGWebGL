@@ -37,6 +37,7 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
         height: $(animate.container).height()
       };
       animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
+      //composer.setSize( animate.renderSize.width, animate.renderSize.height );
 		  animate.camera.aspect	= animate.renderSize.width / animate.renderSize.height;
 		  animate.camera.updateProjectionMatrix();
     }

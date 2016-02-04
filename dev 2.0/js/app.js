@@ -39,7 +39,7 @@ require.config({
 
 require(["main", "jquery"], function ( main ) {
   var scenes = [ "IG", "i89", "LoE", "neat", /*"sound",*/ "seaStorm" ];
-  main.Start( "webGL", scenes[2] );
+  main.Start( "webGL", scenes[4] );
 });
 
 require( ["sample"] );

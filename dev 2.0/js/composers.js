@@ -40,8 +40,11 @@ define(["animate", "fxaa"], function(animate, fxaa){
 
       var rtParameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat };
       var depthMat = new THREE.MeshDepthMaterial();
-      var renderTarget = new THREE.WebGLRenderTarget( animate.renderSize.width,
-        animate.renderSize.height, rtParameters );
+      var renderTarget = new THREE.WebGLRenderTarget (
+        animate.renderSize.width,
+        animate.renderSize.height,
+        rtParameters
+      );
 
       var composer = new THREE.EffectComposer( animate.renderer );
       composer.addPass( new THREE.RenderPass( animate.loader.scene, animate.camera ) );
@@ -54,8 +57,10 @@ define(["animate", "fxaa"], function(animate, fxaa){
 
       var fxaaPass = new THREE.ShaderPass( fxaa );
       fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
+      fxaaPass.renderToScreen = true;
       composer.addPass( fxaaPass );
 
+      /*
       var bokFoc, bokApe;
       if(set.bok != undefined){ bokFoc = set.bok.foc; bokApe = set.bok.ape; }
       else {bokFoc = 1; bokApe = 0;}
@@ -70,7 +75,7 @@ define(["animate", "fxaa"], function(animate, fxaa){
 
       bokehPass.renderToScreen = true;
       composer.addPass( bokehPass );
-
+      */
       return composer;
     };
 
