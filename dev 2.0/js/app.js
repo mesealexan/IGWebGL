@@ -38,8 +38,8 @@ require.config({
 });
 
 require(["main", "jquery"], function ( main ) {
-  var scenes = ["IG", "i89", "LoE", "neat", /*"sound",*/ "seaStorm"];
-  main.Start( "webGL", scenes[4] );
+  var scenes = [ "IG", "i89", "LoE", "neat", /*"sound",*/ "seaStorm" ];
+  main.Start( "webGL", scenes[2] );
 });
 
 require( ["sample"] );

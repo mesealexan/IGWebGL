@@ -52,6 +52,7 @@ var i89Scene = {
         'inside_text', /*'outside_text',*/ 'moon', 'logo', 'frame', 'window_plane',
         'heat_wave', 'heat_wave_refract', 'heat_wave_reflect', 'i89']);
     i89.addSounds(["i89-coldnight-intro", "i89-heater-loop", "i89-camera-zoom", "i89-toggle-glasstype"]);
+    i89.disposables = [];
 
     /***on start functions***/
     i89.onStartFunctions.storeScene = function (scene, loader) {
@@ -75,6 +76,7 @@ var i89Scene = {
         var spotLight = new THREE.SpotLight(0xb99bfd);
         spotLight.position.set(980, 1049, -656);
         spotLight.target.position.set(34, 0, 85);
+        spotLight.angle = 0.1;
         scene.add( spotLight );
     };
 
@@ -106,7 +108,8 @@ var i89Scene = {
     /***end on start functions***/
 
     /***on load functions***/
-    i89.onLoadFunctions.outside_text= function(mesh, loader){
+    i89.onLoadFunctions.outside_text= function ( mesh, loader ) {
+      i89.disposables.push( mesh );
       mesh.material = new THREE.MeshBasicMaterial({color: 0xffffff});
     };
 
@@ -120,21 +123,31 @@ var i89Scene = {
         i89.assets.logo = mesh;
     };
 
-    i89.onLoadFunctions.bck = function(mesh){
+    i89.onLoadFunctions.moon = function ( mesh ) {
+      i89.disposables.push( mesh );
+    };
+
+    i89.onLoadFunctions.bck = function( mesh ) {
         mesh.material = mesh.material.materials[0];
         mesh.material.side = THREE.DoubleSide;
-        var bck2 = new THREE.Mesh(mesh.geometry.clone(), mesh.material.clone());
-        //var clone = mesh.material.map.clone();
-        //clone.needsUpdate = true;
-        //console.log(mesh.material.map)
-        //console.log(clone)
-        //bck2.material.map = clone;
-        /*bck2.material.map.wrapS = THREE.RepeatWrapping;
-        bck2.material.map.repeat.x = -1;
-        bck2.material.map.needsUpdate = true;
-        bck2.quaternion.set ( 0, 1, 0, 0);
-        i89.assets.scene.add(bck2);*/
-        //bck2.material.map.repeat.x = -1;
+        var bck2 = new THREE.Mesh( mesh.geometry.clone(), mesh.material.clone() );
+
+        // flip the map as well as opposing back
+        var canvas = document.createElement( "canvas" );
+        var ctx = canvas.getContext("2d");
+        var img = new Image;
+        img.src = mesh.material.map.sourceFile;
+        canvas.width = canvas.height = 2048;
+
+        img.onload = function() {
+          ctx.translate(canvas.width, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(img, 0, 0);
+          var newMap = new THREE.Texture( canvas );
+          newMap.needsUpdate = true;
+          bck2.material.map = newMap;
+        }
+
         bck2.quaternion.set ( 0, 1, 0, 0);
         i89.assets.scene.add(bck2);
     };
@@ -219,7 +232,7 @@ var i89Scene = {
     };
 
     i89.onFinishLoadFunctions.playCamera = function(scene, loader) {
-       loader.cameraHandler.play(undefined,undefined, // from, to undefined
+       loader.cameraHandler.play(undefined, undefined, // from, to undefined
          onCameraComplete,
          animate.Animate);
 
@@ -235,7 +248,7 @@ var i89Scene = {
     };
 
     i89.onFinishLoadFunctions.addControls = function(){
-        var c = {
+        events.AddControls({
             noZoom: true,
             noPan: true,
             maxPolarAngle: Math.PI / 2,
@@ -243,9 +256,7 @@ var i89Scene = {
             rotateSpeed: 0.5,
             minAzimuthAngle: -1.6,
             maxAzimuthAngle: -0.9
-        };
-
-        events.AddControls(c);
+        });
         events.ToggleControls(false);
     };
 
@@ -394,6 +405,7 @@ var i89Scene = {
                 audio.sounds.i89coldnightintro.setVolume(100);
             break;
             case 220:
+                clearDisposables();
                 //audio.sounds.i89coldnightintro.fade(1.0, 0.0, 3000);
                 audio.sounds.i89coldnightintro.fadeTo(0, 3000);
                 break;
@@ -578,6 +590,13 @@ var i89Scene = {
             in: function(obj, time, onComp){ tweenOpacity(obj, 1, time, onComp); }
         }
     }();
+
+    function clearDisposables () {
+      _.each( i89.disposables, function (d) {
+        i89.assets.loader.DisposeObject( d );
+      });
+    }
+
     return i89;
   }
 };

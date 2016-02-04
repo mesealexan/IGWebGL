@@ -3,6 +3,8 @@ function(scene, animate, watch, materials, tween, events, particleSystem, audio,
 var LoEScene = {
   scene: {}
   ,
+  url: "loe"
+  ,
   callbacks: {
     introAnimDone: {
       sampleCall1: function(){ console.log("finished intro animation"); }
@@ -27,7 +29,7 @@ var LoEScene = {
   constructor: function(){
     var LoE = new scene();
     LoE.folderName = "LoE";
-    LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+    LoE.addAssets([/*'EngineeredComfort',*/ /*'bck_1',*/ 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
     LoE.addSounds([ 'loe-factory-loop', 'loe-apply-coating' ]);
     LoE.disposables = [];
@@ -102,6 +104,19 @@ var LoEScene = {
        cube.position.set(-13256, -337, 919);
        scene.add( cube );
      };
+
+    LoE.onStartFunctions.addBackPlane = function (scene) {
+      var geom = new THREE.PlaneBufferGeometry(12000, 5000);
+      var mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({side:2}));
+      LoE.assets.bck_1 = mesh;
+      mesh.position.set(-8037.864, 4474.531, -3842.705);
+      mesh.material = materials.textureFadeMaterial();
+      mesh.rotation.copy(new THREE.Euler(
+        -0.02269702535467891,
+         0.42658893771436296,
+         0.009392635892883978));
+      scene.add( mesh );
+    }
     /***end on start functions***/
 
     /***on load functions***/
@@ -131,7 +146,6 @@ var LoEScene = {
     LoE.onLoadFunctions.bck_1 = function(mesh){
         mesh.material = materials.textureFadeMaterial();
         //mesh.position.set(1500, 0, 2500)
-        console.log(mesh)
         LoE.assets.bck_1 = mesh;
         var geometry = new THREE.PlaneGeometry( 5, 20, 32 );
         var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
@@ -205,12 +219,26 @@ var LoEScene = {
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
     };
 
-    LoE.onLoadFunctions.window_shadow = function(mesh){
-        LoE.assets.window_shadow = mesh;
+    LoE.onLoadFunctions.window_shadow = function ( mesh ) {
+      /*mesh.material = new THREE.MeshBasicMaterial();
+      console.log(mesh)*/
+      /*var geom = new THREE.PlaneBufferGeometry(1000, 1000);
+      var mesh = new THREE.Mesh( geom, materials.setMaterials("LoE", {name:"p2 op"}) );
+      mesh.rotation.x -= Math.PI / 2;
+      mesh.rotation.z -= Math.PI / 4;
+      LoE.assets.window_shadow = mesh;
+      mesh.position.set(-6009.42, 4051.72, 0);
+      scene.add( mesh );
+      console.log(mesh)*/
     };
     /***end on load functions***/
 
     /***on finish functions***/
+    LoE.onFinishLoadFunctions.increaseCamNear = function(){
+        animate.camera.near = 1000;
+        animate.camera.updateProjectionMatrix();
+    };
+
     LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
       //x: -4489.42, y: 4651.72, z: 3962.66
        loader.cameraHandler.play(undefined,undefined,
@@ -219,7 +247,10 @@ var LoEScene = {
 
         function onCameraComplete () {
           animate.StartTimeout();
+          //addBackPlane(scene);
         }
+
+
     };
 
     LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -243,38 +274,42 @@ var LoEScene = {
     };
     /***end on finish functions***/
 
+    /***on unload functions***/
+    LoE.onUnloadFunctions.resetCam = function(){
+        animate.SetCameraDelaultValues();
+    };
+
     LoE.buttons = {
         cold: {
             add: function(){
-                events.AddButton({text:"cold",
-                    function: function(){LoE.manageBackgroundOpacity('Northern')},
+                events.AddButton({text:"Northern",
+                    function: function(){LoE.manageBackgroundOpacity('cold')},
                     id:"cold", class:"coating-type"});
             }
         },
         hot: {
             add: function(){
-                events.AddButton({text:"hot",
-                    function: function(){LoE.manageBackgroundOpacity('Southern')},
+                events.AddButton({text:"Southern",
+                    function: function(){LoE.manageBackgroundOpacity('hot')},
                     id:"hot", class:"coating-type"});
             }
         },
         mixed: {
             add: function(){
-                events.AddButton({text:"mixed",
-                    function: function(){LoE.manageBackgroundOpacity('All-Climate')},
+                events.AddButton({text:"All-Climate",
+                    function: function(){LoE.manageBackgroundOpacity('mixed')},
                     id:"mixed", class:"coating-type"});
             }
         }
     };
 
-    function reactToFrame(frame){
+    function reactToFrame ( frame ) {
         switch (frame){
-            case 0: {
+            case 0:
                 audio.sounds.loefactoryloop.play();
                 audio.sounds.loefactoryloop.setVolume(0);
                 audio.sounds.loefactoryloop.fadeTo(40, 7000);
                 break;
-            }
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
                 LoE.assets.silverPS.holder.visible = true;
@@ -299,12 +334,11 @@ var LoEScene = {
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
                 break;
-            case 315: {
+            case 315:
                 audio.sounds.loeapplycoating.play();
                 //audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
                 audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
                 break;
-            }
             case 358:
                 LoE.assets.silverPS.holder.visible = false;
                 break;
@@ -329,7 +363,7 @@ var LoEScene = {
         }
     }
 
-     LoE.enableBackground = function () {
+    LoE.enableBackground = function () {
         var mat = LoE.assets.plane.material.materials[0];
         mat.transparent = true;
         mat.tweenOpacity(mat, 0, backgroundBlendTime);
@@ -348,7 +382,7 @@ var LoEScene = {
         for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
             var planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0));
             planeObj.rotation.x -= Math.PI / 2;
-            planeObj.rotation.z += Math.PI;																			             //magic
+            planeObj.rotation.z += Math.PI;	//magic
             planeObj.position.set(
                 silver_Planes_pos.positions[i].position.x + offsetX,
                 silver_Planes_pos.positions[i].position.z + offsetY,
@@ -362,7 +396,7 @@ var LoEScene = {
         planeObj.rotation.x += Math.PI / 2;
         planeObj.rotation.z += Math.PI / 2;
         planeObj.position.copy( LoE.assets.mobile_glass.position);
-        planeObj.position.y += 5;
+        planeObj.position.y += 15;
 
         LoE.assets.mobile_glass.plane = planeObj;
         LoE.assets.mobile_glass.add(planeObj);
@@ -446,13 +480,13 @@ var LoEScene = {
         switch (to){
           case "cold":
             tweenTo = cold_t;
-          break;
+            break;
           case "hot":
             tweenTo = hot_t;
-          break;
+            break;
           case "mixed":
             tweenTo = mixed_t;
-          break;
+            break;
           default:
             console.error("Unspecified background!");
         }

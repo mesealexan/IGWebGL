@@ -62,7 +62,6 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
     events.AddMouseUpEvent = function ( fun ) {
         $("body").on("mouseup", "#"+events.containerID, fun);
         //events.hammer.on('panend', function() { fun(); });
-
     };
 
     events.RemoveMouseUpEvent = function ( fun ) {

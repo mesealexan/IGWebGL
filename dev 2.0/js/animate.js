@@ -24,7 +24,7 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     var delta = undefined; // actual time between current and last frame
     var interval = 1000 / animate.fps; // ideal time in ms between frames
     // timeout ( power saving mode ) variables
-    var timeoutTime = 60000; // ms
+    var timeoutTime = 300000; // ms
     /***end private fields***/
 
     window.addEventListener('orientationchange', onOrientationChange);

@@ -8,7 +8,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         LoE: LoE,
         IG: cardinal,
         neat: neat,
-        //sound: sound, // scene disabled
+        //sound: sound, // disabled
         seaStorm: tornado,
         devScene: devScene
     };
@@ -74,7 +74,9 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       mediaFolderUrl;
 
       scene.add(camera);
-      changeURL(this.sceneID);
+
+      //check custom url
+      ( scenes[this.sceneID].url ) ? changeURL( scenes[this.sceneID].url ) : changeURL( this.sceneID );
 
       (function OnStartScene (){
         //retrieve all functions in onStartFunctions object, then call each one

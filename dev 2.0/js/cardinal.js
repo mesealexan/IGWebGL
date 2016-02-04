@@ -55,6 +55,8 @@ var cardinalScene = {
     }
   }
   ,
+  url: "ig"
+  ,
   constructor: function(){
     var cardinal = new scene();
     cardinal.folderName = "cardinal";
@@ -392,35 +394,40 @@ var cardinalScene = {
         sealantA:{
             add: function(){
                 events.AddButton({text:"sealantA", function: cardinal.zoomOnSlice.sealantA,
-                    id:"sealantA", class:"glass-component", once: true});
+                    id:"sealantA", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
         },
         sealantB:{
             add: function(){
                 events.AddButton({text:"sealantB", function: cardinal.zoomOnSlice.sealantB,
-                    id:"sealantB", class:"glass-component", once: true});
+                    id:"sealantB", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantB"); }
         },
         spacer:{
             add: function(){
                 events.AddButton({text:"spacer", function: cardinal.zoomOnSlice.spacer,
-                    id:"spacer", class:"glass-component", once: true});
+                    id:"spacer", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("spacer"); }
         },
         dessicant:{
             add: function(){
                 events.AddButton({text:"dessicant", function: cardinal.zoomOnSlice.dessicant,
-                    id:"dessicant", class:"glass-component", once: true});
+                    id:"dessicant", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("dessicant"); }
         }
     };
 
     cardinal.zoomOnSlice = {
+        currentPosition: undefined
+        ,
          sealantA: function(){
+           if (cardinal.zoomOnSlice.currentPosition == "sealantA") return;
+           stopAllTweens();
+           cardinal.zoomOnSlice.currentPosition = "sealantA";
            events.RemoveMouseDownEvent(stopAllTweens);
             callback.go(cardinalScene.callbacks.goToSealantA_Start);
             var anim = cameraAnimations.animation_3;
@@ -431,15 +438,18 @@ var cardinalScene = {
                 function(){//on complete
                     callback.go(cardinalScene.callbacks.goToSealantA_Done);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
                     cardinal.buttons.backToSlice.add();
                 });
              manageEmissive.resetAllSlice();
-             events.EmptyElementByID("cameraButtons");
-        },
+             events.RemoveElementByID("backToMain");
+             events.RemoveElementByID("backToSlice");
+        }
+        ,
         sealantB: function(){
+          console.log(cardinal.zoomOnSlice.currentPosition)
+          if (cardinal.zoomOnSlice.currentPosition == "sealantB") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "sealantB";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSealantB_Start);
             var anim = cameraAnimations.animation_4;
@@ -450,15 +460,16 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSealantB_Done);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
                     cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            events.RemoveElementByID("backToSlice");
         },
         spacer: function(){
+          if (cardinal.zoomOnSlice.currentPosition == "spacer") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "spacer";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSpacerStart);
             var anim = cameraAnimations.animation_5;
@@ -469,15 +480,16 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSpacerDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.dessicant.add();
                     cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            events.RemoveElementByID("backToSlice");
         },
         dessicant: function(){
+          if (cardinal.zoomOnSlice.currentPosition == "dessicant") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "dessicant";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToDessicantStart);
             var anim = cameraAnimations.animation_6;
@@ -488,13 +500,11 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToDessicantDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
                     cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            events.RemoveElementByID("backToSlice");
         },
         backToSlice: function(){
             callback.go(cardinalScene.callbacks.backToSliceStart);
@@ -506,14 +516,12 @@ var cardinalScene = {
                     events.AddMouseDownEvent(stopAllTweens);
                     events.AddMouseUpEvent( tweenCamToSliceMain );
                     callback.go(cardinalScene.callbacks.backToSliceDone);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
                     cardinal.buttons.backToMain.add();
+                    cardinal.zoomOnSlice.currentPosition = undefined;
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToSlice");
+
         }
     };
 

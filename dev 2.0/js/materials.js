@@ -165,10 +165,11 @@ define(["three", "animate"], function(THREE, animate){
                 break;
             case 'LoEp2 op':
                 material = new THREE.MeshLambertMaterial({
-                    color: new THREE.Color("rgb(0,0,0)"),
-                    ambient: new THREE.Color("rgb(0,0,0)"),
-                    specular: new THREE.Color("rgb(0,0,0)"),
-                    map:  THREE.ImageUtils.loadTexture(url+'p2_op.png')
+                    color: new THREE.Color("rgb(255,255,255)"),
+                    map: THREE.ImageUtils.loadTexture(url+'p2_op.png'),
+                    transparent: true,
+                    side: 2,
+                    opacity: 1
                 });
                 break;
             case 'LoEplane':
@@ -232,12 +233,11 @@ define(["three", "animate"], function(THREE, animate){
             case 'i89Glass':
                 material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
-                    specular: new THREE.Color("rgb(0,80,60)"),
-                    vertexColors: THREE.VertexColors,
+                    specular: new THREE.Color("rgb(0,0,0)"),
                     envMap: textureCube,
                     refractionRatio: 0.985,
                     reflectivity: 0.99,
-                    shininess: 30,
+                    shininess: 900,
                     transparent: true,
                     opacity: 0.61
                 });
@@ -406,7 +406,10 @@ define(["three", "animate"], function(THREE, animate){
                 material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(160,160,160)"),
                     ambient: new THREE.Color("rgb(222,222,222)"),
-                    specular: new THREE.Color("rgb(255,255,255)")
+                    specular: new THREE.Color("rgb(255,255,255)"),
+                    envMap: textureCube,
+                    reflectivity: 0.5,
+                    shininess: 30
                 });
                 break;
             case 'cardinalSpacer Cap':
@@ -414,8 +417,10 @@ define(["three", "animate"], function(THREE, animate){
                     color: new THREE.Color("rgb(150,150,150)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
-                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg')//,
-                    //envMap: textureCube
+                    normalMap: THREE.ImageUtils.loadTexture(url+'spacer.jpg'),
+                    envMap: textureCube,
+                    reflectivity: 0.5,
+                    shininess: 30
                 });
                 break;
             case 'cardinalGlass':
@@ -692,8 +697,11 @@ define(["three", "animate"], function(THREE, animate){
                 "void main(){"+
                 "float color = 1.0;"+
                 "vec2 position = vUv;"+
-                "gl_FragColor = startValue * texture2D(texture1, vUv) +" +
-                "endValue * texture2D(texture2, vUv);}"
+                "vec4 finalCol = startValue * texture2D(texture1, vUv) +" +
+                "endValue * texture2D(texture2, vUv);"+
+                "float opac = 1.0;"+
+                "gl_FragColor = vec4(finalCol.xyz, opac);"+
+              "}"
         }
 
         function tween(to, time){
