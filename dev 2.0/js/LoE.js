@@ -1,8 +1,6 @@
 define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
 function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
 var LoEScene = {
-  scene: {}
-  ,
   url: "loe"
   ,
   callbacks: {

@@ -49,16 +49,21 @@ define(["animate", "fxaa"], function(animate, fxaa){
       var composer = new THREE.EffectComposer( animate.renderer );
       composer.addPass( new THREE.RenderPass( animate.loader.scene, animate.camera ) );
 
-      var fadeToWhitePass = new THREE.ShaderPass( fadeToWhite );
-      composer.addPass( fadeToWhitePass );
+      composer.bloomPass = new THREE.BloomPass(set.str, 25, 5);
+      composer.bloomPass.name = "bloom";
+      composer.addPass(composer.bloomPass);
 
-      var bloomPass = new THREE.BloomPass(set.str, 25, 5);
-      composer.addPass(bloomPass);
+      composer.fadeToWhitePass = new THREE.ShaderPass( fadeToWhite );
+      composer.fadeToWhitePass.name = "fadeToWhite";
+      composer.addPass( composer.fadeToWhitePass );
 
-      var fxaaPass = new THREE.ShaderPass( fxaa );
-      fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
-      fxaaPass.renderToScreen = true;
-      composer.addPass( fxaaPass );
+
+
+      composer.fxaaPass = new THREE.ShaderPass( fxaa );
+      composer.fxaaPass.name = "fxaa";
+      composer.fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
+      composer.fxaaPass.renderToScreen = true;
+      composer.addPass( composer.fxaaPass );
 
       /*
       var bokFoc, bokApe;

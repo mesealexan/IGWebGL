@@ -12,7 +12,8 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       updater: new updater(),
       composer: undefined,
       onLoadProgress: { },
-      timeoutID: undefined// id used for sleep mode
+      timeoutID: undefined,// id used for sleep mode,
+      lastSystemDelta: 0
     };//public functionality
 
     /***private fields***/
@@ -33,13 +34,22 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     /***private functions***/
     function resizeWindow(){
       animate.renderSize = {
-        width: $(animate.container).width(),
+        width:  $(animate.container).width(),
         height: $(animate.container).height()
       };
-      animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
-      //composer.setSize( animate.renderSize.width, animate.renderSize.height );
+
 		  animate.camera.aspect	= animate.renderSize.width / animate.renderSize.height;
+
+      var composer = animate.loader.selectedScene.assets.composer;
+
+      if ( composer )
+      composer.fxaaPass.uniforms[ 'resolution' ].value.set(
+        1 / animate.renderSize.width,
+        1 / animate.renderSize.height
+      );
+
 		  animate.camera.updateProjectionMatrix();
+      animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
     }
 
     function startWindowAutoResize() {
@@ -50,13 +60,18 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       window.removeEventListener('resize', resizeWindow);
     }
 
+
+    function getDeltaTime (time) {
+      animate.lastSystemDelta = Number(time);
+    }
+
     /***end private functions***/
 
     /***public fields***/
 
     /***end public fields***/
 
-    animate.Animate = function(systemDelta){
+    animate.Animate = function( systemDelta ){
         frameID = requestAnimationFrame(animate.Animate);
         now = _.now();
         delta = now - then;
@@ -64,12 +79,15 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
             then = now - (delta % interval);
             animate.loader.scene.simulate(); // run physics
             TWEEN.update();
-            animate.updater.UpdateHandlers(systemDelta);
+            animate.updater.UpdateHandlers( performance.now() );
             animate.RenderFunction();
         }
     };
 
-    animate.StopAnimating = function () { cancelAnimationFrame(frameID); };
+    animate.StopAnimating = function () {
+      //requestAnimationFrame(getDeltaTime);
+      cancelAnimationFrame(frameID);
+    };
 
     animate.RenderFunction = function () { };
 

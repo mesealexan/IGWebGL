@@ -3,7 +3,7 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
       loader: undefined,
       audioArrIndex: 0
     };
-    
+
     audio.sounds = {};
     //Howler.iOSAutoEnable = true;
 
@@ -16,16 +16,15 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
         return [pre + ".mp3", pre + ".ogg", pre + ".m4a"];
     }
 
-    function loadSound(arr, onComp, mediaFolderUrl){
-
-      if(!arr || !(url = arr[audio.audioArrIndex])){
+    function loadSound ( arr, onComp, mediaFolderUrl ) {
+      if( !arr || !( url = arr [ audio.audioArrIndex ] ) ) {
         audio.loader.OnLoadProgress();
         audio.audioArrIndex = 0;
-        onComp();
+        if( onComp) onComp();
         return;
       }
 
-      if(audio.sounds[cleanName(url)]){
+      if( audio.sounds[ cleanName ( url ) ] ) {
           audio.audioArrIndex++;
           loadSound(arr, onComp);
           return;
@@ -46,6 +45,8 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
         audio.audioArrIndex = 0;
         loadSound(arr, loader.OnFinishedLoadingAssets, loader.mediaFolderUrl);
     };
+
+    audio.LoadSound = loadSound;
 
     audio.StopAll = function () {
       _.each( audio.sounds, function ( s ) {

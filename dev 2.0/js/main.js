@@ -7,6 +7,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     var camFOV =  45; //degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
+    var defaultScene = "ig";
 
     /***private functions***/
     function reportVersion(){
@@ -37,6 +38,17 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
       $('#'+containerID).css('background', 'url('+mediaFolderUrl+'/images/bck.jpg) no-repeat center center fixed');
     }
 
+    function startFromURL () {
+       var url = window.location.href;
+       var index = url.lastIndexOf( "#" );
+       if ( index == -1 ) return defaultScene;
+       var sceneUrl = url.slice( index + 1, url.length );
+       sceneUrl = sceneUrl || defaultScene;
+       sceneUrl = sceneUrl.replace("-", "");
+       sceneUrl = sceneUrl.toLowerCase();
+       return sceneUrl;
+     }
+
     function addButtons() {
       main.buttons.muteAll.add();
       main.buttons.fullscreen.add();
@@ -55,12 +67,13 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.loader = undefined;
 
     /***public functions***/
+
     main.Start = function(containerID, sceneID){
         reportVersion();
         //check webGL compatibility
         if(!degradation.webgl_detect({id: containerID})) return;
         //entry point (first function called by require in app.js)
-        //loader.LoadingScreen.add();
+        sceneID = sceneID || startFromURL();
         width = $( '#' + containerID ).width ();
         height = $( '#' + containerID ).height ();
         events.Init(containerID);
@@ -110,8 +123,6 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         }
     };
     /***end public functions***/
-
-
 
     main.buttons = {
         loadCardinal:{

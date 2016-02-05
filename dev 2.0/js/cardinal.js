@@ -1,8 +1,6 @@
 define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text", "materials"],
 function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text, materials){
 var cardinalScene = {
-  scene: {}
-  ,
   callbacks:{
     introAnimHalfway: {
       sampleCall1: function(){ console.log("reached middle of intro animation"); },
@@ -60,11 +58,11 @@ var cardinalScene = {
   constructor: function(){
     var cardinal = new scene();
     cardinal.folderName = "cardinal";
-    cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice',
-      'cardinal_vertical_shadow', 'cardinal_horizontal_shadow']);
+    cardinal.addAssets( ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice',
+      'cardinal_vertical_shadow', 'cardinal_horizontal_shadow'] );
 
     var fadeOutTime = 700;
-    var fpsForText = 20; //slow down fps to read text on window.
+    var fpsForText  = 20; //slow down fps to read text on window.
 
     var cameraAnimations = {
         animation_1: { from:    0, to:     158},
@@ -247,7 +245,7 @@ var cardinalScene = {
           var newUp = loader.cameraHandler.modifyCameraUp(firstFrame.rollAngle);
           animate.camera.up.set(newUp.x, newUp.y, newUp.z);
           loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
-          tweenBloomDown();
+          //tweenBloomDown();
       }
 
       function onCompleteTween(){
@@ -371,7 +369,7 @@ var cardinalScene = {
     cardinal.buttons ={
         slice: {
             add: function(){
-                events.AddButton({text:"go to slice",
+                events.AddButton({text:"Zoom in",
                     function: function(){ tweenCamToMain(cardinal.goToSlice) },
                     id:"goSlice", class:"navigation", once: true});
             },
@@ -379,7 +377,7 @@ var cardinalScene = {
         },
         backToMain: {
             add: function(){
-                events.AddButton({text:"back", function: cardinal.backToMain,
+                events.AddButton({text:"Zoom out", function: cardinal.backToMain,
                     id:"backToMain", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToMain"); }
@@ -393,28 +391,28 @@ var cardinalScene = {
         },
         sealantA:{
             add: function(){
-                events.AddButton({text:"sealantA", function: cardinal.zoomOnSlice.sealantA,
+                events.AddButton({text:"Silicone", function: cardinal.zoomOnSlice.sealantA,
                     id:"sealantA", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
         },
         sealantB:{
             add: function(){
-                events.AddButton({text:"sealantB", function: cardinal.zoomOnSlice.sealantB,
+                events.AddButton({text:"PIB", function: cardinal.zoomOnSlice.sealantB,
                     id:"sealantB", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantB"); }
         },
         spacer:{
             add: function(){
-                events.AddButton({text:"spacer", function: cardinal.zoomOnSlice.spacer,
+                events.AddButton({text:"Spacer", function: cardinal.zoomOnSlice.spacer,
                     id:"spacer", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("spacer"); }
         },
         dessicant:{
             add: function(){
-                events.AddButton({text:"dessicant", function: cardinal.zoomOnSlice.dessicant,
+                events.AddButton({text:"Desiccants", function: cardinal.zoomOnSlice.dessicant,
                     id:"dessicant", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("dessicant"); }
@@ -641,7 +639,7 @@ var cardinalScene = {
     }
 
     function tweenBloomDown () {
-      var amount = cardinal.assets.composer.passes[2].copyUniforms.opacity;
+      var amount = cardinal.assets.composer.bloomPass.copyUniforms.opacity;
       var tween = new TWEEN.Tween( amount );
       tween.to( { value: 0 }, 100 );
       //tween.start();

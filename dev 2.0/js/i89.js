@@ -1,8 +1,6 @@
 define(["scene", "animationHandler", "snowHandler", "watch", "animate", "events", "audio", "callback", "composers", "text"],
 function(scene, animationHandler, snowHandler, watch, animate, events, audio, callback, composers, text){
 var i89Scene = {
-  scene: {}
-  ,
   callbacks: {
     heaterStart: {
       sampleCall1: function(){ console.log("started heater waves"); }

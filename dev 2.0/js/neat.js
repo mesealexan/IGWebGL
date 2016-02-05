@@ -1,8 +1,6 @@
 define(["scene", "events", "animate", "particleSystem", "materials", "animationHandler", "underscore", "tween", "watch", "audio", "callback", "composers", "text"],
 function(scene, events, animate, particleSystem, materials, animationHandler, underscore, tween, watch, audio, callback, composers, text){
 var neatScene = {
-  scene: {}
-  ,
   callbacks: {
     introAnimDone:  {
       sampleCall1: function(){ console.log("finished intro animation"); }
@@ -44,6 +42,7 @@ var neatScene = {
     neat.cloudSpeed = 0.0004;
 
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
+    var establishingShotSpeed = 0.07;
 
     /***on start functions***/
     neat.onStartFunctions.makeText = function(scene){
@@ -215,7 +214,7 @@ var neatScene = {
 
       function onCompleteFirstPlay(){
         animate.camera.position.z += 300;
-        loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
+        loader.cameraHandler.tween(0, establishingShotSpeed, onCompleteTween, TWEEN.Easing.Cubic.In);
       }
 
       function onCompleteTween(){
@@ -231,7 +230,6 @@ var neatScene = {
       };
 
       function onCameraStart () {
-        tweenFocus();
         neat.animationHandlers.ah1.loop(0, 15);
         animate.updater.addHandler(new animate.PositionRotationHandler(neat.assets.bird, neat.assets.birdAnim));
       }
@@ -562,7 +560,7 @@ var neatScene = {
         var tweenOut = new TWEEN.Tween(sphere.material).to({opacity: 0}, 500).onUpdate(function(){
           sphere.position.y -= 0.25;
         }).onComplete(function(){
-          neat.assets.loader.DisposeObject(sphere, {envMap: true});
+          neat.assets.loader.DisposeObject(sphere, { envMap: true });
         });
         tweenOut.easing(TWEEN.Easing.Sinusoidal.InOut);
 
@@ -698,12 +696,6 @@ var neatScene = {
         glintOpacityIn.chain(glintOpacityOut);
         glintTween.start();
         glintOpacityIn.start();
-    }
-
-    function tweenFocus(){
-      var tween = new TWEEN.Tween(neat.assets.composer.passes[4].uniforms[ "focus" ]);
-      tween.to({value: 1 }, 100);
-      //tween.start();
     }
 
     return neat;

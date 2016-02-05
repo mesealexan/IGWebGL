@@ -45,6 +45,11 @@ define(["three", "animate"], function(THREE, animate){
               map: THREE.ImageUtils.loadTexture(url+'checker.jpg')
           });
           break;
+          case 'tornadobrick':
+          material = new THREE.MeshBasicMaterial({
+              map: THREE.ImageUtils.loadTexture(url+'brick.jpg')
+          });
+          break;
             case 'LoEpouring':
                 material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(170,10,243)"),
@@ -962,6 +967,7 @@ define(["three", "animate"], function(THREE, animate){
     };
     this.side = 1;
     this.transparent = true;
+    
     this.vertexShader = [
       "varying vec3 Vnormal;",
       "uniform float offset;"+

@@ -5,12 +5,12 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
     var scenes = {
         i89: i89,
-        LoE: LoE,
-        IG: cardinal,
+        loe: LoE,
+        ig: cardinal,
         neat: neat,
         //sound: sound, // disabled
-        seaStorm: tornado,
-        devScene: devScene
+        seastorm: tornado,
+        //devScene: devScene
     };
 
     function disposeObject (obj, skipMat) {
@@ -59,18 +59,19 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
     var loader = function( scene, animationComponent, mediaFolderUrl, camera ) {//public functionality
       var _this = this;
+      this.scenes = scenes;
       this.loadingScene = true;
       this.scene = scene;
       this.animationComponent = animationComponent;
       this.animationComponent.loader = this;
       this.DisposeObject = disposeObject;
-      this.sceneID = scene.sceneID;
+      this.sceneID = scene.sceneID.toLowerCase();
       this.onLoadProgressFunctions = _.functions( this.animationComponent.onLoadProgress );
-      var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
+      this.selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
 
       this.mediaFolderUrl =
       materials.mediaFolderUrl =
-      selectedScene.mediaFolderUrl =
+      this.selectedScene.mediaFolderUrl =
       mediaFolderUrl;
 
       scene.add(camera);
@@ -80,17 +81,21 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
       (function OnStartScene (){
         //retrieve all functions in onStartFunctions object, then call each one
-        var onStartFunctions = _.functions(selectedScene.onStartFunctions);
+        var onStartFunctions = _.functions(_this.selectedScene.onStartFunctions);
         _.each(onStartFunctions, function(fun){
-            selectedScene.onStartFunctions[fun](scene, _this);
+            _this.selectedScene.onStartFunctions[fun](scene, _this);
         });
       }());
 
       /***public functions***/
+      this.RandomNum = function( min, max ) {
+      	return Math.floor( Math.random() * (max - min + 1 ) + min );
+      };
+
       this.OnFinishedLoadingAssets = function(){
-        var onFinishLoadFunctions = _.functions( selectedScene.onFinishLoadFunctions );
+        var onFinishLoadFunctions = _.functions( _this.selectedScene.onFinishLoadFunctions );
         _.each(onFinishLoadFunctions, function( fun ) {
-            selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
+            _this.selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
         });
         animationComponent.ResizeWindow();
         _this.LoadingScreen.hide();
@@ -138,10 +143,10 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
       this.UnloadScene = function ( onComplete ) {
         this.animationComponent.SetDefaultRenderFunction();
-        var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
+        var onUnloadFunctions = _.functions(_this.selectedScene.onUnloadFunctions);
 
         _.each(onUnloadFunctions, function(fun){
-            selectedScene.onUnloadFunctions[fun](scene, _this);
+            _this.selectedScene.onUnloadFunctions[fun](scene, _this);
         });
 
 
@@ -172,15 +177,15 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         });
       }
 
-      this.LoadAssets( selectedScene );
+      this.LoadAssets( _this.selectedScene );
     };
 
     loader.prototype.LoadAssets = function ( selectedScene ) {
       var _this = this,
           mesh = undefined,
-          folderName = selectedScene.folderName,
-          assetNames = selectedScene.assetNames,
-          soundNames = selectedScene.soundNames,
+          folderName = this.selectedScene.folderName,
+          assetNames = this.selectedScene.assetNames,
+          soundNames = this.selectedScene.soundNames,
           nextAsset = undefined;
 
       this.assetIndex = 0;
@@ -223,7 +228,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
         //function associated to current mesh, called for features such as positioning
         _this.scene.add(mesh);
-        var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
+        var onCompleteFunction = _this.selectedScene.onLoadFunctions[curAssetName];
         if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
         _this.OnLoadProgress();
         //still has assets to load, go again
