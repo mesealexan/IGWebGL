@@ -305,7 +305,7 @@ var LoEScene = {
             case 0:
                 audio.sounds.loefactoryloop.play();
                 audio.sounds.loefactoryloop.setVolume(0);
-                audio.sounds.loefactoryloop.fadeTo(40, 7000);
+                audio.sounds.loefactoryloop.fadeTo(20, 1000);
                 break;
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);

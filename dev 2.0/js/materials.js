@@ -275,7 +275,7 @@ define(["three", "animate"], function(THREE, animate){
                 break;
 
             case 'i89heat wave':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(223,116,20)"),
                     ambient: new THREE.Color("rgb(223,116,20)"),
                     specular: new THREE.Color("rgb(230,220,60)"),

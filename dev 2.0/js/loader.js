@@ -61,6 +61,8 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       var _this = this;
       animationComponent.ResetTimeout();
       this.scenes = scenes;
+      console.log(scene.sceneID)
+      if ( !this.scenes[scene.sceneID] ) scene.sceneID = "ig";
       this.loadingScene = true;
       this.scene = scene;
       this.animationComponent = animationComponent;

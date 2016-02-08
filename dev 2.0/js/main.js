@@ -42,11 +42,11 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
        var url = window.location.href;
        var index = url.lastIndexOf( "#" );
        if ( index == -1 ) return defaultScene;
-       var sceneUrl = url.slice( index + 1, url.length );
+       var sceneUrl = url.slice( index + 1, url.length ).toLowerCase();
        sceneUrl = sceneUrl || defaultScene;
        sceneUrl = sceneUrl.replace("-", "");
        sceneUrl = sceneUrl.toLowerCase();
-       return sceneUrl;
+       return sceneUrl.toLowerCase();
      }
 
     function addButtons() {
@@ -74,6 +74,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         if(!degradation.webgl_detect({id: containerID})) return;
         //entry point (first function called by require in app.js)
         sceneID = sceneID || startFromURL();
+        sceneID = sceneID.toLowerCase();
         width = $( '#' + containerID ).width ();
         height = $( '#' + containerID ).height ();
         events.Init(containerID);
@@ -103,6 +104,8 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.LoadNewScene = function ( sceneID ) {
         //only call after Start()
         if(main.loader.loadingScene) return;
+        sceneID = sceneID || startFromURL();
+        sceneID = sceneID.toLowerCase();
         audio.StopAll();
         animate.timeoutID = undefined;
         animate.ClearLowPowerTimeout();
