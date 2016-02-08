@@ -331,8 +331,8 @@ var neatScene = {
             neat.assets.sun.tweenColor("sun");
             neat.assets.sun.tweenAmbiental("normalAmb");
 
-            audio.sounds.neatheavenlytransition.setVolume(100);
-            audio.sounds.neatheavenlytransition.play();
+            //audio.sounds.neatheavenlytransition.setVolume(100);
+            //audio.sounds.neatheavenlytransition.play();
             //audio.sounds.neatheavenlytransition.fadeTo(100, 1000);
             if (neat.assets.intro) {
               if (prevState == 'dirt') {
@@ -358,7 +358,7 @@ var neatScene = {
              }, 3500);
           },
           stop: function(){
-            audio.sounds.neatheavenlytransition.fadeTo(0, 500);
+            //audio.sounds.neatheavenlytransition.fadeTo(0, 500);
             //neat.assets.sun.lightDown();
           }
         }
@@ -664,6 +664,7 @@ var neatScene = {
 
         theSunTween.start();
         theSunRotation.start();
+        audio.sounds.neatheavenlytransition.play();
     }
 
     function glint(scene, delay){

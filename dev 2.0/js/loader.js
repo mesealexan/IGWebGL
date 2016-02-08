@@ -59,6 +59,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
     var loader = function( scene, animationComponent, mediaFolderUrl, camera ) {//public functionality
       var _this = this;
+      animationComponent.ResetTimeout();
       this.scenes = scenes;
       this.loadingScene = true;
       this.scene = scene;

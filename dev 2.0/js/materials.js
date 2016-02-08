@@ -81,7 +81,7 @@ define(["three", "animate"], function(THREE, animate){
                 });
                 break;
             case 'LoErotator':
-                material = new THREE.MeshPhongMaterial({
+                material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(200,200,200)"),
                     ambient: new THREE.Color("rgb(211,211,211)"),
                     specular: new THREE.Color("rgb(222,222,222)"),
@@ -126,22 +126,23 @@ define(["three", "animate"], function(THREE, animate){
                 });
                 break;
             case 'LoESpacer Cap':
-                material = new THREE.MeshLambertMaterial({
+              material = new THREE.MeshBasicMaterial();
+                /*material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(116,116,116)"),
                     specular: new THREE.Color("rgb(255,255,255)")
-                });
+                });*/
                 break;
             case 'LoEGlass':
-                material = new THREE.MeshLambertMaterial({
+                material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
                     specular: new THREE.Color("rgb(0,80,60)"),
-                    vertexColors: THREE.VertexColors,
                     envMap: textureCube,
-                    refractionRatio: 0.985,
-                    reflectivity: 0.99,
-                    shininess: 30,
+                    //refractionRatio: 0.985,
+                    //reflectivity: 0.99,
+                    //shininess: 30,
                     transparent: true,
+                    side: THREE.FrontSide,
                     opacity: 0.61
                 });
                 break;
@@ -194,13 +195,15 @@ define(["three", "animate"], function(THREE, animate){
                 });
                 break;
             case 'LoEdesicant':
-                material = new THREE.MeshLambertMaterial({
+              material = new THREE.MeshBasicMaterial();
+                /*material = new THREE.MeshLambertMaterial({
                     color: new THREE.Color("rgb(255,255,255)"),
                     ambient: new THREE.Color("rgb(255,255,255)")
-                });
+                });*/
                 break;
             case 'LoESpacer slice':
-                material = new THREE.MeshPhongMaterial({
+              material = new THREE.MeshBasicMaterial();
+                /*material = new THREE.MeshPhongMaterial({
                     color: new THREE.Color("rgb(213,213,213)"),
                     ambient: new THREE.Color("rgb(222,222,222)"),
                     specular: new THREE.Color("rgb(255,255,255)"),
@@ -208,7 +211,7 @@ define(["three", "animate"], function(THREE, animate){
                     refractionRatio: 0.985,
                     reflectivity: 0.99,
                     shininess: 30
-                });
+                });*/
                 break;
             case 'i89logo':
                 material = new THREE.MeshLambertMaterial({
@@ -967,7 +970,7 @@ define(["three", "animate"], function(THREE, animate){
     };
     this.side = 1;
     this.transparent = true;
-    
+
     this.vertexShader = [
       "varying vec3 Vnormal;",
       "uniform float offset;"+

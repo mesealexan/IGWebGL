@@ -33,23 +33,32 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
 
     /***private functions***/
     function resizeWindow(){
+
       animate.renderSize = {
+
         width:  $(animate.container).width(),
         height: $(animate.container).height()
+
       };
 
-		  animate.camera.aspect	= animate.renderSize.width / animate.renderSize.height;
+      animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
 
       var composer = animate.loader.selectedScene.assets.composer;
 
-      if ( composer )
-      composer.fxaaPass.uniforms[ 'resolution' ].value.set(
-        1 / animate.renderSize.width,
-        1 / animate.renderSize.height
-      );
+      if ( composer ) {
 
-		  animate.camera.updateProjectionMatrix();
-      animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
+        //composer.setSize( animate.renderSize.width, animate.renderSize.height );
+
+        composer.fxaaPass.uniforms[ 'resolution' ].value.set(
+          1 / animate.renderSize.width,
+          1 / animate.renderSize.height
+        );
+
+      }
+
+      animate.camera.aspect	= animate.renderSize.width / animate.renderSize.height;
+      animate.camera.updateProjectionMatrix();
+
     }
 
     function startWindowAutoResize() {
@@ -70,18 +79,18 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     /***public fields***/
 
     /***end public fields***/
-
     animate.Animate = function( systemDelta ){
-        frameID = requestAnimationFrame(animate.Animate);
-        now = _.now();
-        delta = now - then;
-        if(delta >= interval){
-            then = now - (delta % interval);
-            animate.loader.scene.simulate(); // run physics
-            TWEEN.update();
-            animate.updater.UpdateHandlers( performance.now() );
-            animate.RenderFunction();
-        }
+      frameID = requestAnimationFrame( animate.Animate );
+      now = _.now();
+      delta = now - then;
+      if( delta >= interval ) {
+        then = now - (delta % interval);
+        animate.renderer.clear();
+        animate.loader.scene.simulate(); // run physics
+        TWEEN.update();
+        animate.updater.UpdateHandlers( performance.now() );
+        animate.RenderFunction();
+      }
     };
 
     animate.StopAnimating = function () {
@@ -111,6 +120,7 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     };
 
     animate.SetCustomRenderFunction = function (fun) {
+      //return;
   		animate.ResizeWindow();
       animate.RenderFunction = fun;
     };

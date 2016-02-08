@@ -22,12 +22,12 @@ define(["animate", "fxaa"], function(animate, fxaa){
           "varying vec2 vUv;",
           "uniform float amount;",
 
-          "float random(float p){",
+          /*"float random(float p){",
             "return fract(sin(p)*100000.);",
-          "}",
+          "}",*/
 
           "void main() {",
-            "vec4 tex = texture2D(tDiffuse, vUv);",
+            "vec4 tex = texture2D(tDiffuse, vUv );",
             //"if(vUv.x > 0.5) gl_FragColor;",
             //"if(random(tex.b) < .2) discard;",
             //"gl_FragColor = vec4(random(tex.r), random(tex.g) , random(tex.b), tex.a);",
@@ -47,7 +47,8 @@ define(["animate", "fxaa"], function(animate, fxaa){
       );
 
       var composer = new THREE.EffectComposer( animate.renderer );
-      composer.addPass( new THREE.RenderPass( animate.loader.scene, animate.camera ) );
+      composer.renderPass = new THREE.RenderPass( animate.loader.scene, animate.camera );
+      composer.addPass( composer.renderPass );
 
       composer.bloomPass = new THREE.BloomPass(set.str, 25, 5);
       composer.bloomPass.name = "bloom";
@@ -64,6 +65,8 @@ define(["animate", "fxaa"], function(animate, fxaa){
       composer.fxaaPass.uniforms[ 'resolution' ].value.set( 1 / animate.renderSize.width, 1 / animate.renderSize.height );
       composer.fxaaPass.renderToScreen = true;
       composer.addPass( composer.fxaaPass );
+
+      console.log(composer)
 
       /*
       var bokFoc, bokApe;

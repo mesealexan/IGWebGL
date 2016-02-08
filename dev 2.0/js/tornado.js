@@ -4,7 +4,7 @@ function (scene, animate, events, animationHandler, composers, watch, tween,
   materials, underscore, particleSystem, aeTween, text, cloth, particleSystemGPU, callback ) {
 var tornadoScene = {
   callbacks: {
-    introAnimDone:  {
+    introAnimDone: {
       sampleCall1: function(){ console.log("finished intro animation"); }
     }
   }
@@ -176,7 +176,7 @@ var tornadoScene = {
     var offsetY = 0.1;
 
     var settings = {
-      size: 0.2,
+      size: 0.18,
       curveSegments: 5,
       height: 0.02,
       style: "normal",
@@ -199,6 +199,7 @@ var tornadoScene = {
     var mesh = new THREE.Mesh(combinedGeom, material);
     mesh.position.set(-9.478, -420.718, -3.257);
     scene.add( mesh );
+    mesh.visible = false;
     tornado.assets.annealedTextMesh = mesh;
   };
 
