@@ -15,6 +15,7 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
 
     function resetAnimateTimeout () {
       animate.ResetTimeout();
+      animate.StopPan();
     }
 
     events.Init = function ( containerID ) {

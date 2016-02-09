@@ -15,6 +15,8 @@ return function ( s ) {
 
   };
 
+  placeRandomParticles();
+
   this.update = function () {
     this.uniforms.time.value += speed;
   }
@@ -35,7 +37,6 @@ return function ( s ) {
     "void main () {",
       "vec3 pos = position;",
       "pos.y = mod( pos.y - time, height );",
-      //"pos.x = mod( pos.x - time, height );",
       "gl_PointSize = size;",
       "gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );",
     "}"
@@ -51,8 +52,6 @@ return function ( s ) {
     "}"
   ].join("\n");
 
-  placeRandomParticles();
-
   function placeRandomParticles () {
     _.times( s.num, function () {
       var vertex = new THREE.Vector3(
@@ -62,6 +61,7 @@ return function ( s ) {
       );
       _this.systemGeometry.vertices.push( vertex );
     });
+
     loadMap({ name: s.mapName });
   }
 

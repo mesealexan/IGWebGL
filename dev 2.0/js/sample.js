@@ -12,8 +12,19 @@ console.info( "audio", audio );
 //animate.ResizeWindow();
 
 animate.onLoadProgress.test = function (percent, loader) {
-  
+
 };
+
+function onSampleSoundLoad (sound) {
+  console.info("sound loaded");
+  console.info(sound);
+  //audio.sounds.neatmagicwand.play();
+}
+
+var sampleSound = audio.LoadExternal( "neat-magic-wand",  // pass a name
+                                      "media",            // media folder URL
+                                       onSampleSoundLoad  // on load function
+                                     );
 
 /***adding callbacks***/
 cardinal.callbacks.introAnimHalfway.extraCallback = function () {

@@ -24,21 +24,21 @@ var LoEScene = {
     }
   }
   ,
-  constructor: function(){
+  constructor: function () {
     var LoE = new scene();
     LoE.folderName = "LoE";
     LoE.addAssets([/*'EngineeredComfort',*/ /*'bck_1',*/ 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
-    LoE.addSounds([ 'loe-factory-loop', 'loe-apply-coating' ]);
+    LoE.addSounds( [ 'loe-factory-loop', 'loe-apply-coating' ] );
     LoE.disposables = [];
 
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
     var coatTexture = undefined;
     var LoE_textTexture = undefined;
-    var hot_t = undefined,
-        colt_t = undefined,
-        mixed_t = undefined; //background plane textures
+    var hot_t = undefined;
+    var colt_t = undefined;
+    var mixed_t = undefined; //background plane textures
 
     /***on start functions***/
     LoE.onStartFunctions.storeScene = function(scene, loader) {

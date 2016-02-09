@@ -124,7 +124,7 @@ var cardinalScene = {
                 THREE.AdditiveBlending );
         }
 
-       lensFlare.position.set( -1127.008, 1232.292, -11  );
+       lensFlare.position.set( -1127.008, 1032.292, -11  );
        lensFlare.visible = false;
        cardinal.assets.lensFlare = lensFlare;
        scene.add( lensFlare );

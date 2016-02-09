@@ -7,6 +7,18 @@ var tornadoScene = {
     introAnimDone: {
       sampleCall1: function(){ console.log("finished intro animation"); }
     }
+    ,
+    cardinalWindow: {
+      sampleCall2: function(){ console.log("changed to cardinal window"); }
+    }
+    ,
+    annealedWindow: {
+      sampleCall2: function(){ console.log("changed to annealed window"); }
+    }
+    ,
+    throwDebris: {
+      sampleCall2: function(){ console.log("throwed debris"); }
+    }
   }
   ,
   url: "sea-storm"
@@ -114,8 +126,8 @@ var tornadoScene = {
     //scene.add( plane );
   };
 
-  tornado.onStartFunctions.makeIntroText = function(scene){
-     var strings = [ "Protection for when", "good weather goes bad" ];
+  tornado.onStartFunctions.makeIntroText = function( scene ) {
+     var strings = [ /*"Protection for when", "good weather goes bad"*/ "Storm Relief", "" ];
 
      var settings = {
        size: 1,
@@ -154,7 +166,7 @@ var tornadoScene = {
 
      tornado.assets.textMeshes = meshes;
 
-     meshes[0].position.set(0, 0, 100 );
+     meshes[0].position.set(-0.5, -1, 100 );
      meshes[0].add(meshes[1]);
      meshes[1].position.x += -meshes[0].centerOffset + meshes[1].centerOffset;
      scene.add(meshes[0]);
@@ -573,20 +585,20 @@ var tornadoScene = {
       tornado.assets.rain = new THREE.PointCloud( rainShader.systemGeometry, rainShader );
       tornado.assets.rain.position.set(-2, -438, -5);
       scene.add(tornado.assets.rain);
-    /*var rainSettings = {
-        width: 50,
-        height: 50,
-        depth: 50,
-        num: 100,
-        size: {w: 0.1, h: 0.8},
-        mapNames: ["water_drop"],
-        pos: new THREE.Vector3(0, -408, 40),
-        dir: new THREE.Vector3(0, -1, -1),
-        speed: 2,
-        fixedRot: {x: 0.6, y: 0, z: 0}
-    };
+      /*var rainSettings = {
+          width: 50,
+          height: 50,
+          depth: 50,
+          num: 100,
+          size: {w: 0.1, h: 0.8},
+          mapNames: ["water_drop"],
+          pos: new THREE.Vector3(0, -408, 40),
+          dir: new THREE.Vector3(0, -1, -1),
+          speed: 2,
+          fixedRot: {x: 0.6, y: 0, z: 0}
+      };
 
-    tornado.assets.rainPS = new particleSystem(rainSettings);*/
+      tornado.assets.rainPS = new particleSystem(rainSettings);*/
     //tornado.assets.rainPS.Init(scene);
   };
 
@@ -706,6 +718,8 @@ var tornadoScene = {
 
       };
 
+      callback.go( tornadoScene.callbacks.cardinalWindow );
+
       tornado.states.curWindow = "cardinal";
 
       var cardinalIn = function(){
@@ -744,6 +758,7 @@ var tornadoScene = {
 
       };
 
+      callback.go( tornadoScene.callbacks.annealedWindow );
       tornado.states.curWindow = "ordinary";
 
       var ordinaryIn = function () {
@@ -782,6 +797,7 @@ var tornadoScene = {
           tornado.assets.cardinalWindow.wind();
         }
 
+        callback.go( tornadoScene.callbacks.throwDebris );
         throwBrick(onBrickComp, "cardinal");
       }
 

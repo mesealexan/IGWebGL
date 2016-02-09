@@ -1,7 +1,7 @@
 define(["underscore", "updater", "tween", "EffectComposer", "CopyShader", "ShaderPass", "RenderPass",
-  "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader", "SSAOShader"],
+  "BloomPass", "ConvolutionShader", "MaskPass", "BokehPass", "BokehShader", "SSAOShader", "camPan"],
 function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, RenderPass,
-  BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader, SSAOShader){
+  BloomPass, ConvolutionShader, MaskPass, BokehPass, BokehShader, SSAOShader, camPan){
     var animate = {
       fps: 30,
       asleep: false,
@@ -12,7 +12,8 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       updater: new updater(),
       composer: undefined,
       onLoadProgress: { },
-      timeoutID: undefined,// id used for sleep mode,
+      lowPowerTimeoutID: undefined,// id used for sleep mode,
+      panTimeoutID: undefined,
       lastSystemDelta: 0
     };//public functionality
 
@@ -25,7 +26,8 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     var delta = undefined; // actual time between current and last frame
     var interval = 1000 / animate.fps; // ideal time in ms between frames
     // timeout ( power saving mode ) variables
-    var timeoutTime = 300000; // ms
+    var timeoutTime = 120000; // ms
+    var panTime = 600;
     /***end private fields***/
 
     window.addEventListener('orientationchange', onOrientationChange);
@@ -35,24 +37,22 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     function resizeWindow(){
 
       animate.renderSize = {
-
         width:  $(animate.container).width(),
         height: $(animate.container).height()
-
       };
 
       animate.renderer.setSize( animate.renderSize.width, animate.renderSize.height );
 
-      var composer = animate.loader.selectedScene.assets.composer;
+      if ( animate.composer ) {
 
-      if ( composer ) {
+        animate.composer.setSize( animate.renderSize.width , animate.renderSize.height );
 
-        //composer.setSize( animate.renderSize.width, animate.renderSize.height );
-
-        composer.fxaaPass.uniforms[ 'resolution' ].value.set(
+        animate.composer.fxaaPass.uniforms[ 'resolution' ].value.set(
           1 / animate.renderSize.width,
           1 / animate.renderSize.height
         );
+
+        animate.composer.reset();
 
       }
 
@@ -69,10 +69,6 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       window.removeEventListener('resize', resizeWindow);
     }
 
-
-    function getDeltaTime (time) {
-      animate.lastSystemDelta = Number(time);
-    }
 
     /***end private functions***/
 
@@ -94,7 +90,6 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
     };
 
     animate.StopAnimating = function () {
-      //requestAnimationFrame(getDeltaTime);
       cancelAnimationFrame(frameID);
     };
 
@@ -116,11 +111,13 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
 
     animate.SetDefaultRenderFunction = function () {
   		animate.ResizeWindow();
-      animate.RenderFunction = function(){animate.renderer.render(animate.loader.scene, animate.camera)};
+      animate.RenderFunction =
+        function () {
+          animate.renderer.render( animate.loader.scene, animate.camera )
+        };
     };
 
     animate.SetCustomRenderFunction = function (fun) {
-      //return;
   		animate.ResizeWindow();
       animate.RenderFunction = fun;
     };
@@ -131,7 +128,7 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       animate.camera.updateProjectionMatrix();
     };
 
-    animate.SetCustomFramerate = function (f) {
+    animate.SetCustomFramerate = function ( f ) {
       animate.fps = f;
       interval = 1000 / animate.fps
     };
@@ -141,18 +138,45 @@ function(underscore, updater, tween, EffectComposer, CopyShader, ShaderPass, Ren
       interval = 1000 / animate.fps;
     };
 
-    animate.StartTimeout = function () {
-      animate.timeoutID = _.delay( animate.Sleep, timeoutTime );
+    animate.StartTimeout = function (obj) {
+      obj = obj || {};
+      if ( !obj.noLowPower ) animate.StartLowPowerTimeout();
+      if ( !obj.noPan ) animate.StartPanTimeout();
+    };
+
+    animate.StartPanTimeout = function () {
+      animate.panTimeoutID = _.delay( function(){ animate.cPan.Start() }, panTime );
+    };
+
+    animate.ClearPanTimeout = function () {
+      if ( animate.panTimeoutID != undefined ) clearTimeout ( animate.panTimeoutID );
+      animate.panTimeoutID = undefined;
+    };
+
+    animate.StartLowPowerTimeout = function () {
+      animate.lowPowerTimeoutID = _.delay( animate.Sleep, timeoutTime );
     };
 
     animate.ClearLowPowerTimeout = function () {
-      if ( animate.timeoutID != undefined ) clearTimeout ( animate.timeoutID );
+      if ( animate.lowPowerTimeoutID != undefined ) clearTimeout ( animate.lowPowerTimeoutID );
+      animate.lowPowerTimeoutID = undefined;
     };
 
+    animate.StopPan = function () {
+      animate.cPan.Stop();
+    }
+
     animate.ResetTimeout = function () {
-      if( animate.timeoutID == undefined ) return; // timeout not requested by scene yet
-      animate.ClearLowPowerTimeout();
-      animate.StartTimeout();
+      if( animate.panTimeoutID != undefined ) { // timeout not requested by scene yet
+        animate.ClearPanTimeout();
+        animate.StartPanTimeout();
+      }
+
+      if( animate.lowPowerTimeoutID != undefined ) { // timeout not requested by scene yet
+        animate.ClearLowPowerTimeout();
+        animate.StartLowPowerTimeout();
+      }
+
       if ( animate.asleep == true ) animate.Awake();
     };
 

@@ -1,7 +1,7 @@
 define([ "scene", /*"jquery",*/ "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal",
-  "neat", "sound", "events", "audio", "watch", "tornado", "devScene" ],
+  "neat", "sound", "events", "audio", "watch", "tornado", "devScene", "camPan"],
 function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat,
-  sound, events, audio, watch, tornado, devScene ) {
+  sound, events, audio, watch, tornado, devScene, camPan ) {
 
     var scenes = {
         i89: i89,
@@ -59,9 +59,10 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
     var loader = function( scene, animationComponent, mediaFolderUrl, camera ) {//public functionality
       var _this = this;
-      animationComponent.ResetTimeout();
+      animate.ClearPanTimeout();
+      animate.ClearLowPowerTimeout();
+      animationComponent.cPan = new camPan( animationComponent );
       this.scenes = scenes;
-      console.log(scene.sceneID)
       if ( !this.scenes[scene.sceneID] ) scene.sceneID = "ig";
       this.loadingScene = true;
       this.scene = scene;
@@ -100,6 +101,8 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         _.each(onFinishLoadFunctions, function( fun ) {
             _this.selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
         });
+
+        animationComponent.composer = _this.selectedScene.assets.composer;
         animationComponent.ResizeWindow();
         _this.LoadingScreen.hide();
         _this.loadingScene = false;

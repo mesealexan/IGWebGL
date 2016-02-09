@@ -3,7 +3,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     function(THREE, /*jquery,*/ loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
-    var version = 7;
+    var version = 10;
     var camFOV =  45; //degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
@@ -81,6 +81,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         animate.renderSize = { width: width, height: height };
         animate.container = document.getElementById( containerID );
         animate.containerID = containerID;
+        animate.events = events;
         addRenderer();
         main.mediaFolderUrl = getMediaFolderURL();
         main.scene = new Physijs.Scene( { mediaFolderUrl: main.mediaFolderUrl } );

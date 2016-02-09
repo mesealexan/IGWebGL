@@ -37,8 +37,8 @@ var neatScene = {
     neat.addAssets( ['House', 'Floor_grid', 'Floor_grass', 'Sky_plane', 'Window_symbols',
       'Glass_neat', 'Glass_standard', 'Cardinal_bird_animated', 'House_windows', /*'Neat_intro_text',*/
       'Window_frame_main']);
-    neat.addSounds( ['neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
-      'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand'] );
+    neat.addSounds( [ 'neat-acoustic-guitar', 'neat-cardinal2', 'neat-wind-leaves',
+      'neat-heavenly-transition', 'neat-rain-exterior-loop', 'neat-magic-wand' ] );
     neat.cloudSpeed = 0.0004;
 
     var stagesTime = { sun1: 5000, rain: 10000, sun2: 15000, final: 18000 };
@@ -223,7 +223,7 @@ var neatScene = {
           undefined,
           function () {
             onCameraComplete(scene);
-            animate.StartTimeout();
+            animate.StartTimeout({noPan:true});
           },
           onCameraStart
         )

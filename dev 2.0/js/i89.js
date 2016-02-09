@@ -225,7 +225,7 @@ var i89Scene = {
           ape: 0.08
         }
       });
-      animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
+      //animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
       events.addDOF_GUI(i89);
     };
 
@@ -319,6 +319,8 @@ var i89Scene = {
             case "outside":
                 if(animate.camera.outside || animate.camera.inClose) return;
                 callback.go(i89Scene.callbacks.goOutsideStart);
+                animate.cPan.Stop();
+                animate.cPan.Lock( true );
                 animate.camera.outside = true;
                 events.ToggleControls(false);
                 tween.to( { x: [facingWallPos.x, outsidePos.x],
@@ -341,6 +343,8 @@ var i89Scene = {
                     y: [facingWallPos.y, insidePos.y],
                     z: [facingWallPos.z, insidePos.z]}, tweenTime );
                 tween.onComplete(function(){
+                    animate.cPan.Lock( false );
+                    animate.ResetTimeout();
                     callback.go(i89Scene.callbacks.goInsideDone);
                     animate.camera.outside = false;
                     animate.camera.inClose = false;

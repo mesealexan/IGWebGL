@@ -13,14 +13,16 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
 
     function returnFormatsArray(name, mediaFolderUrl){
         var pre = mediaFolderUrl+"/audio/" + name;
-        return [pre + ".mp3", pre + ".ogg", pre + ".m4a"];
+        return [ pre + ".mp3", pre + ".ogg", pre + ".m4a" ];
     }
 
     function loadSound ( arr, onComp, mediaFolderUrl ) {
+      var url;
+
       if( !arr || !( url = arr [ audio.audioArrIndex ] ) ) {
         audio.loader.OnLoadProgress();
         audio.audioArrIndex = 0;
-        if( onComp) onComp();
+        if( onComp ) onComp();
         return;
       }
 
@@ -46,7 +48,14 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
         loadSound(arr, loader.OnFinishedLoadingAssets, loader.mediaFolderUrl);
     };
 
-    audio.LoadSound = loadSound;
+    audio.LoadExternal = function (name, mediaFolderUrl, onComp) {
+      var sound = new buzz.sound(mediaFolderUrl+ "/audio/" + name, { formats: [ "mp3", "ogg", "m4a" ] });
+      sound.bind("loadeddata", function() {
+        audio.sounds[ cleanName(name) ] = sound;
+        if(onComp) onComp(sound);
+        return sound;
+      });
+    };
 
     audio.StopAll = function () {
       _.each( audio.sounds, function ( s ) {
@@ -57,8 +66,6 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
     audio.ToggleMute = function () {
       buzz.all().toggleMute();
     };
-
-    GlobalFunctions.audio = audio;
 
     return audio;
 });
