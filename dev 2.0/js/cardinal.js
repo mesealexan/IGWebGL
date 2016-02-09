@@ -260,7 +260,7 @@ var cardinalScene = {
       function onCameraComplete () {
         cardinal.buttons.slice.add();
         addMouseDownEvent();
-        animate.StartTimeout();
+        animate.StartTimeout({noPan:true});
       }
 
       function onCameraStart () {
@@ -384,21 +384,21 @@ var cardinalScene = {
         },
         backToSlice: {
             add: function(){
-                events.AddButton({text:"back", function: cardinal.zoomOnSlice.backToSlice,
+                events.AddButton({text:"Zoom out", function: cardinal.zoomOnSlice.backToSlice,
                     id:"backToSlice", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToSlice"); }
         },
         sealantA:{
             add: function(){
-                events.AddButton({text:"Silicone", function: cardinal.zoomOnSlice.sealantA,
+                events.AddButton({text:"PIB", function: cardinal.zoomOnSlice.sealantA,
                     id:"sealantA", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
         },
         sealantB:{
             add: function(){
-                events.AddButton({text:"PIB", function: cardinal.zoomOnSlice.sealantB,
+                events.AddButton({text:"Silicone", function: cardinal.zoomOnSlice.sealantB,
                     id:"sealantB", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantB"); }
@@ -582,11 +582,11 @@ var cardinalScene = {
             cameraAnimations.animation_2.from,
             cameraAnimations.animation_2.to,
             function(){//on complete
-                cardinal.buttons.backToMain.add();
                 cardinal.buttons.sealantA.add();
                 cardinal.buttons.sealantB.add();
                 cardinal.buttons.spacer.add();
                 cardinal.buttons.dessicant.add();
+                cardinal.buttons.backToMain.add();
                 events.ToggleControls(true);
                 events.AddMouseUpEvent(tweenCamToSliceMain);
                 events.AddMouseDownEvent(stopAllTweens);

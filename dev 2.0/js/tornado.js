@@ -674,7 +674,7 @@ var tornadoScene = {
   tornado.buttons = {
     cardinal: {
         add: function(){
-          events.AddButton({text:"Cardinal", function: tornado.states.setCardinal, id:"cardinalWindow",
+          events.AddButton({text:"Sea-Storm", function: tornado.states.setCardinal, id:"cardinalWindow",
           class: "glass-type"});
         },
         remove: function(){ events.RemoveElementByID("cardinalWindow"); }

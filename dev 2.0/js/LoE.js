@@ -303,9 +303,9 @@ var LoEScene = {
     function reactToFrame ( frame ) {
         switch (frame){
             case 0:
-                audio.sounds.loefactoryloop.play();
-                audio.sounds.loefactoryloop.setVolume(0);
-                audio.sounds.loefactoryloop.fadeTo(20, 1000);
+                //audio.sounds.loefactoryloop.play();
+                //audio.sounds.loefactoryloop.setVolume(0);
+                //audio.sounds.loefactoryloop.fadeTo(20, 1000);
                 break;
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
@@ -335,7 +335,7 @@ var LoEScene = {
             case 315:
                 audio.sounds.loeapplycoating.play();
                 //audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
-                audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
+                //audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
                 break;
             case 358:
                 LoE.assets.silverPS.holder.visible = false;

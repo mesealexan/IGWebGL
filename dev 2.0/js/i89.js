@@ -219,13 +219,13 @@ var i89Scene = {
     /***on finish functions***/
     i89.onFinishLoadFunctions.applyComposer = function(scene){
       i89.assets.composer = new composers.Bloom_AdditiveColor({
-        str: 0.6,
+        str: 0.7,
         bok: {
           foc: 1,
           ape: 0.08
         }
       });
-      //animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
+      animate.SetCustomRenderFunction( function(){ i89.assets.composer.render(); } );
       events.addDOF_GUI(i89);
     };
 
