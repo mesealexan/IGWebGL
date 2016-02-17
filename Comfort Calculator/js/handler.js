@@ -22,6 +22,7 @@ define(
             function (geometry, materials) {
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
+              object.name = asset;
               this.assets[asset] = object;
               resolve(object);
             }.bind(this)

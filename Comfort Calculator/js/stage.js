@@ -1,10 +1,14 @@
 define(
-  ['handler', 'three', 'jquery'],
-  function (handler) {
+  ['ui', 'handler', 'three', 'jquery'],
+  function (ui, handler) {
     var stage = {
       scene: undefined,
       camera: undefined,
-      engine: undefined
+      engine: undefined,
+      currentAssets: {
+        left: undefined,
+        right: undefined
+      },
     };
 
     stage.init = function () {
@@ -36,16 +40,43 @@ define(
       }.bind(this)).catch(console.log);
 
       var pLeftSmall = handler.loadAsset('left_small');
-      pLeftSmall.then(function(object){
-        this.scene.add(object);
-      }.bind(this)).catch(console.log);
-
       var pRightSmall = handler.loadAsset('right_small');
-      pRightSmall.then(function(object){
-        this.scene.add(object);
+      var pLeftMedium = handler.loadAsset('left_medium');
+      var pRightMedium = handler.loadAsset('right_medium');
+      var pLeftLarge = handler.loadAsset('left_large');
+      var pRightLarge = handler.loadAsset('right_large');
+
+      Promise.all([pLeftSmall, pRightSmall, pLeftMedium, pRightMedium, pLeftLarge, pRightLarge]).then(function(objects){
+        for (var key in objects) {
+          for (var mKey in objects[key].material.materials) {
+            objects[key].material.materials[mKey].transparent = true;
+            objects[key].material.materials[mKey].opacity = 0;
+          }
+          objects[key].visible = false;
+          this.scene.add(objects[key]);
+
+          var position = objects[key].name.slice(0, objects[key].name.search('_'));
+          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
+          ui.addButton(type, position, function () {console.log('meh');});
+        }
+        this.setDefaults();
       }.bind(this)).catch(console.log);
     };
 
+    stage.setDefaults = function () {
+      this.currentAssets.left = handler.assets.left_small;
+      this.currentAssets.right = handler.assets.right_small;
+
+      for (var lKey in this.currentAssets.left.material.materials) {
+        this.currentAssets.left.material.materials[lKey].opacity = 1;
+      }
+      this.currentAssets.left.visible = true;
+
+      for (var rKey in this.currentAssets.right.material.materials) {
+        this.currentAssets.right.material.materials[rKey].opacity = 1;
+      }
+      this.currentAssets.right.visible = true;
+    };
 
     stage.startRenderLoop = function () {
       requestAnimationFrame(this.startRenderLoop.bind(this));
