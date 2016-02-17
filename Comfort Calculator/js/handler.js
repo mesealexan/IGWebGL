@@ -1,10 +1,9 @@
 define(
   [],
   function () {
-
-    var handler = {};
-
-    
+    var handler = {
+      container: undefined
+    };
 
     return handler;
   }

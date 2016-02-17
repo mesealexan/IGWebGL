@@ -1,6 +1,7 @@
 require.config({
     paths: {
-        "three" : "vendor/three.min"
+        "three" : "vendor/three.min",
+        'jquery': 'vendor/jquery.min'
     }
 });
 
