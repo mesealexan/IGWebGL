@@ -1,5 +1,5 @@
 define(
-  ['ui', 'handler', 'three', 'jquery'],
+  ['ui', 'handler', 'three', 'jquery', 'tween'],
   function (ui, handler) {
     var stage = {
       scene: undefined,
@@ -57,32 +57,50 @@ define(
 
           var position = objects[key].name.slice(0, objects[key].name.search('_'));
           var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, position, function () {console.log('meh');});
+          ui.addButton(type, position, attachCallbackWall.bind(this));
         }
-        this.setDefaults();
+        setDefaults();
       }.bind(this)).catch(console.log);
-    };
-
-    stage.setDefaults = function () {
-      this.currentAssets.left = handler.assets.left_small;
-      this.currentAssets.right = handler.assets.right_small;
-
-      for (var lKey in this.currentAssets.left.material.materials) {
-        this.currentAssets.left.material.materials[lKey].opacity = 1;
-      }
-      this.currentAssets.left.visible = true;
-
-      for (var rKey in this.currentAssets.right.material.materials) {
-        this.currentAssets.right.material.materials[rKey].opacity = 1;
-      }
-      this.currentAssets.right.visible = true;
     };
 
     stage.startRenderLoop = function () {
       requestAnimationFrame(this.startRenderLoop.bind(this));
-
+      TWEEN.update();
       this.engine.render(this.scene, this.camera);
     };
+
+    function setDefaults () {
+      stage.currentAssets.left = handler.assets.left_small;
+      stage.currentAssets.right = handler.assets.right_small;
+
+      for (var lKey in stage.currentAssets.left.material.materials) {
+        stage.currentAssets.left.material.materials[lKey].opacity = 1;
+      }
+      stage.currentAssets.left.visible = true;
+
+      for (var rKey in stage.currentAssets.right.material.materials) {
+        stage.currentAssets.right.material.materials[rKey].opacity = 1;
+      }
+      stage.currentAssets.right.visible = true;
+    }
+
+    function attachCallbackWall (e) {
+      var position = e.target.id.slice(0, e.target.id.search('_'));
+      var tweenTime = 1000;
+
+      for (var keyOut in this.currentAssets[position].material.materials) {
+        new TWEEN.Tween(this.currentAssets[position].material.materials[keyOut]).to({opacity: 0}, tweenTime).start();
+      }
+
+      setTimeout(function () {
+        this.currentAssets[position].visible = false;
+        this.currentAssets[position] = handler.assets[e.target.id];
+        this.currentAssets[position].visible = true;
+        for (var keyIn in handler.assets[e.target.id].material.materials) {
+          new TWEEN.Tween(handler.assets[e.target.id].material.materials[keyIn]).to({opacity: 1}, tweenTime).start();
+        }
+      }.bind(this), tweenTime);
+    }
 
     return stage;
   }

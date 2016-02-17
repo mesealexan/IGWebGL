@@ -8,7 +8,14 @@
   overflow: hidden;
 }
 
-#UI {
+#UI_left {
   position: absolute;
+  left: 0px;
+  z-index: 1;
+}
+
+#UI_right {
+  position: absolute;
+  right: 0px;
   z-index: 1;
 }

@@ -7,7 +7,8 @@ define(
       var button = document.createElement('button');
       button.innerHTML = value;
       button.onclick = callback;
-      document.getElementById('UI').appendChild(button);
+      button.id = position + '_' + value;
+      document.getElementById('UI_'+position).appendChild(button);
     };
 
     return ui;

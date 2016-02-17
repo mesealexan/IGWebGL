@@ -5,7 +5,8 @@ define(
       container: undefined,
       JSONLoader: undefined,
       assets: [],
-      lights: []
+      lights: [],
+      tweens: []
     };
 
     handler.init = function (container_id) {
