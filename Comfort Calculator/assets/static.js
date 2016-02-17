@@ -101,8 +101,8 @@
 {
 "DbgIndex" : 7,
 "DbgName"  : "Dark Blue",
-"colorDiffuse"  : [0.5765, 0.4784, 0.8275],
-"colorAmbient"  : [0.5765, 0.4784, 0.8275],
+"colorDiffuse"  : [0.7490, 0.7333, 0.7843],
+"colorAmbient"  : [0.7490, 0.7333, 0.7843],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
@@ -112,8 +112,8 @@
 {
 "DbgIndex" : 8,
 "DbgName"  : "Yellow",
-"colorDiffuse"  : [0.5882, 0.5882, 0.4157],
-"colorAmbient"  : [0.5882, 0.5882, 0.4157],
+"colorDiffuse"  : [0.7843, 0.7843, 0.7333],
+"colorAmbient"  : [0.7843, 0.7843, 0.7333],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
