@@ -4,7 +4,8 @@ define(
     var handler = {
       container: undefined,
       JSONLoader: undefined,
-      assets: []
+      assets: [],
+      lights: []
     };
 
     handler.init = function (container_id) {
@@ -14,21 +15,21 @@ define(
 
     handler.loadAsset = function (asset) {
       var promise = new Promise(function (resolve, reject) {
-        var assetURL = './assets/'+asset;
+        var assetURL = './assets/'+asset+'.js';
         $.get(assetURL).done(function () {
-          handler.JSONLoader.load(
+          this.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
-              handler.assets[asset] = object;
+              this.assets[asset] = object;
               resolve(object);
-            }
+            }.bind(this)
           );
-        }).fail(function () {
+        }.bind(this)).fail(function () {
           reject('Could not find file: ' + assetURL);
         });
-      });
+      }.bind(this));
       return promise;
     };
 

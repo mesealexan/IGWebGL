@@ -25,23 +25,23 @@ define(
     };
 
     stage.loadStage = function () {
-      var ambientLight = new THREE.AmbientLight(0xffffff);
-      this.scene.add(ambientLight);
+      handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
+      this.scene.add(handler.lights.ambientLight);
 
-      var p1 = handler.loadAsset('static.js');
-      p1.then(function(object){
+      var pStatic = handler.loadAsset('static');
+      pStatic.then(function(object){
         this.scene.add(object);
-      }.bind(this));
+      }.bind(this)).catch(console.log);
 
-      var p2 = handler.loadAsset('left_small.js');
-      p2.then(function(object){
+      var pLeftSmall = handler.loadAsset('left_small');
+      pLeftSmall.then(function(object){
         this.scene.add(object);
-      }.bind(this));
+      }.bind(this)).catch(console.log);
 
-      var p3 = handler.loadAsset('right_small.js');
-      p3.then(function(object){
+      var pRightSmall = handler.loadAsset('right_small');
+      pRightSmall.then(function(object){
         this.scene.add(object);
-      }.bind(this));
+      }.bind(this)).catch(console.log);
     };
 
 
