@@ -4,8 +4,10 @@ define(
     var main = {};
 
     main.init = function (container_id) {
-      handler.container = document.getElementById(container_id);
+      handler.init(container_id);
       stage.init();
+      stage.loadStage();
+      stage.startRenderLoop();
     };
 
     return main;
