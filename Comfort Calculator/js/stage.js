@@ -13,7 +13,7 @@ define(
 
       this.scene = new THREE.Scene();
 
-      this.camera = new THREE.PerspectiveCamera( 32, container_width/container_height, 1, 10000 );
+      this.camera = new THREE.PerspectiveCamera( 30, container_width/container_height, 1, 10000 );
       this.camera.position.set(3, 329, 1225);
       this.camera.lookAt( new THREE.Vector3(3,171,237) );
 
