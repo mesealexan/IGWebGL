@@ -12,8 +12,9 @@ define(
       var container_height = $(handler.container).height();
 
       this.scene = new THREE.Scene();
+      this.scene.fog = new THREE.Fog(0x616161, 1720, 2000);
 
-      this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 1, 10000 );
+      this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
       this.camera.position.set(0, 339, 987);
       this.camera.lookAt( new THREE.Vector3(0,171,237) );
 
