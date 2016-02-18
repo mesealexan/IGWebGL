@@ -19,7 +19,24 @@
   right: 0px;
   z-index: 1;
 }
+
+#UI_winter {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 50%;
+  z-index: 1;
+}
+
+#UI_summer {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  width: 50%;
+  z-index: 1;
+}
+
 .button{
-  width: 150px;
+  width: 100px;
   height: 30px;
 }

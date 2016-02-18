@@ -6,7 +6,9 @@ define(
       JSONLoader: undefined,
       assets: [],
       lights: [],
-      tweens: []
+      tweens: [],
+      animation_mixers: [],
+      animations: []
     };
 
     handler.init = function (container_id) {
@@ -32,6 +34,56 @@ define(
           reject('Could not find file: ' + assetURL);
         });
       }.bind(this));
+      return promise;
+    };
+
+    handler.loadAnimatedModel = function (asset) {
+      var promise = new Promise(function (resolve, reject) {
+        var assetURL = './assets/'+asset+'.js';
+        $.get(assetURL).done(function () {
+          handler.JSONLoader.load(
+            assetURL,
+            function (geometry, materials) {
+              geometry.computeVertexNormals();
+              for (var key in materials) {
+                materials[key].skinning = true;
+              }
+              var material = new THREE.MeshFaceMaterial(materials);
+              var object = new THREE.SkinnedMesh(geometry, material);
+              handler.assets[asset] = object;
+              resolve(object);
+            }
+          );
+        }).fail(function () {
+          reject('Could not find file: ' + assetURL);
+        });
+      });
+
+      return promise;
+    };
+
+    handler.loadAnimation = function (target, asset) {
+      var promise = new Promise(function (resolve, reject) {
+        var assetURL = './assets/'+asset+'.js';
+        $.get(assetURL).done(function () {
+          handler.JSONLoader.load(
+            assetURL,
+            function (geometry, materials) {
+              if (!handler.animation_mixers[target]) {
+                handler.animation_mixers[target] = new THREE.AnimationMixer(handler.assets[target]);
+              }
+              if (!handler.animations[target]) {
+                handler.animations[target] = [];
+              }
+              handler.animations[target][asset] = handler.animation_mixers[target].clipAction(geometry.animations[0]);
+              resolve(asset);
+            }
+          );
+        }).fail(function () {
+          reject('Could not find file: ' + assetURL);
+        });
+      });
+
       return promise;
     };
 
