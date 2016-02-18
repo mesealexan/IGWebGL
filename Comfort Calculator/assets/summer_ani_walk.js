@@ -22,7 +22,7 @@
 "colorSpecular"  : [1.0000, 1.0000, 1.0000],
 "transparency"  : 1.0,
 "specularCoef"  : 0.0,
-"mapDiffuse"    : "skins/hair_woman_D.tga",
+"mapDiffuse"    : "skins/hair_woman_D.jpg",
 "vertexColors" : false
 },
 

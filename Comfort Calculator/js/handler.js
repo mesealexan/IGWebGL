@@ -87,6 +87,39 @@ define(
       return promise;
     };
 
+    handler.tempAnim = function (asset) {
+      var promise = new Promise(function (resolve, reject) {
+        var assetURL = './assets/'+asset+'.js';
+        $.get(assetURL).done(function () {
+          handler.JSONLoader.load(
+            assetURL,
+            function (geometry, materials) {
+              geometry.computeVertexNormals();
+              for (var key in materials) {
+                materials[key].skinning = true;
+              }
+              var material = new THREE.MeshFaceMaterial(materials);
+              var object = new THREE.SkinnedMesh(geometry, material);
+              object.name = asset;
+              handler.assets[asset] = object;
+              if (!handler.animation_mixers[asset]) {
+                handler.animation_mixers[asset] = new THREE.AnimationMixer(handler.assets[asset]);
+              }
+              if (!handler.animations[asset]) {
+                handler.animations[asset] = [];
+              }
+              handler.animations[asset][asset] = handler.animation_mixers[asset].clipAction(geometry.animations[0]);
+              handler.animations[asset][asset].play();
+              resolve(object);
+            }
+          );
+        }).fail(function () {
+          reject('Could not find file: ' + assetURL);
+        });
+      });
+      return promise;
+    };
+
     return handler;
   }
 );
