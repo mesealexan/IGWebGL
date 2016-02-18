@@ -23,6 +23,7 @@ define(
           this.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
+              setMaterials(materials);
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
               object.name = asset;
@@ -119,6 +120,14 @@ define(
       });
       return promise;
     };
+
+    function setMaterials (materials) {
+      for (var key in materials) {
+        switch (materials[key].name) {
+          
+        }
+      }
+    }
 
     return handler;
   }
