@@ -5,8 +5,8 @@ define(
       scene: undefined,
       camera: undefined,
       engine: undefined,
-      clock_winter: undefined,
-      clock_summer: undefined,
+      clock: undefined,
+      clock_delta: undefined,
       currentWalls: {
         left: undefined,
         right: undefined
@@ -32,8 +32,7 @@ define(
       this.engine.setSize(container_width, container_height);
       handler.container.appendChild(this.engine.domElement);
 
-      this.clock_winter =  new THREE.Clock();
-      this.clock_summer =  new THREE.Clock();
+      this.clock = new THREE.Clock();
     };
 
     stage.loadStage = function () {
@@ -110,15 +109,18 @@ define(
       }).catch(console.log);
     };
 
+
     stage.startRenderLoop = function () {
       requestAnimationFrame(this.startRenderLoop.bind(this));
 
+      this.clock_delta = this.clock.getDelta();
+
       if (handler.animation_mixers.winter_char) {
-        handler.animation_mixers.winter_char.update(this.clock_winter.getDelta());
+        handler.animation_mixers.winter_char.update(this.clock_delta);
       }
 
       if (handler.animation_mixers.summer_char) {
-        handler.animation_mixers.summer_char.update(this.clock_summer.getDelta());
+        handler.animation_mixers.summer_char.update(this.clock_delta);
       }
 
       TWEEN.update();
