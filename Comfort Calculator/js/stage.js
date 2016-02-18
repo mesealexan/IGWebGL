@@ -79,9 +79,8 @@ define(
         this.scene.add(object);
       }.bind(this)).catch(console.log);
 
-      var pWinterIdle = handler.loadAnimation('winter_char', 'winter_ani_idle');
-      var pWinterFreezing = handler.loadAnimation('winter_char', 'winter_ani_freezing');
-      Promise.all([pWinterFreezing]).then(function(assetNames){
+      var pWinterIdle = handler.loadAnimation('winter_char','winter_ani_idle');
+      Promise.all([pWinterIdle]).then(function(assetNames){
         for (var key in assetNames) {
           var type = assetNames[key].slice(assetNames[key].search('_')+1, assetNames[key].length);
           ui.addButton(type, 'winter', attachCallbackAnimation.bind(this));
@@ -94,52 +93,20 @@ define(
         this.scene.add(object);
       }.bind(this)).catch(console.log);
 
-      var pSummerHot = handler.loadAnimation('summer_char', 'summer_ani_hot');
+      //var pSummerHot = handler.loadAnimation('summer_char', 'summer_ani_hot');
       var pSummerIdle = handler.loadAnimation('summer_char', 'summer_ani_idle');
-      var pSummerIdleHot = handler.loadAnimation('summer_char', 'summer_ani_idle_hot');
-      var pSummerIdleWalk = handler.loadAnimation('summer_char', 'summer_ani_idle_walk');
-      var pSummerIdleWarm = handler.loadAnimation('summer_char', 'summer_ani_idle_warm');
-      var pSummerWalk = handler.loadAnimation('summer_char', 'summer_ani_walk');
-      var pSummerWarm = handler.loadAnimation('summer_char', 'summer_ani_warm');
-      Promise.all([pSummerIdle
-        // , pSummerHot, pSummerIdleHot, pSummerIdleWarm, pSummerWalk, pSummerWarm, pSummerIdleWalk
-      ]).then(function(assetNames){
+      //var pSummerIdleHot = handler.loadAnimation('summer_char', 'summer_ani_idle_hot');
+      //var pSummerIdleWalk = handler.loadAnimation('summer_char', 'summer_ani_idle_walk');
+      //var pSummerIdleWarm = handler.loadAnimation('summer_char', 'summer_ani_idle_warm');
+      //var pSummerWalk = handler.loadAnimation('summer_char', 'summer_ani_walk');
+      //var pSummerWarm = handler.loadAnimation('summer_char', 'summer_ani_warm');
+      Promise.all([pSummerIdle]).then(function(assetNames){
         for (var key in assetNames) {
           var type = assetNames[key].slice(assetNames[key].search('_')+1, assetNames[key].length);
           ui.addButton(type, 'summer', attachCallbackAnimation.bind(this));
         }
+        setDefaultAnimations();
       }).catch(console.log);
-    };
-
-    stage.tempLoad = function () {
-      var pWinterIdle = handler.tempAnim('winter_ani_idle');
-      var pWinterFreezing = handler.tempAnim('winter_ani_freezing');
-      Promise.all([pWinterIdle, pWinterFreezing]).then(function(objects){
-        for (var key in objects) {
-          objects[key].position.set(-188, 18, -68);
-          objects[key].scale.set(2.54, 2.54, 2.54);
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, 'winter', tempCallbackAnimation.bind(this));
-        }
-      }.bind(this)).catch(console.log);
-
-      var pSummerIdle = handler.tempAnim('summer_ani_idle');
-      var pSummerWalk = handler.tempAnim('summer_ani_walk');
-      Promise.all([pSummerIdle, pSummerWalk]).then(function(objects){
-        for (var key in objects) {
-          objects[key].position.set(188, 18, -68);
-          objects[key].visible = false;
-          // hardcoded fix
-          if (objects[key].name === 'summer_ani_walk') {
-            objects[key].scale.set(2.54, 2.54, 2.54);
-          }
-          this.scene.add(objects[key]);
-          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, 'summer', tempCallbackAnimation.bind(this));
-        }
-      }.bind(this)).catch(console.log);
     };
 
     stage.startRenderLoop = function () {
@@ -147,8 +114,12 @@ define(
 
       this.clock_delta = this.clock.getDelta();
 
-      for (var key in handler.animation_mixers) {
-        handler.animation_mixers[key].update(this.clock_delta);
+      if (handler.animation_mixers.winter_char) {
+        handler.animation_mixers.winter_char.update(this.clock_delta);
+      }
+
+      if (handler.animation_mixers.summer_char) {
+        handler.animation_mixers.summer_char.update(this.clock_delta);
       }
 
       TWEEN.update();
@@ -188,18 +159,19 @@ define(
       }.bind(this), tweenTime);
     }
 
+    function setDefaultAnimations () {
+      stage.currentAnimations.winter = handler.animations.winter_char.winter_ani_idle;
+      stage.currentAnimations.winter.play();
+
+      stage.currentAnimations.summer = handler.animations.summer_char.summer_ani_idle;
+      stage.currentAnimations.summer.play();
+    }
+
     function attachCallbackAnimation (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
       stage.currentAnimations[position].stop();
       stage.currentAnimations[position] = handler.animations[position + '_char'][e.target.id];
       stage.currentAnimations[position].play();
-    }
-
-    function tempCallbackAnimation (e) {
-      var position = e.target.id.slice(0, e.target.id.search('_'));
-      if (this.currentAnimations[position]) this.currentAnimations[position].visible = false;
-      this.currentAnimations[position] = handler.assets[e.target.id];
-      this.currentAnimations[position].visible = true;
     }
 
     return stage;
