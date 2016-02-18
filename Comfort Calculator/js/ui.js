@@ -8,6 +8,7 @@ define(
       button.innerHTML = value;
       button.onclick = callback;
       button.id = position + '_' + value;
+      button.className = "button";
       document.getElementById('UI_'+position).appendChild(button);
     };
 

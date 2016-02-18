@@ -86,7 +86,7 @@ define(
 
     function attachCallbackWall (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
-      var tweenTime = 1000;
+      var tweenTime = 100;
 
       for (var keyOut in this.currentAssets[position].material.materials) {
         new TWEEN.Tween(this.currentAssets[position].material.materials[keyOut]).to({opacity: 0}, tweenTime).start();
