@@ -2,7 +2,7 @@
 
 "metadata":
 {
-"sourceFile": "",
+"sourceFile": "Summer_idle.max",
 "generatedBy": "3ds max ThreeJSExporter",
 "formatVersion": 3,
 "vertices": 6744,
@@ -22,6 +22,7 @@
 "colorSpecular"  : [1.0000, 1.0000, 1.0000],
 "transparency"  : 1.0,
 "specularCoef"  : 0.0,
+"mapDiffuse"    : "skins/hair_woman_D.jpg",
 "vertexColors" : false
 },
 
@@ -33,6 +34,7 @@
 "colorSpecular"  : [1.0000, 1.0000, 1.0000],
 "transparency"  : 1.0,
 "specularCoef"  : 0.0,
+"mapDiffuse"    : "skins/Female_Body_DIF.jpg",
 "vertexColors" : false
 },
 
@@ -44,6 +46,7 @@
 "colorSpecular"  : [1.0000, 1.0000, 1.0000],
 "transparency"  : 1.0,
 "specularCoef"  : 0.0,
+"mapDiffuse"    : "skins/summer_cloth.jpg",
 "vertexColors" : false
 }
 
