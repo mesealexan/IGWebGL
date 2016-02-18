@@ -40,6 +40,9 @@ define(
       handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
       this.scene.add(handler.lights.ambientLight);
 
+      handler.lights.ambientLight2 = new THREE.AmbientLight(0x303028);
+      this.scene.add(handler.lights.ambientLight2);  
+
       var pStatic = handler.loadAsset('static');
       pStatic.then(function(object){
         this.scene.add(object);
