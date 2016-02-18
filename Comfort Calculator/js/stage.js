@@ -91,14 +91,14 @@ define(
         this.scene.add(object);
       }.bind(this)).catch(console.log);
 
-      var pSummerHot = handler.loadAnimation('summer_char', 'summer_ani_hot');
+      //var pSummerHot = handler.loadAnimation('summer_char', 'summer_ani_hot');
       var pSummerIdle = handler.loadAnimation('summer_char', 'summer_ani_idle');
-      var pSummerIdleHot = handler.loadAnimation('summer_char', 'summer_ani_idle_hot');
-      var pSummerIdleWalk = handler.loadAnimation('summer_char', 'summer_ani_idle_walk');
-      var pSummerIdleWarm = handler.loadAnimation('summer_char', 'summer_ani_idle_warm');
-      var pSummerWalk = handler.loadAnimation('summer_char', 'summer_ani_walk');
-      var pSummerWarm = handler.loadAnimation('summer_char', 'summer_ani_warm');
-      Promise.all([pSummerHot, pSummerIdle, pSummerIdleHot, pSummerIdleWalk, pSummerIdleWarm, pSummerWalk, pSummerWarm]).then(function(assetNames){
+      //var pSummerIdleHot = handler.loadAnimation('summer_char', 'summer_ani_idle_hot');
+      //var pSummerIdleWalk = handler.loadAnimation('summer_char', 'summer_ani_idle_walk');
+      //var pSummerIdleWarm = handler.loadAnimation('summer_char', 'summer_ani_idle_warm');
+      //var pSummerWalk = handler.loadAnimation('summer_char', 'summer_ani_walk');
+      //var pSummerWarm = handler.loadAnimation('summer_char', 'summer_ani_warm');
+      Promise.all([pSummerIdle]).then(function(assetNames){
         for (var key in assetNames) {
           var type = assetNames[key].slice(assetNames[key].search('_')+1, assetNames[key].length);
           ui.addButton(type, 'summer', attachCallbackAnimation.bind(this));
