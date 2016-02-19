@@ -40,7 +40,7 @@ define(
     };
 
     stage.loadStage = function () {
-      handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
+      handler.lights.ambientLight = new THREE.AmbientLight(0xaaaaaa);
       this.scene.add(handler.lights.ambientLight);
 
       handler.lights.ambientLight2 = new THREE.AmbientLight(0x303028);
