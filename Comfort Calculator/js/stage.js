@@ -23,7 +23,7 @@ define(
       var container_height = $(handler.container).height();
 
       this.scene = new THREE.Scene();
-      this.scene.fog = new THREE.Fog(0x616161, 1661, 2000);
+      this.scene.fog = new THREE.Fog(0xffffff, 1300, 2000);
 
       this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
       this.camera.position.set(0, 339, 987);
@@ -43,16 +43,12 @@ define(
       handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
       this.scene.add(handler.lights.ambientLight);
 
-      handler.lights.ambientLight2 = new THREE.AmbientLight(0x303028);
-      //this.scene.add(handler.lights.ambientLight2);
+      handler.lights.ambientLight2 = new THREE.AmbientLight(0x161616);
+      this.scene.add(handler.lights.ambientLight2);
 
-      var directionalLightR = new THREE.DirectionalLight( 0xffffff, 0.5 );
-      directionalLightR.position.set( 600, 1000, 300);
-      this.scene.add( directionalLightR );
-
-      var directionalLightL = new THREE.DirectionalLight( 0xffffff, 0.5 );
-      directionalLightL.position.set( -600, 1000, 300);
-      this.scene.add( directionalLightL );
+      var light = new THREE.PointLight( 0xffffff, 0.2, 3000 );
+        light.position.set( 555, 503, -1310 );
+        this.scene.add( light );
 
       var pStatic = handler.loadAsset('static');
       pStatic.then(function(object){
@@ -124,7 +120,7 @@ define(
           this.scene.add(objects[key]);
         }
         setDefaultShader();
-        ui.addSlider('right', 0, 1, 0.01, attachCallbackShader.bind(this));
+        ui.addSlider('right', 0, 1, 0.25, attachCallbackShader.bind(this));
       }.bind(this)).catch(console.log.bind(console));
     };
 
