@@ -142,6 +142,8 @@ define(
           ui.addButton(type, 'summer', tempCallbackAnimation.bind(this));
         }
       }.bind(this)).catch(console.log);
+
+      ui.addSlider('right', 0, 1, 0.01, function () {console.log('test');});
     };
 
     stage.startRenderLoop = function () {
