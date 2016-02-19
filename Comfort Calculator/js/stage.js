@@ -33,6 +33,8 @@ define(
       handler.container.appendChild(this.engine.domElement);
 
       this.clock = new THREE.Clock();
+
+      window.addEventListener('resize', resizeWindow.bind(this));
     };
 
     stage.loadStage = function () {
@@ -200,6 +202,14 @@ define(
       if (this.currentAnimations[position]) this.currentAnimations[position].visible = false;
       this.currentAnimations[position] = handler.assets[e.target.id];
       this.currentAnimations[position].visible = true;
+    }
+
+    function resizeWindow () {
+      var container_width = $(handler.container).width();
+      var container_height = $(handler.container).height();
+      this.engine.setSize(container_width, container_height);
+      this.camera.aspect = container_width / container_height;
+  		this.camera.updateProjectionMatrix();
     }
 
     return stage;
