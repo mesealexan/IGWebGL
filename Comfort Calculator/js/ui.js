@@ -19,6 +19,7 @@ define(
       slider.min = min;
       slider.max = max;
       slider.step = step;
+      slider.defaultValue = 0;
       document.getElementById('UI_'+position).appendChild(document.createElement("br"));
       document.getElementById('UI_'+position).appendChild(slider);
     };

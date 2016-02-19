@@ -38,32 +38,7 @@ define(
       return promise;
     };
 
-    handler.loadAnimatedModel = function (asset) {
-      var promise = new Promise(function (resolve, reject) {
-        var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
-          handler.JSONLoader.load(
-            assetURL,
-            function (geometry, materials) {
-              geometry.computeVertexNormals();
-              for (var key in materials) {
-                materials[key].skinning = true;
-                materials[key].morphTargets = true;
-              }
-              var material = new THREE.MeshFaceMaterial(materials);
-              var object = new THREE.SkinnedMesh(geometry, material);
-              handler.assets[asset] = object;
-              resolve(object);
-            }
-          );
-        }).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
-      });
-      return promise;
-    };
-
-    handler.loadMorphModel = function (asset) {
+    handler.loadMorphedAsset = function (asset) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
         $.get(assetURL).done(function () {
@@ -76,7 +51,7 @@ define(
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
-              handler.assets[asset] = object;  
+              handler.assets[asset] = object;
               resolve(object);
             }
           );
@@ -84,31 +59,6 @@ define(
           reject('Could not find file: ' + assetURL);
         });
       });
-      return promise;
-    };
-
-    handler.loadAnimation = function (target, asset) {
-      var promise = new Promise(function (resolve, reject) {
-        var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
-          handler.JSONLoader.load(
-            assetURL,
-            function (geometry, materials) {
-              if (!handler.animation_mixers[target]) {
-                handler.animation_mixers[target] = new THREE.AnimationMixer(handler.assets[target]);
-              }
-              if (!handler.animations[target]) {
-                handler.animations[target] = [];
-              }
-              handler.animations[target][asset] = handler.animation_mixers[target].clipAction(geometry.animations[0]);
-              resolve(asset);
-            }
-          );
-        }).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
-      });
-
       return promise;
     };
 
@@ -135,6 +85,39 @@ define(
               }
               handler.animations[asset][asset] = handler.animation_mixers[asset].clipAction(geometry.animations[0]);
               handler.animations[asset][asset].play();
+              resolve(object);
+            }
+          );
+        }).fail(function () {
+          reject('Could not find file: ' + assetURL);
+        });
+      });
+      return promise;
+    };
+
+    handler.loadAnimatedAsset = function (asset) {
+      var promise = new Promise(function (resolve, reject) {
+        var assetURL = './assets/'+asset+'.js';
+        $.get(assetURL).done(function () {
+          handler.JSONLoader.load(
+            assetURL,
+            function (geometry, materials) {
+              geometry.computeVertexNormals();
+              for (var key in materials) {
+                materials[key].skinning = true;
+              }
+              var material = new THREE.MeshFaceMaterial(materials);
+              var object = new THREE.SkinnedMesh(geometry, material);
+              handler.assets[asset] = object;
+              if (!handler.animation_mixers[asset]) {
+                handler.animation_mixers[asset] = new THREE.AnimationMixer(handler.assets[asset]);
+              }
+              if (!handler.animations[asset]) {
+                handler.animations[asset] = [];
+              }
+              for (var ani_key in geometry.animations) {
+                handler.animations[asset].push(handler.animation_mixers[asset].clipAction(geometry.animations[ani_key]));
+              }
               resolve(object);
             }
           );

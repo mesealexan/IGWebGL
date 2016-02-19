@@ -7,8 +7,8 @@ define(
       handler.init(container_id);
       stage.init();
       stage.loadStage();
-      // stage.loadAnimations();
-      stage.tempLoad();
+      stage.loadAnimations();
+      // stage.tempLoad();
       stage.startRenderLoop();
     };
 
