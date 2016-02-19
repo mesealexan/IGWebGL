@@ -61,7 +61,7 @@ var tornadoScene = {
 
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    tweenBloomDown();
+    /*tweenBloomDown();
     rareLightning();
     loader.cameraHandler.frame = 369;
     //loader.cameraHandler.frame = 200;
