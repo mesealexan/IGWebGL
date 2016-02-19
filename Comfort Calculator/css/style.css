@@ -1,0 +1,42 @@
+#WebGL {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+ 	width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#UI_left {
+  position: absolute;
+  left: 0px;
+  z-index: 1;
+}
+
+#UI_right {
+  position: absolute;
+  right: 0px;
+  z-index: 1;
+}
+
+#UI_winter {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  max-width:: 50%;
+  z-index: 1;
+}
+
+#UI_summer {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  max-width:: 50%;
+  z-index: 1;
+}
+
+.button{
+  width: 100px;
+  height: 30px;
+}
