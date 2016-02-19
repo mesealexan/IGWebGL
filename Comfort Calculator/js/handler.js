@@ -19,7 +19,7 @@ define(
     handler.loadAsset = function (asset) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
+        // $.get(assetURL).done(function () {
           this.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
@@ -31,9 +31,9 @@ define(
               resolve(object);
             }.bind(this)
           );
-        }.bind(this)).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
+        // }.bind(this)).fail(function () {
+          // reject('Could not find file: ' + assetURL);
+        // });
       }.bind(this));
       return promise;
     };
@@ -41,7 +41,7 @@ define(
     handler.loadMorphedAsset = function (asset) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
+        // $.get(assetURL).done(function () {
           handler.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
@@ -55,9 +55,9 @@ define(
               resolve(object);
             }
           );
-        }).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
+        // }).fail(function () {
+          // reject('Could not find file: ' + assetURL);
+        // });
       });
       return promise;
     };
@@ -65,7 +65,7 @@ define(
     handler.tempAnim = function (asset) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
+        // $.get(assetURL).done(function () {
           handler.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
@@ -88,9 +88,9 @@ define(
               resolve(object);
             }
           );
-        }).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
+        // }).fail(function () {
+          // reject('Could not find file: ' + assetURL);
+        // });
       });
       return promise;
     };
@@ -98,7 +98,7 @@ define(
     handler.loadAnimatedAsset = function (asset) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
-        $.get(assetURL).done(function () {
+        // $.get(assetURL).done(function () {
           handler.JSONLoader.load(
             assetURL,
             function (geometry, materials) {
@@ -121,9 +121,9 @@ define(
               resolve(object);
             }
           );
-        }).fail(function () {
-          reject('Could not find file: ' + assetURL);
-        });
+        // }).fail(function () {
+          // reject('Could not find file: ' + assetURL);
+        // });
       });
       return promise;
     };
