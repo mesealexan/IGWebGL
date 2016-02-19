@@ -48,6 +48,7 @@ define(
               geometry.computeVertexNormals();
               for (var key in materials) {
                 materials[key].skinning = true;
+                materials[key].morphTargets = true;
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.SkinnedMesh(geometry, material);
@@ -59,7 +60,30 @@ define(
           reject('Could not find file: ' + assetURL);
         });
       });
+      return promise;
+    };
 
+    handler.loadMorphModel = function (asset) {
+      var promise = new Promise(function (resolve, reject) {
+        var assetURL = './assets/'+asset+'.js';
+        $.get(assetURL).done(function () {
+          handler.JSONLoader.load(
+            assetURL,
+            function (geometry, materials) {
+              geometry.computeVertexNormals();
+              for (var key in materials) {
+                materials[key].morphTargets = true;
+              }
+              var material = new THREE.MeshFaceMaterial(materials);
+              var object = new THREE.Mesh(geometry, material);
+              handler.assets[asset] = object;  
+              resolve(object);
+            }
+          );
+        }).fail(function () {
+          reject('Could not find file: ' + assetURL);
+        });
+      });
       return promise;
     };
 
