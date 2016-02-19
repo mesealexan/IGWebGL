@@ -1,28 +1,46 @@
 define(["scene", "animate", "events", "animationHandler", "composers", "watch", "tween",
-  "materials", "underscore", "particleSystem", "aeTween", "text", "cloth"],
+  "materials", "underscore", "particleSystem", "aeTween", "text", "cloth", "particleSystemGPU", "callback", "audio"],
 function (scene, animate, events, animationHandler, composers, watch, tween,
-  materials, underscore, particleSystem, aeTween, text, cloth ) {
+  materials, underscore, particleSystem, aeTween, text, cloth, particleSystemGPU, callback, audio ) {
 var tornadoScene = {
-  scene: {}
+  callbacks: {
+    introAnimDone: {
+      sampleCall1: function(){ console.log("finished intro animation"); }
+    }
+    ,
+    cardinalWindow: {
+      sampleCall2: function(){ console.log("changed to cardinal window"); }
+    }
+    ,
+    annealedWindow: {
+      sampleCall2: function(){ console.log("changed to annealed window"); }
+    }
+    ,
+    throwDebris: {
+      sampleCall2: function(){ console.log("throwed debris"); }
+    }
+  }
   ,
-  callbacks:{}
+  url: "sea-storm"
   ,
-  constructor: function(){
+  constructor: function () {
   var tornado = new scene();
   tornado.folderName = "tornado";
-  tornado.addAssets(["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House", "SeaStorm",
-   "Floor_grass", "Hurricane_arm", "Debris", "Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
-   "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow" ,"CardinalWindow"]);
-   // scroll clouds
+  tornado.addAssets( ["Floor_gird", "Background_clouds", "Earth_shell", "Earth_clouds", "House", "SeaStorm",
+   "Floor_grass", "Hurricane_arm", "Debris", /*"Tree_sway", "Bush_sway",/* "Wind_1", "Wind_2", "Wind_3",*/
+   "House_windows", /*"GoodWeatherBadWeather",*/ "Inner_walls", "OrdinaryWindow" ,"CardinalWindow", "Arrow"] );
+   tornado.addSounds( [ 'LAMI_hurricane', 'LAMI_rest_music', 'LAMI_annealed', 'LAMI_seastorm' ] );
+   // scroll
    tornado.cloudSpeed = 0.0001;
    tornado.slowMoCloudSpeed = 0.00005;
    // gravity
    tornado.gravity = new THREE.Vector3(0, -15, -15 );
    tornado.slowMoGravity = new THREE.Vector3(0, -1, -1 );
-   // debrees
+   // debree
    tornado.debreeDestroyTime = 3000;
    tornado.nomalModebreeDestroyTime = 3000;
    tornado.slowModebreeDestroyTime = 10000;
+   var brickTravelTime = 40;
    // lightning
    tornado.lightningTime = 75;
    tornado.slowMoLightningTime = 200;
@@ -35,20 +53,28 @@ var tornadoScene = {
    tornado.upperSceneDisposables = [];
    tornado.lowerSceneObjects = [];
    // crack window
-   crackCycleSpeed = 0.1;
+   var crackCycleSpeed = 0.1;
+   // intro text
+   var textFadeOutFrames = 150;
+   // between windows frames
+   var betweenWindowsFrames = 25;
+
 
   tornado.onFinishLoadFunctions.jumpAhead = function(scene, loader) {
-    /*tweenBloomDown();
+    tweenBloomDown();
     rareLightning();
-    loader.cameraHandler.frame = 380;
+    loader.cameraHandler.frame = 369;
+    //loader.cameraHandler.frame = 200;
     animate.SetCustomFramerate(30);
     cleanUpperScene();
     revealLowerScene();
     events.ToggleControls(true);
     startPhysics(tornado.assets.scene, tornado.assets.loader);
+    scene.add(tornado.assets.rain);
+    tornado.assets.rain.material.Start();
     //startLightning();
-    setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
-    setTimeout(function(){
+    //setTimeout(function(){animate.updater.removeHandler(loader.cameraHandler)}, 1000);
+    /*setTimeout(function(){
       animate.updater.removeHandler(loader.cameraHandler);
       triggerSlowMo();
     }, 2000);*/
@@ -57,13 +83,6 @@ var tornadoScene = {
   };
 
   /***on start functions***/
-  tornado.onStartFunctions.addButtons = function(){
-    tornado.buttons.cardinal.add();
-    tornado.buttons.ordinary.add();
-    tornado.buttons.wind.add();
-    tornado.buttons.reset.add();
-  };
-
   tornado.onStartFunctions.startLightning = function () {
     startLightning();
   };
@@ -108,36 +127,34 @@ var tornadoScene = {
     //scene.add( plane );
   };
 
-  tornado.onStartFunctions.makeText = function(scene){
-     //var string1 = "Protection for when"; //Ē not supported with current font
-     //var string2 = "good weather goes bad";
-     var strings = [ "Protection for when", "good weather goes bad" ];
+  tornado.onStartFunctions.makeIntroText = function( scene ) {
+     var strings = [ /*"Protection for when", "good weather goes bad"*/ "Storm Relief", "" ];
 
      var settings = {
-       size: 15,
+       size: 1,
        curveSegments: 4,
-       height: 1,
+       height: 0.1,
        bevelEnabled: false,
        style: "normal",
        weight: "normal",
 			 bevelEnabled: true,
-			 bevelThickness: 0.01,
-			 bevelSize: 0.01,
+			 bevelThickness: 0.05,
+			 bevelSize: 0,
        font: "bank gothic"
        //font: "helvetiker"
      };
 
-     var material = new THREE.MeshBasicMaterial({color: 0x000000});
+     var material = new THREE.MeshBasicMaterial( {color: 0x000000, transparent: true} );
      materials.outlineShader.prototype = new THREE.ShaderMaterial();
      var outlineMaterial = new materials.outlineShader({
-       thickness: 1,
+       thickness: 0.06,
        color: new THREE.Color("rgb(255,255,255)")
      });
 
      var mats = [material, outlineMaterial];
      var meshes = [];
 
-     _.each(strings, function(s){
+     _.each(strings, function ( s ) {
        var geom = text.Make(s, settings);
        geom.computeBoundingBox();
        geom.computeVertexNormals();
@@ -148,27 +165,77 @@ var tornadoScene = {
        tornado.upperSceneDisposables.push(mesh);
      });
 
-     meshes[0].position.set(-37 + meshes[0].centerOffset, 180, 45 );
-     meshes[0].rotation.x -= Math.PI / 2;
+     tornado.assets.textMeshes = meshes;
+
+     meshes[0].position.set(-0.5, -1, 100 );
      meshes[0].add(meshes[1]);
-     meshes[1].position.y -= 20;
      meshes[1].position.x += -meshes[0].centerOffset + meshes[1].centerOffset;
      scene.add(meshes[0]);
-
-    /*animate.camera.add(meshes[0]);
-    meshes[0].position.z -= 200;
-    meshes[0].position.y += 2.5;
-    meshes[0].position.x += meshes[0].centerOffset;
-
-    animate.camera.add(meshes[1]);
-    meshes[1].position.z -= 200;
-    meshes[1].position.y -= 2.5;
-    meshes[1].position.x += meshes[1].centerOffset;
-
-     var textPosTween = new aeTween(meshes[0].position);
-     textPosTween.to({x: 60 + meshes[0].centerOffset, z: 170}, 100);*/
-     //textPosTween.start();
+     animate.camera.add(meshes[0]);
+     meshes[0].position.z -= 200;
+     meshes[0].position.y += 1;
+     meshes[0].position.x += meshes[0].centerOffset;
+     meshes[1].position.y -= 2.5;
    };
+
+  tornado.onStartFunctions.makeAnnealedText = function ( scene ) {
+    var strings = [ "Non-impact", "Glass" ];
+
+    var offsets = {
+      Nonimpact : 0.1,
+      Glass     : -0.1
+    };
+
+    var settings = {
+      size: 0.17,
+      curveSegments: 3,
+      height: 0.02,
+      style: "normal",
+      weight: "normal",
+      font: "bank gothic"
+    };
+
+    /*
+    var strings = [ "Non-", "impact", "Glass" ];
+
+    var offsets = {
+      Non: 0.17,
+      impact: 0,
+      Glass   : -0.17
+    };
+
+    var settings = {
+      size: 0.2,
+      curveSegments: 3,
+      height: 0.02,
+      style: "normal",
+      weight: "normal",
+      font: "bank gothic"
+    };
+    */
+
+    var combinedGeom = new THREE.Geometry();
+    var material = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0 } );
+    var offsetY = 0.1;
+
+    _.each (strings, function ( s ) {
+      var geom = text.Make( s, settings );
+      geom.computeBoundingBox();
+      geom.computeVertexNormals();
+      var centerOffset = -0.5 * ( geom.boundingBox.max.x - geom.boundingBox.min.x );
+      var posMatrix = new THREE.Matrix4();
+      posMatrix.makeTranslation( centerOffset, offsets[ audio.CleanHyphens(s) ], 0 );
+      geom.applyMatrix ( posMatrix );
+      var mesh = new THREE.Mesh( geom );
+      combinedGeom.merge( mesh.geometry, mesh.matrix );
+    });
+
+    var mesh = new THREE.Mesh(combinedGeom, material);
+    mesh.position.set(-9.478, -420.718, -3.257);
+    scene.add( mesh );
+    mesh.visible = false;
+    tornado.assets.annealedTextMesh = mesh;
+  };
 
   /***on load functions***/
 
@@ -258,6 +325,7 @@ var tornadoScene = {
         opacity: opac,
         envMap: materials.gloomyCloudsCube
       });
+
     tornado.assets.cardinalWindow.material.maxOpacity = opac;
     tornado.assets.cardinalWindow.material.morphTargets = true;
     tornado.assets.cardinalWindHandler = {
@@ -290,6 +358,20 @@ var tornadoScene = {
       tornado.assets.cardinalWindHandler.value = 0;
     };
   }
+
+  tornado.onLoadFunctions.SeaStorm = function (mesh) {
+    mesh.material = mesh.material.materials[0];
+    mesh.material.opacity = 0;
+    mesh.material.transparent = true;
+    tornado.assets.SeaStorm = mesh;
+  };
+
+  tornado.onLoadFunctions.Arrow = function (mesh) {
+    mesh.material = mesh.material.materials[0];
+    mesh.material.opacity = 0;
+    mesh.material.transparent = true;
+    tornado.assets.Arrow = mesh;
+  };
 
   tornado.onLoadFunctions.House_windows = function ( mesh ) {
     tornado.lowerSceneObjects.push(mesh);
@@ -350,8 +432,8 @@ var tornadoScene = {
     mesh.visible = false;
     var PHY_Floor_girdMat = Physijs.createMaterial(
       mesh.material.clone(),
-      .6, // medium friction
-      .3  // low restitution
+      0.6, // medium friction
+      0.3  // low restitution
     );
 
     var PHY_Floor_gird = new Physijs.ConvexMesh (mesh.geometry.clone(), PHY_Floor_girdMat, 0 );
@@ -468,8 +550,17 @@ var tornadoScene = {
 
   /***on finish functions***/
   tornado.onFinishLoadFunctions.playCamera = function(scene, loader) {
-     loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+     loader.cameraHandler.play(undefined,undefined, //from, to undefined
+       onCameraComplete,
        animate.Animate);
+
+       function onCameraComplete () {
+         addButtons();
+         revealSeaStormLogo();
+         audio.sounds.LAMI_rest_music.play();
+         callback.go( tornadoScene.callbacks.introAnimDone );
+         animate.StartTimeout();
+       }
   };
 
   tornado.onFinishLoadFunctions.applyComposer = function(scene){
@@ -479,7 +570,15 @@ var tornadoScene = {
   };
 
   tornado.onFinishLoadFunctions.addControls = function () {
-      events.AddControls();
+      var c = {
+          noZoom: true,
+          noPan: true,
+          maxPolarAngle: 1.7,
+          minPolarAngle: 1.2,
+          minAzimuthAngle: -0.7,
+          maxAzimuthAngle: 0.1
+      };
+      events.AddControls(c);
       events.ToggleControls(false);
   };
 
@@ -490,20 +589,39 @@ var tornadoScene = {
   };
 
   tornado.onFinishLoadFunctions.addRain = function (scene) {
-    var rainSettings = {
-        width: 50,
-        height: 50,
-        depth: 50,
-        num: 100,
-        size: {w: 0.1, h: 0.8},
-        mapNames: ["water_drop"],
-        pos: new THREE.Vector3(0, -408, 40),
-        dir: new THREE.Vector3(0, -1, -1),
-        speed: 2,
-        fixedRot: {x: 0.6, y: 0, z: 0}
-    };
+      var rainSettings = {
+          //width:  37,
+          //height: 50,
+          //depth:  30,
+          width:  100,
+          height: 50,
+          depth:  100,
+          num: 7500,
+          size: 30,
+          mapName: "rainLine",
+          dir: new THREE.Vector3(0, -1, -1),
+          speed: 1.2,
+      };
 
-    tornado.assets.rainPS = new particleSystem(rainSettings);
+      particleSystemGPU.prototype = new THREE.ShaderMaterial();
+      var rainShader = new particleSystemGPU(rainSettings);
+      tornado.assets.rain = new THREE.PointCloud( rainShader.systemGeometry, rainShader );
+      tornado.assets.rain.position.set(-2, -438, -5);
+      scene.add(tornado.assets.rain);
+      /*var rainSettings = {
+          width: 50,
+          height: 50,
+          depth: 50,
+          num: 100,
+          size: {w: 0.1, h: 0.8},
+          mapNames: ["water_drop"],
+          pos: new THREE.Vector3(0, -408, 40),
+          dir: new THREE.Vector3(0, -1, -1),
+          speed: 2,
+          fixedRot: {x: 0.6, y: 0, z: 0}
+      };
+
+      tornado.assets.rainPS = new particleSystem(rainSettings);*/
     //tornado.assets.rainPS.Init(scene);
   };
 
@@ -527,7 +645,7 @@ var tornadoScene = {
         tornado.assets.windHandler = {
           maxFrame: undefined,
           curFrame: 0,
-          update: function(systemDelta){
+          update: function ( systemDelta ) {
             if(tornado.assets.clothSim.windOn == true ||
               (this.maxFrame !== undefined && this.curFrame++ < this.maxFrame)){
               tornado.assets.clothSim.SetWindStrength(Math.abs(Math.cos( systemDelta / 2000 )
@@ -540,10 +658,6 @@ var tornadoScene = {
               tornado.assets.clothSim.windForce.set( 0, 0, 0 ).normalize().
               multiplyScalar( tornado.assets.clothSim.windStrength );
             }
-
-            /*if(this.maxFrame !== undefined && this.curFrame++ < this.maxFrame)
-              tornado.assets.clothSim.windOn = true;
-            else tornado.assets.clothSim.windOn = false;*/
 
             tornado.assets.clothSim.simulate(systemDelta);
 
@@ -569,11 +683,11 @@ var tornadoScene = {
   };
 
   /***on unload functions***/
-  tornado.onUnloadFunctions.resetFramerate = function(){
+  tornado.onUnloadFunctions.resetFramerate = function () {
     animate.SetDefaultFramerate();
   };
 
-  tornado.onUnloadFunctions.clearIntervals = function(){
+  tornado.onUnloadFunctions.clearIntervals = function () {
     for (var key in tornado.intervals)
       if (tornado.intervals.hasOwnProperty(key))
         clearInterval(tornado.intervals[key]);
@@ -583,19 +697,22 @@ var tornadoScene = {
   tornado.buttons = {
     cardinal: {
         add: function(){
-            events.AddButton({text:"cardinal", function: tornado.states.setCardinal, id:"cardinalWindow"});
+          events.AddButton({text:"Sea-Storm", function: tornado.states.setCardinal, id:"cardinalWindow",
+          class: "glass-type"});
         },
         remove: function(){ events.RemoveElementByID("cardinalWindow"); }
     },
     ordinary: {
         add: function(){
-            events.AddButton({text:"ordinary", function: tornado.states.setOrdinary, id:"ordinaryWindow"});
+          events.AddButton({text:"Annealed", function: tornado.states.setOrdinary, id:"ordinaryWindow",
+          class: "glass-type"});
         },
         remove: function(){ events.RemoveElementByID("ordinaryWindow"); }
     },
     wind: {
         add: function(){
-            events.AddButton({text:"wind", function: tornado.states.windCycling, id:"wind"});
+            events.AddButton({ text:"Debris", function: tornado.states.debris, id:"wind",
+            class:"anim-event" });
         },
         remove: function(){ events.RemoveElementByID("wind"); }
     },
@@ -608,20 +725,29 @@ var tornadoScene = {
 
   };
 
+
   tornado.states = {
-    curWindow: undefined,
+    curWindow: "cardinal",
+    cardinalCracked: false,
+    ordinaryCracked: false,
+    tweenDone: false,
     /*********************cardinal*********************/
     setCardinal: function(){
-      if(tornado.states.curWindow == "cardinal") return;
+      if ( tornado.states.tweenDone == false ) return;
+      if ( tornado.states.curWindow == "cardinal" ) {
+
+        tornado.states.reset();
+        return;
+
+      };
+
+      callback.go( tornadoScene.callbacks.cardinalWindow );
+
       tornado.states.curWindow = "cardinal";
 
       var cardinalIn = function(){
-        var onBrickComp = function(){
-          tornado.assets.cardinalWindow.crack();
-          //tornado.assets.cardinalWindow.wind();
-        }
         tornado.assets.clothSim.windOn = false;
-        throwBrick(onBrickComp);
+        tornado.states.tweenDone = true;
       }
 
       var ordinaryOut = function(){
@@ -632,37 +758,37 @@ var tornadoScene = {
           tornado.assets.cardinalWindow.material.maxOpacity,
           cardinalIn);
       };
+
+      var annealedTextOut = function(){
+        tornado.assets.annealedTextMesh.visible = false;
+        tornado.states.tweenOpac(tornado.assets.SeaStorm, 1);
+      }
+
       //opacity tween
       tornado.assets.clothSim.windOn = false;
+      tornado.states.tweenDone = false;
+      tornado.states.tweenOpac(tornado.assets.annealedTextMesh, 0, annealedTextOut);
       tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, ordinaryOut);
     }
     ,
     /*********************ordinary*********************/
     setOrdinary: function(){
-      if(tornado.states.curWindow == "ordinary") return;
+      if ( tornado.states.tweenDone == false ) return;
+      if(tornado.states.curWindow == "ordinary") {
+
+        tornado.states.reset();
+        return;
+
+      };
+
+      callback.go( tornadoScene.callbacks.annealedWindow );
       tornado.states.curWindow = "ordinary";
 
-      var ordinaryIn = function(){
-        var onBrickComp = function(){
-          tornado.assets.ordinaryWindow.break();
-          tornado.assets.clothSim.windAmplify = 300;
-          animate.updater.addHandler({
-            update: function(){
-              if(tornado.assets.clothSim.windAmplify < 0) {
-                tornado.assets.clothSim.windOn = false;
-                animate.updater.removeHandler(this);
-              }
-              tornado.assets.clothSim.windAmplify -= 2;
-            }
-          });
-          //tornado.assets.windHandler.maxFrame = 100;
-          tornado.assets.clothSim.windOn = true;
-        }
-
+      var ordinaryIn = function () {
         tornado.assets.cardinalWindow.reset();
         tornado.assets.windHandler.curFrame = 0;
         tornado.assets.windHandler.maxFrame = undefined;
-        throwBrick(onBrickComp);
+        tornado.states.tweenDone = true;
       }
       //on complete
       var cardinalOut = function(){
@@ -675,55 +801,113 @@ var tornadoScene = {
           ordinaryIn
         );
       };
+
+      var SeaStormLogoOut = function(){
+        tornado.assets.annealedTextMesh.visible = true;
+        tornado.states.tweenOpac(tornado.assets.annealedTextMesh, 1);
+      }
       //opacity tween
+      tornado.states.tweenDone = false;
+      tornado.states.tweenOpac(tornado.assets.SeaStorm, 0, SeaStormLogoOut);
       tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, cardinalOut);
     }
     ,
-    windCycling: function(){
-      if(tornado.states.curWindow == "cardinal")
-        tornado.assets.cardinalWindow.wind();
-      else if(tornado.states.curWindow == "ordinary"){
-        tornado.assets.clothSim.windAmplify = 120;
-        tornado.assets.clothSim.windOn = true;
+    debris: function(){
+      if ( tornado.states.curWindow == "cardinal" ) {
+        tornado.states.cardinalCracked = true;
+        var onBrickComp = function () {
+          tornado.assets.cardinalWindow.crack();
+          tornado.assets.cardinalWindow.wind();
+          tornado.assets.rain.material.Start();
+          audio.sounds.LAMI_seastorm.play();
+        }
+
+        callback.go( tornadoScene.callbacks.throwDebris );
+        throwBrick(onBrickComp, "cardinal");
+      }
+
+      else if( tornado.states.curWindow == "ordinary" ) {
+        tornado.states.ordinaryCracked = true;
+
+        var onBrickComp = function(){
+          tornado.assets.ordinaryWindow.break();
+          tornado.assets.clothSim.windAmplify = 300;
+          tornado.assets.clothSim.windOn = true;
+          audio.sounds.LAMI_annealed.play();
+        }
+
+        throwBrick(onBrickComp, "ordinary");
+
       }
     }
     ,
     reset: function(){
-      if(tornado.states.curWindow == "cardinal"){
+      if( tornado.states.curWindow == "cardinal" &&
+          tornado.states.cardinalCracked ) {
+
+        tornado.states.cardinalCracked = false;
         var tweenBack = function(){
+          tornado.states.tweenDone = true;
           tornado.assets.cardinalWindow.reset();
           tornado.states.tweenOpac(tornado.assets.cardinalWindow, tornado.assets.cardinalWindow.material.maxOpacity);
         };
+
+        tornado.states.tweenDone = false;
         tornado.states.tweenOpac(tornado.assets.cardinalWindow, 0, tweenBack);
       }
-      else if(tornado.states.curWindow == "ordinary"){
+      else if( tornado.states.curWindow == "ordinary" &&
+               tornado.states.ordinaryCracked ) {
+
+        tornado.states.ordinaryCracked = false;
+
         var tweenBack = function(){
+          tornado.states.tweenDone = true;
           tornado.assets.ordinaryWindow.reset();
           tornado.states.tweenOpac(tornado.assets.ordinaryWindow, tornado.assets.ordinaryWindow.material.maxOpacity);
         };
+
+        tornado.states.tweenDone = false;
         tornado.states.tweenOpac(tornado.assets.ordinaryWindow, 0, tweenBack);
       }
-      tornado.states.curWindow = undefined;
+      //tornado.states.curWindow = undefined;
       tornado.assets.clothSim.windAmplify = 0;
       tornado.assets.clothSim.windOn = false;
     }
     ,
     tweenOpac: function(obj, val, onComp){
       var tween = new aeTween(obj.material);
-      tween.to({opacity: val}, 20);
+      tween.to({opacity: val}, betweenWindowsFrames);
       if(onComp)tween.onComplete = onComp;
       tween.start();
     }
   };
 
-  function reactToFrame (frame) {
+  function revealSeaStormLogo () {
+    var logoTween = new aeTween( tornado.assets.SeaStorm.material );
+    logoTween.onComplete = function () {
+      tornado.states.tweenDone = true;
+    }
+    logoTween.to({opacity: 1}, betweenWindowsFrames);
+    logoTween.start();
+
+    var arrowTween = new aeTween( tornado.assets.Arrow.material );
+    arrowTween.to({opacity: 1}, betweenWindowsFrames);
+    arrowTween.start();
+  }
+
+  function reactToFrame ( frame ) {
     switch (frame) {
       case 0:
         revealTornado();
+        audio.sounds.LAMI_hurricane.loop().play();
+        break;
+      case 20:
+        tweenTextOpacityDown();
         break;
       case 200:
         fadeToWhite();
-        tornado.assets.rainPS.Init(tornado.assets.scene);
+        //tornado.assets.rainPS.Init(tornado.assets.scene);
+        tornado.assets.rain.material.Start();
         startPhysics(tornado.assets.scene, tornado.assets.loader);
         animate.SetCustomFramerate(30);
         tweenBloomDown();
@@ -732,15 +916,38 @@ var tornadoScene = {
       case 240:
         cleanUpperScene();
         revealLowerScene();
+        audio.sounds.LAMI_hurricane.fadeTo(10, 1000);
         fadeBack();
         break;
-      case 270:
-        //triggerSlowMo();
-        break;
-      case 280:
-        //throwBrick();
+      case 370:
+        tornado.assets.loader.cameraHandler.frame = 496;
         events.ToggleControls(true);
         break;
+    }
+  }
+
+  function tweenTextOpacityDown () {
+    _.each(tornado.assets.textMeshes, loopTextMeshes); // object that holds both lines of text
+
+    function loopTextMeshes ( c ) { // line of text that holds bith text and outline
+      _.each(c.children, loopTextChildren);
+    }
+
+    function loopTextChildren ( tc ) {
+      if ( !tc.material ) return;
+
+      if ( tc.material.uniforms ) {  // outlineShader
+        var textTween = new aeTween( tc.material.uniforms.opacity );
+        textTween.to( { value: 0 }, textFadeOutFrames );
+        textTween.onComplete = function () { tc.visible = false; }
+        textTween.start();
+      }
+      else {                         // basic material
+        var textTween = new aeTween ( tc.material );
+        textTween.to( { opacity: 0 }, textFadeOutFrames );
+        textTween.onComplete = function () { tc.visible = false; }
+        textTween.start();
+      }
     }
   }
 
@@ -755,69 +962,115 @@ var tornadoScene = {
 
   }
 
-  function throwBrick (onComp) {
-    var startPos =  new THREE.Vector3(-6.95, -420.64, 10);
+  function throwBrick ( onComp, win ) {
+    var startPos = new THREE.Vector3(-6.95, -420.64, 10);
+    var bounceBackPos = new THREE.Vector3(-6.95, -430.64, 10);
+    bounceBackPos.x += tornado.assets.loader.RandomNum ( -15, -3 );
+    bounceBackPos.y += tornado.assets.loader.RandomNum ( -5, -3 );
+    //bounceBackPos.z += tornado.assets.loader.RandomNum ( -5, 5 );
     var windowPos = new THREE.Vector3(-6.95, -420.64, -3.37);
-    var time = 1000;
-
     var geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.3 );
-    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-    var cube = new THREE.Mesh( geometry, material );
+
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+    tornado.assets.brickMat = tornado.assets.brickMat ||
+                              materials.setMaterials("tornado", { name: "brick" });
+
+    var material = tornado.assets.brickMat;
+    ////////////
+    materials.outlineShader.prototype = new THREE.ShaderMaterial();
+     var outlineMaterial = new materials.outlineShader({
+       thickness: 0.05,
+       color: new THREE.Color("rgb(255, 0, 0)")
+     });
+
+     var mats = [material, outlineMaterial];
+     var cube = THREE.SceneUtils.createMultiMaterialObject(geometry, mats);
+    ///////////
     cube.position.copy(startPos);
     tornado.assets.scene.add( cube );
 
-    var posTween = new TWEEN.Tween( cube.position );
-    posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, time );
-    posTween.onComplete (function () {
-      cube.visible = false;
-      if(onComp)onComp();
-      //tornado.assets.shatterWindowMaterial.uniforms.amp.value = 0.05;
-      //animate.updater.addHandler(tornado.assets.shatterWindowMaterial);
-    });
-    posTween.start();
+    if ( win == "ordinary" ) {
+      var posTween = new aeTween( cube.position );
+      posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, brickTravelTime );
+      posTween.onComplete = function () {
+        if( onComp ) onComp();
+        var keepGoingTween = new aeTween( cube.position );
+        keepGoingTween.to( { z: windowPos.z - 5 }, brickTravelTime );
 
-    var rotTween = new TWEEN.Tween( cube.rotation );
-    rotTween.to( { x: -Math.PI * 2 }, 500 );
-    rotTween.repeat( Infinity );
+        keepGoingTween.onComplete = function () {
+          tornado.assets.loader.DisposeObject( cube, { all: true } ) ;
+        };
+        keepGoingTween.start();
+      };
+
+      posTween.start();
+    }
+    else if ( win == "cardinal" ) {
+
+      var posTween = new aeTween( cube.position );
+      posTween.to( { x: windowPos.x, y: windowPos.y, z: windowPos.z }, brickTravelTime );
+      posTween.onComplete = function () {
+        if( onComp ) onComp();
+        var bounceBackTween = new aeTween( cube.position );
+        bounceBackTween.to({ x: bounceBackPos.x,
+                             y: bounceBackPos.y,
+                             z: bounceBackPos.z
+                           }, brickTravelTime );
+        bounceBackTween.onComplete = function () {
+          tornado.assets.loader.DisposeObject( cube, { all: true } ) ;
+        };
+        bounceBackTween.start();
+      };
+
+      posTween.start();
+    }
+
+    var rotTween = new aeTween( cube.rotation );
+    rotTween.to( { x: -Math.PI * 2 } , 20);
+    rotTween.repeat( 100 );
     rotTween.start();
   }
 
-  function fadeToWhite() {
-    var amount = tornado.assets.composer.passes[1].uniforms.amount,
-        upTime = 20;
+  function fadeToWhite () {
+    var amount = tornado.assets.composer.fadeToWhitePass.uniforms.amount;
+    var upTime = 15;
 
     /*var tweenUp = new TWEEN.Tween( amount );
     tweenUp.to( { value: 1 }, upTime );
     tweenUp.start();*/
     var tweenUp = new aeTween(amount);
     tweenUp.to({value: 1}, upTime);
+    tweenUp.onComplete = function(){
+      tornado.assets.loader.cameraHandler.frame = 225;
+    };
     tweenUp.start();
   }
 
-  function fadeBack() {
-    var amount = tornado.assets.composer.passes[1].uniforms.amount,
-        downTime = 20;
+  function fadeBack () {
+    var amount = tornado.assets.composer.fadeToWhitePass.uniforms.amount;
+    var downTime = 10;
 
     var tweenDown = new aeTween( amount );
     tweenDown.to( { value: 0 }, downTime );
     tweenDown.start();
   }
 
-  function tweenBloomDown() {
-    var amount = tornado.assets.composer.passes[2].copyUniforms.opacity;
+  function tweenBloomDown () {
+    var amount = tornado.assets.composer.bloomPass.copyUniforms.opacity;
     var tween = new TWEEN.Tween( amount );
     tween.to( { value: 0.3 }, 1000 );
     tween.start();
   }
 
-  function rareLightning() {
+  function rareLightning () {
     tornado.assets.lightningHandler.minBloom = tornado.bloomSettings.inside.min;
     tornado.assets.lightningHandler.maxBloom = tornado.bloomSettings.inside.max;
     tornado.assets.lightningHandler.minFramesToStrike = 200;
     tornado.assets.lightningHandler.maxFramesToStrike = 400;
   }
 
-  function revealTornado() {
+  function revealTornado () {
     var revealTime = 150, twistTime = 150, randomOffsetMax = 75;
     var twist = new aeTween(tornado.assets.Hurricane_arm.rotation);
     twist.to({ y: -Math.PI * 2 }, twistTime );
@@ -834,7 +1087,7 @@ var tornadoScene = {
     });
   }
 
-  function randomDebreePos(pos){
+  function randomDebreePos ( pos ) {
     var distance = 20;
     return new THREE.Vector3(
       pos.x + Math.random() * distance,
@@ -876,7 +1129,7 @@ var tornadoScene = {
           tweenLightUp.start();
 
           /*bloom*/
-          var bloomAmount = tornado.assets.composer.passes[2].copyUniforms.opacity;
+          var bloomAmount = tornado.assets.composer.bloomPass.copyUniforms.opacity;
 
           var tweenBloomDown = new TWEEN.Tween( bloomAmount );
           tweenBloomDown.to( { value: this.minBloom }, this.downTime );
@@ -903,7 +1156,7 @@ var tornadoScene = {
     animate.updater.addHandler(tornado.assets.lightningHandler);
   };
 
-  function startPhysics(scene, loader) {
+  function startPhysics ( scene, loader ) {
     var emitterLocation = new THREE.Vector3(26.6, -414.2, 35.3),
     above = new THREE.Vector3(-20, -408, 10),
     size = 0.1,
@@ -940,7 +1193,7 @@ var tornadoScene = {
     }
   };
 
-  function triggerSlowMo(){
+  function triggerSlowMo () {
     tornado.assets.rainPS.speed = 0.1;
     tornado.assets.scene.setGravity(tornado.slowMoGravity);
     tornado.debreeDestroyTime = tornado.slowModebreeDestroyTime;
@@ -1136,7 +1389,14 @@ var tornadoScene = {
     };
     return tornado;
 
-}
+  function addButtons () {
+    tornado.buttons.cardinal.add();
+    tornado.buttons.ordinary.add();
+    tornado.buttons.wind.add();
+    //tornado.buttons.reset.add();
+  };
+
+  }
 }
 return tornadoScene;
 });

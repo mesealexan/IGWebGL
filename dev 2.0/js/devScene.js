@@ -1,7 +1,7 @@
 define(["animate", "physi", "materials", "composers", "events"], function (animate, physi, materials, composers, events) {
   var devScene = {
     folderName: "devScene",
-    assetNames: ["hair"],
+    assetNames: [ "hair" ],
     soundNames: [],
     onStartFunctions: {},
     onLoadFunctions: {},

@@ -2,7 +2,7 @@
 
 "metadata":
 {
-"sourceFile": "LowPoly.max",
+"sourceFile": "shadow.max",
 "generatedBy": "3ds max ThreeJSExporter",
 "formatVersion": 3.1,
 "vertices": 4,
@@ -22,14 +22,15 @@
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
 "specularCoef"  : 10.0,
+"mapDiffuse"    : "p2_op.jpg",
 "vertexColors" : false
 }
 
 ],
 
-"vertices": [875.847,-559.108,128.871,-398.916,-559.108,-607.114,257.245,-559.108,1200.32,-1017.52,-559.108,464.338],
+"vertices": [-618.602,-3.05911e-005,-735.985,-618.603,-0.000205338,735.985,618.603,0.000201249,-735.985,618.602,0.000114697,735.985],
 
-"normals": [0.0,1.0,1.48904e-007,0.0,1.0,2.1236e-007],
+"normals": [-2.58676e-007,1.0,0.0,-1.8739e-007,1.0,0.0],
 
 "colors": [],
 

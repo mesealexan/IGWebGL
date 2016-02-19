@@ -3,10 +3,11 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     function(THREE, /*jquery,*/ loader, animate, tween, events, audio, materials, physi, aeTween, degradation){
     var main = {}; //public functionality
     /***private fields***/
-    var version = 7;
+    var version = 10;
     var camFOV =  45; //degrees
     var width, height; //browser window dimension
     var camNear = 1, camFar = 17000; //camera frustum near and far clip planes
+    var defaultScene = "ig";
 
     /***private functions***/
     function reportVersion(){
@@ -18,7 +19,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
         animate.renderer.setSize( width, height );
-        animate.renderer.setClearColor( 0x000000, 1 );
+        animate.renderer.setClearColor( 0x000000, 0 );
         animate.renderer.shadowMapType = THREE.PCFShadowMap;
         animate.container.appendChild( animate.renderer.domElement );
     }
@@ -36,6 +37,17 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     function setBackground(containerID, mediaFolderUrl) {
       $('#'+containerID).css('background', 'url('+mediaFolderUrl+'/images/bck.jpg) no-repeat center center fixed');
     }
+
+    function startFromURL () {
+       var url = window.location.href;
+       var index = url.lastIndexOf( "#" );
+       if ( index == -1 ) return defaultScene;
+       var sceneUrl = url.slice( index + 1, url.length ).toLowerCase();
+       sceneUrl = sceneUrl || defaultScene;
+       sceneUrl = sceneUrl.replace("-", "");
+       sceneUrl = sceneUrl.toLowerCase();
+       return sceneUrl.toLowerCase();
+     }
 
     function addButtons() {
       main.buttons.muteAll.add();
@@ -55,18 +67,21 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.loader = undefined;
 
     /***public functions***/
+
     main.Start = function(containerID, sceneID){
         reportVersion();
         //check webGL compatibility
         if(!degradation.webgl_detect({id: containerID})) return;
         //entry point (first function called by require in app.js)
-        //loader.LoadingScreen.add();
+        sceneID = sceneID || startFromURL();
+        sceneID = sceneID.toLowerCase();
         width = $( '#' + containerID ).width ();
         height = $( '#' + containerID ).height ();
-        events.containerID = containerID;
+        events.Init(containerID);
         animate.renderSize = { width: width, height: height };
         animate.container = document.getElementById( containerID );
         animate.containerID = containerID;
+        animate.events = events;
         addRenderer();
         main.mediaFolderUrl = getMediaFolderURL();
         main.scene = new Physijs.Scene( { mediaFolderUrl: main.mediaFolderUrl } );
@@ -75,7 +90,12 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
         materials.makeTextureCube( main.mediaFolderUrl );
         materials.makeCloudTextureCube( main.mediaFolderUrl );
         materials.makeGloomyTextureCube( main.mediaFolderUrl );
-        animate.loader = main.loader = new loader( main.scene, animate, main.mediaFolderUrl, addCamera() );
+        animate.loader =
+        main.loader =
+        new loader( main.scene, animate, main.mediaFolderUrl, addCamera() );
+        main.loader.LoadingScreen.add();
+        main.loader.LowPowerScreen.add();
+        main.loader.LowPowerScreen.hide();
         animate.StartWindowAutoResize();
         animate.SetDefaultRenderFunction();
         addButtons();
@@ -85,24 +105,28 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
     main.LoadNewScene = function ( sceneID ) {
         //only call after Start()
         if(main.loader.loadingScene) return;
-        loader.LoadingScreen.show();
+        sceneID = sceneID || startFromURL();
+        sceneID = sceneID.toLowerCase();
         audio.StopAll();
+        animate.timeoutID = undefined;
+        animate.ClearLowPowerTimeout();
         animate.StopAnimating();
         events.UnbindAll();
         events.EmptyElementByID("cameraButtons");
         animate.updater.clearAll();
         TWEEN.removeAll();
         main.loader.UnloadScene(newScene);
+        main.loader.LoadingScreen.show();
 
         function newScene(){
             main.scene.sceneID = sceneID;
-            main.loader = new loader(main.scene, animate, getMediaFolderURL(), addCamera());
-            animate.loader = main.loader;
+            animate.loader =
+            main.loader =
+            new loader( main.scene, animate, getMediaFolderURL(), addCamera() );
+            main.loader.LowPowerScreen.hide();
         }
     };
     /***end public functions***/
-
-
 
     main.buttons = {
         loadCardinal:{

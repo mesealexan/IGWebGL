@@ -1,7 +1,7 @@
-define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore"],
-function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore){
+define(["scene", "animate", "watch", "materials", "tween", "events", "particleSystem", "audio", "callback", "text", "underscore", "aeTween"],
+function(scene, animate, watch, materials, tween, events, particleSystem, audio, callback, text, underscore, aeTween){
 var LoEScene = {
-  scene: {}
+  url: "loe"
   ,
   callbacks: {
     introAnimDone: {
@@ -24,21 +24,21 @@ var LoEScene = {
     }
   }
   ,
-  constructor: function(){
+  constructor: function () {
     var LoE = new scene();
     LoE.folderName = "LoE";
-    LoE.addAssets([/*'EngineeredComfort',*/ 'bck_1', 'rail', 'plane', 'window', 'fixed_glass',
+    LoE.addAssets([/*'EngineeredComfort',*/ /*'bck_1',*/ 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
-    LoE.addSounds([ 'loe-factory-loop', 'loe-apply-coating' ]);
+    LoE.addSounds( [ 'LoE_conveyor', 'loe-apply-coating', 'LoE_glass_to_window_frame' ] );
     LoE.disposables = [];
 
     var coatingTime = 2700;
     var backgroundBlendTime = 600;
     var coatTexture = undefined;
     var LoE_textTexture = undefined;
-    var hot_t = undefined,
-        colt_t = undefined,
-        mixed_t = undefined; //background plane textures
+    var hot_t = undefined;
+    var colt_t = undefined;
+    var mixed_t = undefined; //background plane textures
 
     /***on start functions***/
     LoE.onStartFunctions.storeScene = function(scene, loader) {
@@ -99,25 +99,31 @@ var LoEScene = {
        // line above E
        var cube = new THREE.Mesh( new THREE.BoxGeometry( 75, 1, 15 ),
         new THREE.MeshBasicMaterial( {color: 0x4A7082} ) );
-       cube.position.set(-13256, -337, 919);
+       cube.position.set( -13256, -337, 919 );
+       LoE.disposables.push( cube );
        scene.add( cube );
      };
+
+    LoE.onStartFunctions.addBackPlane = function (scene) {
+      var geom = new THREE.PlaneBufferGeometry(12000, 5000);
+      var mesh = new THREE.Mesh(geom, new THREE.MeshBasicMaterial({side:2}));
+      LoE.assets.bck_1 = mesh;
+      mesh.position.set(-8037.864, 4474.531, -3842.705);
+      mesh.material = materials.textureFadeMaterial();
+      mesh.rotation.copy(new THREE.Euler(
+        -0.02269702535467891,
+         0.42658893771436296,
+         0.009392635892883978));
+      scene.add( mesh );
+    }
     /***end on start functions***/
 
     /***on load functions***/
 
-    LoE.onLoadFunctions.EngineeredComfort = function(mesh){
-      mesh.material = materials.setMaterials(LoE.folderName, {name: "text"});
+    LoE.onLoadFunctions.rail = function ( mesh ) {
+      LoE.disposables.push(mesh);
     };
 
-    LoE.onLoadFunctions.fixed_glass = function(mesh){
-      LoE.assets.fixed_glass = mesh;
-    };
-
-    LoE.onLoadFunctions.pouring = function(mesh){
-      LoE.assets.pouring = mesh;
-      mesh.visible= false;
-    };
 
     LoE.onLoadFunctions.rotator = function(mesh){
         mesh.position.set(-8310, -150, 0);
@@ -131,7 +137,6 @@ var LoEScene = {
     LoE.onLoadFunctions.bck_1 = function(mesh){
         mesh.material = materials.textureFadeMaterial();
         //mesh.position.set(1500, 0, 2500)
-        console.log(mesh)
         LoE.assets.bck_1 = mesh;
         var geometry = new THREE.PlaneGeometry( 5, 20, 32 );
         var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
@@ -147,6 +152,7 @@ var LoEScene = {
 
     LoE.onLoadFunctions.tambur_a = function(mesh){
         LoE.assets.tambur_a = mesh;
+        LoE.disposables.push(mesh);
     };
 
     LoE.onLoadFunctions.tambur_b = function(mesh, loader){
@@ -184,6 +190,7 @@ var LoEScene = {
     };
 
     LoE.onLoadFunctions.fixed_glass = function(mesh, loader){
+        //mesh.visible = false;
         coatTexture = THREE.ImageUtils.loadTexture(animate.loader.mediaFolderUrl+'/models/LoE/coat1.png');
         LoE_textTexture = THREE.ImageUtils.loadTexture(animate.loader.mediaFolderUrl+'/models/LoE/coat1_text.png');
         var fixed_window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/fixed_glass_anim.JSON');
@@ -200,22 +207,46 @@ var LoEScene = {
         LoE.disposables.push(mesh);
     };
 
-    LoE.onLoadFunctions.window = function(mesh, loader){
+    LoE.onLoadFunctions.window = function ( mesh, loader ) {
+        mesh.visible = false;
         var window_animation = loader.ParseJSON(animate.loader.mediaFolderUrl+'/models/LoE/window_animation.JSON');
         animate.updater.addHandler(new animate.PositionRotationHandler(mesh, window_animation));
+        LoE.assets.window = mesh;
     };
 
-    LoE.onLoadFunctions.window_shadow = function(mesh){
-        LoE.assets.window_shadow = mesh;
+    LoE.onLoadFunctions.window_shadow = function ( mesh ) {
+      mesh.material = mesh.material.materials[0];
+      mesh.frustumCulled = false;
+      mesh.material.side = 2;
+      mesh.position.set( -5948.14, 4100, -100 );
+      mesh.rotation.x += Math.PI;
+      mesh.rotation.y -= Math.PI / 6.2;
+      mesh.transparent = true;
+      mesh.opacity = 0;
+      mesh.visible = false;
+      LoE.assets.windowShadow = mesh;
     };
     /***end on load functions***/
 
     /***on finish functions***/
-    LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
+    LoE.onFinishLoadFunctions.increaseCamNear = function(){
+        animate.camera.near = 2000;
+        animate.camera.far = 12000;
+        animate.camera.updateProjectionMatrix();
+    };
 
+    LoE.onFinishLoadFunctions.playCamera = function(scene, loader) {
       //x: -4489.42, y: 4651.72, z: 3962.66
-       loader.cameraHandler.play(undefined,undefined,undefined,//from, to and onComplete undefined
+       loader.cameraHandler.play(undefined,undefined,
+         onCameraComplete,//from, to
          animate.Animate);
+
+        function onCameraComplete () {
+          animate.StartTimeout();
+          //addBackPlane(scene);
+        }
+
+
     };
 
     LoE.onFinishLoadFunctions.addWatch = function(scene, loader){
@@ -226,7 +257,7 @@ var LoEScene = {
 
     LoE.onFinishLoadFunctions.addControls = function(){
         var c = {
-            noZoom: false,
+            noZoom: true,
             noPan: true,
             maxPolarAngle: 1.6,
             minPolarAngle: 1.55,
@@ -234,43 +265,51 @@ var LoEScene = {
             minAzimuthAngle: 0.3,
             maxAzimuthAngle: 0.5
         };
+
         events.AddControls(c);
         events.ToggleControls(false);
     };
     /***end on finish functions***/
 
+    /***on unload functions***/
+    LoE.onUnloadFunctions.resetCam = function(){
+        animate.SetCameraDelaultValues();
+    };
+
     LoE.buttons = {
         cold: {
             add: function(){
-                events.AddButton({text:"cold",
+                events.AddButton({text:"Northern",
                     function: function(){LoE.manageBackgroundOpacity('cold')},
-                    id:"cold"});
+                    id:"cold", class:"coating-type"});
             }
         },
         hot: {
             add: function(){
-                events.AddButton({text:"hot",
+                events.AddButton({text:"Southern",
                     function: function(){LoE.manageBackgroundOpacity('hot')},
-                    id:"hot"});
+                    id:"hot", class:"coating-type"});
             }
         },
         mixed: {
             add: function(){
-                events.AddButton({text:"mixed",
+                events.AddButton({text:"All-Climate",
                     function: function(){LoE.manageBackgroundOpacity('mixed')},
-                    id:"mixed"});
+                    id:"mixed", class:"coating-type"});
             }
         }
     };
 
-    function reactToFrame(frame){
+    function reactToFrame ( frame ) {
         switch (frame){
-            case 0: {
-                audio.sounds.loefactoryloop.play();
-                audio.sounds.loefactoryloop.setVolume(0);
-                audio.sounds.loefactoryloop.fadeTo(40, 7000);
+            case 0:
+                audio.sounds.LoE_conveyor.setVolume(0);
+                audio.sounds.LoE_conveyor.play();
+                audio.sounds.LoE_conveyor.fadeTo(20, 1000);
+                //audio.sounds.loefactoryloop.play();
+                //audio.sounds.loefactoryloop.setVolume(0);
+                //audio.sounds.loefactoryloop.fadeTo(20, 1000);
                 break;
-            }
             case 169:
                 LoE.assets.fixed_glass.plane4.material.tween(coatingTime);
                 LoE.assets.silverPS.holder.visible = true;
@@ -294,18 +333,21 @@ var LoEScene = {
                 callback.go( LoEScene.callbacks.coatSecondVisibleWindow);
                 LoE.assets.silverPS.holder.visible = true;
                 LoE.assets.mobile_glass.plane.material.tween(coatingTime);
+                LoE.assets.window.visible = true;
                 break;
-            case 315: {
+            case 315:
                 audio.sounds.loeapplycoating.play();
                 //audio.sounds.loefactoryloop.fade(0.6, 0, 3000);
-                audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
+                //audio.sounds.loefactoryloop.fadeTo(0.6, 3000);
                 break;
-            }
             case 358:
                 LoE.assets.silverPS.holder.visible = false;
                 break;
             case 375:
                 break;
+            case 405:
+                audio.sounds.LoE_glass_to_window_frame.play();
+            break;
             case 410:
                 LoE.assets.mobile_glass.visible = false;
                 break;
@@ -325,10 +367,15 @@ var LoEScene = {
         }
     }
 
-     LoE.enableBackground = function () {
+    LoE.enableBackground = function () {
         var mat = LoE.assets.plane.material.materials[0];
         mat.transparent = true;
         mat.tweenOpacity(mat, 0, backgroundBlendTime);
+
+        LoE.assets.windowShadow.visible = true;
+        var tweenStart = new aeTween( LoE.assets.windowShadow.material );
+        tweenStart.to({opacity: 1}, 20);
+        tweenStart.start();
     }
 
     function clearDisposables(){
@@ -344,7 +391,7 @@ var LoEScene = {
         for (var i = 0; i < silver_Planes_pos.positions.length; i++) {
             var planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0));
             planeObj.rotation.x -= Math.PI / 2;
-            planeObj.rotation.z += Math.PI;																			             //magic
+            planeObj.rotation.z += Math.PI;	//magic
             planeObj.position.set(
                 silver_Planes_pos.positions[i].position.x + offsetX,
                 silver_Planes_pos.positions[i].position.z + offsetY,
@@ -352,13 +399,25 @@ var LoEScene = {
 
             LoE.assets.fixed_glass['plane' + (i + 1).toString()] = planeObj;
             LoE.assets.fixed_glass.add(planeObj);
+            LoE.disposables.push(planeObj);
+
+            /*var geometry = new THREE.BoxGeometry( 10, 10, 10 );
+            var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+            var cube = new THREE.Mesh( geometry, material );
+            cube.position.set(
+                silver_Planes_pos.positions[i].position.x + offsetX,
+                silver_Planes_pos.positions[i].position.z + offsetY,
+               -silver_Planes_pos.positions[i].position.y);
+            LoE.assets.fixed_glass.add( cube );*/
         }
 
-        planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, LoE_textTexture) );
+        var planeObj = new THREE.Mesh( geometry.clone(), silverCoatingMaterial(3.0, LoE_textTexture) );
         planeObj.rotation.x += Math.PI / 2;
         planeObj.rotation.z += Math.PI / 2;
         planeObj.position.copy( LoE.assets.mobile_glass.position);
-        planeObj.position.y += 5;
+        planeObj.position.y += 15;
+
+        LoE.disposables.push(planeObj);
 
         LoE.assets.mobile_glass.plane = planeObj;
         LoE.assets.mobile_glass.add(planeObj);
@@ -382,11 +441,7 @@ var LoEScene = {
             vertexShader: vShader(),
             fragmentShader: fShader(),
             transparent: true,
-            side: 2,
-            color: new THREE.Color("rgb(200,200,0)"),
-            ambient: new THREE.Color("rgb(211,211,0)"),
-            specular: new THREE.Color("rgb(222,222,0)"),
-            shininess: 3
+            side: 2
         });
         material.tween = tween;
         material.depthTest = true;
@@ -402,8 +457,7 @@ var LoEScene = {
         }
 
         function fShader() {
-            return "" +
-                "varying vec2 vUv;" +
+            return "varying vec2 vUv;" +
                 "uniform sampler2D primary_t;" +
                 "uniform sampler2D secondary_t;" +
                 "uniform float start;" +
@@ -411,28 +465,35 @@ var LoEScene = {
                 "uniform float maxColor;" +
                 "uniform float discard_f;" +
                 "uniform float hasSecondary;" +
-                "void main(){" +
+                "void main() {" +
                   "float color = 0.0;" +
-                  "vec2 vUvInv = vec2(1. - vUv.x, vUv.y);" + //flip uv coord for text
-                  "color = ((vUv.x * size) + maxColor) + start;" +
-                  "if (hasSecondary == 1.0) {" +
-                    "if (color >= discard_f + maxColor) discard;" +
-                    "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv))+"+
-                    "texture2D(secondary_t, vUvInv);" +
-                    "else gl_FragColor = texture2D(secondary_t, vUvInv);"+
-                  "}"+
-                  "else {" +
-                  "if (color >= discard_f + maxColor) discard;" +
-                  "else if (color > 0.) gl_FragColor = (color * texture2D(primary_t, vUv));}"+
+                  "vec2 vUvInv = vec2( 1. - vUv.x, vUv.y );" + //flip uv coord for text
+                  "color = ( ( vUv.x * size ) + maxColor ) + start;" +
+                  "if ( hasSecondary == 1.0 ) {" +
+                    "if ( color >= discard_f + maxColor ) discard;" +
+                    "else if ( color > 0. ) gl_FragColor = ( color * texture2D( primary_t, vUv ) ) +" +
+                    "texture2D( secondary_t, vUvInv );" +
+                    "else gl_FragColor = texture2D( secondary_t, vUvInv );" +
+                  "}" +
+                  "else if ( hasSecondary != 1.0 ) {" +
+                    "if ( color >= discard_f + maxColor ) gl_FragColor = " +
+                      "vec4( 0., 0., 0., 0.);" +
+                    "else if ( color > 0. ) gl_FragColor = ( color * texture2D( primary_t, vUv ) );"+
+                    "else if ( start < 0. ) discard;" +
+                  "}" +
                 "}"
         }
 
         function tween(time, delay, repeat){
-            var tweenStart = new TWEEN.Tween( this.uniforms.start );
+            /*var tweenStart = new TWEEN.Tween( this.uniforms.start );
             if(repeat != undefined) tweenStart.repeat( repeat );
             if(delay != undefined) tweenStart.delay( delay );
             tweenStart.to( { value: -this.uniforms.size.value - this.uniforms.maxColor.value },
                 time);
+            tweenStart.start();*/
+
+            var tweenStart = new aeTween( this.uniforms.start );
+            tweenStart.to({value: -this.uniforms.size.value - this.uniforms.maxColor.value}, 78);
             tweenStart.start();
         }
     }
@@ -442,13 +503,13 @@ var LoEScene = {
         switch (to){
           case "cold":
             tweenTo = cold_t;
-          break;
+            break;
           case "hot":
             tweenTo = hot_t;
-          break;
+            break;
           case "mixed":
             tweenTo = mixed_t;
-          break;
+            break;
           default:
             console.error("Unspecified background!");
         }
@@ -459,7 +520,7 @@ var LoEScene = {
 
     function addParticles(scene){
       var geometry = new THREE.SphereGeometry( 5, 6, 6 );
-      var material = materials.setMaterials("LoE", {name:"metal"});
+      var material = new THREE.MeshBasicMaterial({color:0xC0C0C0});//materials.setMaterials("LoE", {name:"metal"});
       var sphere = new THREE.Mesh( geometry, material );
 
       var silverSettings = {

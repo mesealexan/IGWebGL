@@ -1,8 +1,7 @@
-define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text", "materials"],
-function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text, materials){
+define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text", "materials", "audio"],
+function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text,
+materials, audio){
 var cardinalScene = {
-  scene: {}
-  ,
   callbacks:{
     introAnimHalfway: {
       sampleCall1: function(){ console.log("reached middle of intro animation"); },
@@ -55,14 +54,17 @@ var cardinalScene = {
     }
   }
   ,
+  url: "ig"
+  ,
   constructor: function(){
     var cardinal = new scene();
     cardinal.folderName = "cardinal";
-    cardinal.addAssets(['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice',
-      'cardinal_vertical_shadow', 'cardinal_horizontal_shadow']);
+    cardinal.addAssets( ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice',
+      'cardinal_vertical_shadow', 'cardinal_horizontal_shadow'] );
+    cardinal.addSounds( [ 'IG_intro_music', 'IG_button_zoomIN', 'IG_frame_zoom_in' ] );
 
     var fadeOutTime = 700;
-    var fpsForText = 20; //slow down fps to read text on window.
+    var fpsForText  = 20; //slow down fps to read text on window.
 
     var cameraAnimations = {
         animation_1: { from:    0, to:     158},
@@ -106,7 +108,7 @@ var cardinalScene = {
     };
 
     cardinal.onStartFunctions.addLensFlare = function(scene) {
-        /*var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
+        var textureFlare1 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
           "/models/cardinal/Flare_1.png");
         var textureFlare2 = THREE.ImageUtils.loadTexture( cardinal.mediaFolderUrl+
           "/models/cardinal/Flare_2.png");
@@ -124,8 +126,10 @@ var cardinalScene = {
                 THREE.AdditiveBlending );
         }
 
-        lensFlare.position.set( -1127.008, 1232.292, -11  );*/
-      //  scene.add( lensFlare );
+       lensFlare.position.set( -1127.008, 1032.292, -11  );
+       lensFlare.visible = false;
+       cardinal.assets.lensFlare = lensFlare;
+       scene.add( lensFlare );
     };
 
     cardinal.onStartFunctions.makeText = function(scene){
@@ -243,24 +247,31 @@ var cardinalScene = {
           var newUp = loader.cameraHandler.modifyCameraUp(firstFrame.rollAngle);
           animate.camera.up.set(newUp.x, newUp.y, newUp.z);
           loader.cameraHandler.tween(0, 0.03, onCompleteTween, TWEEN.Easing.Cubic.In);
-          tweenBloomDown();
+          //tweenBloomDown();
       }
 
       function onCompleteTween(){
         loader.cameraHandler.play(
           cameraAnimations.animation_1.from,
           cameraAnimations.animation_1.to,
-          function(){       //on finish
-            cardinal.buttons.slice.add();
-            addMouseDownEvent();
-          },
-          function(){       //on start
-            tweenTextOpac();
-            animate.camera.near = 1;
-            animate.camera.updateProjectionMatrix();
-          }
+          onCameraComplete,
+          onCameraStart
         );
       }
+
+      function onCameraComplete () {
+        cardinal.buttons.slice.add();
+        addMouseDownEvent();
+        //animate.StartTimeout({noPan:true});
+        animate.StartTimeout();
+      }
+
+      function onCameraStart () {
+        tweenTextOpac();
+        animate.camera.near = 1;
+        animate.camera.updateProjectionMatrix();
+      }
+
       animate.Animate();
     };
 
@@ -337,8 +348,12 @@ var cardinalScene = {
 
     function reactToFrame(frame){
         switch (frame){
+            case 0:
+              audio.sounds.IG_intro_music.play();
+            break;
             case 80:
                 animate.SetCustomFramerate(fpsForText);
+                cardinal.assets.lensFlare.visible = true;
             break;
             case 100://anim 1 mid way, vertical window out of frustum
                 cardinal.assets.cardinal_slice.visible = true;
@@ -360,77 +375,85 @@ var cardinalScene = {
     cardinal.buttons ={
         slice: {
             add: function(){
-                events.AddButton({text:"go to slice",
+                events.AddButton({text:"Zoom in",
                     function: function(){ tweenCamToMain(cardinal.goToSlice) },
-                    id:"goSlice", once: true});
+                    id:"goSlice", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("goSlice"); }
         },
         backToMain: {
             add: function(){
-                events.AddButton({text:"back", function: cardinal.backToMain,
-                    id:"backToMain", once: true});
+                events.AddButton({text:"Zoom out", function: cardinal.backToMain,
+                    id:"backToMain", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToMain"); }
         },
         backToSlice: {
             add: function(){
-                events.AddButton({text:"back", function: cardinal.zoomOnSlice.backToSlice,
-                    id:"backToSlice", once: true});
+                events.AddButtonOnce({text:"Zoom out", function: cardinal.zoomOnSlice.backToSlice,
+                    id:"backToSlice", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToSlice"); }
         },
         sealantA:{
             add: function(){
-                events.AddButton({text:"sealantA", function: cardinal.zoomOnSlice.sealantA,
-                    id:"sealantA", once: true});
+                events.AddButton({text:"PIB", function: cardinal.zoomOnSlice.sealantA,
+                    id:"sealantA", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantA"); }
         },
         sealantB:{
             add: function(){
-                events.AddButton({text:"sealantB", function: cardinal.zoomOnSlice.sealantB,
-                    id:"sealantB", once: true});
+                events.AddButton({text:"Silicone", function: cardinal.zoomOnSlice.sealantB,
+                    id:"sealantB", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("sealantB"); }
         },
         spacer:{
             add: function(){
-                events.AddButton({text:"spacer", function: cardinal.zoomOnSlice.spacer,
-                    id:"spacer", once: true});
+                events.AddButton({text:"Spacer", function: cardinal.zoomOnSlice.spacer,
+                    id:"spacer", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("spacer"); }
         },
         dessicant:{
             add: function(){
-                events.AddButton({text:"dessicant", function: cardinal.zoomOnSlice.dessicant,
-                    id:"dessicant", once: true});
+                events.AddButton({text:"Desiccants", function: cardinal.zoomOnSlice.dessicant,
+                    id:"dessicant", class:"glass-component", once: false});
             },
             remove: function(){ events.RemoveElementByID("dessicant"); }
         }
     };
 
     cardinal.zoomOnSlice = {
-         sealantA: function(){
-           events.RemoveMouseDownEvent(stopAllTweens);
-            callback.go(cardinalScene.callbacks.goToSealantA_Start);
-            var anim = cameraAnimations.animation_3;
-             events.ToggleControls(false);
-             events.RemoveMouseUpEvent( tweenCamToSliceMain );
-            cardinal.assets.loaderComponent.cameraHandler.tween(
-                anim.frame, anim.speed,
-                function(){//on complete
-                    callback.go(cardinalScene.callbacks.goToSealantA_Done);
-                    manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
-                    cardinal.buttons.backToSlice.add();
-                });
-             manageEmissive.resetAllSlice();
-             events.EmptyElementByID("cameraButtons");
-        },
+        currentPosition: undefined
+        ,
+       sealantA: function(){
+         if (cardinal.zoomOnSlice.currentPosition == "sealantA") return;
+         stopAllTweens();
+         cardinal.zoomOnSlice.currentPosition = "sealantA";
+         events.RemoveMouseDownEvent(stopAllTweens);
+          callback.go(cardinalScene.callbacks.goToSealantA_Start);
+          var anim = cameraAnimations.animation_3;
+           events.ToggleControls(false);
+           events.RemoveMouseUpEvent( tweenCamToSliceMain );
+          cardinal.assets.loaderComponent.cameraHandler.tween(
+              anim.frame, anim.speed,
+              function(){//on complete
+                  callback.go(cardinalScene.callbacks.goToSealantA_Done);
+                  manageEmissive.modify(anim.frame);
+              });
+           manageEmissive.resetAllSlice();
+           events.RemoveElementByID("backToMain");
+           cardinal.buttons.backToSlice.add();
+           //events.RemoveElementByID("backToSlice");
+        }
+        ,
         sealantB: function(){
+          console.log(cardinal.zoomOnSlice.currentPosition)
+          if (cardinal.zoomOnSlice.currentPosition == "sealantB") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "sealantB";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSealantB_Start);
             var anim = cameraAnimations.animation_4;
@@ -441,15 +464,16 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSealantB_Done);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         spacer: function(){
+          if (cardinal.zoomOnSlice.currentPosition == "spacer") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "spacer";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToSpacerStart);
             var anim = cameraAnimations.animation_5;
@@ -460,15 +484,16 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSpacerDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.dessicant.add();
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         dessicant: function(){
+          if (cardinal.zoomOnSlice.currentPosition == "dessicant") return;
+          stopAllTweens();
+          cardinal.zoomOnSlice.currentPosition = "dessicant";
            events.RemoveMouseDownEvent(stopAllTweens);
            callback.go(cardinalScene.callbacks.goToDessicantStart);
             var anim = cameraAnimations.animation_6;
@@ -479,15 +504,14 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToDessicantDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToMain");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         backToSlice: function(){
+            stopAllTweens();
             callback.go(cardinalScene.callbacks.backToSliceStart);
             var speed = 0.1;
             cardinal.assets.loaderComponent.cameraHandler.tween(
@@ -497,14 +521,12 @@ var cardinalScene = {
                     events.AddMouseDownEvent(stopAllTweens);
                     events.AddMouseUpEvent( tweenCamToSliceMain );
                     callback.go(cardinalScene.callbacks.backToSliceDone);
-                    cardinal.buttons.sealantA.add();
-                    cardinal.buttons.sealantB.add();
-                    cardinal.buttons.spacer.add();
-                    cardinal.buttons.dessicant.add();
-                    cardinal.buttons.backToMain.add();
+                    cardinal.zoomOnSlice.currentPosition = undefined;
                 });
             manageEmissive.resetAllSlice();
-            events.EmptyElementByID("cameraButtons");
+            events.RemoveElementByID("backToSlice");
+            cardinal.buttons.backToMain.add();
+
         }
     };
 
@@ -514,31 +536,34 @@ var cardinalScene = {
         spacerSlice_ID: 6,
         dessicant_ID: 0,
         modify: function (frame){
-            var sliceSelectedC = new THREE.Color(0x555555);
+            var sliceSelectedC = new THREE.Color(0x67C8FF);
             var mats = cardinal.assets.cardinal_slice.material.materials;
             switch (frame){
                 case 191:
-                    mats[manageEmissive.sealantA_ID].emissive = sliceSelectedC;
+                    mats[manageEmissive.sealantA_ID].color = sliceSelectedC;
                     break;
                 case 192:
-                    mats[manageEmissive.sealantB_ID].emissive = sliceSelectedC;
+                    mats[manageEmissive.sealantB_ID].color = sliceSelectedC;
                     break;
                 case 193:
-                    mats[manageEmissive.spacerSlice_ID].emissive = sliceSelectedC;
+                    mats[manageEmissive.spacerSlice_ID].color = sliceSelectedC;
                     break;
                 case 194:
-                    mats[manageEmissive.dessicant_ID].emissive = sliceSelectedC;
+                    mats[manageEmissive.dessicant_ID].color = sliceSelectedC;
                     break;
             }
         },
         resetAllSlice: function () {
             var mats = cardinal.assets.cardinal_slice.material.materials;
-            _.each(mats, function(m){ m.emissive = m.defaultEmissive; });
+            _.each(mats, function(m){ m.color = m.defaultColor; });
         }
     };
 
-    cardinal.goToSlice = function(){
+    cardinal.goToSlice = function () {
+        audio.sounds.IG_button_zoomIN.play();
         events.ToggleControls(false);
+        animate.ClearPanTimeout();
+        animate.StopPan();
         callback.go(cardinalScene.callbacks.goToSliceStart);
         cardinal.buttons.slice.remove();
         events.RemoveMouseDownEvent(stopAllTweens);
@@ -566,12 +591,12 @@ var cardinalScene = {
         cardinal.assets.loaderComponent.cameraHandler.play(
             cameraAnimations.animation_2.from,
             cameraAnimations.animation_2.to,
-            function(){//on complete
-                cardinal.buttons.backToMain.add();
+            function(){ // on complete
                 cardinal.buttons.sealantA.add();
                 cardinal.buttons.sealantB.add();
                 cardinal.buttons.spacer.add();
                 cardinal.buttons.dessicant.add();
+                cardinal.buttons.backToMain.add();
                 events.ToggleControls(true);
                 events.AddMouseUpEvent(tweenCamToSliceMain);
                 events.AddMouseDownEvent(stopAllTweens);
@@ -580,16 +605,18 @@ var cardinalScene = {
         );
     }
 
-    cardinal.backToMain = function(){
+    cardinal.backToMain = function () {
+        stopAllTweens();
         callback.go(cardinalScene.callbacks.backToMainStart);
+        audio.sounds.IG_frame_zoom_in.play();
         //cardinal.assets.cardinal_vertical.visible = true;
 
         events.EmptyElementByID("cameraButtons");
         events.RemoveMouseUpEvent(tweenCamToSliceMain);
         events.RemoveMouseDownEvent(stopAllTweens);
 
-        events.Controls.minAzimuthAngle = - 0.3;
-        events.Controls.maxAzimuthAngle = 0.3;
+        events.Controls.minAzimuthAngle = -0.3;
+        events.Controls.maxAzimuthAngle =  0.3;
         events.ToggleControls(false);
 
         tweenShadowOpacity(1);
@@ -611,26 +638,27 @@ var cardinalScene = {
                 cardinal.buttons.slice.add();
                 events.ToggleControls(true);
                 events.AddMouseDownEvent(stopAllTweens);
+                animate.StartPanTimeout();
                 callback.go(cardinalScene.callbacks.backToMainDone);
             }
         );
     }
 
-    function tweenTextOpac() {
+    function tweenTextOpac () {
       var tween = new TWEEN.Tween( cardinal.assets.introText.children[0].material );
       tween.to( { opacity: 0 }, 500 );
       tween.onComplete(function () { cardinal.assets.introText.visible = false; });
       tween.start();
     }
 
-    function tweenBloomDown() {
-      var amount = cardinal.assets.composer.passes[2].copyUniforms.opacity;
+    function tweenBloomDown () {
+      var amount = cardinal.assets.composer.bloomPass.copyUniforms.opacity;
       var tween = new TWEEN.Tween( amount );
       tween.to( { value: 0 }, 100 );
       //tween.start();
     }
 
-    function tweenShadowOpacity(val){
+    function tweenShadowOpacity ( val ) {
       if (val == 1) {
         cardinal.assets.cardinal_vertical_shadow.visible = true;
         cardinal.assets.cardinal_horizontal_shadow.visible = true;
@@ -653,7 +681,7 @@ var cardinalScene = {
       opacTween.start();
     }
 
-    function tweenTextOpacity(val){
+    function tweenTextOpacity ( val ) {
       if (val == 1) {
         cardinal.assets.warmEdgeText.visible = true;
         cardinal.assets.dualSealText.visible = true;

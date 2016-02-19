@@ -1,16 +1,16 @@
 define([ "scene", /*"jquery",*/ "underscore", "cameraHandler", "materials", "animate", "i89", "LoE", "cardinal",
-  "neat", "sound", "events", "audio", "watch", "tornado", "devScene" ],
+  "neat", "sound", "events", "audio", "watch", "tornado", "devScene", "camPan"],
 function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89, LoE, cardinal, neat,
-  sound, events, audio, watch, tornado, devScene ) {
+  sound, events, audio, watch, tornado, devScene, camPan ) {
 
     var scenes = {
         i89: i89,
-        LoE: LoE,
-        IG: cardinal,
+        loe: LoE,
+        ig: cardinal,
         neat: neat,
-        //sound: sound, // scene disabled
-        seaStorm: tornado,
-        devScene: devScene
+        //sound: sound, // disabled
+        seastorm: tornado,
+        //devScene: devScene
     };
 
     function disposeObject (obj, skipMat) {
@@ -59,42 +59,85 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
     var loader = function( scene, animationComponent, mediaFolderUrl, camera ) {//public functionality
       var _this = this;
+      animate.ClearPanTimeout();
+      animate.ClearLowPowerTimeout();
+      animationComponent.cPan = new camPan( animationComponent );
+      this.scenes = scenes;
+      if ( !this.scenes[scene.sceneID] ) scene.sceneID = "ig";
       this.loadingScene = true;
       this.scene = scene;
       this.animationComponent = animationComponent;
       this.animationComponent.loader = this;
       this.DisposeObject = disposeObject;
-      this.sceneID = scene.sceneID;
+      this.sceneID = scene.sceneID.toLowerCase();
       this.onLoadProgressFunctions = _.functions( this.animationComponent.onLoadProgress );
-
-      var selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
+      this.selectedScene = scenes[this.sceneID].scene = new scenes[this.sceneID].constructor();
 
       this.mediaFolderUrl =
       materials.mediaFolderUrl =
-      selectedScene.mediaFolderUrl =
+      this.selectedScene.mediaFolderUrl =
       mediaFolderUrl;
 
       scene.add(camera);
-      changeURL(this.sceneID);
+
+      //check custom url
+      ( scenes[this.sceneID].url ) ? changeURL( scenes[this.sceneID].url ) : changeURL( this.sceneID );
 
       (function OnStartScene (){
         //retrieve all functions in onStartFunctions object, then call each one
-        var onStartFunctions = _.functions(selectedScene.onStartFunctions);
+        var onStartFunctions = _.functions(_this.selectedScene.onStartFunctions);
         _.each(onStartFunctions, function(fun){
-            selectedScene.onStartFunctions[fun](scene, _this);
+            _this.selectedScene.onStartFunctions[fun](scene, _this);
         });
       }());
 
       /***public functions***/
+      this.RandomNum = function( min, max ) {
+      	return Math.floor( Math.random() * (max - min + 1 ) + min );
+      };
+
       this.OnFinishedLoadingAssets = function(){
-        var onFinishLoadFunctions = _.functions( selectedScene.onFinishLoadFunctions );
+        var onFinishLoadFunctions = _.functions( _this.selectedScene.onFinishLoadFunctions );
         _.each(onFinishLoadFunctions, function( fun ) {
-            selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
+            _this.selectedScene.onFinishLoadFunctions[ fun ] ( scene, _this );
         });
+
+        animationComponent.composer = _this.selectedScene.assets.composer;
         animationComponent.ResizeWindow();
-        loader.LoadingScreen.hide();
+        _this.LoadingScreen.hide();
         _this.loadingScene = false;
       };
+
+      this.LoadingScreen = {
+        add: function () {
+            $( "#" + animate.containerID ).append( '<div class="loader"></div>' );
+            $( "#" + animate.containerID ).append( '<h1 id="loadingText">loading</h1>' );
+        },
+        show: function () {
+            animate.renderer.clear();
+            $( '#loadingText' ).text( "0%" );
+            $( '.loader, #loadingText' ).show();
+        },
+        hide: function () {
+            $( '.loader, #loadingText' ).hide();
+        },
+        update: function ( percent ) {
+            $( '#loadingText' ).text( percent + "%" );
+        }
+      };
+
+      this.LowPowerScreen = {
+        add: function () {
+            $( "#" + animate.containerID ).append( '<div id="lowPower"></div>' );
+            $( "#lowPower" ).append( '<p id="lowPowerText">User inactive. Click to resume.</p>' );
+        },
+        show: function () {
+            $( '#lowPower, #lowPowerText' ).show();
+        },
+        hide: function () {
+            $( '#lowPower, #lowPowerText' ).hide();
+        },
+      }
 
       this.ParseJSON = function ( file ) {
         var request = new XMLHttpRequest();
@@ -106,10 +149,10 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
       this.UnloadScene = function ( onComplete ) {
         this.animationComponent.SetDefaultRenderFunction();
-        var onUnloadFunctions = _.functions(selectedScene.onUnloadFunctions);
+        var onUnloadFunctions = _.functions(_this.selectedScene.onUnloadFunctions);
 
         _.each(onUnloadFunctions, function(fun){
-            selectedScene.onUnloadFunctions[fun](scene, _this);
+            _this.selectedScene.onUnloadFunctions[fun](scene, _this);
         });
 
 
@@ -126,6 +169,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       this.OnLoadProgress = function () {
         _.each(_this.onLoadProgressFunctions, function(fun){
           var percent = getLoadingPercentage(_this);
+          _this.LoadingScreen.update( percent );
           _this.animationComponent.onLoadProgress [fun] (percent, _this) ;
         });
       }
@@ -139,27 +183,27 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
         });
       }
 
-      this.LoadAssets( selectedScene );
+      this.LoadAssets( _this.selectedScene );
     };
 
     loader.prototype.LoadAssets = function ( selectedScene ) {
       var _this = this,
           mesh = undefined,
-          folderName = selectedScene.folderName,
-          assetNames = selectedScene.assetNames,
-          soundNames = selectedScene.soundNames,
+          folderName = this.selectedScene.folderName,
+          assetNames = this.selectedScene.assetNames,
+          soundNames = this.selectedScene.soundNames,
           nextAsset = undefined;
 
       this.assetIndex = 0;
       this.totalAssets = assetNames.length + soundNames.length;
 
-      //camera handler
+      // camera handler
       var cameraJSON = this.ParseJSON( _this.mediaFolderUrl+"/cameras/"+folderName+"/camera.JSON" );
       if( cameraJSON != false ) this.cameraHandler = new cameraHandler( cameraJSON );
 
-      //check if no assets exist
+      // check if no assets exist
       if( assetNames == undefined || assetNames.length == 0){ loadSounds(); return; };
-      //load next asset if it exists
+      // load next asset if it exists
       if( ( nextAsset = assetNames[_this.assetIndex] ) !== undefined ) load ( nextAsset );
 
       function load(name){
@@ -190,7 +234,7 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
 
         //function associated to current mesh, called for features such as positioning
         _this.scene.add(mesh);
-        var onCompleteFunction = selectedScene.onLoadFunctions[curAssetName];
+        var onCompleteFunction = _this.selectedScene.onLoadFunctions[curAssetName];
         if(onCompleteFunction)onCompleteFunction(mesh, _this);//pass the mesh and instance of loader
         _this.OnLoadProgress();
         //still has assets to load, go again
@@ -208,19 +252,6 @@ function(_scene, /*jquery,*/ underscore, cameraHandler, materials, animate, i89,
       }
     };
 
-    loader.LoadingScreen = {
-      add: function(){
-          $('body').append('<div class="loader"></div>');
-          $('.loader').append('<h1 id="loadingText">loading</h1>');
-      },
-      show: function(){
-          animate.renderer.clear()
-          $('.loader').show();
-      },
-      hide: function(){
-          $('.loader').hide();
-      }
-    };
     /***end public functions***/
 
     return loader;

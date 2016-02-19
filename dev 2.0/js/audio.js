@@ -3,7 +3,7 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
       loader: undefined,
       audioArrIndex: 0
     };
-    
+
     audio.sounds = {};
     //Howler.iOSAutoEnable = true;
 
@@ -13,19 +13,20 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
 
     function returnFormatsArray(name, mediaFolderUrl){
         var pre = mediaFolderUrl+"/audio/" + name;
-        return [pre + ".mp3", pre + ".ogg", pre + ".m4a"];
+        return [ pre + ".mp3", pre + ".ogg", pre + ".m4a" ];
     }
 
-    function loadSound(arr, onComp, mediaFolderUrl){
+    function loadSound ( arr, onComp, mediaFolderUrl ) {
+      var url;
 
-      if(!arr || !(url = arr[audio.audioArrIndex])){
+      if( !arr || !( url = arr [ audio.audioArrIndex ] ) ) {
         audio.loader.OnLoadProgress();
         audio.audioArrIndex = 0;
-        onComp();
+        if( onComp ) onComp();
         return;
       }
 
-      if(audio.sounds[cleanName(url)]){
+      if( audio.sounds[ cleanName ( url ) ] ) {
           audio.audioArrIndex++;
           loadSound(arr, onComp);
           return;
@@ -41,10 +42,21 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
       });
     }
 
+    audio.CleanHyphens = cleanName;
+
     audio.LoadAll = function( arr, loader ) {
         audio.loader = loader;
         audio.audioArrIndex = 0;
         loadSound(arr, loader.OnFinishedLoadingAssets, loader.mediaFolderUrl);
+    };
+
+    audio.LoadExternal = function (name, mediaFolderUrl, onComp) {
+      var sound = new buzz.sound(mediaFolderUrl+ "/audio/" + name, { formats: [ "mp3", "ogg", "m4a" ] });
+      sound.bind("loadeddata", function() {
+        audio.sounds[ cleanName(name) ] = sound;
+        if(onComp) onComp(sound);
+        return sound;
+      });
     };
 
     audio.StopAll = function () {
@@ -56,8 +68,6 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
     audio.ToggleMute = function () {
       buzz.all().toggleMute();
     };
-
-    GlobalFunctions.audio = audio;
 
     return audio;
 });

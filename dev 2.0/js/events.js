@@ -7,17 +7,29 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
     events.hammer = undefined;
     events.containerID = undefined;
 
-    $( "canvas" ).mousedown(function(event){ event.preventDefault(); });
-
-    (function(){
-      //setTimeout(function(){ alert("Hello"); }, 3000);
-    }())
-
     function activateButton ( button ) {
       $(button).addClass( activeClassName )
       .siblings()
       .removeClass( activeClassName );
     }
+
+    function resetAnimateTimeout () {
+      animate.ResetTimeout();
+      animate.StopPan();
+    }
+
+    events.Init = function ( containerID ) {
+      events.containerID = containerID;
+      $( "#" + events.containerID ).mousedown(function ( event ) { event.preventDefault(); });
+      $( "#" + events.containerID ).on( "click mousemove", function (event) {
+        resetAnimateTimeout();
+      });
+    }
+
+    events.AddButtonOnce = function ( btn ) {
+      if ( $('#' + btn.id).length == 0)
+        events.AddButton(btn);
+    };
 
     events.AddButton = function ( btn ) {
         btn.class = btn.class || " ";
@@ -39,42 +51,41 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
         }
 
 
-        if( btn.once)
+        if( btn.once )
           $( "#"+btn.id ).one( "click", btn.function );
         else
           $( "#"+btn.id ).on( "click", btn.function );
     };
 
-    events.AddMouseDownEvent = function(fun){
+    events.AddMouseDownEvent = function ( fun ) {
         $("body").on("mousedown", "#"+events.containerID, fun);
     };
 
-    events.RemoveMouseDownEvent = function(fun){
+    events.RemoveMouseDownEvent = function ( fun ) {
         $("body").off("mousedown", "#"+events.containerID, fun);
     };
 
-    events.AddMouseUpEvent = function(fun){
+    events.AddMouseUpEvent = function ( fun ) {
         $("body").on("mouseup", "#"+events.containerID, fun);
         //events.hammer.on('panend', function() { fun(); });
-
     };
 
-    events.RemoveMouseUpEvent = function(fun){
+    events.RemoveMouseUpEvent = function ( fun ) {
         $("body").off("mouseup", "#"+events.containerID, fun);
         //events.hammer.off('panend', function() { fun(); });
     };
 
-    events.RemoveElementByID = function(id){
+    events.RemoveElementByID = function ( id ) {
         $("#"+id).off("click").remove();
     };
 
-    events.EmptyElementByID = function(id){ $("#"+id).empty(); };
+    events.EmptyElementByID = function ( id ) { $( "#" + id ).empty(); };
 
-    events.UnbindAll = function(){
+    events.UnbindAll = function () {
       $("body").off();
     };
 
-    events.AddControls = function(c){
+    events.AddControls = function ( c ) {
         var _this = this;
         this.Controls = new orbitControls( animate.camera, animate.renderer.domElement );
         //this.hammer = new hammer(animate.container);
@@ -82,13 +93,13 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
         _.each(_.keys(c), function(prop){ _this.Controls[prop] = c[prop]; });
     };
 
-    events.ToggleControls = function(bool){
+    events.ToggleControls = function ( bool ) {
       events.Controls.enabled = bool;
     };
 
-    events.addDOF_GUI = function(scene) {
-      //return;
-      var effectController  = {
+    events.addDOF_GUI = function ( scene ) {
+      return;
+      /*var effectController  = {
         focus: 		1.0,
         aperture:	0.025,
         maxblur:	1.0
@@ -106,7 +117,7 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
 				ui.add( effectController, "maxblur", 0.0, 3.0, 0.025 ).onChange( matChanger );
 		  ui.close();
 
-      $(".dg").css('z-index', 6);
+      $(".dg").css('z-index', 6);*/
     }
 
     return events;
