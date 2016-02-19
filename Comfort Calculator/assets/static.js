@@ -55,11 +55,14 @@
 "DbgName"  : "room_mat",
 "colorDiffuse"  : [0.8000, 0.8000, 0.8000],
 "colorAmbient"  : [0.0000, 0.0000, 0.0000],
-"colorSpecular"  : [0.0000, 0.0000, 0.0000],
+"colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 1.0,
-"specularCoef"  : 10.0,
+"specularCoef"  : 3,
 "mapDiffuse"    : "main_building.jpg",
-"vertexColors" : false
+"mapNormal" : "main_building_N.jpg",
+"mapNormalFactor" : 2,
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {

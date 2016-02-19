@@ -23,7 +23,7 @@ define(
       var container_height = $(handler.container).height();
 
       this.scene = new THREE.Scene();
-      this.scene.fog = new THREE.Fog(0x616161, 1720, 2000);
+      this.scene.fog = new THREE.Fog(0x616161, 1661, 2000);
 
       this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
       this.camera.position.set(0, 339, 987);
@@ -31,6 +31,7 @@ define(
 
       this.engine = new THREE.WebGLRenderer({antialias: true});
       this.engine.setSize(container_width, container_height);
+      this.engine.gammaInput = this.engine.gammaOutput = true;
       handler.container.appendChild(this.engine.domElement);
 
       this.clock = new THREE.Clock();
@@ -43,7 +44,15 @@ define(
       this.scene.add(handler.lights.ambientLight);
 
       handler.lights.ambientLight2 = new THREE.AmbientLight(0x303028);
-      this.scene.add(handler.lights.ambientLight2);
+      //this.scene.add(handler.lights.ambientLight2);
+
+      var directionalLightR = new THREE.DirectionalLight( 0xffffff, 0.5 );
+      directionalLightR.position.set( 600, 1000, 300);
+      this.scene.add( directionalLightR );
+
+      var directionalLightL = new THREE.DirectionalLight( 0xffffff, 0.5 );
+      directionalLightL.position.set( -600, 1000, 300);
+      this.scene.add( directionalLightL );
 
       var pStatic = handler.loadAsset('static');
       pStatic.then(function(object){

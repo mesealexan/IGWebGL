@@ -46,7 +46,9 @@
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
 "transparency"  : 0.5,
 "specularCoef"  : 7.0,
-"vertexColors" : false
+"vertexColors" : false,
+"transparent" : true,
+"shading" : "Phong"
 }
 
 ],
