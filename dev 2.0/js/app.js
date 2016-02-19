@@ -20,7 +20,7 @@ require.config({
             "CopyShader" : "../lib/EffectComposer/CopyShader",
         "EffectComposer" : "../lib/EffectComposer/EffectComposer",
             "underscore" : "../lib/underscore/underscore",
-                 "tween" : "../lib/tween.js/src/Tween_iosFix",//modified to work for iOS
+                 "tween" : "../lib/tween.js/src/Tween_iosFix", //modified to work for iOS
                  "watch" : "../lib/watch.js/src/watch",
                 "bowser" : "../lib/bowser/bowser",
                   "buzz" : "../lib/buzz/buzz",
@@ -38,7 +38,7 @@ require.config({
 });
 
 require(["main", "jquery"], function ( main ) {
-  var scenes = [ "ig", "i89", "loe", "neat", /*"sound",*/ "seaStorm" ];
+  var scenes = [ "ig", "i89", "loe", "neat", "seaStorm" ];
   main.Start( "webGL", "seaStorm" );
 });
 

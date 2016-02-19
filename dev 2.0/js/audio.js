@@ -42,6 +42,8 @@ define([/*"howler",*/ "underscore", "buzz"], function(/*howler,*/ underscore, bu
       });
     }
 
+    audio.CleanHyphens = cleanName;
+
     audio.LoadAll = function( arr, loader ) {
         audio.loader = loader;
         audio.audioArrIndex = 0;

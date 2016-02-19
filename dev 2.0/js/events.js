@@ -26,6 +26,11 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
       });
     }
 
+    events.AddButtonOnce = function ( btn ) {
+      if ( $('#' + btn.id).length == 0)
+        events.AddButton(btn);
+    };
+
     events.AddButton = function ( btn ) {
         btn.class = btn.class || " ";
         btn.id = btn.id || " ";
@@ -46,7 +51,7 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
         }
 
 
-        if( btn.once)
+        if( btn.once )
           $( "#"+btn.id ).one( "click", btn.function );
         else
           $( "#"+btn.id ).on( "click", btn.function );
@@ -94,7 +99,7 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
 
     events.addDOF_GUI = function ( scene ) {
       return;
-      var effectController  = {
+      /*var effectController  = {
         focus: 		1.0,
         aperture:	0.025,
         maxblur:	1.0
@@ -112,7 +117,7 @@ define( ["animate", "orbitControls", "underscore", "hammer", "gui"],
 				ui.add( effectController, "maxblur", 0.0, 3.0, 0.025 ).onChange( matChanger );
 		  ui.close();
 
-      $(".dg").css('z-index', 6);
+      $(".dg").css('z-index', 6);*/
     }
 
     return events;

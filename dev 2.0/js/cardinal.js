@@ -1,5 +1,6 @@
-define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text", "materials"],
-function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text, materials){
+define(["scene", "three", "watch", "events", "tween", "underscore", "animate", "callback", "composers", "aeTween", "text", "materials", "audio"],
+function(scene, three, watch, events, tween, underscore, animate, callback, composers, aeTween, text,
+materials, audio){
 var cardinalScene = {
   callbacks:{
     introAnimHalfway: {
@@ -60,6 +61,7 @@ var cardinalScene = {
     cardinal.folderName = "cardinal";
     cardinal.addAssets( ['cardinal_horizontal', 'cardinal_vertical', 'cardinal_slice',
       'cardinal_vertical_shadow', 'cardinal_horizontal_shadow'] );
+    cardinal.addSounds( [ 'IG_intro_music', 'IG_button_zoomIN', 'IG_frame_zoom_in' ] );
 
     var fadeOutTime = 700;
     var fpsForText  = 20; //slow down fps to read text on window.
@@ -260,7 +262,8 @@ var cardinalScene = {
       function onCameraComplete () {
         cardinal.buttons.slice.add();
         addMouseDownEvent();
-        animate.StartTimeout({noPan:true});
+        //animate.StartTimeout({noPan:true});
+        animate.StartTimeout();
       }
 
       function onCameraStart () {
@@ -345,6 +348,9 @@ var cardinalScene = {
 
     function reactToFrame(frame){
         switch (frame){
+            case 0:
+              audio.sounds.IG_intro_music.play();
+            break;
             case 80:
                 animate.SetCustomFramerate(fpsForText);
                 cardinal.assets.lensFlare.visible = true;
@@ -384,7 +390,7 @@ var cardinalScene = {
         },
         backToSlice: {
             add: function(){
-                events.AddButton({text:"Zoom out", function: cardinal.zoomOnSlice.backToSlice,
+                events.AddButtonOnce({text:"Zoom out", function: cardinal.zoomOnSlice.backToSlice,
                     id:"backToSlice", class:"navigation", once: true});
             },
             remove: function(){ events.RemoveElementByID("backToSlice"); }
@@ -422,25 +428,25 @@ var cardinalScene = {
     cardinal.zoomOnSlice = {
         currentPosition: undefined
         ,
-         sealantA: function(){
-           if (cardinal.zoomOnSlice.currentPosition == "sealantA") return;
-           stopAllTweens();
-           cardinal.zoomOnSlice.currentPosition = "sealantA";
-           events.RemoveMouseDownEvent(stopAllTweens);
-            callback.go(cardinalScene.callbacks.goToSealantA_Start);
-            var anim = cameraAnimations.animation_3;
-             events.ToggleControls(false);
-             events.RemoveMouseUpEvent( tweenCamToSliceMain );
-            cardinal.assets.loaderComponent.cameraHandler.tween(
-                anim.frame, anim.speed,
-                function(){//on complete
-                    callback.go(cardinalScene.callbacks.goToSealantA_Done);
-                    manageEmissive.modify(anim.frame);
-                    cardinal.buttons.backToSlice.add();
-                });
-             manageEmissive.resetAllSlice();
-             events.RemoveElementByID("backToMain");
-             events.RemoveElementByID("backToSlice");
+       sealantA: function(){
+         if (cardinal.zoomOnSlice.currentPosition == "sealantA") return;
+         stopAllTweens();
+         cardinal.zoomOnSlice.currentPosition = "sealantA";
+         events.RemoveMouseDownEvent(stopAllTweens);
+          callback.go(cardinalScene.callbacks.goToSealantA_Start);
+          var anim = cameraAnimations.animation_3;
+           events.ToggleControls(false);
+           events.RemoveMouseUpEvent( tweenCamToSliceMain );
+          cardinal.assets.loaderComponent.cameraHandler.tween(
+              anim.frame, anim.speed,
+              function(){//on complete
+                  callback.go(cardinalScene.callbacks.goToSealantA_Done);
+                  manageEmissive.modify(anim.frame);
+              });
+           manageEmissive.resetAllSlice();
+           events.RemoveElementByID("backToMain");
+           cardinal.buttons.backToSlice.add();
+           //events.RemoveElementByID("backToSlice");
         }
         ,
         sealantB: function(){
@@ -458,11 +464,11 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSealantB_Done);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
             events.RemoveElementByID("backToMain");
-            events.RemoveElementByID("backToSlice");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         spacer: function(){
           if (cardinal.zoomOnSlice.currentPosition == "spacer") return;
@@ -478,11 +484,11 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToSpacerDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
             events.RemoveElementByID("backToMain");
-            events.RemoveElementByID("backToSlice");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         dessicant: function(){
           if (cardinal.zoomOnSlice.currentPosition == "dessicant") return;
@@ -498,13 +504,14 @@ var cardinalScene = {
                 function(){//on complete
                    callback.go(cardinalScene.callbacks.goToDessicantDone);
                     manageEmissive.modify(anim.frame);
-                    cardinal.buttons.backToSlice.add();
                 });
             manageEmissive.resetAllSlice();
             events.RemoveElementByID("backToMain");
-            events.RemoveElementByID("backToSlice");
+            cardinal.buttons.backToSlice.add();
+            //events.RemoveElementByID("backToSlice");
         },
         backToSlice: function(){
+            stopAllTweens();
             callback.go(cardinalScene.callbacks.backToSliceStart);
             var speed = 0.1;
             cardinal.assets.loaderComponent.cameraHandler.tween(
@@ -514,11 +521,11 @@ var cardinalScene = {
                     events.AddMouseDownEvent(stopAllTweens);
                     events.AddMouseUpEvent( tweenCamToSliceMain );
                     callback.go(cardinalScene.callbacks.backToSliceDone);
-                    cardinal.buttons.backToMain.add();
                     cardinal.zoomOnSlice.currentPosition = undefined;
                 });
             manageEmissive.resetAllSlice();
             events.RemoveElementByID("backToSlice");
+            cardinal.buttons.backToMain.add();
 
         }
     };
@@ -553,7 +560,10 @@ var cardinalScene = {
     };
 
     cardinal.goToSlice = function () {
+        audio.sounds.IG_button_zoomIN.play();
         events.ToggleControls(false);
+        animate.ClearPanTimeout();
+        animate.StopPan();
         callback.go(cardinalScene.callbacks.goToSliceStart);
         cardinal.buttons.slice.remove();
         events.RemoveMouseDownEvent(stopAllTweens);
@@ -581,7 +591,7 @@ var cardinalScene = {
         cardinal.assets.loaderComponent.cameraHandler.play(
             cameraAnimations.animation_2.from,
             cameraAnimations.animation_2.to,
-            function(){//on complete
+            function(){ // on complete
                 cardinal.buttons.sealantA.add();
                 cardinal.buttons.sealantB.add();
                 cardinal.buttons.spacer.add();
@@ -596,15 +606,17 @@ var cardinalScene = {
     }
 
     cardinal.backToMain = function () {
+        stopAllTweens();
         callback.go(cardinalScene.callbacks.backToMainStart);
+        audio.sounds.IG_frame_zoom_in.play();
         //cardinal.assets.cardinal_vertical.visible = true;
 
         events.EmptyElementByID("cameraButtons");
         events.RemoveMouseUpEvent(tweenCamToSliceMain);
         events.RemoveMouseDownEvent(stopAllTweens);
 
-        events.Controls.minAzimuthAngle = - 0.3;
-        events.Controls.maxAzimuthAngle = 0.3;
+        events.Controls.minAzimuthAngle = -0.3;
+        events.Controls.maxAzimuthAngle =  0.3;
         events.ToggleControls(false);
 
         tweenShadowOpacity(1);
@@ -626,6 +638,7 @@ var cardinalScene = {
                 cardinal.buttons.slice.add();
                 events.ToggleControls(true);
                 events.AddMouseDownEvent(stopAllTweens);
+                animate.StartPanTimeout();
                 callback.go(cardinalScene.callbacks.backToMainDone);
             }
         );

@@ -29,7 +29,7 @@ var LoEScene = {
     LoE.folderName = "LoE";
     LoE.addAssets([/*'EngineeredComfort',*/ /*'bck_1',*/ 'rail', 'plane', 'window', 'fixed_glass',
         'mobile_glass', 'tambur_a', 'tambur_b', 'window_shadow', /*'pouring',*/ 'rotator']);
-    LoE.addSounds( [ 'loe-factory-loop', 'loe-apply-coating' ] );
+    LoE.addSounds( [ 'LoE_conveyor', 'loe-apply-coating', 'LoE_glass_to_window_frame' ] );
     LoE.disposables = [];
 
     var coatingTime = 2700;
@@ -303,6 +303,9 @@ var LoEScene = {
     function reactToFrame ( frame ) {
         switch (frame){
             case 0:
+                audio.sounds.LoE_conveyor.setVolume(0);
+                audio.sounds.LoE_conveyor.play();
+                audio.sounds.LoE_conveyor.fadeTo(20, 1000);
                 //audio.sounds.loefactoryloop.play();
                 //audio.sounds.loefactoryloop.setVolume(0);
                 //audio.sounds.loefactoryloop.fadeTo(20, 1000);
@@ -342,6 +345,9 @@ var LoEScene = {
                 break;
             case 375:
                 break;
+            case 405:
+                audio.sounds.LoE_glass_to_window_frame.play();
+            break;
             case 410:
                 LoE.assets.mobile_glass.visible = false;
                 break;

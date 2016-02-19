@@ -19,7 +19,7 @@ define(["three", /*"jquery",*/ "loader", "animate", "tween", "events", "audio", 
             logarithmicDepthBuffer: false});
         animate.renderer.autoClear = false;
         animate.renderer.setSize( width, height );
-        animate.renderer.setClearColor( 0x000000, 1 );
+        animate.renderer.setClearColor( 0x000000, 0 );
         animate.renderer.shadowMapType = THREE.PCFShadowMap;
         animate.container.appendChild( animate.renderer.domElement );
     }
