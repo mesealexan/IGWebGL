@@ -14,7 +14,8 @@ define(
       currentAnimations: {
         winter: undefined,
         summer: undefined
-      }
+      },
+      currentShader: undefined
     };
 
     stage.init = function () {
@@ -114,6 +115,7 @@ define(
     };
 
     stage.tempLoad = function () {
+      // winter
       var pWinterIdle = handler.tempAnim('winter_ani_idle');
       var pWinterFreezing = handler.tempAnim('winter_ani_freezing');
       Promise.all([pWinterIdle, pWinterFreezing]).then(function(objects){
@@ -127,6 +129,7 @@ define(
         }
       }.bind(this)).catch(console.log);
 
+      // summer
       var pSummerIdle = handler.tempAnim('summer_ani_idle');
       var pSummerWalk = handler.tempAnim('summer_ani_walk');
       Promise.all([pSummerIdle, pSummerWalk]).then(function(objects){
@@ -143,7 +146,22 @@ define(
         }
       }.bind(this)).catch(console.log);
 
-      ui.addSlider('right', 0, 1, 0.01, function () {console.log('test');});
+      // shaders
+      var pShaderSmall = handler.loadMorphModel('right_small_shader');
+      var pShaderMedium = handler.loadMorphModel('right_medium_shader');
+      var pShaderLarge = handler.loadMorphModel('right_large_shader');
+      Promise.all([pShaderSmall, pShaderMedium, pShaderLarge]).then(function (objects) {
+        for (var key in objects) {
+          for (var mKey in objects[key].material.materials) {
+            objects[key].material.materials[mKey].transparent = true;
+            objects[key].material.materials[mKey].opacity = 0;
+          }
+          objects[key].visible = false;
+          this.scene.add(objects[key]);
+        }
+        setDefaultShaders();
+        ui.addSlider('right', 0, 1, 0.01, attachCallbackShader.bind(this));
+      }.bind(this)).catch(console.log);
     };
 
     stage.startRenderLoop = function () {
@@ -182,14 +200,37 @@ define(
         new TWEEN.Tween(this.currentWalls[position].material.materials[keyOut]).to({opacity: 0}, tweenTime).start();
       }
 
+      if (position === 'right') {
+        for (var keyOutShader in this.currentShader.material.materials) {
+          new TWEEN.Tween(this.currentShader.material.materials[keyOutShader]).to({opacity: 0}, tweenTime).start();
+        }
+      }
+
       setTimeout(function () {
         this.currentWalls[position].visible = false;
         this.currentWalls[position] = handler.assets[e.target.id];
         this.currentWalls[position].visible = true;
-        for (var keyIn in handler.assets[e.target.id].material.materials) {
-          new TWEEN.Tween(handler.assets[e.target.id].material.materials[keyIn]).to({opacity: 1}, tweenTime).start();
+        for (var keyIn in this.currentWalls[position].material.materials) {
+          new TWEEN.Tween(this.currentWalls[position].material.materials[keyIn]).to({opacity: 1}, tweenTime).start();
+        }
+
+        if (position === 'right') {
+          this.currentShader.visible = false;
+          this.currentShader = handler.assets[e.target.id+'_shader'];
+          this.currentShader.visible = true;
+          for (var keyInShader in this.currentShader.material.materials) {
+            new TWEEN.Tween(this.currentShader.material.materials[keyInShader]).to({opacity: 1}, tweenTime).start();
+          }
         }
       }.bind(this), tweenTime);
+    }
+
+    function setDefaultShaders () {
+      stage.currentShader = handler.assets.right_small_shader;
+      for (var key in stage.currentShader.material.materials) {
+        stage.currentShader.material.materials[key].opacity = 1;
+      }
+      stage.currentShader.visible = true;
     }
 
     function attachCallbackAnimation (e) {
@@ -197,6 +238,15 @@ define(
       stage.currentAnimations[position].stop();
       stage.currentAnimations[position] = handler.animations[position + '_char'][e.target.id];
       stage.currentAnimations[position].play();
+    }
+
+    function attachCallbackShader (e) {
+      this.currentShader.morphTargetInfluences[0] = 1 - e.target.valueAsNumber;
+      this.currentShader.morphTargetInfluences[1] = e.target.valueAsNumber;
+    }
+
+    function scale_from_0_1_to_range (value, min, max) {
+      return (value * (max - min)) + min;
     }
 
     function tempCallbackAnimation (e) {
