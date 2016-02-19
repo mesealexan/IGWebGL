@@ -127,10 +127,10 @@ define(
       // winter
       var pWinterIdle = handler.tempAnim('winter_ani_idle');
       var pWinterFreezing = handler.tempAnim('winter_ani_freezing');
-      Promise.all([pWinterIdle, pWinterFreezing]).then(function(objects){
+      var pWinterWalk = handler.tempAnim('winter_ani_walk');
+      Promise.all([pWinterIdle, pWinterFreezing,pWinterWalk]).then(function(objects){
         for (var key in objects) {
           objects[key].position.set(-188, 18, -68);
-          objects[key].scale.set(2.54, 2.54, 2.54);
           objects[key].visible = false;
           this.scene.add(objects[key]);
           var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
@@ -141,14 +141,11 @@ define(
       // summer
       var pSummerIdle = handler.tempAnim('summer_ani_idle');
       var pSummerWalk = handler.tempAnim('summer_ani_walk');
-      Promise.all([pSummerIdle, pSummerWalk]).then(function(objects){
+      var pSummerWarm = handler.tempAnim('summer_ani_warm');
+      Promise.all([pSummerIdle, pSummerWalk,pSummerWarm]).then(function(objects){
         for (var key in objects) {
           objects[key].position.set(188, 18, -68);
           objects[key].visible = false;
-          // hardcoded fix
-          if (objects[key].name === 'summer_ani_walk') {
-            objects[key].scale.set(2.54, 2.54, 2.54);
-          }
           this.scene.add(objects[key]);
           var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
           ui.addButton(type, 'summer', tempCallbackAnimation.bind(this));

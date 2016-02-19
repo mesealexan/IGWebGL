@@ -149,7 +149,7 @@ define(
       for (var key in materials) {
         switch (materials[key].name) {
           case 'room_mat': {
-            materials[key] = new THREE.MeshPhongMaterial({map: materials[key].map});
+            //materials[key] = new THREE.MeshPhongMaterial({map: materials[key].map});
             break;
           }
         }
