@@ -247,6 +247,7 @@ define(
 
     function attachCallbackAnimation (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
+      if (this == stage.currentAnimations[position]) return;
       this.play();
       this.enabled = true;
       this.crossFadeFrom(stage.currentAnimations[position], 1);
