@@ -81,7 +81,7 @@ define(
 
     stage.loadAnimations = function () {
       // winter
-      var pWinter = handler.loadAnimatedAsset('winter');
+      var pWinter = handler.loadAnimatedAsset('winter', true);
       pWinter.then(function (object) {
         object.position.set(-188, 18, -68);
         this.scene.add(object);
@@ -94,7 +94,7 @@ define(
       }.bind(this)).catch(console.log.bind(console));
 
       // summer
-      var pSummer = handler.loadAnimatedAsset('summer');
+      var pSummer = handler.loadAnimatedAsset('summer', true);
       pSummer.then(function (object) {
         object.position.set(188, 18, -68);
         this.scene.add(object);
@@ -124,60 +124,13 @@ define(
       }.bind(this)).catch(console.log.bind(console));
     };
 
-    stage.tempLoad = function () {
-      // winter
-      var pWinterIdle = handler.tempAnim('winter_ani_idle');
-      var pWinterFreezing = handler.tempAnim('winter_ani_freezing');
-      var pWinterWalk = handler.tempAnim('winter_ani_walk');
-      Promise.all([pWinterIdle, pWinterFreezing, pWinterWalk]).then(function(objects){
-        for (var key in objects) {
-          objects[key].position.set(-188, 18, -68);
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, 'winter', tempCallbackAnimation.bind(this));
-        }
-      }.bind(this)).catch(console.log.bind(console));
-
-      // summer
-      var pSummerIdle = handler.tempAnim('summer_ani_idle');
-      var pSummerWalk = handler.tempAnim('summer_ani_walk');
-      var pSummerWarm = handler.tempAnim('summer_ani_warm');
-      Promise.all([pSummerIdle, pSummerWalk, pSummerWarm]).then(function(objects){
-        for (var key in objects) {
-          objects[key].position.set(188, 18, -68);
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, 'summer', tempCallbackAnimation.bind(this));
-        }
-      }.bind(this)).catch(console.log.bind(console));
-
-      // shaders
-      var pShaderSmall = handler.loadMorphedAsset('right_small_shader');
-      var pShaderMedium = handler.loadMorphedAsset('right_medium_shader');
-      var pShaderLarge = handler.loadMorphedAsset('right_large_shader');
-      Promise.all([pShaderSmall, pShaderMedium, pShaderLarge]).then(function (objects) {
-        for (var key in objects) {
-          for (var mKey in objects[key].material.materials) {
-            objects[key].material.materials[mKey].transparent = true;
-            objects[key].material.materials[mKey].opacity = 0;
-          }
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-        }
-        setDefaultShader();
-        ui.addSlider('right', 0, 1, 0.01, attachCallbackShader.bind(this));
-      }.bind(this)).catch(console.log.bind(console));
-    };
-
     stage.startRenderLoop = function () {
       requestAnimationFrame(this.startRenderLoop.bind(this));
 
       this.clock_delta = this.clock.getDelta();
 
       for (var key in handler.animation_mixers) {
-        handler.animation_mixers[key].update(this.clock_delta);
+        handler.animation_mixers[key].update(this.clock_delta );
       }
 
       TWEEN.update();
@@ -250,17 +203,9 @@ define(
       if (this == stage.currentAnimations[position]) return;
       this.play();
       this.enabled = true;
-      this.crossFadeFrom(stage.currentAnimations[position], 1);
+      this.crossFadeFrom(stage.currentAnimations[position], 0);
       stage.currentAnimations[position] = this;
     }
-
-    function tempCallbackAnimation (e) {
-      var position = e.target.id.slice(0, e.target.id.search('_'));
-      if (this.currentAnimations[position]) this.currentAnimations[position].visible = false;
-      this.currentAnimations[position] = handler.assets[e.target.id];
-      this.currentAnimations[position].visible = true;
-    }
-
 
     function resizeWindow () {
       var container_width = $(handler.container).width();

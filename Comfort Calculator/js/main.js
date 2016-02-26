@@ -8,7 +8,6 @@ define(
       stage.init();
       stage.loadStage();
       stage.loadAnimations();
-      // stage.tempLoad();
       stage.startRenderLoop();
     };
 

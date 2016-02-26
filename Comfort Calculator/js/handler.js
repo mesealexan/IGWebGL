@@ -62,7 +62,7 @@ define(
       return promise;
     };
 
-    handler.tempAnim = function (asset) {
+    handler.loadAnimatedAsset = function (asset, timeFix) {
       var promise = new Promise(function (resolve, reject) {
         var assetURL = './assets/'+asset+'.js';
         // $.get(assetURL).done(function () {
@@ -73,38 +73,8 @@ define(
               for (var key in materials) {
                 materials[key].skinning = true;
               }
-              var material = new THREE.MeshFaceMaterial(materials);
-              var object = new THREE.SkinnedMesh(geometry, material);
-              object.name = asset;
-              handler.assets[asset] = object;
-              if (!handler.animation_mixers[asset]) {
-                handler.animation_mixers[asset] = new THREE.AnimationMixer(handler.assets[asset]);
-              }
-              if (!handler.animations[asset]) {
-                handler.animations[asset] = [];
-              }
-              handler.animations[asset][asset] = handler.animation_mixers[asset].clipAction(geometry.animations[0]);
-              handler.animations[asset][asset].play();
-              resolve(object);
-            }
-          );
-        // }).fail(function () {
-          // reject('Could not find file: ' + assetURL);
-        // });
-      });
-      return promise;
-    };
-
-    handler.loadAnimatedAsset = function (asset) {
-      var promise = new Promise(function (resolve, reject) {
-        var assetURL = './assets/'+asset+'.js';
-        // $.get(assetURL).done(function () {
-          handler.JSONLoader.load(
-            assetURL,
-            function (geometry, materials) {
-              geometry.computeVertexNormals();
-              for (var key in materials) {
-                materials[key].skinning = true;
+              if (timeFix) {
+                fixTimeFrame(geometry.animations);  
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.SkinnedMesh(geometry, material);
@@ -127,6 +97,17 @@ define(
       });
       return promise;
     };
+
+    function fixTimeFrame (animations) {
+      for (var key01 in animations) {
+        for (var key02 in animations[key01].tracks) {
+          var offSet = Math.floor(animations[key01].tracks[key02].times[1]);
+          for (var i = 1; i < animations[key01].tracks[key02].times.length; i++) {
+            animations[key01].tracks[key02].times[i] -= offSet;
+          }
+        }
+      }
+    }
 
     function setMaterials (materials) {
       for (var key in materials) {
