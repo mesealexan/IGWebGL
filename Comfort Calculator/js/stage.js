@@ -86,7 +86,11 @@ define(
         object.position.set(-188, 18, -68);
         this.scene.add(object);
         for (var key in handler.animations.winter) {
-          ui.addButton(handler.animations.winter[key]._clip.name, 'winter', attachCallbackAnimation.bind(handler.animations.winter[key]));
+          if (handler.animations.winter[key]._clip.name.includes('_to_') || handler.animations.winter[key]._clip.name == 'idle') { }
+          else {
+            ui.addButton(handler.animations.winter[key]._clip.name, 'winter', attachCallbackAnimation.bind(handler.animations.winter[key]));
+            handler.animations.winter[key].repetitions = 0;
+          }
         }
         // default
         this.currentAnimations.winter = handler.animations.winter[0];
@@ -99,7 +103,11 @@ define(
         object.position.set(188, 18, -68);
         this.scene.add(object);
         for (var key in handler.animations.summer) {
-          ui.addButton(handler.animations.summer[key]._clip.name, 'summer', attachCallbackAnimation.bind(handler.animations.summer[key]));
+          if (handler.animations.summer[key]._clip.name.includes('_to_') || handler.animations.summer[key]._clip.name == 'idle') { }
+          else {
+            ui.addButton(handler.animations.summer[key]._clip.name, 'summer', attachCallbackAnimation.bind(handler.animations.summer[key]));
+            handler.animations.summer[key].repetitions = 0;
+          }
         }
         // default
         this.currentAnimations.summer = handler.animations.summer[0];
@@ -201,10 +209,20 @@ define(
     function attachCallbackAnimation (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
       if (this == stage.currentAnimations[position]) return;
-      this.play();
       this.enabled = true;
-      this.crossFadeFrom(stage.currentAnimations[position], 0);
+      if (this.isRunning()) {
+        this.reset();
+      } else {
+        this.play();
+      }
+      this.crossFadeFrom(stage.currentAnimations[position], 0.5);
       stage.currentAnimations[position] = this;
+      setTimeout(function () {
+        handler.animations[position][0].enabled = true;
+        handler.animations[position][0].play();
+        handler.animations[position][0].crossFadeFrom(stage.currentAnimations[position], 1);
+        stage.currentAnimations[position] = handler.animations[position][0];
+      }, this._clip.duration * 1000 - 1000);
     }
 
     function resizeWindow () {

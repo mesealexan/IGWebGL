@@ -74,7 +74,7 @@ define(
                 materials[key].skinning = true;
               }
               if (timeFix) {
-                fixTimeFrame(geometry.animations);  
+                fixTimeFrame(geometry.animations);
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.SkinnedMesh(geometry, material);
@@ -106,6 +106,7 @@ define(
             animations[key01].tracks[key02].times[i] -= offSet;
           }
         }
+        animations[key01].resetDuration();
       }
     }
 
