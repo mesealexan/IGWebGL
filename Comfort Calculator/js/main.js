@@ -5,12 +5,11 @@ define(
 
     main.init = function (container_id) {
       handler.init(container_id);
-      
+
       var plm = handler.preLoadMaps();
       plm.then(function () {
         stage.init();
         stage.loadStage();
-        stage.loadAnimations();
         stage.startRenderLoop();
       }).catch(console.log.bind(console));
     };

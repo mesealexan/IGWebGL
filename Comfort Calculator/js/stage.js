@@ -1,6 +1,6 @@
 define(
-  ['ui', 'handler', 'three', 'jquery', 'tween'],
-  function (ui, handler) {
+  ['ls', 'ui', 'handler', 'three', 'jquery', 'tween'],
+  function (ls, ui, handler) {
     var stage = {
       scene: undefined,
       camera: undefined,
@@ -47,89 +47,105 @@ define(
       this.scene.add(handler.lights.ambientLight2);
 
       var light = new THREE.PointLight( 0xffffff, 0.2, 3000 );
-        light.position.set( 555, 503, -1310 );
-        this.scene.add( light );
+      light.position.set( 555, 503, -1310 );
+      this.scene.add( light );
 
+      var timeOutValue = 1000;
+
+      ls.update('room');
       var pStatic = handler.loadAsset('static');
       pStatic.then(function(object){
-        this.scene.add(object);
-      }.bind(this)).catch(console.log.bind(console));
+        setTimeout (function () {
+          this.scene.add(object);
+          ls.update('furniture');
+          var pFurniture = handler.loadAsset('furniture');
+          pFurniture.then(function(object){
+            setTimeout(function () {
+              this.scene.add(object);
+              ls.update('walls');
+              var pLeftSmall = handler.loadAsset('left_small');
+              var pRightSmall = handler.loadAsset('right_small');
+              var pLeftMedium = handler.loadAsset('left_medium');
+              var pRightMedium = handler.loadAsset('right_medium');
+              var pLeftLarge = handler.loadAsset('left_large');
+              var pRightLarge = handler.loadAsset('right_large');
 
-      var pLeftSmall = handler.loadAsset('left_small');
-      var pRightSmall = handler.loadAsset('right_small');
-      var pLeftMedium = handler.loadAsset('left_medium');
-      var pRightMedium = handler.loadAsset('right_medium');
-      var pLeftLarge = handler.loadAsset('left_large');
-      var pRightLarge = handler.loadAsset('right_large');
+              Promise.all([pLeftSmall, pRightSmall, pLeftMedium, pRightMedium, pLeftLarge, pRightLarge]).then(function(objects){
+                setTimeout(function () {
+                  for (var key in objects) {
+                    for (var mKey in objects[key].material.materials) {
+                      objects[key].material.materials[mKey].transparent = true;
+                      objects[key].material.materials[mKey].opacity = 0;
+                    }
+                    objects[key].visible = false;
+                    this.scene.add(objects[key]);
 
-      Promise.all([pLeftSmall, pRightSmall, pLeftMedium, pRightMedium, pLeftLarge, pRightLarge]).then(function(objects){
-        for (var key in objects) {
-          for (var mKey in objects[key].material.materials) {
-            objects[key].material.materials[mKey].transparent = true;
-            objects[key].material.materials[mKey].opacity = 0;
-          }
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-
-          var position = objects[key].name.slice(0, objects[key].name.search('_'));
-          var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
-          ui.addButton(type, position, attachCallbackWall.bind(this));
-        }
-        setDefaultWalls();
-      }.bind(this)).catch(console.log.bind(console));
-    };
-
-    stage.loadAnimations = function () {
-      // winter
-      var pWinter = handler.loadAnimatedAsset('winter', true);
-      pWinter.then(function (object) {
-        object.position.set(-188, 18, -68);
-        this.scene.add(object);
-        for (var key in handler.animations.winter) {
-          if (handler.animations.winter[key]._clip.name.includes('_to_') || handler.animations.winter[key]._clip.name == 'idle') { }
-          else {
-            ui.addButton(handler.animations.winter[key]._clip.name, 'winter', attachCallbackAnimation.bind(handler.animations.winter[key]));
-            handler.animations.winter[key].repetitions = 0;
-          }
-        }
-        // default
-        this.currentAnimations.winter = handler.animations.winter[0];
-        this.currentAnimations.winter.play();
-      }.bind(this)).catch(console.log.bind(console));
-
-      // summer
-      var pSummer = handler.loadAnimatedAsset('summer', true);
-      pSummer.then(function (object) {
-        object.position.set(188, 18, -68);
-        this.scene.add(object);
-        for (var key in handler.animations.summer) {
-          if (handler.animations.summer[key]._clip.name.includes('_to_') || handler.animations.summer[key]._clip.name == 'idle') { }
-          else {
-            ui.addButton(handler.animations.summer[key]._clip.name, 'summer', attachCallbackAnimation.bind(handler.animations.summer[key]));
-            handler.animations.summer[key].repetitions = 0;
-          }
-        }
-        // default
-        this.currentAnimations.summer = handler.animations.summer[0];
-        this.currentAnimations.summer.play();
-      }.bind(this)).catch(console.log.bind(console));
-
-      // shaders
-      var pShaderSmall = handler.loadMorphedAsset('right_small_shader');
-      var pShaderMedium = handler.loadMorphedAsset('right_medium_shader');
-      var pShaderLarge = handler.loadMorphedAsset('right_large_shader');
-      Promise.all([pShaderSmall, pShaderMedium, pShaderLarge]).then(function (objects) {
-        for (var key in objects) {
-          for (var mKey in objects[key].material.materials) {
-            objects[key].material.materials[mKey].transparent = true;
-            objects[key].material.materials[mKey].opacity = 0;
-          }
-          objects[key].visible = false;
-          this.scene.add(objects[key]);
-        }
-        setDefaultShader();
-        ui.addSlider('right', 0, 1, 0.25, attachCallbackShader.bind(this));
-      }.bind(this)).catch(console.log.bind(console));
+                    var position = objects[key].name.slice(0, objects[key].name.search('_'));
+                    var type = objects[key].name.slice(objects[key].name.search('_')+1, objects[key].name.length);
+                    ui.addButton(type, position, attachCallbackWall.bind(this));
+                  }
+                  setDefaultWalls();
+                  ls.update('shaders');
+                  var pShaderSmall = handler.loadMorphedAsset('right_small_shader');
+                  var pShaderMedium = handler.loadMorphedAsset('right_medium_shader');
+                  var pShaderLarge = handler.loadMorphedAsset('right_large_shader');
+                  Promise.all([pShaderSmall, pShaderMedium, pShaderLarge]).then(function (objects) {
+                    setTimeout(function () {
+                      for (var key in objects) {
+                        for (var mKey in objects[key].material.materials) {
+                          objects[key].material.materials[mKey].transparent = true;
+                          objects[key].material.materials[mKey].opacity = 0;
+                        }
+                        objects[key].visible = false;
+                        this.scene.add(objects[key]);
+                      }
+                      setDefaultShader();
+                      ui.addSlider('right', 0, 1, 0.25, attachCallbackShader.bind(this));
+                      ls.update('winter character');
+                      var pWinter = handler.loadAnimatedAsset('winter', true);
+                      pWinter.then(function (object) {
+                        setTimeout(function () {
+                          object.position.set(-188, 18, -68);
+                          this.scene.add(object);
+                          for (var key in handler.animations.winter) {
+                            if (handler.animations.winter[key]._clip.name.includes('_to_') || handler.animations.winter[key]._clip.name == 'idle') { }
+                            else {
+                              ui.addButton(handler.animations.winter[key]._clip.name, 'winter', attachCallbackAnimation.bind(handler.animations.winter[key]));
+                              handler.animations.winter[key].repetitions = 0;
+                            }
+                          }
+                          // default
+                          this.currentAnimations.winter = handler.animations.winter[0];
+                          this.currentAnimations.winter.play();
+                          ls.update('summer character');
+                          var pSummer = handler.loadAnimatedAsset('summer', true);
+                          pSummer.then(function (object) {
+                            setTimeout(function () {
+                              object.position.set(188, 18, -68);
+                              this.scene.add(object);
+                              for (var key in handler.animations.summer) {
+                                if (handler.animations.summer[key]._clip.name.includes('_to_') || handler.animations.summer[key]._clip.name == 'idle') { }
+                                else {
+                                  ui.addButton(handler.animations.summer[key]._clip.name, 'summer', attachCallbackAnimation.bind(handler.animations.summer[key]));
+                                  handler.animations.summer[key].repetitions = 0;
+                                }
+                              }
+                              // default
+                              this.currentAnimations.summer = handler.animations.summer[0];
+                              this.currentAnimations.summer.play();
+                              ls.update('done');
+                            }.bind(this), timeOutValue);
+                          }.bind(this));
+                        }.bind(this), timeOutValue);
+                      }.bind(this));
+                    }.bind(this), timeOutValue);
+                  }.bind(this));
+                }.bind(this), timeOutValue);
+              }.bind(this));
+            }.bind(this), timeOutValue);
+          }.bind(this));
+        }.bind(this), timeOutValue);
+      }.bind(this));
     };
 
     stage.startRenderLoop = function () {

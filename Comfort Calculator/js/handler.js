@@ -1,5 +1,5 @@
 define(
-  ['jquery', 'three', 'ls'],
+  ['ls', 'jquery', 'three'],
   function (ls) {
     var handler = {
       container: undefined,
@@ -100,28 +100,51 @@ define(
     };
 
     handler.preLoadMaps = function () {
+      ls.update('background');
+
       var maps = [
         '/skins/body_woman.jpg',
         '/skins/hair_woman.jpg',
         '/skins/summer_cloth.jpg',
-        '/skins/winter_cloth.jpg'
+        '/skins/winter_cloth.jpg',
+        'background.jpg',
+        'blind.jpg',
+        'lamp.jpg',
+        'large_wall_03.jpg',
+        'left_sofa.jpg',
+        'main_building_N.jpg',
+        'main_building.jpg',
+        'med_window_ao.jpg',
+        'med_window.jpg',
+        'mid_wall_01.jpg',
+        'mid_wall_02.jpg',
+        'right_lamp.jpg',
+        'right_sofa.jpg',
+        'right_table.jpg',
+        'shadow_plane.png',
+        'table_left.jpg',
+        'window_large.jpg'
       ];
       ls.maps_count += maps.length;
+
+      this.resolve;
 
       var promise = new Promise(function (resolve, reject) {
         for (var key in maps) {
           this.maps[maps.length] = new Image();
-          this.maps[maps.length].onload = onImageLoaded.bind(promise);
           this.maps[maps.length].src = './assets/' + maps[key];
+          this.maps[maps.length].onload = onImageLoaded.bind(this);
         }
+        this.resolve = resolve;
       }.bind(this));
       return promise;
     };
 
     function onImageLoaded () {
       ls.maps_loaded++;
-      if (ls.maps_loaded == ls.maps_count) resolve();
-      // ls.updateLoader();
+      if (ls.maps_loaded == ls.maps_count) {
+        this.resolve();
+      }
     }
 
     function fixTimeFrame (animations) {
