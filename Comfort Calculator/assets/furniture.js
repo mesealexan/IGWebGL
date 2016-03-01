@@ -23,7 +23,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "table_left.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -35,7 +36,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "left_sofa.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -47,7 +49,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "lamp.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -59,7 +62,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "right_table.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -71,7 +75,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 62.8951,
 "mapDiffuse"    : "right_lamp.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -83,7 +88,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "right_sofa.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 }
 
 ],

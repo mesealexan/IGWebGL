@@ -28,6 +28,8 @@ define(
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
               object.name = asset;
+              object.castShadow = true;
+              object.receiveShadow = true;
               this.assets[asset] = object;
               resolve(object);
             }.bind(this)
@@ -52,6 +54,8 @@ define(
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
+              object.castShadow = true;
+              object.receiveShadow = true;
               handler.assets[asset] = object;
               resolve(object);
             }
@@ -79,6 +83,9 @@ define(
               }
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.SkinnedMesh(geometry, material);
+
+              object.castShadow = true;
+              object.receiveShadow = true;
               handler.assets[asset] = object;
               if (!handler.animation_mixers[asset]) {
                 handler.animation_mixers[asset] = new THREE.AnimationMixer(handler.assets[asset]);

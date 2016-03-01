@@ -23,7 +23,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "blind.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -32,11 +33,11 @@
 "colorDiffuse"  : [0.2471, 0.3373, 0.3137],
 "colorAmbient"  : [0.2471, 0.3373, 0.3137],
 "colorSpecular"  : [0.9000, 0.9000, 0.9000],
-"transparency"  : 0.5,
-"specularCoef"  : 7.0,
+"opacity"  : 0.3,
+"specularCoef"  : 25.0,
 "vertexColors" : false,
-"transparent" : true,
-"shading" : "Phong"
+"shading" : "Phong",
+"transparent":true
 },
 
 {
@@ -48,7 +49,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "mid_wall_02.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 },
 
 {
@@ -60,7 +62,8 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "med_window_ao.jpg",
-"vertexColors" : false
+"vertexColors" : false,
+"shading" : "Phong"
 }
 
 ],
