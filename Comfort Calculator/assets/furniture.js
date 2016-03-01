@@ -49,6 +49,7 @@
 "transparency"  : 1.0,
 "specularCoef"  : 43.2193,
 "mapDiffuse"    : "lamp.jpg",
+"mapLight": "lamp.jpg",
 "vertexColors" : false,
 "shading" : "Phong"
 },
