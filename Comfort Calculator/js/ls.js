@@ -8,9 +8,13 @@ define(
 
     ls.update = function (value) {
       if (value == 'done') {
-        $('#ls').css('visibility', 'hidden');
+        $('#ls').html('Load completed');
+        setTimeout(function(){ 
+          $('#ls_holder').css('display', 'none');
+         }, 1000);
+        
       } else {
-        $('#ls').html('Loading: ' + value);
+        $('#ls').html('Loading: ' + value + " ...");
       }
     };
 

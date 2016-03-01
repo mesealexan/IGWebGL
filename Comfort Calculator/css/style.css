@@ -49,15 +49,21 @@
   height: 100%;
   z-index: -1;
 }
-
-#ls {
+#ls_holder{
   position: fixed;
-  background-color: purple;
+  top: 10%;
+  left: 0%;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  background-color: rgb(224,221,213);
+  text-align: center;
+  display: block;
+  opacity: 0.99;
+}
+#ls {
+  color: rgb(83,82,90);
+  position: relative;
   font-size: 32px;
-  top: 33%;
-  left: 33%;
-  width: 33%;
-  height: 33%;
   z-index: 2;
-  visibility: visible;
 }

@@ -50,8 +50,10 @@ define(
       handler.lights.ambientLight2 = new THREE.AmbientLight(0x161616);
       this.scene.add(handler.lights.ambientLight2);
 
-      var light = new THREE.PointLight( 0xffffff, 0.2, 3000 );
-      light.position.set( 555, 503, -1310 );
+      var light = new THREE.SpotLight( 0xffffff );
+      light.position.set( -46.57,178.75,-215.98);
+      light.target.position.set( -225.63,18.27,-87.41);
+      light.angle = Math.PI*2;
       this.scene.add( light );
 
       var timeOutValue = 1000;
