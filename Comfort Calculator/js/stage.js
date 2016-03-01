@@ -29,7 +29,7 @@ define(
       this.camera.position.set(0, 339, 987);
       this.camera.lookAt( new THREE.Vector3(0,171,237) );
 
-      this.engine = new THREE.WebGLRenderer({antialias: true});
+      this.engine = new THREE.WebGLRenderer({antialias: true, alpha: true});
       this.engine.setSize(container_width, container_height);
       this.engine.gammaInput = this.engine.gammaOutput = true;
       handler.container.appendChild(this.engine.domElement);
