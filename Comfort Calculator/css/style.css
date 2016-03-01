@@ -40,3 +40,15 @@
   width: 100px;
   height: 30px;
 }
+
+#ls {
+  position: fixed;
+  background-color: purple;
+  font-size: 32px;
+  top: 33%;
+  left: 33%;
+  width: 33%;
+  height: 33%;
+  z-index: 2;
+  visibility: visible;
+}

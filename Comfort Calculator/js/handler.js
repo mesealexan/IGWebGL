@@ -1,6 +1,6 @@
 define(
-  ['jquery', 'three'],
-  function () {
+  ['jquery', 'three', 'ls'],
+  function (ls) {
     var handler = {
       container: undefined,
       JSONLoader: undefined,
@@ -8,7 +8,8 @@ define(
       lights: [],
       tweens: [],
       animation_mixers: [],
-      animations: []
+      animations: [],
+      maps: []
     };
 
     handler.init = function (container_id) {
@@ -97,6 +98,31 @@ define(
       });
       return promise;
     };
+
+    handler.preLoadMaps = function () {
+      var maps = [
+        '/skins/body_woman.jpg',
+        '/skins/hair_woman.jpg',
+        '/skins/summer_cloth.jpg',
+        '/skins/winter_cloth.jpg'
+      ];
+      ls.maps_count += maps.length;
+
+      var promise = new Promise(function (resolve, reject) {
+        for (var key in maps) {
+          this.maps[maps.length] = new Image();
+          this.maps[maps.length].onload = onImageLoaded.bind(promise);
+          this.maps[maps.length].src = './assets/' + maps[key];
+        }
+      }.bind(this));
+      return promise;
+    };
+
+    function onImageLoaded () {
+      ls.maps_loaded++;
+      if (ls.maps_loaded == ls.maps_count) resolve();
+      // ls.updateLoader();
+    }
 
     function fixTimeFrame (animations) {
       for (var key01 in animations) {
