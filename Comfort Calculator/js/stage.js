@@ -15,7 +15,11 @@ define(
         winter: undefined,
         summer: undefined
       },
-      currentShader: undefined
+      currentShader: undefined,
+      timeOuts: {
+        winter: undefined,
+        summer: undefined
+      }
     };
 
     stage.init = function () {
@@ -225,6 +229,7 @@ define(
     function attachCallbackAnimation (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
       if (this == stage.currentAnimations[position]) return;
+      clearTimeout(stage.timeOuts[position]);
       this.enabled = true;
       if (this.isRunning()) {
         this.reset();
@@ -233,7 +238,7 @@ define(
       }
       this.crossFadeFrom(stage.currentAnimations[position], 0.5);
       stage.currentAnimations[position] = this;
-      setTimeout(function () {
+      stage.timeOuts[position] = setTimeout(function () {
         handler.animations[position][0].enabled = true;
         handler.animations[position][0].play();
         handler.animations[position][0].crossFadeFrom(stage.currentAnimations[position], 1);
