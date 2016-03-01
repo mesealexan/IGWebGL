@@ -15,11 +15,7 @@ define(
         winter: undefined,
         summer: undefined
       },
-      currentShader: undefined,
-      timeOuts: {
-        winter: undefined,
-        summer: undefined
-      }
+      currentShader: undefined
     };
 
     stage.init = function () {
@@ -27,14 +23,16 @@ define(
       var container_height = $(handler.container).height();
 
       this.scene = new THREE.Scene();
-      this.scene.fog = new THREE.Fog(0xffffff, 1300, 2000);
+      //this.scene.fog = new THREE.Fog(0xffffff, 1300, 2000);
 
       this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
-      this.camera.position.set(0, 339, 987);
+      this.camera.position.set(0.66, 339, 987);
       this.camera.lookAt( new THREE.Vector3(0,171,237) );
 
       this.engine = new THREE.WebGLRenderer({antialias: true, alpha: true});
       this.engine.setSize(container_width, container_height);
+      this.engine.shadowMap.enabled = true;
+      this.engine.shadowMap.type = THREE.PCFSoftShadowMap;
       this.engine.gammaInput = this.engine.gammaOutput = true;
       handler.container.appendChild(this.engine.domElement);
 
@@ -44,19 +42,42 @@ define(
     };
 
     stage.loadStage = function () {
-      handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
+      handler.lights.ambientLight = new THREE.AmbientLight(0xC4C4C4);
       this.scene.add(handler.lights.ambientLight);
 
       handler.lights.ambientLight2 = new THREE.AmbientLight(0x161616);
-      this.scene.add(handler.lights.ambientLight2);
+      //this.scene.add(handler.lights.ambientLight2);
 
-      var light = new THREE.SpotLight( 0xffffff );
-      light.position.set( -46.57,178.75,-215.98);
-      light.target.position.set( -225.63,18.27,-87.41);
-      light.angle = Math.PI*2;
+      var light = new THREE.PointLight( 0xB5CCFF, 1 );
+
+      light.position.set( -48, 450, -212);
+      light.castShadow = true;
+      light.shadow.mapSize.width = 1024;
+      light.shadow.mapSize.height = 1024;
+
+      light.shadow.camera.near = 4;
+      light.shadow.camera.far = 9000;
+      light.shadow.camera.fov = 90;
       this.scene.add( light );
 
       var timeOutValue = 1000;
+
+
+      var light2 = new THREE.SpotLight( 0xffffff, 6 );
+
+      light2.position.set( 1557, 593, 10);
+      light2.target.position.set( 117, 18, -28);
+      light2.target.updateMatrixWorld()
+      light2.castShadow = true;
+      light2.shadow.mapSize.width = 
+      light2.shadow.mapSize.height = 2048;
+
+      light2.shadow.camera.near = 500;
+      light2.shadow.camera.far = 3000;
+      light2.shadow.camera.fov = 40;
+      this.scene.add( light2 );
+
+
 
       ls.update('room');
       var pStatic = handler.loadAsset('static');
@@ -127,7 +148,7 @@ define(
                           var pSummer = handler.loadAnimatedAsset('summer', true);
                           pSummer.then(function (object) {
                             setTimeout(function () {
-                              object.position.set(188, 18, -68);
+                              object.position.set(266, 18, -45);
                               this.scene.add(object);
                               for (var key in handler.animations.summer) {
                                 if (handler.animations.summer[key]._clip.name.includes('_to_') || handler.animations.summer[key]._clip.name == 'idle') { }
@@ -231,7 +252,6 @@ define(
     function attachCallbackAnimation (e) {
       var position = e.target.id.slice(0, e.target.id.search('_'));
       if (this == stage.currentAnimations[position]) return;
-      clearTimeout(stage.timeOuts[position]);
       this.enabled = true;
       if (this.isRunning()) {
         this.reset();
@@ -240,7 +260,7 @@ define(
       }
       this.crossFadeFrom(stage.currentAnimations[position], 0.5);
       stage.currentAnimations[position] = this;
-      stage.timeOuts[position] = setTimeout(function () {
+      setTimeout(function () {
         handler.animations[position][0].enabled = true;
         handler.animations[position][0].play();
         handler.animations[position][0].crossFadeFrom(stage.currentAnimations[position], 1);
