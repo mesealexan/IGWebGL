@@ -1,3 +1,4 @@
+var pizda;
 define(
   ['ls', 'ui', 'handler', 'three', 'jquery', 'tween'],
   function (ls, ui, handler) {
@@ -30,6 +31,7 @@ define(
       //this.scene.fog = new THREE.Fog(0xffffff, 1300, 2000);
 
       this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
+      pizda = this.camera;
       this.camera.position.set(0.66, 339, 987);
       this.camera.lookAt( new THREE.Vector3(0,171,237) );
 
@@ -43,9 +45,11 @@ define(
       this.clock = new THREE.Clock();
 
       window.addEventListener('resize', resizeWindow.bind(this));
+
     };
 
     stage.loadStage = function () {
+
       handler.lights.ambientLight = new THREE.AmbientLight(0xC4C4C4);
       this.scene.add(handler.lights.ambientLight);
 
@@ -56,11 +60,11 @@ define(
 
       light.position.set( -48, 450, -212);
       light.castShadow = true;
-      light.shadow.mapSize.width = 1024;
+      light.shadow.mapSize.width = 
       light.shadow.mapSize.height = 1024;
 
       light.shadow.camera.near = 4;
-      light.shadow.camera.far = 9000;
+      light.shadow.camera.far = 6000;
       light.shadow.camera.fov = 90;
       this.scene.add( light );
 
@@ -279,13 +283,19 @@ define(
     }
 
     function resizeWindow () {
+      
       var container_width = $(handler.container).width();
       var container_height = $(handler.container).height();
       this.engine.setSize(container_width, container_height);
+      
       this.camera.aspect = container_width / container_height;
+      this.camera.fov = interpolate(0.35,this.camera.aspect,3,85,10);
   		this.camera.updateProjectionMatrix();
-    }
 
+    }
+    function interpolate(x1,x2,x3,y1,y3) {
+      return ((x2 - x1) * (y3 - y1)) / (x3 - x1) + y1;
+    }
     return stage;
   }
 );

@@ -32,9 +32,9 @@
 "DbgName"  : "Glass",
 "colorDiffuse"  : [0.2471, 0.3373, 0.3137],
 "colorAmbient"  : [0.2471, 0.3373, 0.3137],
-"colorSpecular"  : [0.9000, 0.9000, 0.9000],
-"opacity"  : 0.3,
-"specularCoef"  : 25.0,
+"colorSpecular"  : [1, 1, 1],
+"opacity"  : 0.4,
+"specularCoef"  : 6.0,
 "vertexColors" : false,
 "shading" : "Phong",
 "transparent":true
