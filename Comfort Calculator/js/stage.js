@@ -106,6 +106,7 @@ define(
                   for (var key in objects) {
                     for (var mKey in objects[key].material.materials) {
                       objects[key].material.materials[mKey].transparent = true;
+                      if (objects[key].material.materials[mKey].name == 'Glass') continue;
                       objects[key].material.materials[mKey].opacity = 0;
                     }
                     objects[key].visible = false;
@@ -197,11 +198,13 @@ define(
       stage.currentWalls.right = handler.assets.right_small;
 
       for (var lKey in stage.currentWalls.left.material.materials) {
+        if (stage.currentWalls.left.material.materials[lKey].name == 'Glass') continue;
         stage.currentWalls.left.material.materials[lKey].opacity = 1;
       }
       stage.currentWalls.left.visible = true;
 
       for (var rKey in stage.currentWalls.right.material.materials) {
+        if (stage.currentWalls.right.material.materials[rKey].name == 'Glass') continue;
         stage.currentWalls.right.material.materials[rKey].opacity = 1;
       }
       stage.currentWalls.right.visible = true;
@@ -212,6 +215,7 @@ define(
       var tweenTime = 100;
 
       for (var keyOut in this.currentWalls[position].material.materials) {
+        if (this.currentWalls[position].material.materials[keyOut].name == 'Glass') continue;
         new TWEEN.Tween(this.currentWalls[position].material.materials[keyOut]).to({opacity: 0}, tweenTime).start();
       }
 
@@ -226,6 +230,7 @@ define(
         this.currentWalls[position] = handler.assets[e.target.id];
         this.currentWalls[position].visible = true;
         for (var keyIn in this.currentWalls[position].material.materials) {
+          if (this.currentWalls[position].material.materials[keyIn].name == 'Glass') continue;
           new TWEEN.Tween(this.currentWalls[position].material.materials[keyIn]).to({opacity: 1}, tweenTime).start();
         }
 
