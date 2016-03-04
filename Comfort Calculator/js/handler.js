@@ -25,6 +25,9 @@ define(
             assetURL,
             function (geometry, materials) {
               setMaterials(materials);
+              if(asset == 'furniture')
+                  geometry.computeVertexNormals();
+              geometry.computeFaceNormals();
               var material = new THREE.MeshFaceMaterial(materials);
               var object = new THREE.Mesh(geometry, material);
               object.name = asset;
@@ -49,6 +52,7 @@ define(
             assetURL,
             function (geometry, materials) {
               geometry.computeVertexNormals();
+              geometry.computeFaceNormals();
               for (var key in materials) {
                 materials[key].morphTargets = true;
               }
@@ -75,6 +79,7 @@ define(
             assetURL,
             function (geometry, materials) {
               geometry.computeVertexNormals();
+              geometry.computeFaceNormals();
               for (var key in materials) {
                 materials[key].skinning = true;
               }

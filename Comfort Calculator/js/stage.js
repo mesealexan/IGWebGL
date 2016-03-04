@@ -50,28 +50,28 @@ define(
 
     stage.loadStage = function () {
 
-      handler.lights.ambientLight = new THREE.AmbientLight(0xC4C4C4);
+      handler.lights.ambientLight = new THREE.AmbientLight(0xffffff);
       this.scene.add(handler.lights.ambientLight);
 
       handler.lights.ambientLight2 = new THREE.AmbientLight(0x161616);
       //this.scene.add(handler.lights.ambientLight2);
 
-      var light = new THREE.PointLight( 0xB5CCFF, 1 );
+      var light = new THREE.PointLight( 0xB5CCFF, 0.4 );
 
-      light.position.set( -48, 450, -212);
+      light.position.set( -260, 320, -50);
       light.castShadow = true;
       light.shadow.mapSize.width = 
-      light.shadow.mapSize.height = 1024;
+      light.shadow.mapSize.height = 2048;
 
       light.shadow.camera.near = 4;
-      light.shadow.camera.far = 6000;
+      light.shadow.camera.far = 3000;
       light.shadow.camera.fov = 90;
       this.scene.add( light );
 
       var timeOutValue = 1000;
 
 
-      var light2 = new THREE.SpotLight( 0xffffff, 6 );
+      var light2 = new THREE.SpotLight( 0xffffff, 3 );
 
       light2.position.set( 1557, 593, 10);
       light2.target.position.set( 117, 18, -28);
@@ -85,7 +85,11 @@ define(
       light2.shadow.camera.fov = 40;
       this.scene.add( light2 );
 
+      var light3 = new THREE.PointLight( 0xffffff, 0.2 );
 
+      light3.position.set( 5, 290, 740);
+
+      this.scene.add( light3 );
 
       ls.update('room');
       var pStatic = handler.loadAsset('static');
@@ -141,7 +145,7 @@ define(
                       var pWinter = handler.loadAnimatedAsset('winter', true);
                       pWinter.then(function (object) {
                         setTimeout(function () {
-                          object.position.set(-188, 18, -68);
+                          object.position.set(-270, 18, -68);
                           this.scene.add(object);
                           for (var key in handler.animations.winter) {
                             if (handler.animations.winter[key]._clip.name.includes('_to_') || handler.animations.winter[key]._clip.name == 'idle') { }
@@ -280,7 +284,11 @@ define(
         handler.animations[position][0].crossFadeFrom(stage.currentAnimations[position], 1);
         stage.currentAnimations[position] = handler.animations[position][0];
       }, this._clip.duration * 1000 - 1000);
-    }
+      if (this._clip.name == 'side_walk' && handler.assets[position].position.x < -90) {
+         new TWEEN.Tween(handler.assets[position].position).to({x: handler.assets[position].position.x + 30}, this._clip.duration * 700).easing(TWEEN.Easing.Cubic.In).start();
+      //handler.assets[position].position.x += 100;
+      }
+          }
 
     function resizeWindow () {
       
