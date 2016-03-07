@@ -1,7 +1,6 @@
-var pizda;
 define(
-  ['ls', 'ui', 'handler', 'three', 'jquery', 'tween'],
-  function (ls, ui, handler) {
+  ['ls', 'ui', 'handler', 'three', 'jquery', 'tween','threex'],
+  function (ls, ui, handler, three, $, tween, threex) {
     var stage = {
       scene: undefined,
       camera: undefined,
@@ -23,6 +22,22 @@ define(
       }
     };
 
+/*
+
+      var container_width = $(handler.container).width();
+      var container_height = $(handler.container).height();
+      this.engine.setSize(container_width, container_height);
+
+      this.camera.aspect = container_width / container_height;
+      this.camera.fov = interpolate(0.35,this.camera.aspect,3,85,10);
+      this.camera.updateProjectionMatrix();
+
+*/
+
+
+
+
+
     stage.init = function () {
       var container_width = $(handler.container).width();
       var container_height = $(handler.container).height();
@@ -31,11 +46,14 @@ define(
       //this.scene.fog = new THREE.Fog(0xffffff, 1300, 2000);
 
       this.camera = new THREE.PerspectiveCamera( 40, container_width/container_height, 100, 2000 );
-      pizda = this.camera;
       this.camera.position.set(0.66, 339, 987);
       this.camera.lookAt( new THREE.Vector3(0,171,237) );
+      this.camera.aspect = container_width / container_height;
+      this.camera.fov = interpolate(0.35,this.camera.aspect,3,85,10);
+      this.camera.updateProjectionMatrix();
 
       this.engine = new THREE.WebGLRenderer({antialias: true, alpha: true});
+      this.engine.setClearColor('black', 0 );
       this.engine.setSize(container_width, container_height);
       this.engine.shadowMap.enabled = true;
       this.engine.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -70,10 +88,8 @@ define(
 
       var timeOutValue = 1000;
 
-
       var light2 = new THREE.SpotLight( 0xffffff, 3 );
-
-      light2.position.set( 1557, 593, 10);
+      light2.position.set(1557, 593, 10);
       light2.target.position.set( 117, 18, -28);
       light2.target.updateMatrixWorld();
       light2.castShadow = true;
@@ -84,6 +100,8 @@ define(
       light2.shadow.camera.far = 3000;
       light2.shadow.camera.fov = 40;
       this.scene.add( light2 );
+      this.scene.add( light2.target )
+
 
       var light3 = new THREE.PointLight( 0xffffff, 0.2 );
 
@@ -100,6 +118,7 @@ define(
           var pFurniture = handler.loadAsset('furniture');
           pFurniture.then(function(object){
             setTimeout(function () {
+
               this.scene.add(object);
               ls.update('walls');
               var pLeftSmall = handler.loadAsset('left_small');
