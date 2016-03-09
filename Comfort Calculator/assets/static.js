@@ -26,6 +26,7 @@
 "mapNormal" : "main_building_N.jpg",
 "vertexColors" : false,
 "shading" : "Phong"
+
 },
 
 {

@@ -22,22 +22,6 @@ define(
       }
     };
 
-/*
-
-      var container_width = $(handler.container).width();
-      var container_height = $(handler.container).height();
-      this.engine.setSize(container_width, container_height);
-
-      this.camera.aspect = container_width / container_height;
-      this.camera.fov = interpolate(0.35,this.camera.aspect,3,85,10);
-      this.camera.updateProjectionMatrix();
-
-*/
-
-
-
-
-
     stage.init = function () {
       var container_width = $(handler.container).width();
       var container_height = $(handler.container).height();
@@ -103,6 +87,8 @@ define(
       this.scene.add( light2.target )
 
 
+
+
       var light3 = new THREE.PointLight( 0xffffff, 0.2 );
 
       light3.position.set( 5, 290, 740);
@@ -151,16 +137,12 @@ define(
                   Promise.all([pShaderSmall, pShaderMedium, pShaderLarge]).then(function (objects) {
                     setTimeout(function () {
                       for (var key in objects) {
-                        for (var mKey in objects[key].material.materials) {
-                          objects[key].material.materials[mKey].transparent = true;
-                          objects[key].material.materials[mKey].opacity = 0;
-                        }
                         objects[key].visible = false;
                         this.scene.add(objects[key]);
                       }
                       setDefaultShader();
                       ls.update('cold shader');
-                      ui.addSlider('right', 0, 1, 0.25, attachCallbackShader.bind(this));
+                      ui.addSlider('right', 0, 2, 1, attachCallbackShader.bind(this));
                       var pCold = handler.loadMorphedAsset('cold').then(function (object) {
                         setTimeout(function () {
                           this.scene.add(object);
@@ -256,12 +238,6 @@ define(
         new TWEEN.Tween(this.currentWalls[position].material.materials[keyOut]).to({opacity: 0}, tweenTime).start();
       }
 
-      if (position === 'right') {
-        for (var keyOutShader in this.currentShader.material.materials) {
-          new TWEEN.Tween(this.currentShader.material.materials[keyOutShader]).to({opacity: 0}, tweenTime).start();
-        }
-      }
-
       setTimeout(function () {
         this.currentWalls[position].visible = false;
         this.currentWalls[position] = handler.assets[e.target.id];
@@ -275,24 +251,33 @@ define(
           this.currentShader.visible = false;
           this.currentShader = handler.assets[e.target.id+'_shader'];
           this.currentShader.visible = true;
-          for (var keyInShader in this.currentShader.material.materials) {
-            new TWEEN.Tween(this.currentShader.material.materials[keyInShader]).to({opacity: 1}, tweenTime).start();
-          }
         }
       }.bind(this), tweenTime);
     }
 
     function setDefaultShader () {
       stage.currentShader = handler.assets.right_small_shader;
-      for (var key in stage.currentShader.material.materials) {
-        stage.currentShader.material.materials[key].opacity = 1;
-      }
       stage.currentShader.visible = true;
     }
 
     function attachCallbackShader (e) {
-      this.currentShader.morphTargetInfluences[0] = 1 - e.target.valueAsNumber;
-      this.currentShader.morphTargetInfluences[1] = e.target.valueAsNumber;
+      switch( e.target.valueAsNumber) {
+        case 0:
+            this.currentShader.morphTargetInfluences[0] = 1;
+            this.currentShader.morphTargetInfluences[1] = 0;
+            this.currentShader.morphTargetInfluences[2] = 0;
+            break;
+        case 1:
+            this.currentShader.morphTargetInfluences[0] = 0;
+            this.currentShader.morphTargetInfluences[1] = 1;
+            this.currentShader.morphTargetInfluences[2] = 0;
+            break;
+        case 2:
+            this.currentShader.morphTargetInfluences[0] = 0;
+            this.currentShader.morphTargetInfluences[1] = 0;
+            this.currentShader.morphTargetInfluences[2] = 1;
+            break;
+          }
     }
 
     function attachCallbackCold (e) {
