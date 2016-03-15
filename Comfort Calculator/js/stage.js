@@ -155,6 +155,7 @@ define(
                           pWinter.then(function (object) {
                             setTimeout(function () {
                               object.position.set(-270, 18, -68);
+                              object.scale.set(2.54,2.54,2.54);
                               this.scene.add(object);
                               for (var key in handler.animations.winter) {
                                 if (handler.animations.winter[key]._clip.name.includes('_to_') || handler.animations.winter[key]._clip.name == 'idle') { }
